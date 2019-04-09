@@ -16,7 +16,7 @@ import com.boot.security.server.model.Usercinemaview;
 @RunWith(SpringRunner.class)
 
 public class HelloControllerTest {
-	////
+	////\\
 	@Test
 	public void test() throws Exception{
 		Dy1905Interface di = new Dy1905Interface();
