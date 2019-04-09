@@ -51,7 +51,7 @@ public class CxInterface implements ICTMSInterface {
 	FilminfoServiceImpl _filminfoService = SpringUtil.getBean(FilminfoServiceImpl.class);
 	SessioninfoServiceImpl _sessioninfoService = SpringUtil.getBean(SessioninfoServiceImpl.class);
 	private static final String pCompress = "0";
-
+    
 	public CxInterface() {
 		cxService = new WebService();
 	}
