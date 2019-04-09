@@ -42,8 +42,6 @@ public class CinemaController {
     public Cinema get(@PathVariable Long id) {
     	Cinema c = new Cinema();
     	c = cinemaDao.getById(id);
-    	System.out.println(c.getId());
-    	System.out.println(c.getMId());
     	return cinemaDao.getById(id);
     }
     

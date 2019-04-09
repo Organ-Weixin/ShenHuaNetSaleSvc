@@ -19,7 +19,7 @@ public interface UserinfoDao {
     Userinfo getById(Long id);
     
     @Select("select * from userinfo t where t.username = #{username} and t.password = #{password}")
-    Userinfo getByUserCredential(String username,String password);
+    Userinfo getByUserCredential(@Param("username")String username,@Param("password")String password);
 
     @Delete("delete from userinfo where id = #{id}")
     int delete(Long id);

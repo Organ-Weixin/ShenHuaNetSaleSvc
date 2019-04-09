@@ -15,6 +15,7 @@ import com.boot.security.server.model.Cinema;
 
 @Mapper
 public interface CinemaDao {
+	//提交测试
 	//根据id查询订单数据
     @Select("select * from cinema t where t.Id= #{id}")
     Cinema getById(Long id);
@@ -25,13 +26,15 @@ public interface CinemaDao {
     @Delete("delete from cinema where id = #{id}")
     int delete(Long id);
     
+    @Update("update  cinema set Name=#{Name},Address=#{Address},ScreenCount=#{ScreenCount},CinemaId=#{CinemaId} where Code=#{Code}")
+    int updateByCode(Cinema cinema);
     
- @Update("update  cinema set Code=#{Code},Name=#{Name},Address=#{Address},IsOpen=#{IsOpen},MId=#{MId} where Id=#{Id}")
+    @Insert("insert into cinema(MId, Code, Name, Address, ScreenCount, IsDel, ManualAdd, IsOpen, CinemaId) values(#{MId}, #{Code}, #{Name}, #{Address}, #{ScreenCount}, #{IsDel}, #{ManualAdd}, #{IsOpen}, #{CinemaId})")
+    int save(Cinema cinema);
+  
+    
+ 	@Update("update  cinema set Code=#{Code},Name=#{Name},Address=#{Address},IsOpen=#{IsOpen},MId=#{MId} where Id=#{Id}")
     int update(Cinema cinema);
-    
-   @Options(useGeneratedKeys = true, keyProperty = "id")
-   @Insert("insert into cinema(Code, Name, Address, IsOpen, MId) values(#{code}, #{name}, #{address}, #{isOpen}, #{MId})")
-   int save(Cinema cinema); 
    
     int count(@Param("params") Map<String, Object> params);
 

@@ -1,23 +1,75 @@
 package com.boot.security.server.service.impl;
 
+import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.boot.security.server.dao.OrdersDao;
 import com.boot.security.server.dao.OrderseatdetailsDao;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Orderseatdetails;
+import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.OrderService;
-
-public class OrderServiceImpl implements OrderService {
+@Service
+public class OrderServiceImpl implements OrderService{
 	private static final Logger log = LoggerFactory.getLogger("adminLogger");
 	@Autowired
 	private OrdersDao ordersDao;
 	@Autowired
 	private OrderseatdetailsDao orderseatdetailssDao;
+	@Override
+	public Orders getById(Long id) {
+		// TODO Auto-generated method stub
+		return ordersDao.getById(id);
+	}
 
+	@Override
+	public int delete(Long id) {
+		// TODO Auto-generated method stub
+		return ordersDao.delete(id);
+	}
+
+	@Override
+	public int count(Map<String, Object> params) {
+		// TODO Auto-generated method stub
+		return ordersDao.count(params);
+	}
+
+	@Override
+	public List<Orders> list(Map<String, Object> params, Integer offset, Integer limit) {
+		// TODO Auto-generated method stub
+		return ordersDao.list(params, offset, limit);
+	}
+
+	@Override
+	public List<Userinfo> queryCompany() {
+		// TODO Auto-generated method stub
+		return ordersDao.queryCompany();
+	}
+
+	@Override
+	public List<Orders> queryOrders() {
+		// TODO Auto-generated method stub
+		return ordersDao.queryOrders();
+	}
+
+	@Override
+	public Orders getByPrintNo(String cinemacode, String printno, String verifycode) {
+		// TODO Auto-generated method stub
+		return ordersDao.getByPrintNo(cinemacode, printno, verifycode);
+	}
+	
+	@Override
+	public Orders getByOrderCode(String cinemacode, String ordercode) {
+		// TODO Auto-generated method stub
+		return ordersDao.getByOrderCode(cinemacode, ordercode);
+	}
+	
 	@Override
 	public int Insert(OrderView orderview) {
 		ordersDao.save(orderview.getOrderBaseInfo());

@@ -17,22 +17,18 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="E:/EclipseNew/plugins/org.apache.axis_1.4.0.v201411182030/lib/axis.jar"/>
-	<classpathentry kind="lib" path="E:/EclipseNew/plugins/org.apache.commons.discovery_0.2.0.v201004190315/lib/commons-discovery-0.2.jar"/>
-	<classpathentry kind="lib" path="E:/EclipseNew/plugins/javax.xml.rpc_1.1.0.v201209140446/lib/jaxrpc.jar"/>
-	<classpathentry kind="lib" path="E:/EclipseNew/plugins/javax.xml.soap_1.2.0.v201005080501/lib/saaj.jar"/>
-	<classpathentry kind="lib" path="E:/EclipseNew/plugins/javax.wsdl_1.6.2.v201012040545.jar"/>
-	<classpathentry kind="lib" path="E:/EclipseNew/plugins/org.apache.commons.codec_1.6.0.v201305230611.jar"/>
-	<classpathentry kind="lib" path="E:/EclipseNew/plugins/org.apache.commons.logging_1.1.1.v201101211721.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/jarPackage/axis-1.4.jar"/>
+	<classpathentry kind="lib" path="E:/jarPackage/com.springsource.javax.xml.rpc-1.1.0.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

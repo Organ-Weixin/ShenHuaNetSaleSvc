@@ -158,16 +158,16 @@ public class TicketapiPortTypeProxy implements cn.cmts.main.webservice.Ticketapi
     return ticketapiPortType.getCinemaAllPlan(pAppCode, pCinemaID, pTokenID, pVerifyInfo);
   }
   
-  public java.lang.String allCinemas(java.lang.String para, java.lang.String pVerifyInfo) throws java.rmi.RemoteException{
-    if (ticketapiPortType == null)
-      _initTicketapiPortTypeProxy();
-    return ticketapiPortType.allCinemas(para, pVerifyInfo);
-  }
-  
   public java.lang.String getHallAllSeat(java.lang.String pAppCode, java.lang.String pCinemaID, java.lang.String pHallID, java.lang.String pVerifyInfo) throws java.rmi.RemoteException{
     if (ticketapiPortType == null)
       _initTicketapiPortTypeProxy();
     return ticketapiPortType.getHallAllSeat(pAppCode, pCinemaID, pHallID, pVerifyInfo);
+  }
+  
+  public java.lang.String allCinemas(java.lang.String para, java.lang.String pVerifyInfo) throws java.rmi.RemoteException{
+    if (ticketapiPortType == null)
+      _initTicketapiPortTypeProxy();
+    return ticketapiPortType.allCinemas(para, pVerifyInfo);
   }
   
   public java.lang.String getOrderSeatMsg(java.lang.String pAppCode, java.lang.String pOrderNO, java.lang.String pValidCode, java.lang.String pVerifyInfo) throws java.rmi.RemoteException{

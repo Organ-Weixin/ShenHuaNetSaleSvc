@@ -26,6 +26,7 @@ import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
 import com.boot.security.server.model.Sessioninfo;
+import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 
 public class ModelMapper {
@@ -78,6 +79,7 @@ public class ModelMapper {
         session.setFeatureNo(entity.getFeatureNo());
         session.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(entity.getStartTime()));
         session.setPlaythroughFlag(entity.getPlaythroughFlag());
+        //session.setPlaythroughFlag(StatusEnum.valueOf(entity.getPlaythroughFlag()));
 
         session.Films =session.new QuerySessionReplyFilms();
         QuerySessionReplyFilm film =session.Films.new QuerySessionReplyFilm();

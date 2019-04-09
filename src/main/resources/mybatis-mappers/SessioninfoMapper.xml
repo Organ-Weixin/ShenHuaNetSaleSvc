@@ -2,93 +2,47 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.boot.security.server.dao.SessioninfoDao">
-
+	<resultMap type="Sessioninfo" id="Films">
+		<result property="Id" column="Id"/>
+		<result property="CCode" column="CCode"/>
+		<result property="FilmCode" column="FilmCode"/>
+		<result property="FilmName" column="FilmName"/>
+		<result property="Duration" column="Duration"/>
+		<result property="Language" column="Language"/>
+		<association property="FileInfo" javaType="FileInfo">
+			<result property="Id" column="Id"/>
+			<result property="FilmCode" column="FilmCode"/>
+			<result property="FilmName" column="FilmName"/>
+		</association>
+	</resultMap>
 	<sql id="where">
 		<where>
 			<if test="params.Id != null and params.Id != ''">
-				and Id = #{params.Id} 
+				and s.Id = #{params.Id} 
 			</if>
 			<if test="params.CCode != null and params.CCode != ''">
-				and CCode = #{params.CCode} 
+				and s.CCode = #{params.CCode} 
 			</if>
-			<if test="params.SCode != null and params.SCode != ''">
-				and SCode = #{params.SCode} 
+			<if test="params.StartTime !=null and params.StartTime != ''">
+				and s.StartTime >= #{params.StartTime}
 			</if>
-			<if test="params.ScreenCode != null and params.ScreenCode != ''">
-				and ScreenCode = #{params.ScreenCode} 
+			<if test="params.EndTime !=null and params.EndTime != ''">
+				and #{params.EndTime} >= s.EndTime  
 			</if>
-			<if test="params.StartTime != null and params.StartTime != ''">
-				and StartTime = #{params.StartTime} 
-			</if>
-			<if test="params.FilmCode != null and params.FilmCode != ''">
-				and FilmCode = #{params.FilmCode} 
-			</if>
-			<if test="params.FilmName != null and params.FilmName != ''">
-				and FilmName = #{params.FilmName} 
-			</if>
-			<if test="params.Duration != null and params.Duration != ''">
-				and Duration = #{params.Duration} 
-			</if>
-			<if test="params.Language != null and params.Language != ''">
-				and Language = #{params.Language} 
-			</if>
-			<if test="params.UpdateTime != null and params.UpdateTime != ''">
-				and UpdateTime = #{params.UpdateTime} 
-			</if>
-			<if test="params.StandardPrice != null and params.StandardPrice != ''">
-				and StandardPrice = #{params.StandardPrice} 
-			</if>
-			<if test="params.LowestPrice != null and params.LowestPrice != ''">
-				and LowestPrice = #{params.LowestPrice} 
-			</if>
-			<if test="params.SettlePrice != null and params.SettlePrice != ''">
-				and SettlePrice = #{params.SettlePrice} 
-			</if>
-			<if test="params.TicketFee != null and params.TicketFee != ''">
-				and TicketFee = #{params.TicketFee} 
-			</if>
-			<if test="params.IsAvalible != null and params.IsAvalible != ''">
-				and IsAvalible = #{params.IsAvalible} 
-			</if>
-			<if test="params.PlaythroughFlag != null and params.PlaythroughFlag != ''">
-				and PlaythroughFlag = #{params.PlaythroughFlag} 
-			</if>
-			<if test="params.Dimensional != null and params.Dimensional != ''">
-				and Dimensional = #{params.Dimensional} 
-			</if>
-			<if test="params.Sequence != null and params.Sequence != ''">
-				and Sequence = #{params.Sequence} 
-			</if>
-			<if test="params.UserID != null and params.UserID != ''">
-				and UserID = #{params.UserID} 
-			</if>
-			<if test="params.ListingPrice != null and params.ListingPrice != ''">
-				and ListingPrice = #{params.ListingPrice} 
-			</if>
-			<if test="params.FeatureNo != null and params.FeatureNo != ''">
-				and FeatureNo = #{params.FeatureNo} 
-			</if>
-			<if test="params.SessionId != null and params.SessionId != ''">
-				and SessionId = #{params.SessionId} 
-			</if>
-			<if test="params.SessionKey != null and params.SessionKey != ''">
-				and SessionKey = #{params.SessionKey} 
-			</if>
-			<if test="params.InternalUpdateTime != null and params.InternalUpdateTime != ''">
-				and InternalUpdateTime = #{params.InternalUpdateTime} 
-			</if>
-		
 		</where>
 	</sql>
 
 	<select id="count" resultType="int">
-		select count(1) from sessioninfo t
+		select count(1) from filminfo f left join sessioninfo s 
+		on f.FilmCode = s.FilmCode
 		<include refid="where" />
 	</select>
 
-	<select id="list" resultType="Sessioninfo">
-		select * from sessioninfo t
+	<select id="getFilms" resultMap="Films">
+		select f.id,s.* from filminfo f left join sessioninfo s 
+		on f.FilmCode = s.FilmCode
 		<include refid="where" />
+		group by f.FilmCode
 		${params.orderBy}
 		limit #{offset}, #{limit}
 	</select>

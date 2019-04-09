@@ -2,6 +2,7 @@ package com.boot.security.server.controller;
 
 import java.util.List;
 
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,10 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boot.security.server.page.table.PageTableRequest;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
+import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
-import com.boot.security.server.dao.OrdersDao;
 import com.boot.security.server.model.Orders;
+import com.boot.security.server.model.Userinfo;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -27,44 +29,41 @@ import io.swagger.annotations.ApiOperation;
 public class OrdersController {
 
     @Autowired
-    private OrdersDao ordersDao;
+    OrderServiceImpl ordersS;
 
-    @PostMapping
-    @ApiOperation(value = "保存")
-    public Orders save(@RequestBody Orders orders) {
-        ordersDao.save(orders);
-
-        return orders;
-    }
 
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取")
     public Orders get(@PathVariable Long id) {
-        return ordersDao.getById(id);
+    	System.out.println(ordersS.getById(id));
+        return ordersS.getById(id);
+    }
+    
+    @RequestMapping("/getCompany")
+    public List<Userinfo> getCompany(){
+    	return ordersS.queryCompany();
+    }
+    
+    @RequestMapping("/queryOrders")
+    public List<Orders> queryOrders(){
+    	List<Orders> list = ordersS.queryOrders();
+    	return list;
     }
 
-    @PutMapping
-    @ApiOperation(value = "修改")
-    public Orders update(@RequestBody Orders orders) {
-        ordersDao.update(orders);
-
-        return orders;
-    }
-
-    @GetMapping
+    @RequestMapping("/list")
     @ApiOperation(value = "列表")
     public PageTableResponse list(PageTableRequest request) {
         return new PageTableHandler(new CountHandler() {
 
             @Override
             public int count(PageTableRequest request) {
-                return ordersDao.count(request.getParams());
+                return ordersS.count(request.getParams());
             }
         }, new ListHandler() {
 
             @Override
             public List<Orders> list(PageTableRequest request) {
-                return ordersDao.list(request.getParams(), request.getOffset(), request.getLimit());
+                return ordersS.list(request.getParams(), request.getOffset(), request.getLimit());
             }
         }).handle(request);
     }
@@ -72,6 +71,11 @@ public class OrdersController {
     @DeleteMapping("/{id}")
     @ApiOperation(value = "删除")
     public void delete(@PathVariable Long id) {
-        ordersDao.delete(id);
+    	ordersS.delete(id);
+    }
+    @Test
+    public void test(){
+    	List list = ordersS.queryOrders();
+    	System.out.println(list);
     }
 }

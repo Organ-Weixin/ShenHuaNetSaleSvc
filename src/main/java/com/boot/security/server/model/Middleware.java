@@ -2,8 +2,11 @@ package com.boot.security.server.model;
 
 
 
-public class Middleware extends BaseEntity<Long> {
+public class Middleware extends BaseEntity<Long>{
 
+	/**
+	 * 
+	 */
 	private Long Id;
 	private String Title;
 	private String Url;
@@ -15,11 +18,12 @@ public class Middleware extends BaseEntity<Long> {
 	private Integer CinemaCount;
 	private Integer IsDel;
 
+	
 	public Long getId() {
 		return Id;
 	}
-	public void setId(Long Id) {
-		this.Id = Id;
+	public void setId(Long id) {
+		Id = id;
 	}
 	public String getTitle() {
 		return Title;

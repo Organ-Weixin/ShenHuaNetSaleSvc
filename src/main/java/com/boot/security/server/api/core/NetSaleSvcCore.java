@@ -7,30 +7,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.boot.security.server.api.core.LockSeatReply.LockSeatReplyOrder;
 import com.boot.security.server.api.core.LockSeatReply.LockSeatReplyOrder.LockSeatReplySeat;
-import com.boot.security.server.api.core.QueryCinemaListReply.QueryCinemaListReplyCinemas;
 import com.boot.security.server.api.core.QueryCinemaListReply.QueryCinemaListReplyCinemas.QueryCinemaListReplyCinema;
 import com.boot.security.server.api.core.QueryCinemaReply.QueryCinemaReplyCinema.QueryCinemaReplyScreen;
-import com.boot.security.server.api.core.QueryFilmReply.QueryFilmReplyFilms;
 import com.boot.security.server.api.core.QueryFilmReply.QueryFilmReplyFilms.QueryFilmReplyFilm;
-import com.boot.security.server.api.core.QueryOrderReply.QueryOrderReplyOrder;
 import com.boot.security.server.api.core.QueryOrderReply.QueryOrderReplyOrder.QueryOrderReplyFilms;
 import com.boot.security.server.api.core.QueryOrderReply.QueryOrderReplyOrder.QueryOrderReplyFilms.QueryOrderReplyFilm;
 import com.boot.security.server.api.core.QueryOrderReply.QueryOrderReplyOrder.QueryOrderReplySeats;
 import com.boot.security.server.api.core.QueryOrderReply.QueryOrderReplyOrder.QueryOrderReplySeats.QueryOrderReplySeat;
-import com.boot.security.server.api.core.QuerySeatReply.QuerySeatReplyCinema.QuerySeatReplyScreen;
 import com.boot.security.server.api.core.QuerySeatReply.QuerySeatReplyCinema.QuerySeatReplyScreen.QuerySeatReplySeat;
-import com.boot.security.server.api.core.QuerySessionReply.QuerySessionReplySessions;
 import com.boot.security.server.api.core.QuerySessionReply.QuerySessionReplySessions.QuerySessionReplySession;
-import com.boot.security.server.api.core.QuerySessionSeatReply.QuerySessionSeatReplySessionSeat;
 import com.boot.security.server.api.core.QuerySessionSeatReply.QuerySessionSeatReplySessionSeat.QuerySessionSeatReplySeat;
 import com.boot.security.server.api.core.QueryTicketReply.QueryTicketReplyTickets;
 import com.boot.security.server.api.core.QueryTicketReply.QueryTicketReplyTickets.QueryTicketReplyTicket;
 import com.boot.security.server.api.core.ReleaseSeatReply.ReleaseSeatReplyOrder.ReleaseSeatReplySeat;
-import com.boot.security.server.api.core.SubmitOrderReply.SubmitOrderReplyOrder;
 import com.boot.security.server.api.core.SubmitOrderReply.SubmitOrderReplyOrder.SubmitOrderReplySeat;
 import com.boot.security.server.api.ctms.reply.CTMSFetchTicketReply;
 import com.boot.security.server.api.ctms.reply.CTMSInterfaceFactory;
@@ -46,7 +37,6 @@ import com.boot.security.server.api.ctms.reply.CTMSQueryTicketReply;
 import com.boot.security.server.api.ctms.reply.CTMSRefundTicketReply;
 import com.boot.security.server.api.ctms.reply.CTMSReleaseSeatReply;
 import com.boot.security.server.api.ctms.reply.CTMSSubmitOrderReply;
-import com.boot.security.server.api.ctms.reply.CxQueryCinemaListResult;
 import com.boot.security.server.api.ctms.reply.ICTMSInterface;
 import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Filminfo;
@@ -62,25 +52,25 @@ import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.model.YesOrNoEnum;
-import com.boot.security.server.service.OrderService;
-import com.boot.security.server.service.ScreeninfoService;
-import com.boot.security.server.service.ScreenseatinfoService;
-import com.boot.security.server.service.SessioninfoService;
-import com.boot.security.server.service.UserCinemaViewService;
-import com.boot.security.server.service.UserInfoService;
+import com.boot.security.server.service.impl.OrderServiceImpl;
+import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
+import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
+import com.boot.security.server.service.impl.SessioninfoServiceImpl;
+import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
+import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.SpringUtil;
 import com.boot.security.server.utils.XmlToJsonUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 public class NetSaleSvcCore {
-	private ICTMSInterface _CTMSInterface;
-	private UserInfoService _userInfoService=SpringUtil.getBean(UserInfoService.class);
-	private ScreeninfoService _screenInfoService=SpringUtil.getBean(ScreeninfoService.class);
-	private UserCinemaViewService _userCinemaViewService=SpringUtil.getBean(UserCinemaViewService.class);
-	private ScreenseatinfoService _seatInfoService=SpringUtil.getBean(ScreenseatinfoService.class);
-	private SessioninfoService _sessionInfoService=SpringUtil.getBean(SessioninfoService.class);
-	private OrderService _orderService=SpringUtil.getBean(OrderService.class);
+	 private ICTMSInterface _CTMSInterface;
+	 UserInfoServiceImpl _userInfoService = SpringUtil.getBean(UserInfoServiceImpl.class);
+	 ScreeninfoServiceImpl _screenInfoService = SpringUtil.getBean(ScreeninfoServiceImpl.class);
+	 UserCinemaViewServiceImpl _userCinemaViewService = SpringUtil.getBean(UserCinemaViewServiceImpl.class);
+	 ScreenseatinfoServiceImpl _seatInfoService = SpringUtil.getBean(ScreenseatinfoServiceImpl.class);
+	 SessioninfoServiceImpl _sessionInfoService = SpringUtil.getBean(SessioninfoServiceImpl.class);
+	 OrderServiceImpl _orderService = SpringUtil.getBean(OrderServiceImpl.class);
 
 	private static volatile NetSaleSvcCore _instance;
 
@@ -92,7 +82,7 @@ public class NetSaleSvcCore {
 		}
 		return _instance;
 	}
-
+	
 	public NetSaleSvcCore() {
 
 	}
@@ -133,6 +123,7 @@ public class NetSaleSvcCore {
 			}
 		}
 		reply.SetSuccessReply();
+		System.out.println(new Gson().toJson(reply));
 		return reply;
 	}
 	// endregion

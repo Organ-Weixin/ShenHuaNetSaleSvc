@@ -14,30 +14,60 @@ import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.service.SessioninfoService;
 
 @Service
-public class SessioninfoServiceImpl implements SessioninfoService {
+public class SessioninfoServiceImpl implements SessioninfoService{
 
 	private static final Logger log = LoggerFactory.getLogger("adminLogger");
 	@Autowired
 	private SessioninfoDao sessioninfoDao;
 
 	@Override
-	public List<Sessioninfo> getByCinemaCodeAndDate(Long userid,String cinemacode, Date StartDate, Date EndDate) {
-		return sessioninfoDao.getByCinemaCodeAndDate(userid,cinemacode, StartDate, EndDate);
-	}
-
-	@Override
-	public int deleteByCinemaCodeAndDate(Long userid,String cinemacode, Date StartDate, Date EndDate) {
-		return sessioninfoDao.deleteByCinemaCodeAndDate(userid,cinemacode, StartDate, EndDate);
+	public List<Sessioninfo> getByCinemaCodeAndDate(Long userid, String cinemacode, Date StartDate, Date EndDate) {
+		// TODO Auto-generated method stub
+		return sessioninfoDao.getByCinemaCodeAndDate(userid, cinemacode, StartDate, EndDate);
 	}
 	
 	@Override
-	public int save(Sessioninfo session) {
-		return sessioninfoDao.save(session);
+	public int deleteByCinemaCodeAndDate(Long userid, String cinemacode, Date StartDate, Date EndDate) {
+		// TODO Auto-generated method stub
+		return sessioninfoDao.deleteByCinemaCodeAndDate(userid, cinemacode, StartDate, EndDate);
 	}
-
+	
+	@Override
+	public int save(Sessioninfo sessioninfo) {
+		// TODO Auto-generated method stub
+		return sessioninfoDao.save(sessioninfo);
+	}
+	
 	@Override
 	public Sessioninfo getBySessionCode(Long userid, String cinemacode, String sessioncode) {
+		// TODO Auto-generated method stub
 		return sessioninfoDao.getBySessionCode(userid, cinemacode, sessioncode);
 	}
 
+
+	@Override
+	public List<Sessioninfo> getFilms(String CCode, Date StartTime, Date EndTime) {
+		// TODO Auto-generated method stub
+		return sessioninfoDao.getFilms(CCode, StartTime, EndTime);
+	}
+
+	@Override
+	public List<Sessioninfo> getByCCode(String ccode, Date StartTime) {
+		// TODO Auto-generated method stub
+		return sessioninfoDao.getByCCode(ccode, StartTime);
+	}
+
+	@Override
+	public Sessioninfo getByCinemaCodeAndSessionCodeAndUserId(String cinemacode, String sessioncode, Long userid) {
+		// TODO Auto-generated method stub
+		return sessioninfoDao.getByCinemaCodeAndSessionCodeAndUserId(cinemacode, sessioncode, userid);
+	}
+
+	@Override
+	public int delete(String ccode, Date StartTime) {
+		// TODO Auto-generated method stub
+		return sessioninfoDao.deleteByCinemaCode(ccode, StartTime);
+	}
+	
+	
 }

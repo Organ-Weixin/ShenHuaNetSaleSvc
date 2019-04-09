@@ -1,0 +1,9 @@
+2019-04-05 18:28:25,375 [main] ==>  Preparing: select * from cinema t where t.Code= ? 
+2019-04-05 18:28:25,773 [main] ==> Parameters: 33014901(String)
+2019-04-05 18:28:25,812 [main] <==      Total: 1
+2019-04-05 18:28:25,815 [main] ==>  Preparing: select * from cinema t where t.Code= ? 
+2019-04-05 18:28:25,816 [main] ==> Parameters: 33014901(String)
+2019-04-05 18:28:25,820 [main] <==      Total: 1
+2019-04-05 18:34:04,669 [main] ==>  Preparing: select * from cinema t where t.Code= ? 
+2019-04-05 18:34:05,041 [main] ==> Parameters: 33014901(String)
+2019-04-05 18:34:05,087 [main] <==      Total: 1

@@ -551,16 +551,8 @@ public class TicketapiSoap11BindingStub extends org.apache.axis.client.Stub impl
         _operations[18] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("GetHallAllSeat");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://webservice.main.cmts.cn", "pAppCode"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
-        param.setOmittable(true);
-        param.setNillable(true);
-        oper.addParameter(param);
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://webservice.main.cmts.cn", "pCinemaID"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
-        param.setOmittable(true);
-        param.setNillable(true);
-        oper.addParameter(param);
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://webservice.main.cmts.cn", "pHallID"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.setName("allCinemas");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://webservice.main.cmts.cn", "para"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
         param.setOmittable(true);
         param.setNillable(true);
         oper.addParameter(param);
@@ -581,8 +573,16 @@ public class TicketapiSoap11BindingStub extends org.apache.axis.client.Stub impl
         org.apache.axis.description.OperationDesc oper;
         org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("allCinemas");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://webservice.main.cmts.cn", "para"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.setName("GetHallAllSeat");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://webservice.main.cmts.cn", "pAppCode"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        param.setOmittable(true);
+        param.setNillable(true);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://webservice.main.cmts.cn", "pCinemaID"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        param.setOmittable(true);
+        param.setNillable(true);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://webservice.main.cmts.cn", "pHallID"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
         param.setOmittable(true);
         param.setNillable(true);
         oper.addParameter(param);
@@ -1745,23 +1745,23 @@ public class TicketapiSoap11BindingStub extends org.apache.axis.client.Stub impl
 }
     }
 
-    public java.lang.String getHallAllSeat(java.lang.String pAppCode, java.lang.String pCinemaID, java.lang.String pHallID, java.lang.String pVerifyInfo) throws java.rmi.RemoteException {
+    public java.lang.String allCinemas(java.lang.String para, java.lang.String pVerifyInfo) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
         _call.setOperation(_operations[19]);
         _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("urn:GetHallAllSeat");
+        _call.setSOAPActionURI("urn:allCinemas");
         _call.setEncodingStyle(null);
         _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
         _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://webservice.main.cmts.cn", "GetHallAllSeat"));
+        _call.setOperationName(new javax.xml.namespace.QName("http://webservice.main.cmts.cn", "allCinemas"));
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {pAppCode, pCinemaID, pHallID, pVerifyInfo});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {para, pVerifyInfo});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;
@@ -1779,23 +1779,23 @@ public class TicketapiSoap11BindingStub extends org.apache.axis.client.Stub impl
 }
     }
 
-    public java.lang.String allCinemas(java.lang.String para, java.lang.String pVerifyInfo) throws java.rmi.RemoteException {
+    public java.lang.String getHallAllSeat(java.lang.String pAppCode, java.lang.String pCinemaID, java.lang.String pHallID, java.lang.String pVerifyInfo) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
         _call.setOperation(_operations[20]);
         _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("urn:allCinemas");
+        _call.setSOAPActionURI("urn:GetHallAllSeat");
         _call.setEncodingStyle(null);
         _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
         _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://webservice.main.cmts.cn", "allCinemas"));
+        _call.setOperationName(new javax.xml.namespace.QName("http://webservice.main.cmts.cn", "GetHallAllSeat"));
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {para, pVerifyInfo});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {pAppCode, pCinemaID, pHallID, pVerifyInfo});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;

@@ -2,8 +2,10 @@ package com.boot.security.server.model;
 
 import java.util.Date;
 
-public class Orders extends BaseEntity<Long> {
-
+public class Orders  extends BaseEntity<Long>{
+	private Cinema Cinema;
+	private UserCinema UserCinema;
+	private Orderseatdetails Orderseatdetails;
 	private Long Id;
 	private String CinemaCode;
 	private Long UserId;
@@ -39,7 +41,27 @@ public class Orders extends BaseEntity<Long> {
 	private String PaySeqNo;
 	private String IDCardNumber;
 	private String MarketingCode;
-
+	
+	
+	public Orderseatdetails getOrderseatdetails() {
+		return Orderseatdetails;
+	}
+	public void setOrderseatdetails(Orderseatdetails orderseatdetails) {
+		Orderseatdetails = orderseatdetails;
+	}
+	public Cinema getCinema() {
+		return Cinema;
+	}
+	public void setCinema(Cinema cinema) {
+		Cinema = cinema;
+	}
+	
+	public UserCinema getUserCinema() {
+		return UserCinema;
+	}
+	public void setUserCinema(UserCinema userCinema) {
+		UserCinema = userCinema;
+	}
 	public Long getId() {
 		return Id;
 	}
@@ -250,6 +272,5 @@ public class Orders extends BaseEntity<Long> {
 	public void setMarketingCode(String marketingCode) {
 		MarketingCode = marketingCode;
 	}
-	
 
 }

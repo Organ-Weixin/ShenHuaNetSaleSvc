@@ -14,6 +14,4 @@ public class CTMSQuerySessionSeatReply extends CTMSBaseReply {
 	public void setSessionSeats(List<SessionSeat> sessionSeats) {
 		SessionSeats = sessionSeats;
 	}
-	
-
 }

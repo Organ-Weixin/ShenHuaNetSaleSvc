@@ -32,7 +32,7 @@ public class Sessioninfo extends BaseEntity<Long> {
 	private String InternalUpdateTime;
 	private String MarketingCode;
 	private String MarketingName;
-
+	
 	public Long getId() {
 		return Id;
 	}
@@ -117,7 +117,6 @@ public class Sessioninfo extends BaseEntity<Long> {
 	public void setTicketFee(Double TicketFee) {
 		this.TicketFee = TicketFee;
 	}
-	
 	public Double getAddFee() {
 		return AddFee;
 	}
@@ -202,6 +201,5 @@ public class Sessioninfo extends BaseEntity<Long> {
 	public void setMarketingName(String marketingName) {
 		MarketingName = marketingName;
 	}
-	
 
 }

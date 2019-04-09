@@ -1,0 +1,42 @@
+2019-03-30 09:36:16,970 [http-nio-8080-exec-8] ==>  Preparing: select * from sys_user t where t.username = ? 
+2019-03-30 09:36:16,980 [http-nio-8080-exec-8] ==> Parameters: admin(String)
+2019-03-30 09:36:16,991 [http-nio-8080-exec-8] <==      Total: 1
+2019-03-30 09:36:17,000 [http-nio-8080-exec-8] ==>  Preparing: select distinct p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId inner join sys_role_user ru on ru.roleId = rp.roleId where ru.userId = ? order by p.sort 
+2019-03-30 09:36:17,003 [http-nio-8080-exec-8] ==> Parameters: 1(Long)
+2019-03-30 09:36:17,014 [http-nio-8080-exec-8] <==      Total: 43
+2019-03-30 09:36:17,154 [taskExecutor-1] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-30 09:36:17,163 [taskExecutor-1] ==> Parameters: 1(Long), 登陆(String), true(Boolean), null
+2019-03-30 09:36:17,287 [taskExecutor-1] <==    Updates: 1
+2019-03-30 09:36:17,468 [http-nio-8080-exec-6] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-30 09:36:17,473 [http-nio-8080-exec-6] ==> Parameters: 1(Long)
+2019-03-30 09:36:17,477 [http-nio-8080-exec-6] <==      Total: 1
+2019-03-30 09:39:22,392 [taskExecutor-2] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-30 09:39:22,395 [taskExecutor-2] ==> Parameters: 1(Long), 生成代码(String), true(Boolean), null
+2019-03-30 09:39:22,435 [taskExecutor-2] <==    Updates: 1
+2019-03-30 16:33:52,981 [http-nio-8080-exec-3] ==>  Preparing: select * from sys_user t where t.username = ? 
+2019-03-30 16:33:53,099 [http-nio-8080-exec-3] ==> Parameters: admin(String)
+2019-03-30 16:33:53,113 [http-nio-8080-exec-3] <==      Total: 1
+2019-03-30 16:33:53,122 [http-nio-8080-exec-3] ==>  Preparing: select distinct p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId inner join sys_role_user ru on ru.roleId = rp.roleId where ru.userId = ? order by p.sort 
+2019-03-30 16:33:53,127 [http-nio-8080-exec-3] ==> Parameters: 1(Long)
+2019-03-30 16:33:53,137 [http-nio-8080-exec-3] <==      Total: 43
+2019-03-30 16:33:53,252 [taskExecutor-1] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-30 16:33:53,316 [taskExecutor-1] ==> Parameters: 1(Long), 登陆(String), true(Boolean), null
+2019-03-30 16:33:53,439 [taskExecutor-1] <==    Updates: 1
+2019-03-30 16:33:53,524 [http-nio-8080-exec-4] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-30 16:33:53,533 [http-nio-8080-exec-4] ==> Parameters: 1(Long)
+2019-03-30 16:33:53,535 [http-nio-8080-exec-4] <==      Total: 1
+2019-03-30 16:34:13,484 [taskExecutor-2] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-30 16:34:13,485 [taskExecutor-2] ==> Parameters: 1(Long), 生成代码(String), true(Boolean), null
+2019-03-30 16:34:13,691 [taskExecutor-2] <==    Updates: 1
+2019-03-30 21:18:51,048 [http-nio-8080-exec-10] ==>  Preparing: select * from sys_user t where t.username = ? 
+2019-03-30 21:18:51,069 [http-nio-8080-exec-10] ==> Parameters: admin(String)
+2019-03-30 21:18:51,080 [http-nio-8080-exec-10] <==      Total: 1
+2019-03-30 21:18:51,090 [http-nio-8080-exec-10] ==>  Preparing: select distinct p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId inner join sys_role_user ru on ru.roleId = rp.roleId where ru.userId = ? order by p.sort 
+2019-03-30 21:18:51,095 [http-nio-8080-exec-10] ==> Parameters: 1(Long)
+2019-03-30 21:18:51,108 [http-nio-8080-exec-10] <==      Total: 43
+2019-03-30 21:18:51,240 [taskExecutor-1] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-30 21:18:51,247 [taskExecutor-1] ==> Parameters: 1(Long), 登陆(String), true(Boolean), null
+2019-03-30 21:18:51,301 [taskExecutor-1] <==    Updates: 1
+2019-03-30 21:18:51,548 [http-nio-8080-exec-9] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-30 21:18:51,551 [http-nio-8080-exec-9] ==> Parameters: 1(Long)
+2019-03-30 21:18:51,554 [http-nio-8080-exec-9] <==      Total: 1

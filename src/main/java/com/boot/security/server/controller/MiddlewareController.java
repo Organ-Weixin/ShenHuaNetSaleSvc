@@ -2,6 +2,7 @@ package com.boot.security.server.controller;
 
 import java.util.List;
 
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boot.security.server.page.table.PageTableRequest;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
+import com.boot.security.server.service.MiddlewareService;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
-import com.boot.security.server.dao.MiddlewareDao;
 import com.boot.security.server.model.Middleware;
 
 import io.swagger.annotations.ApiOperation;
@@ -27,27 +28,25 @@ import io.swagger.annotations.ApiOperation;
 public class MiddlewareController {
 
     @Autowired
-    private MiddlewareDao middlewareDao;
+    MiddlewareService middleS;
 
     @PostMapping
     @ApiOperation(value = "保存")
     public Middleware save(@RequestBody Middleware middleware) {
-        middlewareDao.save(middleware);
-
+    	middleS.save(middleware);
         return middleware;
     }
 
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取")
     public Middleware get(@PathVariable Long id) {
-        return middlewareDao.getById(id);
+        return middleS.getById(id);
     }
 
     @PutMapping
     @ApiOperation(value = "修改")
     public Middleware update(@RequestBody Middleware middleware) {
-        middlewareDao.update(middleware);
-
+    	middleS.update(middleware);
         return middleware;
     }
 
@@ -58,13 +57,13 @@ public class MiddlewareController {
 
             @Override
             public int count(PageTableRequest request) {
-                return middlewareDao.count(request.getParams());
+                return middleS.count(request.getParams());
             }
         }, new ListHandler() {
 
             @Override
             public List<Middleware> list(PageTableRequest request) {
-                return middlewareDao.list(request.getParams(), request.getOffset(), request.getLimit());
+                return middleS.list(request.getParams(), request.getOffset(), request.getLimit());
             }
         }).handle(request);
     }
@@ -72,6 +71,10 @@ public class MiddlewareController {
     @DeleteMapping("/{id}")
     @ApiOperation(value = "删除")
     public void delete(@PathVariable Long id) {
-        middlewareDao.delete(id);
+    	middleS.delete(id);
+    }
+    @Test
+    public void test(){
+    	
     }
 }

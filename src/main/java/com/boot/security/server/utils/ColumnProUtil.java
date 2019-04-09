@@ -61,7 +61,6 @@ public class ColumnProUtil {
 					orderBy = orderBy.replace(pro, val);
 				}
 			}
-
 			request.getParams().put("orderBy", orderBy);
 		}
 

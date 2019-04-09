@@ -11,11 +11,12 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.boot.security.server.model.Orders;
+import com.boot.security.server.model.Userinfo;
 
 @Mapper
 public interface OrdersDao {
 
-	@Select("select * from orders t where t.id = #{id}")
+    @Select("select * from orders t where t.id = #{id}")
 	Orders getById(Long id);
 
 	@Select("select * from orders t where t.cinemacode=#{cinemacode} and t.lockordercode = #{lockordercode}")
@@ -40,4 +41,9 @@ public interface OrdersDao {
 
 	List<Orders> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset,
 			@Param("limit") Integer limit);
+    //查询渠道
+    @Select("select * from userinfo where isDel =0")
+    List<Userinfo> queryCompany();
+    
+    List<Orders> queryOrders();
 }

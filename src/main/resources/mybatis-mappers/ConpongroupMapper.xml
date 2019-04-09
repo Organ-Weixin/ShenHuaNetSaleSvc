@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.ConpongroupDao">
+	<resultMap type="Conpongroup" id="getConpons">
+		<result property="Id" column="Id"/>
+		<result property="CinemaCode" column="CinemaCode"/>
+		<result property="TypeCode" column="TypeCode"/>
+		<result property="GroupCode" column="GroupCode"/>
+		<result property="GroupName" column="GroupName"/>
+		<result property="Price" column="Price"/>
+		<result property="ConponNumber" column="ConponNumber"/>
+		<result property="SnackOrFilmCode" column="SnackOrFilmCode"/>
+		<result property="ValidityDate" column="ValidityDate"/>
+		<result property="Created" column="Created"/>
+		<result property="Updated" column="Updated"/>
+		<result property="Remark" column="Remark"/>
+		<result property="Alls" column="Alls"/>
+		<result property="Used" column="Used"/>
+		<result property="Unused" column="Unused"/>
+		<result property="Received" column="Received"/>
+		<association property="Conpontype" javaType="Conpontype">
+			<result property="Id" column="Id"/>
+			<result property="TypeCode" column="TypeCode"/>
+			<result property="TypeName" column="TypeName"/>
+		</association>
+	</resultMap>
+	<sql id="where">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and c.Id = #{params.Id} 
+			</if>
+			<if test="params.CinemaCode != null and params.CinemaCode != ''">
+				and c.CinemaCode = #{params.CinemaCode} 
+			</if>
+			<if test="params.TypeCode != null and params.TypeCode != ''">
+				and c.TypeCode = #{params.TypeCode} 
+			</if>
+			<if test="params.GroupCode != null and params.GroupCode != ''">
+				and c.GroupCode = #{params.GroupCode} 
+			</if>
+			<if test="params.GroupName != null and params.GroupName != ''">
+				and c.GroupName = #{params.GroupName} 
+			</if>
+			<if test="params.Price != null and params.Price != ''">
+				and c.Price = #{params.Price} 
+			</if>
+			<if test="params.ConponNumber != null and params.ConponNumber != ''">
+				and c.ConponNumber = #{params.ConponNumber} 
+			</if>
+			<if test="params.SnackOrFilmCode != null and params.SnackOrFilmCode != ''">
+				and c.SnackOrFilmCode = #{params.SnackOrFilmCode} 
+			</if>
+			<if test="params.ValidityDate != null and params.ValidityDate != ''">
+				and c.ValidityDate = #{params.ValidityDate} 
+			</if>
+			<if test="params.Created != null and params.Created != ''">
+				and c.Created = #{params.Created} 
+			</if>
+			<if test="params.Updated != null and params.Updated != ''">
+				and c.Updated = #{params.Updated} 
+			</if>
+			<if test="params.Remark != null and params.Remark != ''">
+				and c.Remark = #{params.Remark} 
+			</if>
+		
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from conpongroup c 
+		left join (select GroupCode,count(status) as alls from conpons group by GroupCode) cp1
+		on c.GroupCode = cp1.GroupCode 
+		left join (select GroupCode,count(status) as used from conpons where status = 2 group by GroupCode) cp2
+		on c.GroupCode = cp2.GroupCode 
+		left join (select GroupCode,count(status) as unused from conpons where status = 3 group by GroupCode) cp3
+		on c.GroupCode = cp3.GroupCode 
+		left join (select GroupCode,count(status) as received from conpons where status = 4 group by GroupCode) cp4
+		on c.GroupCode = cp4.GroupCode
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultMap="getConpons">
+		select c.groupcode,c.id,c.CinemaCode,ct.typename,c.GroupName,c.Price,c.ConponNumber,c.ValidityDate,cp1.alls,cp2.used,cp3.unused,cp4.received,c.Remark from conpongroup c
+		left join conpontype ct on c.TypeCode = ct.TypeCode 
+		left join conpons cp on c.GroupCode = cp.GroupCode 
+		left join (select GroupCode,count(status) as alls from conpons group by GroupCode) cp1
+		on c.GroupCode = cp1.GroupCode 
+		left join (select GroupCode,count(status) as used from conpons where status = 2 group by GroupCode) cp2
+		on c.GroupCode = cp2.GroupCode 
+		left join (select GroupCode,count(status) as unused from conpons where status = 3 group by GroupCode) cp3
+		on c.GroupCode = cp3.GroupCode 
+		left join (select GroupCode,count(status) as received from conpons where status = 4 group by GroupCode) cp4
+		on c.GroupCode = cp4.GroupCode 
+		<include refid="where" />
+		group by c.groupcode
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="update">
+		update conpongroup t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="CinemaCode != null">
+				CinemaCode = #{CinemaCode}, 
+			</if>
+			<if test="TypeCode != null">
+				TypeCode = #{TypeCode}, 
+			</if>
+			<if test="GroupCode != null">
+				GroupCode = #{GroupCode}, 
+			</if>
+			<if test="GroupName != null">
+				GroupName = #{GroupName}, 
+			</if>
+			<if test="Price != null">
+				Price = #{Price}, 
+			</if>
+			<if test="ConponNumber != null">
+				ConponNumber = #{ConponNumber}, 
+			</if>
+			<if test="SnackOrFilmCode != null">
+				SnackOrFilmCode = #{SnackOrFilmCode}, 
+			</if>
+			<if test="ValidityDate != null">
+				ValidityDate = #{ValidityDate}, 
+			</if>
+			<if test="Created != null">
+				Created = #{Created}, 
+			</if>
+			<if test="Updated != null">
+				Updated = #{Updated}, 
+			</if>
+			<if test="Remark != null">
+				Remark = #{Remark}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+
+</mapper>

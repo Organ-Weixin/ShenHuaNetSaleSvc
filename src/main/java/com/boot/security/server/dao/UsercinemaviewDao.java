@@ -22,7 +22,7 @@ public interface UsercinemaviewDao {
     List<Usercinemaview> GetUserCinemaViewsByUserId(Long userid);
     
     @Select("select * from usercinemaview t where t.userid = #{userid} and t.cinemacode=#{cinemacode}")
-    Usercinemaview GetUserCinemaViewsByUserIdAndCinemaCode(Long userid,String cinemacode);
+    Usercinemaview GetUserCinemaViewsByUserIdAndCinemaCode(@Param("userid")Long userid,@Param("cinemacode")String cinemacode);
 
     @Delete("delete from usercinemaview where id = #{id}")
     int delete(Long id);

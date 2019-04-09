@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>标题<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='Title' type='text' name='title' id='Title' data-bv-notempty='true' data-bv-notempty-message='Title 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>Url<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='Url' type='text' name='url' id='Url' data-bv-notempty='true' data-bv-notempty-message='Url 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>MemberUrl</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='MemberUrl' type='text' name='memberUrl' id='MemberUrl'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>用户名<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='UserName' type='text' name='userName' id='UserName' data-bv-notempty='true' data-bv-notempty-message='UserName 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>密码<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='Password' type='text' name='password' id='Password' data-bv-notempty='true' data-bv-notempty-message='Password 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院类型<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					<select class="form-control"  name='type' id="Type" data-bv-notempty='true' data-bv-notempty-message='影院类型不能为空'>
+						<option selected="selected" value="">请选择...</option>
+						<option value="1">13规范</option>
+						<option value="2">辰星</option>
+						<option value="4">鼎新</option>
+						<option value="8">满天星</option>
+						<option value="16">火烈鸟</option>
+						<option value="32">电影1905</option>
+						<option value="64">粤科</option>
+						<option value="65">云智</option>
+						<option value="66">VISTA</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="location.href='middlewareList.html'">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="add()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		});
+		
+		 function add() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var formdata = $("#form").serializeObject();
+
+			$.ajax({
+				type : 'post',
+				url : '/middlewares',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("添加成功", {shift: -1, time: 1000}, function(){
+                        location.href = "middlewareList.html";
+                    });
+				}
+			});
+		} 
+	</script>
+</body>
+</html>

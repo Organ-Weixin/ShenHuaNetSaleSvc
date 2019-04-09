@@ -15,6 +15,7 @@ import com.boot.security.server.model.Filminfo;
 @Mapper
 public interface FilminfoDao {
 
+	
     @Select("select * from filminfo t where t.id = #{id}")
     Filminfo getById(Long id);
     
@@ -27,8 +28,8 @@ public interface FilminfoDao {
     int update(Filminfo filminfo);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into filminfo(Id, FilmCode, FilmName, Version, Duration, PublishDate, Publisher, Producer, Director, Cast, Introduction) values(#{Id}, #{FilmCode}, #{FilmName}, #{Version}, #{Duration}, #{PublishDate}, #{Publisher}, #{Producer}, #{Director}, #{Cast}, #{Introduction})")
-    int save(Filminfo filminfo);
+    @Insert("insert into filminfo( FilmCode, FilmName, Version, Duration, PublishDate, Publisher, Producer, Director, Cast, Introduction) values( #{FilmCode}, #{FilmName}, #{Version}, #{Duration}, #{PublishDate}, #{Publisher}, #{Producer}, #{Director}, #{Cast}, #{Introduction})")
+	 int save(Filminfo filminfo);
     
     int count(@Param("params") Map<String, Object> params);
 

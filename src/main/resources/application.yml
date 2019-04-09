@@ -3,7 +3,7 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/boot_security?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
     username: root
-    password: 123456
+    password: root
     druid:
       initialSize: 5
       minIdle: 5
@@ -38,10 +38,10 @@ spring:
     timeout: 10s
     lettuce:
       pool:
-        min-idle: 0
-        max-idle: 8
+        min-idle: 50
+        max-idle: 8000
         max-active: 8
-        max-wait: -1ms
+        max-wait: 10000
   mail:
     default-encoding: UTF-8
     host: smtp.163.com
@@ -72,3 +72,21 @@ token:
   jwtSecret: (XIAO:)_$^11244^%$_(WEI:)_@@++--(LAO:)_++++_.sds_(SHI:)
 server:
   port: 8080
+  
+mybatis-plus:
+  mapper-locations: classpath:com/mybatis/plus/sbmp/mapper/xml/*Mapper.xml
+  typeAliasesPackage: com.mybatis.plus.sbmp.entity
+  global-config:
+    #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
+    id-type: 0
+    #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+    field-strategy: 0
+    #驼峰下划线转换
+    db-column-underline: true
+    #刷新mapper 调试神器
+    refresh-mapper: true
+    #数据库大写下划线转换
+    #capital-mode: true
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true

@@ -17,14 +17,14 @@ public interface MiddlewareDao {
 
     @Select("select * from middleware t where t.id = #{id}")
     Middleware getById(Long id);
-
+    
     @Delete("delete from middleware where id = #{id}")
     int delete(Long id);
-
+    
     int update(Middleware middleware);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into middleware(Id, Title, Url, MemberUrl, UserName, Password, CinemaCode, Type, CinemaCount, IsDel) values(#{Id}, #{Title}, #{Url}, #{MemberUrl}, #{UserName}, #{Password}, #{CinemaCode}, #{Type}, #{CinemaCount}, #{IsDel})")
+    @Insert("insert into middleware(Title,Url,MemberUrl,UserName,Password,Type) values(#{title},#{url},#{memberUrl},#{userName},#{password},#{type})")
     int save(Middleware middleware);
     
     int count(@Param("params") Map<String, Object> params);

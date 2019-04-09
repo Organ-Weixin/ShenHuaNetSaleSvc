@@ -20,7 +20,11 @@ public interface ScreeninfoDao {
     Screeninfo getById(Long id);
     
     @Select("select * from screeninfo t where t.ccode = #{cinemacode} and t.scode=#{screencode}")
-    Screeninfo getByScreenCode(String cinemacode,String screencode);
+    Screeninfo getByScreenCode(@Param("cinemacode")String cinemacode,@Param("screencode")String screencode);
+    
+    //查询影票
+    /*@Select("select * from screeninfo t where t.ccode = #{CinemaCode} and t.scode = #{ScreenCode}")
+    Screeninfo getByCinemaCodeAndScreenCode(String CinemaCode,String ScreenCode);*/
     
     @Select("select * from screeninfo t where t.ccode = #{cinemacode}")
     List<Screeninfo> getByCinemaCode(String cinemacode);
@@ -32,10 +36,9 @@ public interface ScreeninfoDao {
     int deleteByCinemaCode(String cinemacode);
 
     int update(Screeninfo screeninfo);
-    
  
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(#{CCode}, #{SCode}, #{SName}, #{UpdateTime}, #{SeatCount}, #{Type}, #{ScreenId})")
+    @Insert("insert into screeninfo(Id, CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(#{Id}, #{CCode}, #{SCode}, #{SName}, #{UpdateTime}, #{SeatCount}, #{Type}, #{ScreenId})")
     int save(Screeninfo screeninfo);
     
     int count(@Param("params") Map<String, Object> params);

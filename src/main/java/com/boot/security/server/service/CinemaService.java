@@ -1,7 +1,6 @@
 package com.boot.security.server.service;
 
 import com.boot.security.server.model.Cinema;
-import com.boot.security.server.model.Permission;
 
 public interface CinemaService {
 	

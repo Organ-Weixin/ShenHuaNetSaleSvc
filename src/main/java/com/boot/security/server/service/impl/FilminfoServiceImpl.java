@@ -10,17 +10,18 @@ import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.service.FilminfoService;
 
 @Service
-public class FilminfoServiceImpl implements FilminfoService {
-	
+public class FilminfoServiceImpl implements FilminfoService{
+
 	private static final Logger log = LoggerFactory.getLogger("adminLogger");
 	@Autowired
-	private FilminfoDao filminfoDao;
-
+	FilminfoDao filminfoDao;
+	
 	@Override
 	public Filminfo getByFilmCode(String filmcode) {
+		// TODO Auto-generated method stub
 		return filminfoDao.getByFilmCode(filmcode);
 	}
-
+	
 	@Override
 	public int save(Filminfo filminfo) {
 		return filminfoDao.save(filminfo);
@@ -28,7 +29,8 @@ public class FilminfoServiceImpl implements FilminfoService {
 
 	@Override
 	public int update(Filminfo filminfo) {
+		// TODO Auto-generated method stub
 		return filminfoDao.update(filminfo);
 	}
-
+	
 }

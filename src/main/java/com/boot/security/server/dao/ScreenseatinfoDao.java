@@ -14,22 +14,27 @@ import com.boot.security.server.model.Screenseatinfo;
 
 @Mapper
 public interface ScreenseatinfoDao {
-
+	///根据影院、影厅编码获取座位信息
+	@Select("select * from screenseatinfo t where t.CinemaCode = #{cinemacode} and t.ScreenCode = #{screencode}")
+	List<Screenseatinfo> getByCinemaCodeAndScreenCode(@Param("cinemacode")String cinemacode,@Param("screencode")String screencode);
+	////
+	@Select("select * from screenseatinfo t where t.cinemacode = #{cinemacode} and t.screencode=#{screencode} and t.seatcode in(#{seatcodes})")
+    List<Screenseatinfo> getBySeatCodes(@Param("cinemacode")String cinemacode,@Param("screencode")String screencode,@Param("seatcodes")String seatcodes);
+	
+	//查询情侣座
+	@Select("select * from screenseatinfo t where t.CinemaCode = #{cinemacode} and t.ScreenCode = #{screencode} and t.LoveFlag ='Y'")
+	List<Screenseatinfo> queryLoveSeats(@Param("cinemacode")String cinemacode,@Param("screencode")String screencode);
+	
     @Select("select * from screenseatinfo t where t.id = #{id}")
     Screenseatinfo getById(Long id);
-    
-    @Select("select * from screenseatinfo t where t.cinemacode = #{cinemacode} and t.screencode=#{screencode}")
-    List<Screenseatinfo> getByCinemaCodeAndScreenCode(String cinemacode,String screencode);
-    
-    @Select("select * from screenseatinfo t where t.cinemacode = #{cinemacode} and t.screencode=#{screencode} and t.seatcode in(#{seatcodes})")
-    List<Screenseatinfo> getBySeatCodes(String cinemacode,String screencode,String seatcodes);
 
     @Delete("delete from screenseatinfo where id = #{id}")
     int delete(Long id);
     
-    @Delete("delete from screenseatinfo where cinemacode = #{cinemacode} and screencode=#{screencode}")
-    int deleteByScreenCode(String cinemacode,String screencode);
-
+    //删除座位信息
+    @Delete("delete from screenseatinfo where cinemacode = #{cinemacode} and screencode = #{screencode}")
+    int deleteByScreenCode(@Param("cinemacode")String cinemacode,@Param("screencode")String screencode);
+    
     int update(Screenseatinfo screenseatinfo);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")

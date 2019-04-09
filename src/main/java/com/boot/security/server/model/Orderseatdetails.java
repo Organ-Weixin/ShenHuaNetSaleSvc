@@ -2,7 +2,7 @@ package com.boot.security.server.model;
 
 import java.util.Date;
 
-public class Orderseatdetails extends BaseEntity<Long> {
+public class Orderseatdetails extends BaseEntity<Long>{
 
 	private Long Id;
 	private Integer OrderId;
@@ -14,8 +14,6 @@ public class Orderseatdetails extends BaseEntity<Long> {
 	private Double Price;
 	private Double SalePrice;
 	private Double Fee;
-	private Double AddFee;//增值服务费
-	private Double CinemaAllowance;//影院补贴
 	private String FilmTicketCode;
 	private String TicketInfoCode;
 	private Integer PrintFlag;
@@ -23,7 +21,12 @@ public class Orderseatdetails extends BaseEntity<Long> {
 	private Date Created;
 	private Date Updated;
 	private Integer Deleted;
-
+	//后台管理添加一下四个字段，数据库添加PreferentialPrice、AddedPrice两个字段
+	private Double CinemaAllowance;//影院补贴
+	private Double AddFee;//增值服务费
+	private String Seat;
+	private Double TotalSale;
+	
 	public Long getId() {
 		return Id;
 	}
@@ -84,7 +87,6 @@ public class Orderseatdetails extends BaseEntity<Long> {
 	public void setFee(Double Fee) {
 		this.Fee = Fee;
 	}
-	
 	public Double getAddFee() {
 		return AddFee;
 	}
@@ -139,5 +141,17 @@ public class Orderseatdetails extends BaseEntity<Long> {
 	public void setDeleted(Integer Deleted) {
 		this.Deleted = Deleted;
 	}
-
+	public String getSeat() {
+		return Seat;
+	}
+	public void setSeat(String seat) {
+		Seat = seat;
+	}
+	public Double getTotalSale() {
+		return TotalSale;
+	}
+	public void setTotalSale(Double totalSale) {
+		TotalSale = totalSale;
+	}
+	
 }

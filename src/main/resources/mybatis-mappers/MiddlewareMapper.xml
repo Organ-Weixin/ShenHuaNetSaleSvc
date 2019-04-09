@@ -9,7 +9,7 @@
 				and Id = #{params.Id} 
 			</if>
 			<if test="params.Title != null and params.Title != ''">
-				and Title = #{params.Title} 
+				and Title like concat('%',#{params.Title},'%') 
 			</if>
 			<if test="params.Url != null and params.Url != ''">
 				and Url = #{params.Url} 
@@ -35,7 +35,6 @@
 			<if test="params.IsDel != null and params.IsDel != ''">
 				and IsDel = #{params.IsDel} 
 			</if>
-		
 		</where>
 	</sql>
 
@@ -50,7 +49,7 @@
 		${params.orderBy}
 		limit #{offset}, #{limit}
 	</select>
-
+	
 	<update id="update">
 		update middleware t
 		<set>
@@ -84,10 +83,8 @@
 			<if test="IsDel != null">
 				IsDel = #{IsDel}, 
 			</if>
-
 		</set>
-
-		where t.id = #{id}
+		where t.Id = #{id}
 	</update>
 
 </mapper>

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import com.boot.security.server.dao.ScreeninfoDao;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.service.ScreeninfoService;
-
 @Service
 public class ScreeninfoServiceImpl  implements ScreeninfoService{
 
@@ -40,7 +39,7 @@ public class ScreeninfoServiceImpl  implements ScreeninfoService{
 	@Override
 	public int save(Screeninfo screeninfo) {
 		// TODO Auto-generated method stub
-		return 0;
+		return screeninfoDao.save(screeninfo);
 	}
 
 	@Override
@@ -66,8 +65,11 @@ public class ScreeninfoServiceImpl  implements ScreeninfoService{
 	}
 
 	@Override
+	/*public Screeninfo getByScreenCode(String CinemaCode, String ScreenCode) {
+		// TODO Auto-generated method stub
+		return screeninfoDao.getByScreenCode(CinemaCode, ScreenCode);
+	}*/
 	public Screeninfo getByScreenCode(String cinemacode, String screencode) {
 		return screeninfoDao.getByScreenCode(cinemacode, screencode);
 	}
-
 }

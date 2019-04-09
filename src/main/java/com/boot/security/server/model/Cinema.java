@@ -2,7 +2,7 @@ package com.boot.security.server.model;
 
 
 
-public class Cinema extends BaseEntity<Long> {
+public class Cinema extends BaseEntity<Long>{
 
 	private Long Id;
 	private Integer MId;
