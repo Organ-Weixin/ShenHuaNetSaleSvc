@@ -22,8 +22,8 @@ public class Orderseatdetails extends BaseEntity<Long>{
 	private Date Updated;
 	private Integer Deleted;
 	//后台管理添加一下四个字段，数据库添加PreferentialPrice、AddedPrice两个字段
-	private Double PreferentialPrice;
-	private Double AddedPrice;
+	private Double CinemaAllowance;//影院补贴
+	private Double AddFee;//增值服务费
 	private String Seat;
 	private Double TotalSale;
 	
@@ -87,6 +87,18 @@ public class Orderseatdetails extends BaseEntity<Long>{
 	public void setFee(Double Fee) {
 		this.Fee = Fee;
 	}
+	public Double getAddFee() {
+		return AddFee;
+	}
+	public void setAddFee(Double addFee) {
+		AddFee = addFee;
+	}
+	public Double getCinemaAllowance() {
+		return CinemaAllowance;
+	}
+	public void setCinemaAllowance(Double cinemaAllowance) {
+		CinemaAllowance = cinemaAllowance;
+	}
 	public String getFilmTicketCode() {
 		return FilmTicketCode;
 	}
@@ -128,18 +140,6 @@ public class Orderseatdetails extends BaseEntity<Long>{
 	}
 	public void setDeleted(Integer Deleted) {
 		this.Deleted = Deleted;
-	}
-	public Double getPreferentialPrice() {
-		return PreferentialPrice;
-	}
-	public void setPreferentialPrice(Double preferentialPrice) {
-		PreferentialPrice = preferentialPrice;
-	}
-	public Double getAddedPrice() {
-		return AddedPrice;
-	}
-	public void setAddedPrice(Double addedPrice) {
-		AddedPrice = addedPrice;
 	}
 	public String getSeat() {
 		return Seat;

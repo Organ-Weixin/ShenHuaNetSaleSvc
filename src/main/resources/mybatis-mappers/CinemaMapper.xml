@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.CinemaDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and Id = #{params.Id} 
+			</if>
+			<if test="params.MId != null and params.MId != ''">
+				and MId = #{params.MId} 
+			</if>
+			<if test="params.Code != null and params.Code != ''">
+				and Code = #{params.Code} 
+			</if>
+			<if test="params.Name != null and params.Name != ''">
+				and Name = #{params.Name} 
+			</if>
+			<if test="params.Address != null and params.Address != ''">
+				and Address = #{params.Address} 
+			</if>
+			<if test="params.ScreenCount != null and params.ScreenCount != ''">
+				and ScreenCount = #{params.ScreenCount} 
+			</if>
+			<if test="params.IsDel != null and params.IsDel != ''">
+				and IsDel = #{params.IsDel} 
+			</if>
+			<if test="params.ManualAdd != null and params.ManualAdd != ''">
+				and ManualAdd = #{params.ManualAdd} 
+			</if>
+			<if test="params.IsOpen != null and params.IsOpen != ''">
+				and IsOpen = #{params.IsOpen} 
+			</if>
+			<if test="params.CinemaId != null and params.CinemaId != ''">
+				and CinemaId = #{params.CinemaId} 
+			</if>
+		
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from cinema t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Cinema">
+		select * from cinema t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+<!-- 	<update id="update">
+		update cinema t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="MId != null">
+				MId = #{MId}, 
+			</if>
+			<if test="Code != null">
+				Code = #{Code}, 
+			</if>
+			<if test="Name != null">
+				Name = #{Name}, 
+			</if>
+			<if test="Address != null">
+				Address = #{Address}, 
+			</if>
+			<if test="ScreenCount != null">
+				ScreenCount = #{ScreenCount}, 
+			</if>
+			<if test="IsDel != null">
+				IsDel = #{IsDel}, 
+			</if>
+			<if test="ManualAdd != null">
+				ManualAdd = #{ManualAdd}, 
+			</if>
+			<if test="IsOpen != null">
+				IsOpen = #{IsOpen}, 
+			</if>
+			<if test="CinemaId != null">
+				CinemaId = #{CinemaId}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+ -->
+</mapper>

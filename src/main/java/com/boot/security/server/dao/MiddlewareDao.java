@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -22,7 +23,7 @@ public interface MiddlewareDao {
     
     int update(Middleware middleware);
     
-    //@Options(useGeneratedKeys = true, keyProperty = "id")
+    @Options(useGeneratedKeys = true, keyProperty = "id")
     @Insert("insert into middleware(Title,Url,MemberUrl,UserName,Password,Type) values(#{title},#{url},#{memberUrl},#{userName},#{password},#{type})")
     int save(Middleware middleware);
     

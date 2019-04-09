@@ -2,7 +2,7 @@ package com.boot.security.server.model;
 
 
 
-public class Middleware{
+public class Middleware extends BaseEntity<Long>{
 
 	/**
 	 * 

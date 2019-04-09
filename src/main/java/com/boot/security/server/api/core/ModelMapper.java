@@ -78,7 +78,8 @@ public class ModelMapper {
         session.setCode(entity.getSCode());
         session.setFeatureNo(entity.getFeatureNo());
         session.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(entity.getStartTime()));
-        session.setPlaythroughFlag(StatusEnum.valueOf(entity.getPlaythroughFlag()));
+        session.setPlaythroughFlag(entity.getPlaythroughFlag());
+        //session.setPlaythroughFlag(StatusEnum.valueOf(entity.getPlaythroughFlag()));
 
         session.Films =session.new QuerySessionReplyFilms();
         QuerySessionReplyFilm film =session.Films.new QuerySessionReplyFilm();

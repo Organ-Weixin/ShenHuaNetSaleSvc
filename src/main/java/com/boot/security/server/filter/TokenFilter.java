@@ -28,7 +28,6 @@ import com.boot.security.server.service.TokenService;
 @Component
 public class TokenFilter extends OncePerRequestFilter {
 
-
 	public static final String TOKEN_KEY = "token";
 
 	@Autowired

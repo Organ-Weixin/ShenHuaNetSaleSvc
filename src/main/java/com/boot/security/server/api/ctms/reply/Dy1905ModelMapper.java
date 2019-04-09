@@ -57,7 +57,7 @@ public class Dy1905ModelMapper {
     	entity.setStandardPrice(Double.parseDouble(model.getStandardPrice()));
     	entity.setSettlePrice(Double.parseDouble(model.getSettlementPrice()));
     	entity.setTicketFee(Double.parseDouble(model.getFee()));
-    	entity.setIsAvalible(model.getStatus());
+    	entity.setIsAvalible(Integer.valueOf(model.getStatus()));
     	entity.setPlaythroughFlag(model.getConsecutive());
     	return entity;
     }

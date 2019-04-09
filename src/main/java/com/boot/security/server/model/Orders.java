@@ -40,7 +40,7 @@ public class Orders  extends BaseEntity<Long>{
 	private String Printpassword;
 	private String PaySeqNo;
 	private String IDCardNumber;
-
+	private String MarketingCode;
 	
 	
 	public Orderseatdetails getOrderseatdetails() {
@@ -265,6 +265,12 @@ public class Orders  extends BaseEntity<Long>{
 	}
 	public void setIDCardNumber(String IDCardNumber) {
 		this.IDCardNumber = IDCardNumber;
+	}
+	public String getMarketingCode() {
+		return MarketingCode;
+	}
+	public void setMarketingCode(String marketingCode) {
+		MarketingCode = marketingCode;
 	}
 
 }

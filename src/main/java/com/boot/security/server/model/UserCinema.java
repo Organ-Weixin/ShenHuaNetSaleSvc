@@ -2,9 +2,8 @@ package com.boot.security.server.model;
 
 import java.util.Date;
 
-public class UserCinema extends BaseEntity<Long>{
-	
-	private Userinfo Userinfo;
+public class UserCinema extends BaseEntity<Long> {
+
 	private Long Id;
 	private Integer UserId;
 	private String CinemaCode;
@@ -16,14 +15,6 @@ public class UserCinema extends BaseEntity<Long>{
 	private Double RealPrice;
 	private Date ExpDate;
 
-	
-	
-	public Userinfo getUserinfo() {
-		return Userinfo;
-	}
-	public void setUserinfo(Userinfo userinfo) {
-		Userinfo = userinfo;
-	}
 	public Long getId() {
 		return Id;
 	}

@@ -29,7 +29,7 @@ public interface FilminfoDao {
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
     @Insert("insert into filminfo( FilmCode, FilmName, Version, Duration, PublishDate, Publisher, Producer, Director, Cast, Introduction) values( #{FilmCode}, #{FilmName}, #{Version}, #{Duration}, #{PublishDate}, #{Publisher}, #{Producer}, #{Director}, #{Cast}, #{Introduction})")
-    int save(Filminfo filminfo);
+	 int save(Filminfo filminfo);
     
     int count(@Param("params") Map<String, Object> params);
 

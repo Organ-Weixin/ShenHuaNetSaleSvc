@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boot.security.server.page.table.PageTableRequest;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
-import com.boot.security.server.service.OrderService;
+import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.model.Orders;
@@ -29,7 +29,7 @@ import io.swagger.annotations.ApiOperation;
 public class OrdersController {
 
     @Autowired
-    OrderService ordersS;
+    OrderServiceImpl ordersS;
 
 
     @GetMapping("/{id}")

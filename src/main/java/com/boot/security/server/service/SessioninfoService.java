@@ -10,18 +10,15 @@ import com.boot.security.server.model.Sessioninfo;
 public interface SessioninfoService {
 	
 	Sessioninfo getBySessionCode(Long userid,String cinemacode,String sessioncode);
-	
 	List<Sessioninfo> getByCinemaCodeAndDate(Long userid,String cinemacode,Date StartDate,Date EndDate);
-	
 	int deleteByCinemaCodeAndDate(Long userid,String cinemacode,Date StartDate,Date EndDate);
+	int save(Sessioninfo sessioninfo);
 	
 	List<Sessioninfo> getByCCode(String ccode,Date StartTime);
 	
 	Sessioninfo getByCinemaCodeAndSessionCodeAndUserId(String cinemacode,String sessioncode,Long userid);
 	
 	int delete(String ccode,Date StartTime);
-	
-	int save(Sessioninfo sessioninfo);
 	
 	List<Sessioninfo> getFilms(String CCode,Date StartTime,Date EndTime);
 }

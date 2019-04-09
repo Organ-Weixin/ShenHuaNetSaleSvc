@@ -2,7 +2,8 @@ package com.boot.security.server.service.impl;
 
 import java.util.List;
 import java.util.Map;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -16,6 +17,7 @@ import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.OrderService;
 @Service
 public class OrderServiceImpl implements OrderService{
+	private static final Logger log = LoggerFactory.getLogger("adminLogger");
 	@Autowired
 	private OrdersDao ordersDao;
 	@Autowired
@@ -115,5 +117,4 @@ public class OrderServiceImpl implements OrderService{
 		return orderview;
 	}
 
-	
 }

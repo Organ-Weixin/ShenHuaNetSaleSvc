@@ -4,7 +4,7 @@ public class SessionSeat {
 	private String SeatCode;
 	private String RowNum;
 	private String ColumnNum;
-	private String Status;
+	private SessionSeatStatusEnum Status;
 	public String getSeatCode() {
 		return SeatCode;
 	}
@@ -23,10 +23,10 @@ public class SessionSeat {
 	public void setColumnNum(String columnNum) {
 		ColumnNum = columnNum;
 	}
-	public String getStatus() {
+	public SessionSeatStatusEnum getStatus() {
 		return Status;
 	}
-	public void setStatus(String status) {
+	public void setStatus(SessionSeatStatusEnum status) {
 		Status = status;
 	}
 	

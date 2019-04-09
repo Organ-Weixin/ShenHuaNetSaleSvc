@@ -27,8 +27,8 @@ public interface TicketapiPortType extends java.rmi.Remote {
     public java.lang.String getHallSite(java.lang.String pAppCode, java.lang.String pCinemaID, java.lang.String pHallID, java.lang.String pTokenID, java.lang.String pVerifyInfo) throws java.rmi.RemoteException;
     public java.lang.String getJsonSiteState(java.lang.String pAppCode, java.lang.String pCinemaID, java.lang.String pFeatureAppNo, java.lang.String pVerifyInfo) throws java.rmi.RemoteException;
     public java.lang.String getCinemaAllPlan(java.lang.String pAppCode, java.lang.String pCinemaID, java.lang.String pTokenID, java.lang.String pVerifyInfo) throws java.rmi.RemoteException;
-    public java.lang.String getHallAllSeat(java.lang.String pAppCode, java.lang.String pCinemaID, java.lang.String pHallID, java.lang.String pVerifyInfo) throws java.rmi.RemoteException;
     public java.lang.String allCinemas(java.lang.String para, java.lang.String pVerifyInfo) throws java.rmi.RemoteException;
+    public java.lang.String getHallAllSeat(java.lang.String pAppCode, java.lang.String pCinemaID, java.lang.String pHallID, java.lang.String pVerifyInfo) throws java.rmi.RemoteException;
     public java.lang.String getOrderSeatMsg(java.lang.String pAppCode, java.lang.String pOrderNO, java.lang.String pValidCode, java.lang.String pVerifyInfo) throws java.rmi.RemoteException;
     public java.lang.String backSellGoods(java.lang.String pAppCode, java.lang.String pCinemaID, java.lang.String pOrderNo, java.lang.String pPayseqNo, java.lang.String pVerifyInfo) throws java.rmi.RemoteException;
     public java.lang.String getCinema(java.lang.String pAppCode, java.lang.String pTokenID, java.lang.String pVerifyInfo) throws java.rmi.RemoteException;

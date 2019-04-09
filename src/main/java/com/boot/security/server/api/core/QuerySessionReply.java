@@ -2,8 +2,6 @@ package com.boot.security.server.api.core;
 
 import java.util.List;
 
-import com.boot.security.server.model.StatusEnum;
-
 public class QuerySessionReply extends BaseReply {
 	public QuerySessionReply()
     {
@@ -36,7 +34,7 @@ public class QuerySessionReply extends BaseReply {
 			public String Code;
 			public String FeatureNo;
 			public String StartTime;
-			public StatusEnum PlaythroughFlag;
+			public String PlaythroughFlag;
 			public QuerySessionReplyFilms Films;
 			public QuerySessionReplyPrice Price;
 			public String getScreenCode() {
@@ -63,10 +61,10 @@ public class QuerySessionReply extends BaseReply {
 			public void setStartTime(String startTime) {
 				StartTime = startTime;
 			}
-			public StatusEnum getPlaythroughFlag() {
+			public String getPlaythroughFlag() {
 				return PlaythroughFlag;
 			}
-			public void setPlaythroughFlag(StatusEnum playthroughFlag) {
+			public void setPlaythroughFlag(String playthroughFlag) {
 				PlaythroughFlag = playthroughFlag;
 			}
 			public QuerySessionReplyFilms getFilms() {

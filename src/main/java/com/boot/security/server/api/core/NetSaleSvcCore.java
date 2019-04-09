@@ -82,6 +82,15 @@ public class NetSaleSvcCore {
 		}
 		return _instance;
 	}
+	
+	public NetSaleSvcCore() {
+
+	}
+	
+	//region 测试main方法
+	public static void main(String[] args) {
+		QueryCinemaListReply reply=_instance.QueryCinemaList("MiniProgram","6BF477EBCC446F54E6512AFC0E976C41");
+	}
 
 	// region 查询可访问的影院列表
 	public QueryCinemaListReply QueryCinemaList(String Username, String Password) {
@@ -438,7 +447,7 @@ public class NetSaleSvcCore {
 				replyseat.setCode(seat.getSeatCode());
 				replyseat.setRowNum(seat.getRowNum());
 				replyseat.setColumnNum(seat.getColumnNum());
-				replyseat.setStatus(SessionSeatStatusEnum.valueOf(seat.getStatus()).getStatusCode());
+				replyseat.setStatus(seat.getStatus().getStatusCode());
 				reply.SessionSeat.Seat.add(replyseat);
 			}
 			reply.SetSuccessReply();

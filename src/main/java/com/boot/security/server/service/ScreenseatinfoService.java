@@ -13,6 +13,6 @@ public interface ScreenseatinfoService {
 	List<Screenseatinfo> getBySeatCodes(String cinemacode,String screencode,String seatcodes);
 	
 	List<Screenseatinfo> getByCinemaCodeAndScreenCode(String cinemacode,String screencode);
-	
+	int deleteByCinemaCodeAndScreenCode(String cinemacode,String screencode);
 	int save(Screenseatinfo screenseatinfo);
 }

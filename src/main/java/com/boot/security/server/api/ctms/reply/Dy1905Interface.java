@@ -70,8 +70,8 @@ public class Dy1905Interface implements ICTMSInterface {
 		System.out.println(getScreenResult);
 		Gson gson = new Gson();
 		Dy1905GetScreenResult Dy1905Reply=gson.fromJson(XmlToJsonUtil.xmltoJson(getScreenResult,"GetScreenResult"), Dy1905GetScreenResult.class);
-		System.out.println(Dy1905Reply.getScreenResult().getResultCode());
-		if (Dy1905Reply.getScreenResult().getResultCode().equals("0"))
+		System.out.println(Dy1905Reply.getGetScreenResult().getResultCode());
+		if (Dy1905Reply.getGetScreenResult().getResultCode().equals("0"))
         {
 			System.out.println("更新数据库");
 			//System.out.println(userCinema.getCinemaCode());
@@ -79,12 +79,12 @@ public class Dy1905Interface implements ICTMSInterface {
 			Cinema cinema = cinemaService.getByCinemaCode(userCinema.getCinemaCode());
 			System.out.println(cinema+"----------------------");
 			//System.out.println(cinema.getName()+"========================");
-			cinema.setScreenCount(Dy1905Reply.getScreenResult().getScreens().getScreen().size());
+			cinema.setScreenCount(Dy1905Reply.getGetScreenResult().getScreens().getScreen().size());
 			cinemaService.update(cinema);
 			//更新影厅信息
 			//List<Screeninfo> oldScreens= screeninfoService.getByCinemaCode(userCinema.getCinemaCode());
 			List<Screeninfo> newScreens = new ArrayList<Screeninfo>();
-			List<ScreenBean> dyscreens=Dy1905Reply.getScreenResult().getScreens().getScreen();
+			List<ScreenBean> dyscreens=Dy1905Reply.getGetScreenResult().getScreens().getScreen();
 			for(ScreenBean dyscreen:dyscreens)
 			{
 				Screeninfo screen=new Screeninfo();//先读取本地
@@ -104,7 +104,7 @@ public class Dy1905Interface implements ICTMSInterface {
         {
             reply.Status = StatusEnum.Failure;
         }
-		reply.ErrorCode = Dy1905Reply.getScreenResult().getResultCode();
+		reply.ErrorCode = Dy1905Reply.getGetScreenResult().getResultCode();
 		return reply;
 	}
 	/*
@@ -280,7 +280,8 @@ public class Dy1905Interface implements ICTMSInterface {
 								SessionSeat.setSeatCode(Dy1905SessionSeat.getSeatNo());
 								SessionSeat.setRowNum(Dy1905SessionSeat.getSeatRow());
 								SessionSeat.setColumnNum(Dy1905SessionSeat.getSeatCol());
-								SessionSeat.setStatus(Dy1905SessionSeat.getSeatStatus());
+								//SessionSeat.setStatus(Dy1905SessionSeat.getSeatStatus());
+								SessionSeat.setStatus(SessionSeatStatusEnum.valueOf(Dy1905SessionSeat.getSeatStatus()));
 							}
 					}
 					reply.Status = StatusEnum.Success;
@@ -298,7 +299,8 @@ public class Dy1905Interface implements ICTMSInterface {
 							SessionSeat.setSeatCode(Dy1905SessionSeat.getSeatNo());
 							SessionSeat.setRowNum(Dy1905SessionSeat.getSeatRow());
 							SessionSeat.setColumnNum(Dy1905SessionSeat.getSeatCol());
-							SessionSeat.setStatus(Dy1905SessionSeat.getSeatStatus());
+							//SessionSeat.setStatus(Dy1905SessionSeat.getSeatStatus());
+							SessionSeat.setStatus(SessionSeatStatusEnum.valueOf(Dy1905SessionSeat.getSeatStatus()));
 						}
 					}
 					reply.Status = StatusEnum.Success;
@@ -316,7 +318,8 @@ public class Dy1905Interface implements ICTMSInterface {
 							SessionSeat.setSeatCode(Dy1905SessionSeat.getSeatNo());
 							SessionSeat.setRowNum(Dy1905SessionSeat.getSeatRow());
 							SessionSeat.setColumnNum(Dy1905SessionSeat.getSeatCol());
-							SessionSeat.setStatus(Dy1905SessionSeat.getSeatStatus());
+							//SessionSeat.setStatus(Dy1905SessionSeat.getSeatStatus());
+							SessionSeat.setStatus(SessionSeatStatusEnum.valueOf(Dy1905SessionSeat.getSeatStatus()));
 						}
 					}
 					reply.Status = StatusEnum.Success;
@@ -334,7 +337,8 @@ public class Dy1905Interface implements ICTMSInterface {
 							SessionSeat.setSeatCode(Dy1905SessionSeat.getSeatNo());
 							SessionSeat.setRowNum(Dy1905SessionSeat.getSeatRow());
 							SessionSeat.setColumnNum(Dy1905SessionSeat.getSeatCol());
-							SessionSeat.setStatus(Dy1905SessionSeat.getSeatStatus());
+							//SessionSeat.setStatus(Dy1905SessionSeat.getSeatStatus());
+							SessionSeat.setStatus(SessionSeatStatusEnum.valueOf(Dy1905SessionSeat.getSeatStatus()));
 						}
 					}
 					reply.Status = StatusEnum.Success;
@@ -351,7 +355,8 @@ public class Dy1905Interface implements ICTMSInterface {
 							SessionSeat.setSeatCode(Dy1905SessionSeat.getSeatNo());
 							SessionSeat.setRowNum(Dy1905SessionSeat.getSeatRow());
 							SessionSeat.setColumnNum(Dy1905SessionSeat.getSeatCol());
-							SessionSeat.setStatus(Dy1905SessionSeat.getSeatStatus());
+							//SessionSeat.setStatus(Dy1905SessionSeat.getSeatStatus());
+							SessionSeat.setStatus(SessionSeatStatusEnum.valueOf(Dy1905SessionSeat.getSeatStatus()));
 						}
 					}
 					reply.Status = StatusEnum.Success;
@@ -369,7 +374,8 @@ public class Dy1905Interface implements ICTMSInterface {
 							SessionSeat.setSeatCode(Dy1905SessionSeat.getSeatNo());
 							SessionSeat.setRowNum(Dy1905SessionSeat.getSeatRow());
 							SessionSeat.setColumnNum(Dy1905SessionSeat.getSeatCol());
-							SessionSeat.setStatus(Dy1905SessionSeat.getSeatStatus());
+							//SessionSeat.setStatus(Dy1905SessionSeat.getSeatStatus());
+							SessionSeat.setStatus(SessionSeatStatusEnum.valueOf(Dy1905SessionSeat.getSeatStatus()));
 						}
 					}
 					reply.Status = StatusEnum.Success;

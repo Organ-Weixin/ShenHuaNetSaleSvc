@@ -18,17 +18,21 @@ public class Sessioninfo extends BaseEntity<Long> {
 	private Double LowestPrice;
 	private Double SettlePrice;
 	private Double TicketFee;
-	private String IsAvalible;
+	private Double AddFee;//增值服务费
+	private Double CinemaAllowance;//影院补贴
+	private Integer IsAvalible;
 	private String PlaythroughFlag;
 	private String Dimensional;
 	private Integer Sequence;
-	private Integer UserID;
+	private Long UserID;
 	private Double ListingPrice;
 	private String FeatureNo;
 	private String SessionId;
 	private String SessionKey;
 	private String InternalUpdateTime;
-
+	private String MarketingCode;
+	private String MarketingName;
+	
 	public Long getId() {
 		return Id;
 	}
@@ -113,10 +117,22 @@ public class Sessioninfo extends BaseEntity<Long> {
 	public void setTicketFee(Double TicketFee) {
 		this.TicketFee = TicketFee;
 	}
-	public String getIsAvalible() {
+	public Double getAddFee() {
+		return AddFee;
+	}
+	public void setAddFee(Double addFee) {
+		AddFee = addFee;
+	}
+	public Double getCinemaAllowance() {
+		return CinemaAllowance;
+	}
+	public void setCinemaAllowance(Double cinemaAllowance) {
+		CinemaAllowance = cinemaAllowance;
+	}
+	public Integer getIsAvalible() {
 		return IsAvalible;
 	}
-	public void setIsAvalible(String IsAvalible) {
+	public void setIsAvalible(Integer IsAvalible) {
 		this.IsAvalible = IsAvalible;
 	}
 	public String getPlaythroughFlag() {
@@ -137,10 +153,10 @@ public class Sessioninfo extends BaseEntity<Long> {
 	public void setSequence(Integer Sequence) {
 		this.Sequence = Sequence;
 	}
-	public Integer getUserID() {
+	public Long getUserID() {
 		return UserID;
 	}
-	public void setUserID(Integer UserID) {
+	public void setUserID(Long UserID) {
 		this.UserID = UserID;
 	}
 	public Double getListingPrice() {
@@ -172,6 +188,18 @@ public class Sessioninfo extends BaseEntity<Long> {
 	}
 	public void setInternalUpdateTime(String InternalUpdateTime) {
 		this.InternalUpdateTime = InternalUpdateTime;
+	}
+	public String getMarketingCode() {
+		return MarketingCode;
+	}
+	public void setMarketingCode(String marketingCode) {
+		MarketingCode = marketingCode;
+	}
+	public String getMarketingName() {
+		return MarketingName;
+	}
+	public void setMarketingName(String marketingName) {
+		MarketingName = marketingName;
 	}
 
 }

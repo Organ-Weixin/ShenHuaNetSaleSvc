@@ -25,7 +25,7 @@ public interface SessioninfoDao {
 	 @Select("select * from sessioninfo t where t.userid=#{userid} and t.ccode = #{cinemacode} and t.starttime>=#{StartDate} and t.starttime<=#{EndDate}")
 	 List<Sessioninfo> getByCinemaCodeAndDate(@Param("userid")Long userid,@Param("cinemacode")String cinemacode,@Param("StartDate")Date StartDate,@Param("EndDate")Date EndDate);
 	 
-	 @Delete("delete from sessioninfo t where t.userid=#{userid} and t.ccode = #{cinemacode} and t.starttime>=#{StartDate} and t.starttime<=#{EndDate}")
+	 @Delete("delete from sessioninfo where userid=#{userid} and ccode = #{cinemacode} and starttime>=#{StartDate} and starttime<=#{EndDate}")
 	 int deleteByCinemaCodeAndDate(@Param("userid")Long userid,@Param("cinemacode")String cinemacode,@Param("StartDate")Date StartDate,@Param("EndDate")Date EndDate);
 	 
 	//通过影院编码、开始时间查询排期
@@ -34,7 +34,7 @@ public interface SessioninfoDao {
 	
 	//通过影院编码、开始时间删除排期
 	@Delete("delete from sessioninfo where CCode = #{ccode} and Date(StartTime) > #{StartTime}")
-	int delete(@Param("ccode")String ccode,@Param("StartTime")Date StartTime);
+	int deleteByCinemaCode(@Param("ccode")String ccode,@Param("StartTime")Date StartTime);
 	
 	//通过影院编码、开始时间、结束时间获取影片信息
 	List<Sessioninfo> getFilms(@Param("CCode")String CCode,@Param("StartTime")Date StartTime,@Param("EndTime")Date EndTime);
@@ -45,6 +45,10 @@ public interface SessioninfoDao {
     
     int update(Sessioninfo sessioninfo);
     //增加
+
+    @Delete("delete from sessioninfo where id = #{id}")
+    int delete(Long id);
+    
     @Options(useGeneratedKeys = true, keyProperty = "id")
     @Insert("insert into sessioninfo(Id, CCode, SCode, ScreenCode, StartTime, FilmCode, FilmName, Duration, Language, UpdateTime, StandardPrice, LowestPrice, SettlePrice, TicketFee, IsAvalible, PlaythroughFlag, Dimensional, Sequence, UserID, ListingPrice, FeatureNo, SessionId, SessionKey, InternalUpdateTime) values(#{Id}, #{CCode}, #{SCode}, #{ScreenCode}, #{StartTime}, #{FilmCode}, #{FilmName}, #{Duration}, #{Language}, #{UpdateTime}, #{StandardPrice}, #{LowestPrice}, #{SettlePrice}, #{TicketFee}, #{IsAvalible}, #{PlaythroughFlag}, #{Dimensional}, #{Sequence}, #{UserID}, #{ListingPrice}, #{FeatureNo}, #{SessionId}, #{SessionKey}, #{InternalUpdateTime})")
     int save(Sessioninfo sessioninfo);

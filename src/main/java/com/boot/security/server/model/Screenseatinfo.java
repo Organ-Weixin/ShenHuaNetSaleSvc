@@ -4,7 +4,6 @@ import java.util.Date;
 
 public class Screenseatinfo extends BaseEntity<Long> {
 
-	
 	private Long Id;
 	private String CinemaCode;
 	private String ScreenCode;

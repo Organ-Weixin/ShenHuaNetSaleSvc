@@ -5,11 +5,11 @@ import java.util.List;
 public class Dy1905GetScreenResult {
 	private ResBean GetScreenResult;
 
-	public ResBean getScreenResult() {
+	public ResBean getGetScreenResult() {
 		return GetScreenResult;
 	}
 
-	public void setScreenResult(ResBean getScreenResult) {
+	public void setGetScreenResult(ResBean getScreenResult) {
 		GetScreenResult = getScreenResult;
 	}
 	public static class ResBean{

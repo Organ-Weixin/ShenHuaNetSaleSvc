@@ -25,13 +25,15 @@ public interface CinemaDao {
     @Delete("delete from cinema where id = #{id}")
     int delete(Long id);
     
-    
     @Update("update  cinema set Name=#{Name},Address=#{Address},ScreenCount=#{ScreenCount},CinemaId=#{CinemaId} where Code=#{Code}")
-    int update(Cinema cinema);
+    int updateByCode(Cinema cinema);
     
-   @Options(useGeneratedKeys = true, keyProperty = "id")
-   @Insert("insert into cinema(Code, Name, Address, CinemaId, ScreenCount) values(#{Code}, #{Name}, #{Address}, #{CinemaId}, #{ScreenCount})")
-   int save(Cinema cinema); 
+    @Insert("insert into cinema(MId, Code, Name, Address, ScreenCount, IsDel, ManualAdd, IsOpen, CinemaId) values(#{MId}, #{Code}, #{Name}, #{Address}, #{ScreenCount}, #{IsDel}, #{ManualAdd}, #{IsOpen}, #{CinemaId})")
+    int save(Cinema cinema);
+  
+    
+ 	@Update("update  cinema set Code=#{Code},Name=#{Name},Address=#{Address},IsOpen=#{IsOpen},MId=#{MId} where Id=#{Id}")
+    int update(Cinema cinema);
    
     int count(@Param("params") Map<String, Object> params);
 

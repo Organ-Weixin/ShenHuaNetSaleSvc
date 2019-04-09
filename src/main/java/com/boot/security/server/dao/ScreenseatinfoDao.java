@@ -32,7 +32,7 @@ public interface ScreenseatinfoDao {
     int delete(Long id);
     
     //删除座位信息
-    @Delete("delete from screenseatinfo where CinemaCode = #{cinemacode} and ScreenCode = #{screencode}")
+    @Delete("delete from screenseatinfo where cinemacode = #{cinemacode} and screencode = #{screencode}")
     int deleteByScreenCode(@Param("cinemacode")String cinemacode,@Param("screencode")String screencode);
     
     int update(Screenseatinfo screenseatinfo);

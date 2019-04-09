@@ -37,9 +37,9 @@ public class CxInterface implements ICTMSInterface {
 		if(cxReply.getQueryCinemaInfoResult().getResultCode()=="0"){
 			//更新影院信息
 			Cinema cinema=_cinemaService.getByCinemaCode(userCinema.getCinemaCode());
-			cinema.setName(cxReply.getQueryCinemaInfoResult().getCinema().getCinemaName());
-			cinema.setAddress(cxReply.getQueryCinemaInfoResult().getCinema().getAddress());
-			cinema.setScreenCount(Integer.parseInt(cxReply.getQueryCinemaInfoResult().getCinema().getScreenCount()));
+			//cinema.setName(cxReply.getQueryCinemaInfoResult().getCinema().getCinemaName());
+			//cinema.setAddress(cxReply.getQueryCinemaInfoResult().getCinema().getAddress());
+			//cinema.setScreenCount(Integer.parseInt(cxReply.getQueryCinemaInfoResult().getCinema().getScreenCount()));
 			_cinemaService.update(cinema);
 			//更新影厅信息
 			//List<Screeninfo> oldScreens= _screeninfoService.getByCinemaCode(userCinema.getCinemaCode());
