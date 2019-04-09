@@ -28,14 +28,14 @@ public interface ScreeninfoDao {
     @Delete("delete from screeninfo where id = #{id}")
     int delete(Long id);
     
-    @Delete("delete from screeninfo t where t.ccode = #{cinemacode}")
+    @Delete("delete from screeninfo where ccode = #{cinemacode}")
     int deleteByCinemaCode(String cinemacode);
 
     int update(Screeninfo screeninfo);
     
  
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into screeninfo(Id, CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(#{Id}, #{CCode}, #{SCode}, #{SName}, #{UpdateTime}, #{SeatCount}, #{Type}, #{ScreenId})")
+    @Insert("insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(#{CCode}, #{SCode}, #{SName}, #{UpdateTime}, #{SeatCount}, #{Type}, #{ScreenId})")
     int save(Screeninfo screeninfo);
     
     int count(@Param("params") Map<String, Object> params);
