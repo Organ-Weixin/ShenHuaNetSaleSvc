@@ -28,12 +28,12 @@ public interface ScreenseatinfoDao {
     int delete(Long id);
     
     @Delete("delete from screenseatinfo where cinemacode = #{cinemacode} and screencode=#{screencode}")
-    int delete(String cinemacode,String screencode);
+    int deleteByScreenCode(String cinemacode,String screencode);
 
     int update(Screenseatinfo screenseatinfo);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into screenseatinfo(Id, CinemaCode, ScreenCode, SeatCode, GroupCode, RowNum, ColumnNum, XCoord, YCoord, Status, LoveFlag, Type, UpdateTime, SeatId) values(#{Id}, #{CinemaCode}, #{ScreenCode}, #{SeatCode}, #{GroupCode}, #{RowNum}, #{ColumnNum}, #{XCoord}, #{YCoord}, #{Status}, #{LoveFlag}, #{Type}, #{UpdateTime}, #{SeatId})")
+    @Insert("insert into screenseatinfo(CinemaCode, ScreenCode, SeatCode, GroupCode, RowNum, ColumnNum, XCoord, YCoord, Status, LoveFlag, Type, UpdateTime, SeatId) values(#{CinemaCode}, #{ScreenCode}, #{SeatCode}, #{GroupCode}, #{RowNum}, #{ColumnNum}, #{XCoord}, #{YCoord}, #{Status}, #{LoveFlag}, #{Type}, #{UpdateTime}, #{SeatId})")
     int save(Screenseatinfo screenseatinfo);
     
     int count(@Param("params") Map<String, Object> params);
