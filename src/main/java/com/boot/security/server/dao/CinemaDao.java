@@ -15,6 +15,7 @@ import com.boot.security.server.model.Cinema;
 
 @Mapper
 public interface CinemaDao {
+	//提交测试
 	//根据id查询订单数据
     @Select("select * from cinema t where t.Id= #{id}")
     Cinema getById(Long id);
