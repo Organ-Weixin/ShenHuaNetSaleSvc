@@ -19,7 +19,7 @@ public interface CinemaDao {
     @Select("select * from cinema t where t.Id= #{id}")
     Cinema getById(Long id);
     
-    @Select("select * from cinema t where t.CinemaCode= #{cinemacode}")
+    @Select("select * from cinema t where t.Code= #{cinemacode}")
     Cinema getByCinemaCode(String  cinemacode);
 
     @Delete("delete from cinema where id = #{id}")
