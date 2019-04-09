@@ -2,6 +2,7 @@ package com.boot.security.server.api.ctms.reply;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -45,32 +46,32 @@ import com.boot.security.server.model.StatusEnum;
 public class CxInterface implements ICTMSInterface {
 	private WebService cxService;
 	CinemaServiceImpl _cinemaService= SpringUtil.getBean(CinemaServiceImpl.class);
-	private ScreeninfoServiceImpl _screeninfoService = SpringUtil.getBean(ScreeninfoServiceImpl.class);
-	private ScreenseatinfoServiceImpl _screenseatinfoService = SpringUtil.getBean(ScreenseatinfoServiceImpl.class);
-	private FilminfoServiceImpl _filminfoService = SpringUtil.getBean(FilminfoServiceImpl.class);
-	private SessioninfoServiceImpl _sessioninfoService = SpringUtil.getBean(SessioninfoServiceImpl.class);
-
+	ScreeninfoServiceImpl _screeninfoService = SpringUtil.getBean(ScreeninfoServiceImpl.class);
+	ScreenseatinfoServiceImpl _screenseatinfoService = SpringUtil.getBean(ScreenseatinfoServiceImpl.class);
+	FilminfoServiceImpl _filminfoService = SpringUtil.getBean(FilminfoServiceImpl.class);
+	SessioninfoServiceImpl _sessioninfoService = SpringUtil.getBean(SessioninfoServiceImpl.class);
 	private static final String pCompress = "0";
 
 	public CxInterface() {
 		cxService = new WebService();
 	}
 
-	// region 查询影厅信息
+	// region 查询影厅信息 
 	public CTMSQueryCinemaReply QueryCinema(Usercinemaview userCinema) {
 		CTMSQueryCinemaReply reply = new CTMSQueryCinemaReply();
 		CxQueryCinemaInfoResult cxReply = cxService.QueryCinemaInfo(userCinema);
-		if (cxReply.getQueryCinemaInfoResult().getResultCode() == "0") {
+		if ("0".equals(cxReply.getQueryCinemaInfoResult().getResultCode())) {
 			// 更新影院信息
 			Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
 			cinema.setName(cxReply.getQueryCinemaInfoResult().getCinema().getCinemaName());
 			cinema.setAddress(cxReply.getQueryCinemaInfoResult().getCinema().getAddress());
 			cinema.setScreenCount(Integer.parseInt(cxReply.getQueryCinemaInfoResult().getCinema().getScreenCount()));
+			cinema.setCinemaId("0000");
 			_cinemaService.update(cinema);
 			// 更新影厅信息
 			// List<Screeninfo> oldScreens=
 			// _screeninfoService.getByCinemaCode(userCinema.getCinemaCode());
-			List<Screeninfo> newScreens = null;
+			List<Screeninfo> newScreens = new ArrayList<Screeninfo>();
 			List<ScreenVOBean> screenvos = cxReply.getQueryCinemaInfoResult().getCinema().getScreens().getScreenVO();
 			for (ScreenVOBean screenvo : screenvos) {
 				Screeninfo screen = new Screeninfo();// 先读取本地
@@ -130,7 +131,7 @@ public class CxInterface implements ICTMSInterface {
 			// 处理完情侣座后将辰星座位的所有GroupCode置为0000000000000001
 			newSeats.forEach(seat -> seat.setGroupCode("0000000000000001"));
 			// 先删除原当前影院当前影厅座位
-			_screenseatinfoService.deleteByCinemaCodeAndScreenCode(userCinema.getCinemaCode(), screen.getSCode());
+			_screenseatinfoService.deleteByScreenCode(userCinema.getCinemaCode(), screen.getSCode());
 			// 插入影厅座位信息
 			for (Screenseatinfo seat : newSeats) {
 				_screenseatinfoService.save(seat);
@@ -498,5 +499,6 @@ public class CxInterface implements ICTMSInterface {
 		nextDay = calendar.getTime();
 		return nextDay;
 	}
+	
 
 }
