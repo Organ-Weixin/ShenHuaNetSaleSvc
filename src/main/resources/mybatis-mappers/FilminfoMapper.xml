@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.FilminfoDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and Id = #{params.Id} 
+			</if>
+			<if test="params.FilmCode != null and params.FilmCode != ''">
+				and FilmCode = #{params.FilmCode} 
+			</if>
+			<if test="params.FilmName != null and params.FilmName != ''">
+				and FilmName = #{params.FilmName} 
+			</if>
+			<if test="params.Version != null and params.Version != ''">
+				and Version = #{params.Version} 
+			</if>
+			<if test="params.Duration != null and params.Duration != ''">
+				and Duration = #{params.Duration} 
+			</if>
+			<if test="params.PublishDate != null and params.PublishDate != ''">
+				and PublishDate = #{params.PublishDate} 
+			</if>
+			<if test="params.Publisher != null and params.Publisher != ''">
+				and Publisher = #{params.Publisher} 
+			</if>
+			<if test="params.Producer != null and params.Producer != ''">
+				and Producer = #{params.Producer} 
+			</if>
+			<if test="params.Director != null and params.Director != ''">
+				and Director = #{params.Director} 
+			</if>
+			<if test="params.Cast != null and params.Cast != ''">
+				and Cast = #{params.Cast} 
+			</if>
+			<if test="params.Introduction != null and params.Introduction != ''">
+				and Introduction = #{params.Introduction} 
+			</if>
+		
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from filminfo t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Filminfo">
+		select * from filminfo t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="update">
+		update filminfo t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="FilmCode != null">
+				FilmCode = #{FilmCode}, 
+			</if>
+			<if test="FilmName != null">
+				FilmName = #{FilmName}, 
+			</if>
+			<if test="Version != null">
+				Version = #{Version}, 
+			</if>
+			<if test="Duration != null">
+				Duration = #{Duration}, 
+			</if>
+			<if test="PublishDate != null">
+				PublishDate = #{PublishDate}, 
+			</if>
+			<if test="Publisher != null">
+				Publisher = #{Publisher}, 
+			</if>
+			<if test="Producer != null">
+				Producer = #{Producer}, 
+			</if>
+			<if test="Director != null">
+				Director = #{Director}, 
+			</if>
+			<if test="Cast != null">
+				Cast = #{Cast}, 
+			</if>
+			<if test="Introduction != null">
+				Introduction = #{Introduction}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+
+</mapper>

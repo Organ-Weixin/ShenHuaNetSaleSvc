@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.UserinfoDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and Id = #{params.Id} 
+			</if>
+			<if test="params.UserName != null and params.UserName != ''">
+				and UserName = #{params.UserName} 
+			</if>
+			<if test="params.Password != null and params.Password != ''">
+				and Password = #{params.Password} 
+			</if>
+			<if test="params.Company != null and params.Company != ''">
+				and Company = #{params.Company} 
+			</if>
+			<if test="params.Address != null and params.Address != ''">
+				and Address = #{params.Address} 
+			</if>
+			<if test="params.Tel != null and params.Tel != ''">
+				and Tel = #{params.Tel} 
+			</if>
+			<if test="params.Advance != null and params.Advance != ''">
+				and Advance = #{params.Advance} 
+			</if>
+			<if test="params.IsDel != null and params.IsDel != ''">
+				and IsDel = #{params.IsDel} 
+			</if>
+			<if test="params.BeginDate != null and params.BeginDate != ''">
+				and BeginDate = #{params.BeginDate} 
+			</if>
+			<if test="params.EndDate != null and params.EndDate != ''">
+				and EndDate = #{params.EndDate} 
+			</if>
+		
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from userinfo t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Userinfo">
+		select * from userinfo t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="update">
+		update userinfo t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="UserName != null">
+				UserName = #{UserName}, 
+			</if>
+			<if test="Password != null">
+				Password = #{Password}, 
+			</if>
+			<if test="Company != null">
+				Company = #{Company}, 
+			</if>
+			<if test="Address != null">
+				Address = #{Address}, 
+			</if>
+			<if test="Tel != null">
+				Tel = #{Tel}, 
+			</if>
+			<if test="Advance != null">
+				Advance = #{Advance}, 
+			</if>
+			<if test="IsDel != null">
+				IsDel = #{IsDel}, 
+			</if>
+			<if test="BeginDate != null">
+				BeginDate = #{BeginDate}, 
+			</if>
+			<if test="EndDate != null">
+				EndDate = #{EndDate}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+
+</mapper>

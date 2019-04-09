@@ -1,0 +1,87 @@
+2019-03-27 17:16:52,376 [http-nio-8080-exec-10] ==>  Preparing: select * from sys_user t where t.username = ? 
+2019-03-27 17:16:52,444 [http-nio-8080-exec-10] ==> Parameters: admin(String)
+2019-03-27 17:16:52,479 [http-nio-8080-exec-10] <==      Total: 1
+2019-03-27 17:16:52,523 [http-nio-8080-exec-10] ==>  Preparing: select distinct p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId inner join sys_role_user ru on ru.roleId = rp.roleId where ru.userId = ? order by p.sort 
+2019-03-27 17:16:52,560 [http-nio-8080-exec-10] ==> Parameters: 1(Long)
+2019-03-27 17:16:52,594 [http-nio-8080-exec-10] <==      Total: 39
+2019-03-27 17:16:52,972 [taskExecutor-1] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-27 17:16:52,998 [taskExecutor-1] ==> Parameters: 1(Long), 登陆(String), true(Boolean), null
+2019-03-27 17:16:53,009 [taskExecutor-1] <==    Updates: 1
+2019-03-27 17:16:54,183 [http-nio-8080-exec-7] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-27 17:16:54,187 [http-nio-8080-exec-7] ==> Parameters: 1(Long)
+2019-03-27 17:16:54,195 [http-nio-8080-exec-7] <==      Total: 1
+2019-03-27 17:16:58,748 [http-nio-8080-exec-9] ==>  Preparing: select count(1) from file_info t 
+2019-03-27 17:16:58,757 [http-nio-8080-exec-9] ==> Parameters: 
+2019-03-27 17:16:58,762 [http-nio-8080-exec-9] <==      Total: 1
+2019-03-27 17:17:27,437 [taskExecutor-2] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-27 17:17:27,444 [taskExecutor-2] ==> Parameters: 1(Long), 生成代码(String), true(Boolean), null
+2019-03-27 17:17:27,450 [taskExecutor-2] <==    Updates: 1
+2019-03-27 17:18:23,226 [taskExecutor-3] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-27 17:18:23,228 [taskExecutor-3] ==> Parameters: 1(Long), 生成代码(String), true(Boolean), null
+2019-03-27 17:18:23,232 [taskExecutor-3] <==    Updates: 1
+2019-03-27 17:20:29,173 [taskExecutor-4] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-27 17:20:29,176 [taskExecutor-4] ==> Parameters: 1(Long), 生成代码(String), true(Boolean), null
+2019-03-27 17:20:29,181 [taskExecutor-4] <==    Updates: 1
+2019-03-27 17:20:43,708 [taskExecutor-5] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-27 17:20:43,709 [taskExecutor-5] ==> Parameters: 1(Long), 生成代码(String), true(Boolean), null
+2019-03-27 17:20:43,714 [taskExecutor-5] <==    Updates: 1
+2019-03-27 17:24:06,831 [http-nio-8080-exec-6] ==>  Preparing: select * from sys_user t where t.username = ? 
+2019-03-27 17:24:06,884 [http-nio-8080-exec-6] ==> Parameters: admin(String)
+2019-03-27 17:24:06,914 [http-nio-8080-exec-6] <==      Total: 1
+2019-03-27 17:24:06,942 [http-nio-8080-exec-6] ==>  Preparing: select distinct p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId inner join sys_role_user ru on ru.roleId = rp.roleId where ru.userId = ? order by p.sort 
+2019-03-27 17:24:06,949 [http-nio-8080-exec-6] ==> Parameters: 1(Long)
+2019-03-27 17:24:06,972 [http-nio-8080-exec-6] <==      Total: 39
+2019-03-27 17:24:08,350 [http-nio-8080-exec-8] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-27 17:24:08,355 [http-nio-8080-exec-8] ==> Parameters: 1(Long)
+2019-03-27 17:24:08,358 [http-nio-8080-exec-8] <==      Total: 1
+2019-03-27 17:24:29,000 [taskExecutor-1] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-27 17:24:29,018 [taskExecutor-1] ==> Parameters: 1(Long), 生成代码(String), true(Boolean), null
+2019-03-27 17:24:29,027 [taskExecutor-1] <==    Updates: 1
+2019-03-27 19:50:07,077 [http-nio-8080-exec-6] ==>  Preparing: select * from sys_user t where t.username = ? 
+2019-03-27 19:50:07,102 [http-nio-8080-exec-6] ==> Parameters: admin(String)
+2019-03-27 19:50:07,131 [http-nio-8080-exec-6] <==      Total: 1
+2019-03-27 19:50:07,152 [http-nio-8080-exec-6] ==>  Preparing: select distinct p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId inner join sys_role_user ru on ru.roleId = rp.roleId where ru.userId = ? order by p.sort 
+2019-03-27 19:50:07,158 [http-nio-8080-exec-6] ==> Parameters: 1(Long)
+2019-03-27 19:50:07,188 [http-nio-8080-exec-6] <==      Total: 39
+2019-03-27 19:50:14,510 [http-nio-8080-exec-5] ==>  Preparing: select * from sys_user t where t.username = ? 
+2019-03-27 19:50:14,511 [http-nio-8080-exec-5] ==> Parameters: admin(String)
+2019-03-27 19:50:14,514 [http-nio-8080-exec-5] <==      Total: 1
+2019-03-27 19:50:14,516 [http-nio-8080-exec-5] ==>  Preparing: select distinct p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId inner join sys_role_user ru on ru.roleId = rp.roleId where ru.userId = ? order by p.sort 
+2019-03-27 19:50:14,517 [http-nio-8080-exec-5] ==> Parameters: 1(Long)
+2019-03-27 19:50:14,527 [http-nio-8080-exec-5] <==      Total: 39
+2019-03-27 19:50:14,763 [taskExecutor-1] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-27 19:50:14,785 [taskExecutor-1] ==> Parameters: 1(Long), 登陆(String), true(Boolean), null
+2019-03-27 19:50:14,790 [taskExecutor-1] <==    Updates: 1
+2019-03-27 19:50:15,891 [http-nio-8080-exec-4] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-27 19:50:15,901 [http-nio-8080-exec-4] ==> Parameters: 1(Long)
+2019-03-27 19:50:15,935 [http-nio-8080-exec-4] <==      Total: 1
+2019-03-27 19:50:54,376 [taskExecutor-2] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-27 19:50:54,379 [taskExecutor-2] ==> Parameters: 1(Long), 生成代码(String), true(Boolean), null
+2019-03-27 19:50:54,384 [taskExecutor-2] <==    Updates: 1
+2019-03-27 19:51:18,821 [taskExecutor-3] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-27 19:51:18,824 [taskExecutor-3] ==> Parameters: 1(Long), 生成代码(String), true(Boolean), null
+2019-03-27 19:51:18,832 [taskExecutor-3] <==    Updates: 1
+2019-03-27 19:51:34,696 [taskExecutor-4] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-27 19:51:34,698 [taskExecutor-4] ==> Parameters: 1(Long), 生成代码(String), true(Boolean), null
+2019-03-27 19:51:34,704 [taskExecutor-4] <==    Updates: 1
+2019-03-27 19:51:49,010 [taskExecutor-5] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-27 19:51:49,016 [taskExecutor-5] ==> Parameters: 1(Long), 生成代码(String), true(Boolean), null
+2019-03-27 19:51:49,022 [taskExecutor-5] <==    Updates: 1
+2019-03-27 19:52:01,568 [taskExecutor-6] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-27 19:52:01,570 [taskExecutor-6] ==> Parameters: 1(Long), 生成代码(String), true(Boolean), null
+2019-03-27 19:52:01,575 [taskExecutor-6] <==    Updates: 1
+2019-03-27 19:52:15,091 [taskExecutor-7] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-27 19:52:15,092 [taskExecutor-7] ==> Parameters: 1(Long), 生成代码(String), true(Boolean), null
+2019-03-27 19:52:15,098 [taskExecutor-7] <==    Updates: 1
+2019-03-27 19:52:38,221 [taskExecutor-8] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-27 19:52:38,222 [taskExecutor-8] ==> Parameters: 1(Long), 生成代码(String), true(Boolean), null
+2019-03-27 19:52:39,186 [taskExecutor-8] <==    Updates: 1
+2019-03-27 19:53:30,114 [taskExecutor-9] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-27 19:53:30,115 [taskExecutor-9] ==> Parameters: 1(Long), 生成代码(String), true(Boolean), null
+2019-03-27 19:53:30,120 [taskExecutor-9] <==    Updates: 1
+2019-03-27 19:53:39,712 [taskExecutor-10] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-27 19:53:39,714 [taskExecutor-10] ==> Parameters: 1(Long), 生成代码(String), true(Boolean), null
+2019-03-27 19:53:39,720 [taskExecutor-10] <==    Updates: 1
+2019-03-27 19:54:04,905 [taskExecutor-11] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-27 19:54:04,906 [taskExecutor-11] ==> Parameters: 1(Long), 生成代码(String), true(Boolean), null
+2019-03-27 19:54:04,912 [taskExecutor-11] <==    Updates: 1

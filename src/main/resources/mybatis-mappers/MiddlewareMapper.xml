@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.MiddlewareDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and Id = #{params.Id} 
+			</if>
+			<if test="params.Title != null and params.Title != ''">
+				and Title = #{params.Title} 
+			</if>
+			<if test="params.Url != null and params.Url != ''">
+				and Url = #{params.Url} 
+			</if>
+			<if test="params.MemberUrl != null and params.MemberUrl != ''">
+				and MemberUrl = #{params.MemberUrl} 
+			</if>
+			<if test="params.UserName != null and params.UserName != ''">
+				and UserName = #{params.UserName} 
+			</if>
+			<if test="params.Password != null and params.Password != ''">
+				and Password = #{params.Password} 
+			</if>
+			<if test="params.CinemaCode != null and params.CinemaCode != ''">
+				and CinemaCode = #{params.CinemaCode} 
+			</if>
+			<if test="params.Type != null and params.Type != ''">
+				and Type = #{params.Type} 
+			</if>
+			<if test="params.CinemaCount != null and params.CinemaCount != ''">
+				and CinemaCount = #{params.CinemaCount} 
+			</if>
+			<if test="params.IsDel != null and params.IsDel != ''">
+				and IsDel = #{params.IsDel} 
+			</if>
+		
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from middleware t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Middleware">
+		select * from middleware t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="update">
+		update middleware t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="Title != null">
+				Title = #{Title}, 
+			</if>
+			<if test="Url != null">
+				Url = #{Url}, 
+			</if>
+			<if test="MemberUrl != null">
+				MemberUrl = #{MemberUrl}, 
+			</if>
+			<if test="UserName != null">
+				UserName = #{UserName}, 
+			</if>
+			<if test="Password != null">
+				Password = #{Password}, 
+			</if>
+			<if test="CinemaCode != null">
+				CinemaCode = #{CinemaCode}, 
+			</if>
+			<if test="Type != null">
+				Type = #{Type}, 
+			</if>
+			<if test="CinemaCount != null">
+				CinemaCount = #{CinemaCount}, 
+			</if>
+			<if test="IsDel != null">
+				IsDel = #{IsDel}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+
+</mapper>

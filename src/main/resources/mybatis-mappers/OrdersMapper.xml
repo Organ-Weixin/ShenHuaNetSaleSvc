@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.OrdersDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and Id = #{params.Id} 
+			</if>
+			<if test="params.CinemaCode != null and params.CinemaCode != ''">
+				and CinemaCode = #{params.CinemaCode} 
+			</if>
+			<if test="params.UserId != null and params.UserId != ''">
+				and UserId = #{params.UserId} 
+			</if>
+			<if test="params.SessionCode != null and params.SessionCode != ''">
+				and SessionCode = #{params.SessionCode} 
+			</if>
+			<if test="params.ScreenCode != null and params.ScreenCode != ''">
+				and ScreenCode = #{params.ScreenCode} 
+			</if>
+			<if test="params.SessionTime != null and params.SessionTime != ''">
+				and SessionTime = #{params.SessionTime} 
+			</if>
+			<if test="params.FilmCode != null and params.FilmCode != ''">
+				and FilmCode = #{params.FilmCode} 
+			</if>
+			<if test="params.FilmName != null and params.FilmName != ''">
+				and FilmName = #{params.FilmName} 
+			</if>
+			<if test="params.TicketCount != null and params.TicketCount != ''">
+				and TicketCount = #{params.TicketCount} 
+			</if>
+			<if test="params.TotalPrice != null and params.TotalPrice != ''">
+				and TotalPrice = #{params.TotalPrice} 
+			</if>
+			<if test="params.TotalFee != null and params.TotalFee != ''">
+				and TotalFee = #{params.TotalFee} 
+			</if>
+			<if test="params.TotalSalePrice != null and params.TotalSalePrice != ''">
+				and TotalSalePrice = #{params.TotalSalePrice} 
+			</if>
+			<if test="params.OrderStatus != null and params.OrderStatus != ''">
+				and OrderStatus = #{params.OrderStatus} 
+			</if>
+			<if test="params.MobilePhone != null and params.MobilePhone != ''">
+				and MobilePhone = #{params.MobilePhone} 
+			</if>
+			<if test="params.LockTime != null and params.LockTime != ''">
+				and LockTime = #{params.LockTime} 
+			</if>
+			<if test="params.AutoUnlockDatetime != null and params.AutoUnlockDatetime != ''">
+				and AutoUnlockDatetime = #{params.AutoUnlockDatetime} 
+			</if>
+			<if test="params.LockOrderCode != null and params.LockOrderCode != ''">
+				and LockOrderCode = #{params.LockOrderCode} 
+			</if>
+			<if test="params.SubmitTime != null and params.SubmitTime != ''">
+				and SubmitTime = #{params.SubmitTime} 
+			</if>
+			<if test="params.SubmitOrderCode != null and params.SubmitOrderCode != ''">
+				and SubmitOrderCode = #{params.SubmitOrderCode} 
+			</if>
+			<if test="params.PrintNo != null and params.PrintNo != ''">
+				and PrintNo = #{params.PrintNo} 
+			</if>
+			<if test="params.VerifyCode != null and params.VerifyCode != ''">
+				and VerifyCode = #{params.VerifyCode} 
+			</if>
+			<if test="params.PrintStatus != null and params.PrintStatus != ''">
+				and PrintStatus = #{params.PrintStatus} 
+			</if>
+			<if test="params.PrintTime != null and params.PrintTime != ''">
+				and PrintTime = #{params.PrintTime} 
+			</if>
+			<if test="params.RefundTime != null and params.RefundTime != ''">
+				and RefundTime = #{params.RefundTime} 
+			</if>
+			<if test="params.Created != null and params.Created != ''">
+				and Created = #{params.Created} 
+			</if>
+			<if test="params.Updated != null and params.Updated != ''">
+				and Updated = #{params.Updated} 
+			</if>
+			<if test="params.Deleted != null and params.Deleted != ''">
+				and Deleted = #{params.Deleted} 
+			</if>
+			<if test="params.ErrorMessage != null and params.ErrorMessage != ''">
+				and ErrorMessage = #{params.ErrorMessage} 
+			</if>
+			<if test="params.SerialNum != null and params.SerialNum != ''">
+				and SerialNum = #{params.SerialNum} 
+			</if>
+			<if test="params.IsMemberPay != null and params.IsMemberPay != ''">
+				and IsMemberPay = #{params.IsMemberPay} 
+			</if>
+			<if test="params.PayType != null and params.PayType != ''">
+				and PayType = #{params.PayType} 
+			</if>
+			<if test="params.Printpassword != null and params.Printpassword != ''">
+				and Printpassword = #{params.Printpassword} 
+			</if>
+			<if test="params.PaySeqNo != null and params.PaySeqNo != ''">
+				and PaySeqNo = #{params.PaySeqNo} 
+			</if>
+			<if test="params.IDCardNumber != null and params.IDCardNumber != ''">
+				and IDCardNumber = #{params.IDCardNumber} 
+			</if>
+		
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from orders t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Orders">
+		select * from orders t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="update">
+		update orders t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="CinemaCode != null">
+				CinemaCode = #{CinemaCode}, 
+			</if>
+			<if test="UserId != null">
+				UserId = #{UserId}, 
+			</if>
+			<if test="SessionCode != null">
+				SessionCode = #{SessionCode}, 
+			</if>
+			<if test="ScreenCode != null">
+				ScreenCode = #{ScreenCode}, 
+			</if>
+			<if test="SessionTime != null">
+				SessionTime = #{SessionTime}, 
+			</if>
+			<if test="FilmCode != null">
+				FilmCode = #{FilmCode}, 
+			</if>
+			<if test="FilmName != null">
+				FilmName = #{FilmName}, 
+			</if>
+			<if test="TicketCount != null">
+				TicketCount = #{TicketCount}, 
+			</if>
+			<if test="TotalPrice != null">
+				TotalPrice = #{TotalPrice}, 
+			</if>
+			<if test="TotalFee != null">
+				TotalFee = #{TotalFee}, 
+			</if>
+			<if test="TotalSalePrice != null">
+				TotalSalePrice = #{TotalSalePrice}, 
+			</if>
+			<if test="OrderStatus != null">
+				OrderStatus = #{OrderStatus}, 
+			</if>
+			<if test="MobilePhone != null">
+				MobilePhone = #{MobilePhone}, 
+			</if>
+			<if test="LockTime != null">
+				LockTime = #{LockTime}, 
+			</if>
+			<if test="AutoUnlockDatetime != null">
+				AutoUnlockDatetime = #{AutoUnlockDatetime}, 
+			</if>
+			<if test="LockOrderCode != null">
+				LockOrderCode = #{LockOrderCode}, 
+			</if>
+			<if test="SubmitTime != null">
+				SubmitTime = #{SubmitTime}, 
+			</if>
+			<if test="SubmitOrderCode != null">
+				SubmitOrderCode = #{SubmitOrderCode}, 
+			</if>
+			<if test="PrintNo != null">
+				PrintNo = #{PrintNo}, 
+			</if>
+			<if test="VerifyCode != null">
+				VerifyCode = #{VerifyCode}, 
+			</if>
+			<if test="PrintStatus != null">
+				PrintStatus = #{PrintStatus}, 
+			</if>
+			<if test="PrintTime != null">
+				PrintTime = #{PrintTime}, 
+			</if>
+			<if test="RefundTime != null">
+				RefundTime = #{RefundTime}, 
+			</if>
+			<if test="Created != null">
+				Created = #{Created}, 
+			</if>
+			<if test="Updated != null">
+				Updated = #{Updated}, 
+			</if>
+			<if test="Deleted != null">
+				Deleted = #{Deleted}, 
+			</if>
+			<if test="ErrorMessage != null">
+				ErrorMessage = #{ErrorMessage}, 
+			</if>
+			<if test="SerialNum != null">
+				SerialNum = #{SerialNum}, 
+			</if>
+			<if test="IsMemberPay != null">
+				IsMemberPay = #{IsMemberPay}, 
+			</if>
+			<if test="PayType != null">
+				PayType = #{PayType}, 
+			</if>
+			<if test="Printpassword != null">
+				Printpassword = #{Printpassword}, 
+			</if>
+			<if test="PaySeqNo != null">
+				PaySeqNo = #{PaySeqNo}, 
+			</if>
+			<if test="IDCardNumber != null">
+				IDCardNumber = #{IDCardNumber}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+
+</mapper>

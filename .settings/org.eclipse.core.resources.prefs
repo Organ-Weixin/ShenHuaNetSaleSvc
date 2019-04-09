@@ -1,0 +1,17 @@
+eclipse.preferences.version=1
+encoding//src/main/java=UTF-8
+encoding//src/main/java/cn/cmts/main/webservice/Ticketapi.java=UTF-8
+encoding//src/main/java/cn/cmts/main/webservice/TicketapiLocator.java=UTF-8
+encoding//src/main/java/cn/cmts/main/webservice/TicketapiPortType.java=UTF-8
+encoding//src/main/java/cn/cmts/main/webservice/TicketapiSoap11BindingStub.java=UTF-8
+encoding//src/main/java/cn/cmts/pay/webservice/Payapi.java=UTF-8
+encoding//src/main/java/cn/cmts/pay/webservice/PayapiLocator.java=UTF-8
+encoding//src/main/java/cn/cmts/pay/webservice/PayapiPortType.java=UTF-8
+encoding//src/main/java/cn/cmts/pay/webservice/PayapiSoap11BindingStub.java=UTF-8
+encoding//src/main/java/com/oristartech/tsp/ws/soap/TspSoapService.java=UTF-8
+encoding//src/main/java/com/oristartech/tsp/ws/soap/TspSoapServiceImplService.java=UTF-8
+encoding//src/main/java/com/oristartech/tsp/ws/soap/TspSoapServiceImplServiceLocator.java=UTF-8
+encoding//src/main/java/com/oristartech/tsp/ws/soap/TspSoapServiceImplServiceSoapBindingStub.java=UTF-8
+encoding//src/main/resources=UTF-8
+encoding//src/test/java=UTF-8
+encoding/<project>=UTF-8

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<input  id="Id" name="id">
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院编码<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='影院编码' type='text' name='code' id='Code' data-bv-notempty='true' data-bv-notempty-message='Code 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院名称<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='影院名称' type='text' name='name' id='Name' data-bv-notempty='true' data-bv-notempty-message='Name 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院地址</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='影院地址' type='text' name='address' id='Address' data-bv-notempty='true' data-bv-notempty-message='Address 不能为空'>
+				</div>
+			</div>
+
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>开通影院<font style="color:red">*</font></label>
+					<div class='col-md-10'>
+						<select class="form-control" id="IsOpen" name="isOpen">
+							<option selected="selected">请选择...</option>
+							<option value="1">开通</option>
+							<option value="2">关闭</option>
+						</select>
+					</div>
+				</div>
+
+	<div class='form-group'>
+				<label class='col-md-2 control-label'>影院接口<font style="color:red">*</font></label>
+					<div class='col-md-10'>
+						<select class="form-control" id="MId" name="mid">
+							<option value="1">13规范</option>
+							<option value="2">辰星</option>
+							<option value="4">鼎新</option>
+							<option value="8">满天星</option>
+							<option value="16">火烈鸟</option>
+							<option value="32">电影1905</option>
+							<option value="64">粤科</option>
+							<option value="65">云智</option>
+							<option value="66">VISTA</option>
+						</select>
+
+					</div>
+				</div> 
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="location.href='cinemaList.html'">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="update()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		});
+		
+		initData();
+		
+		function initData(){
+			var id = getUrlParam("id");
+			if(id != ""){
+				$.ajax({
+					type : 'get',
+					url : '/cinemas/'+id,
+					async : false,
+					success : function(data) {
+						$('#Id').val(data.id);
+						$('#Code').val(data.code);
+						$('#Name').val(data.name);
+						$('#Address').val(data.address);
+						//$('#ScreenCount').val(data.ScreenCount);
+					//	$('#IsDel').val(data.IsDel);
+					//	$('#ManualAdd').val(data.ManualAdd);
+						$('#IsOpen').val(data.isOpen);
+						//$('#CinemaId').val(data.CinemaId);
+						$('#MId').val(data.mid);
+					}
+				});
+			}
+		}
+
+		function update() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var formdata = $("#form").serializeObject();
+
+			$.ajax({
+				type : 'put',
+				url : '/cinemas',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("修改成功", {shift: -1, time: 1000}, function(){
+                        location.href = "cinemaList.html";
+                    });
+				}
+			});
+		}
+		
+	</script>
+</body>
+</html>
+

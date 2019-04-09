@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.ScreeninfoDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and Id = #{params.Id} 
+			</if>
+			<if test="params.CCode != null and params.CCode != ''">
+				and CCode = #{params.CCode} 
+			</if>
+			<if test="params.SCode != null and params.SCode != ''">
+				and SCode = #{params.SCode} 
+			</if>
+			<if test="params.SName != null and params.SName != ''">
+				and SName = #{params.SName} 
+			</if>
+			<if test="params.UpdateTime != null and params.UpdateTime != ''">
+				and UpdateTime = #{params.UpdateTime} 
+			</if>
+			<if test="params.SeatCount != null and params.SeatCount != ''">
+				and SeatCount = #{params.SeatCount} 
+			</if>
+			<if test="params.Type != null and params.Type != ''">
+				and Type = #{params.Type} 
+			</if>
+			<if test="params.ScreenId != null and params.ScreenId != ''">
+				and ScreenId = #{params.ScreenId} 
+			</if>
+		
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from screeninfo t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Screeninfo">
+		select * from screeninfo t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="update">
+		update screeninfo t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="CCode != null">
+				CCode = #{CCode}, 
+			</if>
+			<if test="SCode != null">
+				SCode = #{SCode}, 
+			</if>
+			<if test="SName != null">
+				SName = #{SName}, 
+			</if>
+			<if test="UpdateTime != null">
+				UpdateTime = #{UpdateTime}, 
+			</if>
+			<if test="SeatCount != null">
+				SeatCount = #{SeatCount}, 
+			</if>
+			<if test="Type != null">
+				Type = #{Type}, 
+			</if>
+			<if test="ScreenId != null">
+				ScreenId = #{ScreenId}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+
+</mapper>

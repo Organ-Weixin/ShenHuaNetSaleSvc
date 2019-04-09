@@ -1,0 +1,90 @@
+2019-03-27 17:17:27,387 [http-nio-8080-exec-2] DEBUG -[TemplateUtil.java:47]- 生成java model：Screeninfo模板
+2019-03-27 17:17:27,400 [http-nio-8080-exec-2] DEBUG -[TemplateUtil.java:129]- 生成java dao：Screeninfo模板
+2019-03-27 17:17:27,415 [http-nio-8080-exec-2] DEBUG -[TemplateUtil.java:243]- 生成controller：Screeninfo模板
+2019-03-27 17:17:27,422 [http-nio-8080-exec-2] DEBUG -[TemplateUtil.java:259]- 生成查询页面：Screeninfo模板
+2019-03-27 17:17:27,427 [http-nio-8080-exec-2] DEBUG -[TemplateUtil.java:265]- 生成添加页面：Screeninfo模板
+2019-03-27 17:17:27,433 [http-nio-8080-exec-2] DEBUG -[TemplateUtil.java:272]- 生成修改页面：Screeninfo模板
+2019-03-27 17:18:23,195 [http-nio-8080-exec-10] DEBUG -[TemplateUtil.java:47]- 生成java model：Screenseatinfo模板
+2019-03-27 17:18:23,201 [http-nio-8080-exec-10] DEBUG -[TemplateUtil.java:129]- 生成java dao：Screenseatinfo模板
+2019-03-27 17:18:23,211 [http-nio-8080-exec-10] DEBUG -[TemplateUtil.java:243]- 生成controller：Screenseatinfo模板
+2019-03-27 17:18:23,217 [http-nio-8080-exec-10] DEBUG -[TemplateUtil.java:259]- 生成查询页面：Screenseatinfo模板
+2019-03-27 17:18:23,220 [http-nio-8080-exec-10] DEBUG -[TemplateUtil.java:265]- 生成添加页面：Screenseatinfo模板
+2019-03-27 17:18:23,224 [http-nio-8080-exec-10] DEBUG -[TemplateUtil.java:272]- 生成修改页面：Screenseatinfo模板
+2019-03-27 17:20:29,152 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:47]- 生成java model：Screeninfo模板
+2019-03-27 17:20:29,156 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:129]- 生成java dao：Screeninfo模板
+2019-03-27 17:20:29,162 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:243]- 生成controller：Screeninfo模板
+2019-03-27 17:20:29,164 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:259]- 生成查询页面：Screeninfo模板
+2019-03-27 17:20:29,167 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:265]- 生成添加页面：Screeninfo模板
+2019-03-27 17:20:29,171 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:272]- 生成修改页面：Screeninfo模板
+2019-03-27 17:20:43,691 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:47]- 生成java model：Screenseatinfo模板
+2019-03-27 17:20:43,694 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:129]- 生成java dao：Screenseatinfo模板
+2019-03-27 17:20:43,698 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:243]- 生成controller：Screenseatinfo模板
+2019-03-27 17:20:43,700 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:259]- 生成查询页面：Screenseatinfo模板
+2019-03-27 17:20:43,703 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:265]- 生成添加页面：Screenseatinfo模板
+2019-03-27 17:20:43,706 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:272]- 生成修改页面：Screenseatinfo模板
+2019-03-27 17:24:28,966 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:47]- 生成java model：Screeninfo模板
+2019-03-27 17:24:28,970 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:129]- 生成java dao：Screeninfo模板
+2019-03-27 17:24:28,978 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:243]- 生成controller：Screeninfo模板
+2019-03-27 17:24:28,982 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:259]- 生成查询页面：Screeninfo模板
+2019-03-27 17:24:28,985 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:265]- 生成添加页面：Screeninfo模板
+2019-03-27 17:24:28,987 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:272]- 生成修改页面：Screeninfo模板
+2019-03-27 19:50:54,351 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:47]- 生成java model：Cinema模板
+2019-03-27 19:50:54,355 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:129]- 生成java dao：Cinema模板
+2019-03-27 19:50:54,362 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:243]- 生成controller：Cinema模板
+2019-03-27 19:50:54,367 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:259]- 生成查询页面：Cinema模板
+2019-03-27 19:50:54,370 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:265]- 生成添加页面：Cinema模板
+2019-03-27 19:50:54,374 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:272]- 生成修改页面：Cinema模板
+2019-03-27 19:51:18,796 [http-nio-8080-exec-7] DEBUG -[TemplateUtil.java:47]- 生成java model：Filminfo模板
+2019-03-27 19:51:18,799 [http-nio-8080-exec-7] DEBUG -[TemplateUtil.java:129]- 生成java dao：Filminfo模板
+2019-03-27 19:51:18,804 [http-nio-8080-exec-7] DEBUG -[TemplateUtil.java:243]- 生成controller：Filminfo模板
+2019-03-27 19:51:18,808 [http-nio-8080-exec-7] DEBUG -[TemplateUtil.java:259]- 生成查询页面：Filminfo模板
+2019-03-27 19:51:18,811 [http-nio-8080-exec-7] DEBUG -[TemplateUtil.java:265]- 生成添加页面：Filminfo模板
+2019-03-27 19:51:18,814 [http-nio-8080-exec-7] DEBUG -[TemplateUtil.java:272]- 生成修改页面：Filminfo模板
+2019-03-27 19:51:34,675 [http-nio-8080-exec-9] DEBUG -[TemplateUtil.java:47]- 生成java model：Membercard模板
+2019-03-27 19:51:34,677 [http-nio-8080-exec-9] DEBUG -[TemplateUtil.java:129]- 生成java dao：Membercard模板
+2019-03-27 19:51:34,682 [http-nio-8080-exec-9] DEBUG -[TemplateUtil.java:243]- 生成controller：Membercard模板
+2019-03-27 19:51:34,685 [http-nio-8080-exec-9] DEBUG -[TemplateUtil.java:259]- 生成查询页面：Membercard模板
+2019-03-27 19:51:34,687 [http-nio-8080-exec-9] DEBUG -[TemplateUtil.java:265]- 生成添加页面：Membercard模板
+2019-03-27 19:51:34,690 [http-nio-8080-exec-9] DEBUG -[TemplateUtil.java:272]- 生成修改页面：Membercard模板
+2019-03-27 19:51:48,985 [http-nio-8080-exec-2] DEBUG -[TemplateUtil.java:47]- 生成java model：Middleware模板
+2019-03-27 19:51:48,990 [http-nio-8080-exec-2] DEBUG -[TemplateUtil.java:129]- 生成java dao：Middleware模板
+2019-03-27 19:51:48,996 [http-nio-8080-exec-2] DEBUG -[TemplateUtil.java:243]- 生成controller：Middleware模板
+2019-03-27 19:51:49,000 [http-nio-8080-exec-2] DEBUG -[TemplateUtil.java:259]- 生成查询页面：Middleware模板
+2019-03-27 19:51:49,003 [http-nio-8080-exec-2] DEBUG -[TemplateUtil.java:265]- 生成添加页面：Middleware模板
+2019-03-27 19:51:49,007 [http-nio-8080-exec-2] DEBUG -[TemplateUtil.java:272]- 生成修改页面：Middleware模板
+2019-03-27 19:52:01,542 [http-nio-8080-exec-7] DEBUG -[TemplateUtil.java:47]- 生成java model：Orders模板
+2019-03-27 19:52:01,546 [http-nio-8080-exec-7] DEBUG -[TemplateUtil.java:129]- 生成java dao：Orders模板
+2019-03-27 19:52:01,554 [http-nio-8080-exec-7] DEBUG -[TemplateUtil.java:243]- 生成controller：Orders模板
+2019-03-27 19:52:01,558 [http-nio-8080-exec-7] DEBUG -[TemplateUtil.java:259]- 生成查询页面：Orders模板
+2019-03-27 19:52:01,561 [http-nio-8080-exec-7] DEBUG -[TemplateUtil.java:265]- 生成添加页面：Orders模板
+2019-03-27 19:52:01,563 [http-nio-8080-exec-7] DEBUG -[TemplateUtil.java:272]- 生成修改页面：Orders模板
+2019-03-27 19:52:15,069 [http-nio-8080-exec-9] DEBUG -[TemplateUtil.java:47]- 生成java model：Orderseatdetails模板
+2019-03-27 19:52:15,073 [http-nio-8080-exec-9] DEBUG -[TemplateUtil.java:129]- 生成java dao：Orderseatdetails模板
+2019-03-27 19:52:15,078 [http-nio-8080-exec-9] DEBUG -[TemplateUtil.java:243]- 生成controller：Orderseatdetails模板
+2019-03-27 19:52:15,083 [http-nio-8080-exec-9] DEBUG -[TemplateUtil.java:259]- 生成查询页面：Orderseatdetails模板
+2019-03-27 19:52:15,086 [http-nio-8080-exec-9] DEBUG -[TemplateUtil.java:265]- 生成添加页面：Orderseatdetails模板
+2019-03-27 19:52:15,089 [http-nio-8080-exec-9] DEBUG -[TemplateUtil.java:272]- 生成修改页面：Orderseatdetails模板
+2019-03-27 19:52:38,204 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:47]- 生成java model：Sessioninfo模板
+2019-03-27 19:52:38,207 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:129]- 生成java dao：Sessioninfo模板
+2019-03-27 19:52:38,211 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:243]- 生成controller：Sessioninfo模板
+2019-03-27 19:52:38,214 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:259]- 生成查询页面：Sessioninfo模板
+2019-03-27 19:52:38,216 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:265]- 生成添加页面：Sessioninfo模板
+2019-03-27 19:52:38,219 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:272]- 生成修改页面：Sessioninfo模板
+2019-03-27 19:53:30,096 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:47]- 生成java model：UserCinema模板
+2019-03-27 19:53:30,099 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:129]- 生成java dao：UserCinema模板
+2019-03-27 19:53:30,104 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:243]- 生成controller：UserCinema模板
+2019-03-27 19:53:30,106 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:259]- 生成查询页面：UserCinema模板
+2019-03-27 19:53:30,109 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:265]- 生成添加页面：UserCinema模板
+2019-03-27 19:53:30,111 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:272]- 生成修改页面：UserCinema模板
+2019-03-27 19:53:39,698 [http-nio-8080-exec-3] DEBUG -[TemplateUtil.java:47]- 生成java model：Userinfo模板
+2019-03-27 19:53:39,700 [http-nio-8080-exec-3] DEBUG -[TemplateUtil.java:129]- 生成java dao：Userinfo模板
+2019-03-27 19:53:39,704 [http-nio-8080-exec-3] DEBUG -[TemplateUtil.java:243]- 生成controller：Userinfo模板
+2019-03-27 19:53:39,706 [http-nio-8080-exec-3] DEBUG -[TemplateUtil.java:259]- 生成查询页面：Userinfo模板
+2019-03-27 19:53:39,708 [http-nio-8080-exec-3] DEBUG -[TemplateUtil.java:265]- 生成添加页面：Userinfo模板
+2019-03-27 19:53:39,710 [http-nio-8080-exec-3] DEBUG -[TemplateUtil.java:272]- 生成修改页面：Userinfo模板
+2019-03-27 19:54:04,882 [http-nio-8080-exec-1] DEBUG -[TemplateUtil.java:47]- 生成java model：Usercinemaview模板
+2019-03-27 19:54:04,886 [http-nio-8080-exec-1] DEBUG -[TemplateUtil.java:129]- 生成java dao：Usercinemaview模板
+2019-03-27 19:54:04,891 [http-nio-8080-exec-1] DEBUG -[TemplateUtil.java:243]- 生成controller：Usercinemaview模板
+2019-03-27 19:54:04,893 [http-nio-8080-exec-1] DEBUG -[TemplateUtil.java:259]- 生成查询页面：Usercinemaview模板
+2019-03-27 19:54:04,896 [http-nio-8080-exec-1] DEBUG -[TemplateUtil.java:265]- 生成添加页面：Usercinemaview模板
+2019-03-27 19:54:04,900 [http-nio-8080-exec-1] DEBUG -[TemplateUtil.java:272]- 生成修改页面：Usercinemaview模板
