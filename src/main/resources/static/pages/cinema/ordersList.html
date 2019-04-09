@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="../../layui/css/layui.css" media="all" />
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" /> 
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css" />  
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css"/>
+</head>
+<body>
+    <div>
+        <div  class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div>
+                <header style="height: 100%">
+                    <div align="left">
+	                    <table style="width: 200%">
+	                   		<tr>
+	                   			<td>
+		                   			<form class="form-inline" onsubmit="return false">
+										<div class="form-group">
+											 <select class="form-control" style="width:180px;" id="company">
+												<option value="">渠道</option>
+											</select> 
+											 <select class="form-control" style="width:180px;" id="orderstuats">
+												<option value="">全部</option>
+												<option value="1">新建</option>
+												<option value="2">已锁座</option>
+												<option value="3">锁座失败</option>
+												<option value="4">已解锁</option>
+												<option value="5">解锁失败</option>
+												<option value="6">已提交</option>
+												<option value="7">提交失败</option>
+												<option value="8" selected="selected">完成</option>
+												<option value="9">已退票</option>
+												<option value="10">已支付</option>
+												<option value="11">支付失败</option>
+											</select>
+											<input type="text" class="form-control" placeholder="开始时间" id="start">
+											<input type="text" class="form-control" placeholder="结束时间" id="end">
+											<input id="submitOrderCode" type="text" class="form-control" placeholder="订单编号">
+											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
+										</div>
+									</form>
+	                   			</td>
+	                   		</tr> 
+	                    </table>
+					</div>
+                </header>
+                
+                <div>
+                    <div class="widget-body no-padding">
+                        <table id="dt-table" class="display table table-bordered" cellspacing="0" style="width: 200%">
+                            <thead>
+                                <tr>
+                                </tr>                       
+                                <tr>
+                                	<th>#</th>
+                                	<th>影院名称</th>
+                                	<th>影片名称</th>
+                                	<th>订单编号</th>
+                                	<th>放映时间</th>
+                                	<th>影厅</th>
+                                	<th>座位</th>
+                                	<th>票房</th>
+                                	<th>票价</th>
+                                	<th>增值服务费</th>
+                                	<th>系统服务费</th>
+                                	<th>优惠</th>
+                                	<th>销售总额</th>
+                                	<th>支付方式</th>
+                                	<th>订单时间</th>
+                                	<th>票号</th>
+                                	<th>取票号</th>
+                                	<th>手机号</th>
+                                	<th>订单状态</th>
+                                	<th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/jq.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript" src="../../js/my/permission.js"></script>
+<script type="text/javascript" src="../../js/dict.js"></script>
+<script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>  
+<script src="https://cdn.datatables.net/buttons/1.2.4/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>   
+<script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.html5.min.js "></script> 
+<script src="http://cdn.datatables.net/plug-ins/28e7751dbec/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+<script type="text/javascript">
+var pers = checkPermission();
+
+var OrderStatusEnum = showDictSelect("orderStatus", "OrderStatusEnum", true);
+var payType = showDictSelect("type", "payType", true);
+var example;
+function init(){
+	example = 
+    	$('#dt-table').DataTable({
+			"pageLength":50,    		
+        	"searching": false,
+        	"processing": false,
+        	"serverSide" : true,
+        	"ordering": false,
+        	"language": {
+                "url": "/js/plugin/datatables/Chinese.lang"
+            },
+        	"ajax": {
+        		"url" : "/orderss/list",
+        		"type":"post",
+        		"data":function(d){
+        			var sta = $("#start").val();
+        			var start = sta.replace(/-/g,'');
+        			var en = $("#end").val();
+        			var end = en.replace(/-/g,'');
+        			d.Id = $("#orderId").val();
+        			d.Start = start;
+        			d.End = end;
+					//d.Company = $("#company").val();
+    				d.OrderStatus = $("#orderstuats").val();
+    				d.SubmitOrderCode = $("#submitOrderCode").val();
+    			}
+        	},
+        	"buttons": [  
+                {  
+                    'extend': 'excelHtml5',  
+                    'className': 'btn btn-primary',
+                    'text': '导出excel',//定义导出excel按钮的文字  
+                    'title' : '订单信息',
+                    'exportOptions': {  
+                        'modifier': {  
+                            'page': 'current'  
+                        }  
+                    }  
+                }  
+            ],
+        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",
+        	"dom": 'Bfrtip',
+            "columns": [
+            	 {"data" : null, "defaultContent" : "","orderable":false,
+					"render" : function(data, type, full, meta){
+						return meta.row + 1 + meta.settings._iDisplayStart;
+						}
+				}, 
+				 {
+					"data" : "name", 
+					"defaultContent" : "",
+					"orderable":false,
+					"render": function (data, type, row) {
+                		var cinema = row['orders'];
+                		var name = row['cinema'];
+                        return name['name'];
+                  	}
+				}, 
+				{"data" : "filmName", "defaultContent" : "","orderable":false,
+					"render":function(data, type, row){
+						if (type === 'display') {
+			                if (data.length > 9) {
+			                    return '<span title="' + data + '">' + data.substr(0, 8) + '...</span>';
+			                } else {
+			                    return '<span title="' + data + '">' + data + '</span>';
+			                }
+			            }
+			            return data;
+					}
+				},
+				{"data" : "submitOrderCode", "defaultContent" : "","orderable":false},
+				{"data" : "sessionTime", "defaultContent" : "","orderable":false},
+				{"data" : "screenCode", "defaultContent" : "","orderable":false},
+				{"data" : "seat", "defaultContent" : "","orderable":false,
+					"render":function(data, type, row){
+						var orderseatdetails = row['orders'];
+						var seat = row['orderseatdetails'];
+						return seat['seat'];
+					}
+				},
+				{"data" : "salePrice", "defaultContent" : "","orderable":false,
+					"render":function(data, type, row){
+						var salePrice = row['orderseatdetails'];
+						return salePrice['salePrice'];
+					}
+				},
+				{"data" : "price", "defaultContent" : "","orderable":false,
+					"render":function(data, type, row){
+						var price = row['orderseatdetails'];
+						return price['price'];
+					}
+				},	
+				{"data" : "addedPrice", "defaultContent" : "","orderable":false,
+					"render":function(data, type, row){
+						var addedPrice = row['orderseatdetails'];
+						return addedPrice['addedPrice'];
+					}
+				},
+				{"data" : "fee", "defaultContent" : "","orderable":false,
+					"render":function(data, type, row){
+						var fee = row['orderseatdetails'];
+						return fee['fee'];
+					}
+				},
+				 {"data" : "preferentialPrice", "defaultContent" : "","orderable":false,
+					"render":function(data, type, row){
+						var preferentialPrice = row['orderseatdetails'];
+						return preferentialPrice['preferentialPrice'];
+					}
+				}, 
+				{"data" : "totalSale", "defaultContent" : "","orderable":false,
+					"render":function(data, type, row){
+						var totalSale = row['orderseatdetails'];
+						return totalSale['totalSale'];
+					}
+				},
+				{"data" : "payType", "defaultContent" : "","orderable":false,
+					"render": function (data, type, row) {
+                    	return payType[data];
+                  	}	
+				},
+				{"data" : "created", "defaultContent" : "","orderable":false,
+					"render":function(data, type, row){
+						var created = row['orderseatdetails'];
+						return created['created'];
+					}
+				},
+				{"data" : "filmTicketCode", "defaultContent" : "","orderable":false,
+					"render":function(data, type, row){
+						var filmTicketCode = row['orderseatdetails'];
+						return filmTicketCode['filmTicketCode'];
+					}
+				},
+				{"data" : "printNo", "defaultContent" : "","orderable":false},
+				{"data" : "mobilePhone", "defaultContent" : "","orderable":false},
+				/* {
+					"data" : "userCinema", 
+					"defaultContent" : "",
+					"orderable":false,
+					"render": function (data, type, row) {
+                		var userCinema = row['userCinema'];
+                		var userinfo = userCinema['userinfo'];
+                		return userinfo['company'];
+                  	}
+				},  */
+				{
+					"data" : "orderStatus", 
+					"defaultContent" : "",
+					"orderable":false,
+					"render": function (data, type, row) {
+                    	return OrderStatusEnum[data];
+                  	}	
+				}
+            ],
+           "order": [[ 0, "asc" ]]
+        } );
+}
+
+layui.use(['layer','laydate'], function(){
+    var layer = layui.layer;
+    var laydate = layui.laydate;
+    var form = layui.form
+    var nowTime = new Date().valueOf();
+    var start = laydate.render({ 
+        elem: '#start',
+        max:nowTime,
+        done:function(value,date){
+            endMax = end.config.max;
+            end.config.min = date;
+            end.config.min.month = date.month -1;
+        }
+   });
+  var end = laydate.render({ 
+       elem: '#end',
+       max : nowTime,
+       done:function(value,date){
+           if($.trim(value) == ''){
+               var curDate = new Date();
+               date = {'date': curDate.getDate(), 'month': curDate.getMonth()+1, 'year': curDate.getFullYear()};
+           }
+           start.config.max = date;
+           start.config.max.month = date.month -1;
+       }
+    });
+});
+//获取渠道信息
+/* function getCompany(){
+	$.ajax({
+		url:'/orderss/getCompany',
+		type:'post',
+		success:function(data){
+			for(var i=0; i<data.length;i++){
+				var option = "<option value="+data[i].id+">"+data[i].company+"</option>";
+				$("#company").append(option);
+			}
+		}
+	});
+}
+getCompany(); */
+$("#company").blur(function(){
+	example.ajax.reload();
+});
+$("#orderstuats").blur(function(){
+	example.ajax.reload();
+})
+$("#searchBt").click(function(){
+	example.ajax.reload();
+});
+$("#getExcel").click(function(){
+	example.buttons.reload();
+});
+init();
+</script>

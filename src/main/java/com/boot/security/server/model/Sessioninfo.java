@@ -1,0 +1,177 @@
+package com.boot.security.server.model;
+
+import java.util.Date;
+
+public class Sessioninfo extends BaseEntity<Long> {
+
+	private Long Id;
+	private String CCode;
+	private String SCode;
+	private String ScreenCode;
+	private Date StartTime;
+	private String FilmCode;
+	private String FilmName;
+	private Integer Duration;
+	private String Language;
+	private Date UpdateTime;
+	private Double StandardPrice;
+	private Double LowestPrice;
+	private Double SettlePrice;
+	private Double TicketFee;
+	private String IsAvalible;
+	private String PlaythroughFlag;
+	private String Dimensional;
+	private Integer Sequence;
+	private Integer UserID;
+	private Double ListingPrice;
+	private String FeatureNo;
+	private String SessionId;
+	private String SessionKey;
+	private String InternalUpdateTime;
+
+	public Long getId() {
+		return Id;
+	}
+	public void setId(Long Id) {
+		this.Id = Id;
+	}
+	public String getCCode() {
+		return CCode;
+	}
+	public void setCCode(String CCode) {
+		this.CCode = CCode;
+	}
+	public String getSCode() {
+		return SCode;
+	}
+	public void setSCode(String SCode) {
+		this.SCode = SCode;
+	}
+	public String getScreenCode() {
+		return ScreenCode;
+	}
+	public void setScreenCode(String ScreenCode) {
+		this.ScreenCode = ScreenCode;
+	}
+	public Date getStartTime() {
+		return StartTime;
+	}
+	public void setStartTime(Date StartTime) {
+		this.StartTime = StartTime;
+	}
+	public String getFilmCode() {
+		return FilmCode;
+	}
+	public void setFilmCode(String FilmCode) {
+		this.FilmCode = FilmCode;
+	}
+	public String getFilmName() {
+		return FilmName;
+	}
+	public void setFilmName(String FilmName) {
+		this.FilmName = FilmName;
+	}
+	public Integer getDuration() {
+		return Duration;
+	}
+	public void setDuration(Integer Duration) {
+		this.Duration = Duration;
+	}
+	public String getLanguage() {
+		return Language;
+	}
+	public void setLanguage(String Language) {
+		this.Language = Language;
+	}
+	public Date getUpdateTime() {
+		return UpdateTime;
+	}
+	public void setUpdateTime(Date UpdateTime) {
+		this.UpdateTime = UpdateTime;
+	}
+	public Double getStandardPrice() {
+		return StandardPrice;
+	}
+	public void setStandardPrice(Double StandardPrice) {
+		this.StandardPrice = StandardPrice;
+	}
+	public Double getLowestPrice() {
+		return LowestPrice;
+	}
+	public void setLowestPrice(Double LowestPrice) {
+		this.LowestPrice = LowestPrice;
+	}
+	public Double getSettlePrice() {
+		return SettlePrice;
+	}
+	public void setSettlePrice(Double SettlePrice) {
+		this.SettlePrice = SettlePrice;
+	}
+	public Double getTicketFee() {
+		return TicketFee;
+	}
+	public void setTicketFee(Double TicketFee) {
+		this.TicketFee = TicketFee;
+	}
+	public String getIsAvalible() {
+		return IsAvalible;
+	}
+	public void setIsAvalible(String IsAvalible) {
+		this.IsAvalible = IsAvalible;
+	}
+	public String getPlaythroughFlag() {
+		return PlaythroughFlag;
+	}
+	public void setPlaythroughFlag(String PlaythroughFlag) {
+		this.PlaythroughFlag = PlaythroughFlag;
+	}
+	public String getDimensional() {
+		return Dimensional;
+	}
+	public void setDimensional(String Dimensional) {
+		this.Dimensional = Dimensional;
+	}
+	public Integer getSequence() {
+		return Sequence;
+	}
+	public void setSequence(Integer Sequence) {
+		this.Sequence = Sequence;
+	}
+	public Integer getUserID() {
+		return UserID;
+	}
+	public void setUserID(Integer UserID) {
+		this.UserID = UserID;
+	}
+	public Double getListingPrice() {
+		return ListingPrice;
+	}
+	public void setListingPrice(Double ListingPrice) {
+		this.ListingPrice = ListingPrice;
+	}
+	public String getFeatureNo() {
+		return FeatureNo;
+	}
+	public void setFeatureNo(String FeatureNo) {
+		this.FeatureNo = FeatureNo;
+	}
+	public String getSessionId() {
+		return SessionId;
+	}
+	public void setSessionId(String SessionId) {
+		this.SessionId = SessionId;
+	}
+	public String getSessionKey() {
+		return SessionKey;
+	}
+	public void setSessionKey(String SessionKey) {
+		this.SessionKey = SessionKey;
+	}
+	public String getInternalUpdateTime() {
+		return InternalUpdateTime;
+	}
+	public void setInternalUpdateTime(String InternalUpdateTime) {
+		this.InternalUpdateTime = InternalUpdateTime;
+	}
+
+}

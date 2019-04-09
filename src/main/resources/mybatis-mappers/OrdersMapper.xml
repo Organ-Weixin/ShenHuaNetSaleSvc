@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.OrdersDao">
+<resultMap type="Orders" id="getCinema">
+	<result property="Id" column="Id"/>
+	<result property="CinemaCode" column="CinemaCode"/>
+	<result property="FilmName" column="FilmName"/>
+	<result property="SessionTime" column="SessionTime"/>
+	<result property="ScreenCode" column="ScreenCode"/>
+	<result property="PayType" column="PayType"/>
+	<result property="SubmitOrderCode" column="SubmitOrderCode"/>
+	<result property="PrintNo" column="PrintNo"/>
+	<result property="MobilePhone" column="MobilePhone"/>
+	<result property="OrderStatus" column="OrderStatus"/>
+	<!-- <result property="TicketCount" column="TicketCount"/>
+	<result property="TotalPrice" column="TotalPrice"/>
+	<result property="TotalFee" column="TotalFee"/> 
+	<result property="Created" column="Created"/>-->
+	<association property="Cinema" javaType="Cinema">
+		<result property="Code" column="Code"/>
+		<result property="Name" column="Name"/>
+	</association>
+	<association property="Orderseatdetails" javaType="Orderseatdetails">
+		<result property="OrderId" column="OrderId"/>
+		<result property="RowNum" column="RowNum"/>
+		<result property="ColumnNum" column="ColumnNum"/>
+		<result property="Seat" column="Seat"/>
+		<result property="SalePrice" column="SalePrice"/>
+		<result property="PreferentialPrice" column="PreferentialPrice"/>
+		<result property="TotalSale" column="TotalSale"/>
+		<result property="FilmTicketCode" column="FilmTicketCode"/>
+		<result property="Created" column="Created"/>
+		<result property="AddedPrice" column="AddedPrice"/>
+		<result property="Fee" column="Fee"/>
+		<result property="Price" column="Price"/>
+		<result property="Start" column="Start"/>
+		<result property="End" column="End"/>
+	</association>
+	<association property="UserCinema" javaType="UserCinema">
+		<result property="UserId" column="UserId"/>
+		<result property="CinemaCode" column="CinemaCode"/>
+		<association property="Userinfo" javaType="Userinfo">
+			<result property="Id" column="Id"/>
+			<result property="Company" column="Company"/>
+		</association>
+	</association>
+</resultMap>
+
+	<sql id="where">
+			<if test="params.Id != null and params.Id != ''">
+				and t.Id = #{params.Id} 
+			</if>
+			<if test="params.CinemaCode != null and params.CinemaCode != ''">
+				and t.CinemaCode = #{params.CinemaCode} 
+			</if>
+			<if test="params.FilmName != null and params.FilmName != ''">
+				and t.FilmName = #{params.FilmName} 
+			</if>
+			<if test="params.SessionTime != null and params.SessionTime != ''">
+				and t.SessionTime = #{params.SessionTime} 
+			</if>
+			<if test="params.TicketCount != null and params.TicketCount != ''">
+				and t.TicketCount = #{params.TicketCount} 
+			</if>
+			<if test="params.TotalPrice != null and params.TotalPrice != ''">
+				and t.TotalPrice = #{params.TotalPrice} 
+			</if>
+			<if test="params.TotalFee != null and params.TotalFee != ''">
+				and t.TotalFee = #{params.TotalFee} 
+			</if>
+			<if test="params.SubmitOrderCode != null and params.SubmitOrderCode != ''">
+				and t.SubmitOrderCode = #{params.SubmitOrderCode} 
+			</if>
+			<if test="params.Created != null and params.Created != ''">
+				and t.Created = #{params.Created} 
+			</if>
+			<if test="params.MobilePhone != null and params.MobilePhone != ''">
+				and t.MobilePhone = #{params.MobilePhone} 
+			</if>
+			<if test="params.OrderStatus != null and params.OrderStatus != ''">
+				and t.OrderStatus = #{params.OrderStatus} 
+			</if>
+	</sql>
+	<sql id="comp">
+		<if test="params.Company != null and params.Company != ''">
+				and us.Id = #{params.Company}
+		</if>
+	</sql>
+	<sql id="time">
+		<if test="params.Start != null and params.Start != ''">
+			and left(replace(os.created,'-',''),8) >= #{params.Start}
+		</if>
+		<if test="params.End != null and params.End != ''">
+			and #{params.End} >= left(replace(os.created,'-',''),8)
+		</if>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from orders t left join cinema c on t.cinemacode = c.code
+		left join user_cinema u on t.cinemacode = u.cinemacode 
+		left join userinfo us on u.userid = us.id 
+		right join orderseatdetails os on t.id = os.orderid
+		where us.isdel =0
+		<include refid="where" />
+		<include refid="comp"/>
+		<include refid="time"/>
+	</select>
+
+	<select id="list" resultMap="getCinema">
+		select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime,
+		concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode,
+		t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode,
+		concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat,
+		os.price,os.salePrice,t.paytype,
+		os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno,
+		t.mobilePhone,os.addedprice,os.fee,t.orderStatus 
+		from orders t left join cinema c on t.cinemacode = c.code   
+		left join user_cinema u on t.cinemacode = u.cinemacode 
+		left join userinfo us on u.userid = us.id 
+		join orderseatdetails os on t.id = os.orderid
+		where us.isdel =0
+		<include refid="where" />
+		<include refid="comp"/>
+		<include refid="time"/>
+		${params.orderBy} 
+		limit #{offset}, #{limit}
+	</select>
+	<select id="queryOrders" resultMap="getCinema">
+		select o.id,o.filmname from orders o
+	</select>
+	
+	<update id="update">
+		update orders t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="CinemaCode != null">
+				CinemaCode = #{CinemaCode}, 
+			</if>
+			<if test="UserId != null">
+				UserId = #{UserId}, 
+			</if>
+			<if test="SessionCode != null">
+				SessionCode = #{SessionCode}, 
+			</if>
+			<if test="ScreenCode != null">
+				ScreenCode = #{ScreenCode}, 
+			</if>
+			<if test="SessionTime != null">
+				SessionTime = #{SessionTime}, 
+			</if>
+			<if test="FilmCode != null">
+				FilmCode = #{FilmCode}, 
+			</if>
+			<if test="FilmName != null">
+				FilmName = #{FilmName}, 
+			</if>
+			<if test="TicketCount != null">
+				TicketCount = #{TicketCount}, 
+			</if>
+			<if test="TotalPrice != null">
+				TotalPrice = #{TotalPrice}, 
+			</if>
+			<if test="TotalFee != null">
+				TotalFee = #{TotalFee}, 
+			</if>
+			<if test="TotalSalePrice != null">
+				TotalSalePrice = #{TotalSalePrice}, 
+			</if>
+			<if test="OrderStatus != null">
+				OrderStatus = #{OrderStatus}, 
+			</if>
+			<if test="MobilePhone != null">
+				MobilePhone = #{MobilePhone}, 
+			</if>
+			<if test="LockTime != null">
+				LockTime = #{LockTime}, 
+			</if>
+			<if test="AutoUnlockDatetime != null">
+				AutoUnlockDatetime = #{AutoUnlockDatetime}, 
+			</if>
+			<if test="LockOrderCode != null">
+				LockOrderCode = #{LockOrderCode}, 
+			</if>
+			<if test="SubmitTime != null">
+				SubmitTime = #{SubmitTime}, 
+			</if>
+			<if test="SubmitOrderCode != null">
+				SubmitOrderCode = #{SubmitOrderCode}, 
+			</if>
+			<if test="PrintNo != null">
+				PrintNo = #{PrintNo}, 
+			</if>
+			<if test="VerifyCode != null">
+				VerifyCode = #{VerifyCode}, 
+			</if>
+			<if test="PrintStatus != null">
+				PrintStatus = #{PrintStatus}, 
+			</if>
+			<if test="PrintTime != null">
+				PrintTime = #{PrintTime}, 
+			</if>
+			<if test="RefundTime != null">
+				RefundTime = #{RefundTime}, 
+			</if>
+			<if test="Created != null">
+				Created = #{Created}, 
+			</if>
+			<if test="Updated != null">
+				Updated = #{Updated}, 
+			</if>
+			<if test="Deleted != null">
+				Deleted = #{Deleted}, 
+			</if>
+			<if test="ErrorMessage != null">
+				ErrorMessage = #{ErrorMessage}, 
+			</if>
+			<if test="SerialNum != null">
+				SerialNum = #{SerialNum}, 
+			</if>
+			<if test="IsMemberPay != null">
+				IsMemberPay = #{IsMemberPay}, 
+			</if>
+			<if test="PayType != null">
+				PayType = #{PayType}, 
+			</if>
+			<if test="Printpassword != null">
+				Printpassword = #{Printpassword}, 
+			</if>
+			<if test="PaySeqNo != null">
+				PaySeqNo = #{PaySeqNo}, 
+			</if>
+			<if test="IDCardNumber != null">
+				IDCardNumber = #{IDCardNumber}, 
+			</if>
+
+		</set>
+
+		where t.CinemaCode = #{CinemaCode}
+		and t.PrintNo = #{PrintNo}
+		and t.VerifyCode = #{VerifyCode}
+	</update>
+</mapper>

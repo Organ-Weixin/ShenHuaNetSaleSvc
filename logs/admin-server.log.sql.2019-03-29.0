@@ -1,0 +1,447 @@
+2019-03-29 09:18:16,811 [http-nio-8080-exec-6] ==>  Preparing: select * from sys_user t where t.username = ? 
+2019-03-29 09:18:16,820 [http-nio-8080-exec-6] ==> Parameters: admin(String)
+2019-03-29 09:18:16,831 [http-nio-8080-exec-6] <==      Total: 1
+2019-03-29 09:18:16,840 [http-nio-8080-exec-6] ==>  Preparing: select distinct p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId inner join sys_role_user ru on ru.roleId = rp.roleId where ru.userId = ? order by p.sort 
+2019-03-29 09:18:16,843 [http-nio-8080-exec-6] ==> Parameters: 1(Long)
+2019-03-29 09:18:16,852 [http-nio-8080-exec-6] <==      Total: 43
+2019-03-29 09:18:16,975 [taskExecutor-1] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-29 09:18:16,983 [taskExecutor-1] ==> Parameters: 1(Long), 登陆(String), true(Boolean), null
+2019-03-29 09:18:17,134 [taskExecutor-1] <==    Updates: 1
+2019-03-29 09:18:17,275 [http-nio-8080-exec-9] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-29 09:18:17,277 [http-nio-8080-exec-9] ==> Parameters: 1(Long)
+2019-03-29 09:18:17,281 [http-nio-8080-exec-9] <==      Total: 1
+2019-03-29 09:18:21,579 [http-nio-8080-exec-5] ==>  Preparing: select * from t_dict t where t.type = ? 
+2019-03-29 09:18:21,580 [http-nio-8080-exec-5] ==> Parameters: OrderStatusEnum(String)
+2019-03-29 09:18:21,584 [http-nio-8080-exec-5] <==      Total: 11
+2019-03-29 09:18:21,603 [http-nio-8080-exec-2] ==>  Preparing: select * from userinfo where isDel =0 
+2019-03-29 09:18:21,604 [http-nio-8080-exec-2] ==> Parameters: 
+2019-03-29 09:18:21,607 [http-nio-8080-exec-2] <==      Total: 8
+2019-03-29 09:18:21,727 [http-nio-8080-exec-8] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:18:21,734 [http-nio-8080-exec-8] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:18:21,862 [http-nio-8080-exec-8] <==      Total: 13
+2019-03-29 09:18:21,866 [http-nio-8080-exec-8] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-03-29 09:18:21,868 [http-nio-8080-exec-8] ==> Parameters: 8(String)
+2019-03-29 09:18:21,871 [http-nio-8080-exec-8] <==      Total: 1
+2019-03-29 09:18:21,872 [http-nio-8080-exec-8] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:18:21,873 [http-nio-8080-exec-8] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:18:21,886 [http-nio-8080-exec-8] <==      Total: 13
+2019-03-29 09:30:07,677 [http-nio-8080-exec-8] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-29 09:30:07,678 [http-nio-8080-exec-8] ==> Parameters: 1(Long)
+2019-03-29 09:30:07,680 [http-nio-8080-exec-8] <==      Total: 1
+2019-03-29 09:30:09,469 [http-nio-8080-exec-8] ==>  Preparing: select * from userinfo where isDel =0 
+2019-03-29 09:30:09,470 [http-nio-8080-exec-8] ==> Parameters: 
+2019-03-29 09:30:09,473 [http-nio-8080-exec-8] <==      Total: 8
+2019-03-29 09:30:09,513 [http-nio-8080-exec-5] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:30:09,514 [http-nio-8080-exec-5] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:30:09,528 [http-nio-8080-exec-5] <==      Total: 13
+2019-03-29 09:30:09,530 [http-nio-8080-exec-5] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-03-29 09:30:09,531 [http-nio-8080-exec-5] ==> Parameters: 8(String)
+2019-03-29 09:30:09,535 [http-nio-8080-exec-5] <==      Total: 1
+2019-03-29 09:30:09,537 [http-nio-8080-exec-5] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:30:09,537 [http-nio-8080-exec-5] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:30:09,545 [http-nio-8080-exec-5] <==      Total: 13
+2019-03-29 09:30:21,865 [http-nio-8080-exec-10] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-29 09:30:21,866 [http-nio-8080-exec-10] ==> Parameters: 1(Long)
+2019-03-29 09:30:21,867 [http-nio-8080-exec-10] <==      Total: 1
+2019-03-29 09:30:23,200 [http-nio-8080-exec-6] ==>  Preparing: select * from userinfo where isDel =0 
+2019-03-29 09:30:23,201 [http-nio-8080-exec-6] ==> Parameters: 
+2019-03-29 09:30:23,203 [http-nio-8080-exec-6] <==      Total: 8
+2019-03-29 09:30:23,251 [http-nio-8080-exec-10] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:30:23,252 [http-nio-8080-exec-10] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:30:23,259 [http-nio-8080-exec-10] <==      Total: 13
+2019-03-29 09:30:23,261 [http-nio-8080-exec-10] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-03-29 09:30:23,262 [http-nio-8080-exec-10] ==> Parameters: 8(String)
+2019-03-29 09:30:23,266 [http-nio-8080-exec-10] <==      Total: 1
+2019-03-29 09:30:23,268 [http-nio-8080-exec-10] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:30:23,269 [http-nio-8080-exec-10] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:30:23,277 [http-nio-8080-exec-10] <==      Total: 13
+2019-03-29 09:31:18,435 [http-nio-8080-exec-6] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-29 09:31:18,437 [http-nio-8080-exec-6] ==> Parameters: 1(Long)
+2019-03-29 09:31:18,438 [http-nio-8080-exec-6] <==      Total: 1
+2019-03-29 09:31:19,638 [http-nio-8080-exec-8] ==>  Preparing: select * from userinfo where isDel =0 
+2019-03-29 09:31:19,639 [http-nio-8080-exec-8] ==> Parameters: 
+2019-03-29 09:31:19,642 [http-nio-8080-exec-8] <==      Total: 8
+2019-03-29 09:31:19,681 [http-nio-8080-exec-3] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:31:19,682 [http-nio-8080-exec-3] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:31:19,699 [http-nio-8080-exec-3] <==      Total: 13
+2019-03-29 09:31:19,701 [http-nio-8080-exec-3] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-03-29 09:31:19,702 [http-nio-8080-exec-3] ==> Parameters: 8(String)
+2019-03-29 09:31:19,704 [http-nio-8080-exec-3] <==      Total: 1
+2019-03-29 09:31:19,706 [http-nio-8080-exec-3] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:31:19,708 [http-nio-8080-exec-3] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:31:19,715 [http-nio-8080-exec-3] <==      Total: 13
+2019-03-29 09:31:45,242 [http-nio-8080-exec-8] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-29 09:31:45,243 [http-nio-8080-exec-8] ==> Parameters: 1(Long)
+2019-03-29 09:31:45,245 [http-nio-8080-exec-8] <==      Total: 1
+2019-03-29 09:31:46,207 [http-nio-8080-exec-3] ==>  Preparing: select * from userinfo where isDel =0 
+2019-03-29 09:31:46,208 [http-nio-8080-exec-3] ==> Parameters: 
+2019-03-29 09:31:46,210 [http-nio-8080-exec-3] <==      Total: 8
+2019-03-29 09:31:46,253 [http-nio-8080-exec-8] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:31:46,254 [http-nio-8080-exec-8] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:31:46,265 [http-nio-8080-exec-8] <==      Total: 13
+2019-03-29 09:31:46,268 [http-nio-8080-exec-8] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-03-29 09:31:46,270 [http-nio-8080-exec-8] ==> Parameters: 8(String)
+2019-03-29 09:31:46,275 [http-nio-8080-exec-8] <==      Total: 1
+2019-03-29 09:31:46,277 [http-nio-8080-exec-8] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:31:46,277 [http-nio-8080-exec-8] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:31:46,284 [http-nio-8080-exec-8] <==      Total: 13
+2019-03-29 09:32:52,711 [http-nio-8080-exec-5] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-29 09:32:52,713 [http-nio-8080-exec-5] ==> Parameters: 1(Long)
+2019-03-29 09:32:52,714 [http-nio-8080-exec-5] <==      Total: 1
+2019-03-29 09:32:53,782 [http-nio-8080-exec-4] ==>  Preparing: select * from userinfo where isDel =0 
+2019-03-29 09:32:53,784 [http-nio-8080-exec-4] ==> Parameters: 
+2019-03-29 09:32:53,785 [http-nio-8080-exec-4] <==      Total: 8
+2019-03-29 09:32:53,850 [http-nio-8080-exec-8] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:32:53,851 [http-nio-8080-exec-8] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:32:53,859 [http-nio-8080-exec-8] <==      Total: 13
+2019-03-29 09:32:53,863 [http-nio-8080-exec-8] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-03-29 09:32:53,865 [http-nio-8080-exec-8] ==> Parameters: 8(String)
+2019-03-29 09:32:53,867 [http-nio-8080-exec-8] <==      Total: 1
+2019-03-29 09:32:53,869 [http-nio-8080-exec-8] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:32:53,869 [http-nio-8080-exec-8] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:32:53,878 [http-nio-8080-exec-8] <==      Total: 13
+2019-03-29 09:39:42,768 [http-nio-8080-exec-2] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-29 09:39:42,770 [http-nio-8080-exec-2] ==> Parameters: 1(Long)
+2019-03-29 09:39:42,771 [http-nio-8080-exec-2] <==      Total: 1
+2019-03-29 09:39:43,832 [http-nio-8080-exec-10] ==>  Preparing: select * from userinfo where isDel =0 
+2019-03-29 09:39:43,833 [http-nio-8080-exec-10] ==> Parameters: 
+2019-03-29 09:39:43,834 [http-nio-8080-exec-10] <==      Total: 8
+2019-03-29 09:39:43,870 [http-nio-8080-exec-7] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:39:43,871 [http-nio-8080-exec-7] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:39:43,878 [http-nio-8080-exec-7] <==      Total: 13
+2019-03-29 09:39:43,880 [http-nio-8080-exec-7] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-03-29 09:39:43,880 [http-nio-8080-exec-7] ==> Parameters: 8(String)
+2019-03-29 09:39:43,883 [http-nio-8080-exec-7] <==      Total: 1
+2019-03-29 09:39:43,884 [http-nio-8080-exec-7] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:39:43,885 [http-nio-8080-exec-7] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:39:43,891 [http-nio-8080-exec-7] <==      Total: 13
+2019-03-29 09:40:29,537 [http-nio-8080-exec-9] ==>  Preparing: select count(1) from t_dict t 
+2019-03-29 09:40:29,538 [http-nio-8080-exec-9] ==> Parameters: 
+2019-03-29 09:40:29,539 [http-nio-8080-exec-9] <==      Total: 1
+2019-03-29 09:40:29,540 [http-nio-8080-exec-9] ==>  Preparing: select * from t_dict t order by id asc limit ?, ? 
+2019-03-29 09:40:29,541 [http-nio-8080-exec-9] ==> Parameters: 0(Integer), 10(Integer)
+2019-03-29 09:40:29,542 [http-nio-8080-exec-9] <==      Total: 10
+2019-03-29 09:50:13,085 [http-nio-8080-exec-7] ==>  Preparing: select count(1) from t_dict t 
+2019-03-29 09:50:13,086 [http-nio-8080-exec-7] ==> Parameters: 
+2019-03-29 09:50:13,087 [http-nio-8080-exec-7] <==      Total: 1
+2019-03-29 09:50:13,089 [http-nio-8080-exec-7] ==>  Preparing: select * from t_dict t order by id asc limit ?, ? 
+2019-03-29 09:50:13,089 [http-nio-8080-exec-7] ==> Parameters: 0(Integer), 10(Integer)
+2019-03-29 09:50:13,092 [http-nio-8080-exec-7] <==      Total: 10
+2019-03-29 09:50:15,155 [http-nio-8080-exec-8] ==>  Preparing: select count(1) from t_dict t 
+2019-03-29 09:50:15,156 [http-nio-8080-exec-8] ==> Parameters: 
+2019-03-29 09:50:15,156 [http-nio-8080-exec-8] <==      Total: 1
+2019-03-29 09:50:15,157 [http-nio-8080-exec-8] ==>  Preparing: select * from t_dict t order by id asc limit ?, ? 
+2019-03-29 09:50:15,157 [http-nio-8080-exec-8] ==> Parameters: 10(Integer), 10(Integer)
+2019-03-29 09:50:15,158 [http-nio-8080-exec-8] <==      Total: 10
+2019-03-29 09:50:16,066 [http-nio-8080-exec-2] ==>  Preparing: select count(1) from t_dict t 
+2019-03-29 09:50:16,067 [http-nio-8080-exec-2] ==> Parameters: 
+2019-03-29 09:50:16,067 [http-nio-8080-exec-2] <==      Total: 1
+2019-03-29 09:50:16,068 [http-nio-8080-exec-2] ==>  Preparing: select * from t_dict t order by id asc limit ?, ? 
+2019-03-29 09:50:16,068 [http-nio-8080-exec-2] ==> Parameters: 20(Integer), 10(Integer)
+2019-03-29 09:50:16,069 [http-nio-8080-exec-2] <==      Total: 9
+2019-03-29 09:50:17,554 [http-nio-8080-exec-9] ==>  Preparing: select count(1) from t_dict t 
+2019-03-29 09:50:17,555 [http-nio-8080-exec-9] ==> Parameters: 
+2019-03-29 09:50:17,556 [http-nio-8080-exec-9] <==      Total: 1
+2019-03-29 09:50:17,557 [http-nio-8080-exec-9] ==>  Preparing: select * from t_dict t order by id asc limit ?, ? 
+2019-03-29 09:50:17,557 [http-nio-8080-exec-9] ==> Parameters: 0(Integer), 10(Integer)
+2019-03-29 09:50:17,558 [http-nio-8080-exec-9] <==      Total: 10
+2019-03-29 09:50:29,371 [http-nio-8080-exec-10] ==>  Preparing: select * from t_dict t where t.type = ? and k = ? 
+2019-03-29 09:50:29,372 [http-nio-8080-exec-10] ==> Parameters: payType(String), 0(String)
+2019-03-29 09:50:29,373 [http-nio-8080-exec-10] <==      Total: 0
+2019-03-29 09:50:29,374 [http-nio-8080-exec-10] ==>  Preparing: insert into t_dict(type, k, val, createTime, updateTime) values(?, ?, ?, now(), now()) 
+2019-03-29 09:50:29,375 [http-nio-8080-exec-10] ==> Parameters: payType(String), 0(String), 现金(String)
+2019-03-29 09:50:29,498 [http-nio-8080-exec-10] <==    Updates: 1
+2019-03-29 09:50:30,878 [http-nio-8080-exec-6] ==>  Preparing: select count(1) from t_dict t 
+2019-03-29 09:50:30,878 [http-nio-8080-exec-6] ==> Parameters: 
+2019-03-29 09:50:30,879 [http-nio-8080-exec-6] <==      Total: 1
+2019-03-29 09:50:30,881 [http-nio-8080-exec-6] ==>  Preparing: select * from t_dict t order by id asc limit ?, ? 
+2019-03-29 09:50:30,882 [http-nio-8080-exec-6] ==> Parameters: 0(Integer), 10(Integer)
+2019-03-29 09:50:30,884 [http-nio-8080-exec-6] <==      Total: 10
+2019-03-29 09:50:55,912 [http-nio-8080-exec-3] ==>  Preparing: select * from t_dict t where t.type = ? and k = ? 
+2019-03-29 09:50:55,913 [http-nio-8080-exec-3] ==> Parameters: payType(String), 1(String)
+2019-03-29 09:50:55,914 [http-nio-8080-exec-3] <==      Total: 0
+2019-03-29 09:50:55,915 [http-nio-8080-exec-3] ==>  Preparing: insert into t_dict(type, k, val, createTime, updateTime) values(?, ?, ?, now(), now()) 
+2019-03-29 09:50:55,916 [http-nio-8080-exec-3] ==> Parameters: payType(String), 1(String), 银联刷卡支付(String)
+2019-03-29 09:50:56,039 [http-nio-8080-exec-3] <==    Updates: 1
+2019-03-29 09:50:57,452 [http-nio-8080-exec-10] ==>  Preparing: select count(1) from t_dict t 
+2019-03-29 09:50:57,453 [http-nio-8080-exec-10] ==> Parameters: 
+2019-03-29 09:50:57,454 [http-nio-8080-exec-10] <==      Total: 1
+2019-03-29 09:50:57,455 [http-nio-8080-exec-10] ==>  Preparing: select * from t_dict t order by id asc limit ?, ? 
+2019-03-29 09:50:57,456 [http-nio-8080-exec-10] ==> Parameters: 0(Integer), 10(Integer)
+2019-03-29 09:50:57,457 [http-nio-8080-exec-10] <==      Total: 10
+2019-03-29 09:51:16,740 [http-nio-8080-exec-9] ==>  Preparing: select * from t_dict t where t.type = ? and k = ? 
+2019-03-29 09:51:16,741 [http-nio-8080-exec-9] ==> Parameters: payType(String), 2(String)
+2019-03-29 09:51:16,742 [http-nio-8080-exec-9] <==      Total: 0
+2019-03-29 09:51:16,743 [http-nio-8080-exec-9] ==>  Preparing: insert into t_dict(type, k, val, createTime, updateTime) values(?, ?, ?, now(), now()) 
+2019-03-29 09:51:16,744 [http-nio-8080-exec-9] ==> Parameters: payType(String), 2(String), 银联线上支付(String)
+2019-03-29 09:51:16,897 [http-nio-8080-exec-9] <==    Updates: 1
+2019-03-29 09:51:18,307 [http-nio-8080-exec-2] ==>  Preparing: select count(1) from t_dict t 
+2019-03-29 09:51:18,308 [http-nio-8080-exec-2] ==> Parameters: 
+2019-03-29 09:51:18,310 [http-nio-8080-exec-2] <==      Total: 1
+2019-03-29 09:51:18,312 [http-nio-8080-exec-2] ==>  Preparing: select * from t_dict t order by id asc limit ?, ? 
+2019-03-29 09:51:18,313 [http-nio-8080-exec-2] ==> Parameters: 0(Integer), 10(Integer)
+2019-03-29 09:51:18,315 [http-nio-8080-exec-2] <==      Total: 10
+2019-03-29 09:51:35,245 [http-nio-8080-exec-8] ==>  Preparing: select * from t_dict t where t.type = ? and k = ? 
+2019-03-29 09:51:35,246 [http-nio-8080-exec-8] ==> Parameters: payType(String), 3(String)
+2019-03-29 09:51:35,246 [http-nio-8080-exec-8] <==      Total: 0
+2019-03-29 09:51:35,247 [http-nio-8080-exec-8] ==>  Preparing: insert into t_dict(type, k, val, createTime, updateTime) values(?, ?, ?, now(), now()) 
+2019-03-29 09:51:35,247 [http-nio-8080-exec-8] ==> Parameters: payType(String), 3(String), 支付宝(String)
+2019-03-29 09:51:35,370 [http-nio-8080-exec-8] <==    Updates: 1
+2019-03-29 09:51:36,778 [http-nio-8080-exec-3] ==>  Preparing: select count(1) from t_dict t 
+2019-03-29 09:51:36,779 [http-nio-8080-exec-3] ==> Parameters: 
+2019-03-29 09:51:36,780 [http-nio-8080-exec-3] <==      Total: 1
+2019-03-29 09:51:36,781 [http-nio-8080-exec-3] ==>  Preparing: select * from t_dict t order by id asc limit ?, ? 
+2019-03-29 09:51:36,782 [http-nio-8080-exec-3] ==> Parameters: 0(Integer), 10(Integer)
+2019-03-29 09:51:36,783 [http-nio-8080-exec-3] <==      Total: 10
+2019-03-29 09:51:49,099 [http-nio-8080-exec-6] ==>  Preparing: select * from t_dict t where t.type = ? and k = ? 
+2019-03-29 09:51:49,100 [http-nio-8080-exec-6] ==> Parameters: payType(String), 4(String)
+2019-03-29 09:51:49,101 [http-nio-8080-exec-6] <==      Total: 0
+2019-03-29 09:51:49,102 [http-nio-8080-exec-6] ==>  Preparing: insert into t_dict(type, k, val, createTime, updateTime) values(?, ?, ?, now(), now()) 
+2019-03-29 09:51:49,102 [http-nio-8080-exec-6] ==> Parameters: payType(String), 4(String), 微信(String)
+2019-03-29 09:51:49,158 [http-nio-8080-exec-6] <==    Updates: 1
+2019-03-29 09:51:50,545 [http-nio-8080-exec-1] ==>  Preparing: select count(1) from t_dict t 
+2019-03-29 09:51:50,546 [http-nio-8080-exec-1] ==> Parameters: 
+2019-03-29 09:51:50,547 [http-nio-8080-exec-1] <==      Total: 1
+2019-03-29 09:51:50,548 [http-nio-8080-exec-1] ==>  Preparing: select * from t_dict t order by id asc limit ?, ? 
+2019-03-29 09:51:50,550 [http-nio-8080-exec-1] ==> Parameters: 0(Integer), 10(Integer)
+2019-03-29 09:51:50,552 [http-nio-8080-exec-1] <==      Total: 10
+2019-03-29 09:51:51,981 [http-nio-8080-exec-9] ==>  Preparing: select count(1) from t_dict t 
+2019-03-29 09:51:51,982 [http-nio-8080-exec-9] ==> Parameters: 
+2019-03-29 09:51:51,982 [http-nio-8080-exec-9] <==      Total: 1
+2019-03-29 09:51:51,983 [http-nio-8080-exec-9] ==>  Preparing: select * from t_dict t order by id asc limit ?, ? 
+2019-03-29 09:51:51,983 [http-nio-8080-exec-9] ==> Parameters: 30(Integer), 10(Integer)
+2019-03-29 09:51:51,984 [http-nio-8080-exec-9] <==      Total: 4
+2019-03-29 09:52:42,164 [http-nio-8080-exec-8] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-29 09:52:42,165 [http-nio-8080-exec-8] ==> Parameters: 1(Long)
+2019-03-29 09:52:42,166 [http-nio-8080-exec-8] <==      Total: 1
+2019-03-29 09:52:43,712 [http-nio-8080-exec-2] ==>  Preparing: select * from userinfo where isDel =0 
+2019-03-29 09:52:43,713 [http-nio-8080-exec-2] ==> Parameters: 
+2019-03-29 09:52:43,714 [http-nio-8080-exec-2] <==      Total: 8
+2019-03-29 09:52:43,747 [http-nio-8080-exec-10] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:52:43,749 [http-nio-8080-exec-10] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:52:43,759 [http-nio-8080-exec-10] <==      Total: 13
+2019-03-29 09:52:43,761 [http-nio-8080-exec-10] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-03-29 09:52:43,762 [http-nio-8080-exec-10] ==> Parameters: 8(String)
+2019-03-29 09:52:43,765 [http-nio-8080-exec-10] <==      Total: 1
+2019-03-29 09:52:43,767 [http-nio-8080-exec-10] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:52:43,768 [http-nio-8080-exec-10] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:52:43,773 [http-nio-8080-exec-10] <==      Total: 13
+2019-03-29 09:53:05,505 [http-nio-8080-exec-1] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-29 09:53:05,506 [http-nio-8080-exec-1] ==> Parameters: 1(Long)
+2019-03-29 09:53:05,506 [http-nio-8080-exec-1] <==      Total: 1
+2019-03-29 09:53:06,456 [http-nio-8080-exec-6] ==>  Preparing: select * from userinfo where isDel =0 
+2019-03-29 09:53:06,456 [http-nio-8080-exec-6] ==> Parameters: 
+2019-03-29 09:53:06,458 [http-nio-8080-exec-6] <==      Total: 8
+2019-03-29 09:53:06,496 [http-nio-8080-exec-10] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:53:06,497 [http-nio-8080-exec-10] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:53:06,506 [http-nio-8080-exec-10] <==      Total: 13
+2019-03-29 09:53:06,508 [http-nio-8080-exec-10] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-03-29 09:53:06,510 [http-nio-8080-exec-10] ==> Parameters: 8(String)
+2019-03-29 09:53:06,513 [http-nio-8080-exec-10] <==      Total: 1
+2019-03-29 09:53:06,515 [http-nio-8080-exec-10] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:53:06,517 [http-nio-8080-exec-10] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:53:06,528 [http-nio-8080-exec-10] <==      Total: 13
+2019-03-29 09:54:51,872 [http-nio-8080-exec-10] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-29 09:54:51,873 [http-nio-8080-exec-10] ==> Parameters: 1(Long)
+2019-03-29 09:54:51,874 [http-nio-8080-exec-10] <==      Total: 1
+2019-03-29 09:55:15,968 [http-nio-8080-exec-9] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-29 09:55:15,969 [http-nio-8080-exec-9] ==> Parameters: 1(Long)
+2019-03-29 09:55:15,971 [http-nio-8080-exec-9] <==      Total: 1
+2019-03-29 09:55:17,045 [http-nio-8080-exec-2] ==>  Preparing: select * from t_dict t where t.type = ? 
+2019-03-29 09:55:17,046 [http-nio-8080-exec-2] ==> Parameters: payType(String)
+2019-03-29 09:55:17,047 [http-nio-8080-exec-2] <==      Total: 5
+2019-03-29 09:55:17,055 [http-nio-8080-exec-10] ==>  Preparing: select * from userinfo where isDel =0 
+2019-03-29 09:55:17,056 [http-nio-8080-exec-10] ==> Parameters: 
+2019-03-29 09:55:17,057 [http-nio-8080-exec-10] <==      Total: 8
+2019-03-29 09:55:17,116 [http-nio-8080-exec-3] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:55:17,116 [http-nio-8080-exec-3] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:55:17,122 [http-nio-8080-exec-3] <==      Total: 13
+2019-03-29 09:55:17,125 [http-nio-8080-exec-3] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-03-29 09:55:17,126 [http-nio-8080-exec-3] ==> Parameters: 8(String)
+2019-03-29 09:55:17,130 [http-nio-8080-exec-3] <==      Total: 1
+2019-03-29 09:55:17,132 [http-nio-8080-exec-3] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:55:17,132 [http-nio-8080-exec-3] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:55:17,136 [http-nio-8080-exec-3] <==      Total: 13
+2019-03-29 09:56:00,710 [http-nio-8080-exec-2] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-29 09:56:00,711 [http-nio-8080-exec-2] ==> Parameters: 1(Long)
+2019-03-29 09:56:00,712 [http-nio-8080-exec-2] <==      Total: 1
+2019-03-29 09:56:01,665 [http-nio-8080-exec-5] ==>  Preparing: select * from userinfo where isDel =0 
+2019-03-29 09:56:01,666 [http-nio-8080-exec-5] ==> Parameters: 
+2019-03-29 09:56:01,668 [http-nio-8080-exec-5] <==      Total: 8
+2019-03-29 09:56:01,702 [http-nio-8080-exec-9] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:56:01,703 [http-nio-8080-exec-9] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:56:01,708 [http-nio-8080-exec-9] <==      Total: 13
+2019-03-29 09:56:01,711 [http-nio-8080-exec-9] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-03-29 09:56:01,712 [http-nio-8080-exec-9] ==> Parameters: 8(String)
+2019-03-29 09:56:01,716 [http-nio-8080-exec-9] <==      Total: 1
+2019-03-29 09:56:01,719 [http-nio-8080-exec-9] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:56:01,723 [http-nio-8080-exec-9] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:56:01,728 [http-nio-8080-exec-9] <==      Total: 13
+2019-03-29 09:59:49,504 [http-nio-8080-exec-7] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-29 09:59:49,505 [http-nio-8080-exec-7] ==> Parameters: 1(Long)
+2019-03-29 09:59:49,507 [http-nio-8080-exec-7] <==      Total: 1
+2019-03-29 09:59:50,600 [http-nio-8080-exec-9] ==>  Preparing: select * from userinfo where isDel =0 
+2019-03-29 09:59:50,601 [http-nio-8080-exec-9] ==> Parameters: 
+2019-03-29 09:59:50,602 [http-nio-8080-exec-9] <==      Total: 8
+2019-03-29 09:59:50,636 [http-nio-8080-exec-2] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:59:50,637 [http-nio-8080-exec-2] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:59:50,643 [http-nio-8080-exec-2] <==      Total: 13
+2019-03-29 09:59:50,649 [http-nio-8080-exec-2] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-03-29 09:59:50,651 [http-nio-8080-exec-2] ==> Parameters: 8(String)
+2019-03-29 09:59:50,653 [http-nio-8080-exec-2] <==      Total: 1
+2019-03-29 09:59:50,654 [http-nio-8080-exec-2] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 09:59:50,655 [http-nio-8080-exec-2] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 09:59:50,663 [http-nio-8080-exec-2] <==      Total: 13
+2019-03-29 10:03:58,926 [http-nio-8080-exec-8] ==>  Preparing: select * from t_dict t where t.type = ? 
+2019-03-29 10:03:58,927 [http-nio-8080-exec-8] ==> Parameters: middleWareType(String)
+2019-03-29 10:03:58,928 [http-nio-8080-exec-8] <==      Total: 9
+2019-03-29 10:03:58,981 [http-nio-8080-exec-4] ==>  Preparing: select count(1) from middleware t 
+2019-03-29 10:03:58,982 [http-nio-8080-exec-4] ==> Parameters: 
+2019-03-29 10:03:58,983 [http-nio-8080-exec-4] <==      Total: 1
+2019-03-29 10:03:58,985 [http-nio-8080-exec-4] ==>  Preparing: select * from middleware t limit ?, ? 
+2019-03-29 10:03:58,986 [http-nio-8080-exec-4] ==> Parameters: 0(Integer), 50(Integer)
+2019-03-29 10:03:58,991 [http-nio-8080-exec-4] <==      Total: 50
+2019-03-29 10:04:32,674 [http-nio-8080-exec-5] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-29 10:04:32,676 [http-nio-8080-exec-5] ==> Parameters: 1(Long)
+2019-03-29 10:04:32,677 [http-nio-8080-exec-5] <==      Total: 1
+2019-03-29 10:04:33,638 [http-nio-8080-exec-10] ==>  Preparing: select count(1) from middleware t 
+2019-03-29 10:04:33,638 [http-nio-8080-exec-10] ==> Parameters: 
+2019-03-29 10:04:33,639 [http-nio-8080-exec-10] <==      Total: 1
+2019-03-29 10:04:33,641 [http-nio-8080-exec-10] ==>  Preparing: select * from middleware t limit ?, ? 
+2019-03-29 10:04:33,642 [http-nio-8080-exec-10] ==> Parameters: 0(Integer), 50(Integer)
+2019-03-29 10:04:33,644 [http-nio-8080-exec-10] <==      Total: 50
+2019-03-29 10:04:35,273 [http-nio-8080-exec-3] ==>  Preparing: select * from userinfo where isDel =0 
+2019-03-29 10:04:35,273 [http-nio-8080-exec-3] ==> Parameters: 
+2019-03-29 10:04:35,274 [http-nio-8080-exec-3] <==      Total: 8
+2019-03-29 10:04:35,306 [http-nio-8080-exec-6] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 10:04:35,306 [http-nio-8080-exec-6] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 10:04:35,312 [http-nio-8080-exec-6] <==      Total: 13
+2019-03-29 10:04:35,313 [http-nio-8080-exec-6] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-03-29 10:04:35,314 [http-nio-8080-exec-6] ==> Parameters: 8(String)
+2019-03-29 10:04:35,317 [http-nio-8080-exec-6] <==      Total: 1
+2019-03-29 10:04:35,320 [http-nio-8080-exec-6] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 10:04:35,321 [http-nio-8080-exec-6] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 10:04:35,325 [http-nio-8080-exec-6] <==      Total: 13
+2019-03-29 11:11:36,140 [http-nio-8080-exec-9] ==>  Preparing: select * from sys_user t where t.username = ? 
+2019-03-29 11:11:36,152 [http-nio-8080-exec-9] ==> Parameters: admin(String)
+2019-03-29 11:11:36,162 [http-nio-8080-exec-9] <==      Total: 1
+2019-03-29 11:11:36,170 [http-nio-8080-exec-9] ==>  Preparing: select distinct p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId inner join sys_role_user ru on ru.roleId = rp.roleId where ru.userId = ? order by p.sort 
+2019-03-29 11:11:36,173 [http-nio-8080-exec-9] ==> Parameters: 1(Long)
+2019-03-29 11:11:36,181 [http-nio-8080-exec-9] <==      Total: 43
+2019-03-29 11:11:36,377 [http-nio-8080-exec-5] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-29 11:11:36,383 [http-nio-8080-exec-5] ==> Parameters: 1(Long)
+2019-03-29 11:11:36,390 [http-nio-8080-exec-5] <==      Total: 1
+2019-03-29 11:11:45,557 [http-nio-8080-exec-7] ==>  Preparing: select * from userinfo where isDel =0 
+2019-03-29 11:11:45,560 [http-nio-8080-exec-7] ==> Parameters: 
+2019-03-29 11:11:45,564 [http-nio-8080-exec-7] <==      Total: 8
+2019-03-29 11:11:45,703 [http-nio-8080-exec-8] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-03-29 11:11:45,706 [http-nio-8080-exec-8] ==> Parameters: 8(String)
+2019-03-29 11:11:45,710 [http-nio-8080-exec-8] <==      Total: 1
+2019-03-29 11:11:45,712 [http-nio-8080-exec-8] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 11:11:45,718 [http-nio-8080-exec-8] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 11:11:45,731 [http-nio-8080-exec-8] <==      Total: 13
+2019-03-29 11:26:08,971 [http-nio-8080-exec-2] ==>  Preparing: select count(1) from middleware t 
+2019-03-29 11:26:08,980 [http-nio-8080-exec-2] ==> Parameters: 
+2019-03-29 11:26:08,992 [http-nio-8080-exec-2] <==      Total: 1
+2019-03-29 11:26:08,997 [http-nio-8080-exec-2] ==>  Preparing: select * from middleware t limit ?, ? 
+2019-03-29 11:26:09,000 [http-nio-8080-exec-2] ==> Parameters: 0(Integer), 50(Integer)
+2019-03-29 11:26:09,010 [http-nio-8080-exec-2] <==      Total: 50
+2019-03-29 11:26:16,415 [http-nio-8080-exec-5] ==>  Preparing: select * from middleware t where t.id = ? 
+2019-03-29 11:26:16,417 [http-nio-8080-exec-5] ==> Parameters: 1(Long)
+2019-03-29 11:26:16,418 [http-nio-8080-exec-5] <==      Total: 1
+2019-03-29 11:26:23,903 [http-nio-8080-exec-8] ==>  Preparing: update middleware t SET Id = ?, Title = ?, Url = ?, MemberUrl = ?, UserName = ?, Password = ?, Type = ? where t.Id = ? 
+2019-03-29 11:26:23,904 [http-nio-8080-exec-8] ==> Parameters: 1(Long), 辰星科技11(String), http://tsp.oristartech.cn:8080/tsp-ws/services/tsp/cinema(String), (String), QJUSER(String), fef9407e2a9bc9e55a250e7c693127ea(String), 2(Integer), 1(Long)
+2019-03-29 11:26:24,040 [http-nio-8080-exec-8] <==    Updates: 1
+2019-03-29 11:26:25,438 [http-nio-8080-exec-2] ==>  Preparing: select count(1) from middleware t 
+2019-03-29 11:26:25,439 [http-nio-8080-exec-2] ==> Parameters: 
+2019-03-29 11:26:25,441 [http-nio-8080-exec-2] <==      Total: 1
+2019-03-29 11:26:25,444 [http-nio-8080-exec-2] ==>  Preparing: select * from middleware t limit ?, ? 
+2019-03-29 11:26:25,447 [http-nio-8080-exec-2] ==> Parameters: 0(Integer), 50(Integer)
+2019-03-29 11:26:25,459 [http-nio-8080-exec-2] <==      Total: 50
+2019-03-29 11:26:28,957 [http-nio-8080-exec-4] ==>  Preparing: select * from middleware t where t.id = ? 
+2019-03-29 11:26:28,958 [http-nio-8080-exec-4] ==> Parameters: 1(Long)
+2019-03-29 11:26:28,960 [http-nio-8080-exec-4] <==      Total: 1
+2019-03-29 11:26:31,252 [http-nio-8080-exec-3] ==>  Preparing: update middleware t SET Id = ?, Title = ?, Url = ?, MemberUrl = ?, UserName = ?, Password = ?, Type = ? where t.Id = ? 
+2019-03-29 11:26:31,253 [http-nio-8080-exec-3] ==> Parameters: 1(Long), 辰星科技(String), http://tsp.oristartech.cn:8080/tsp-ws/services/tsp/cinema(String), (String), QJUSER(String), fef9407e2a9bc9e55a250e7c693127ea(String), 2(Integer), 1(Long)
+2019-03-29 11:26:31,320 [http-nio-8080-exec-3] <==    Updates: 1
+2019-03-29 11:26:32,738 [http-nio-8080-exec-6] ==>  Preparing: select count(1) from middleware t 
+2019-03-29 11:26:32,739 [http-nio-8080-exec-6] ==> Parameters: 
+2019-03-29 11:26:32,743 [http-nio-8080-exec-6] <==      Total: 1
+2019-03-29 11:26:32,746 [http-nio-8080-exec-6] ==>  Preparing: select * from middleware t limit ?, ? 
+2019-03-29 11:26:32,747 [http-nio-8080-exec-6] ==> Parameters: 0(Integer), 50(Integer)
+2019-03-29 11:26:32,758 [http-nio-8080-exec-6] <==      Total: 50
+2019-03-29 11:26:39,263 [http-nio-8080-exec-5] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? and left(replace(os.created,'-',''),8) >= ? and ? >= left(replace(os.created,'-',''),8) 
+2019-03-29 11:26:39,268 [http-nio-8080-exec-5] ==> Parameters: 8(String), 20190315(String), 20190329(String)
+2019-03-29 11:26:39,270 [http-nio-8080-exec-5] <==      Total: 1
+2019-03-29 11:26:39,271 [http-nio-8080-exec-5] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? and left(replace(os.created,'-',''),8) >= ? and ? >= left(replace(os.created,'-',''),8) limit ?, ? 
+2019-03-29 11:26:39,275 [http-nio-8080-exec-5] ==> Parameters: 8(String), 20190315(String), 20190329(String), 0(Integer), 50(Integer)
+2019-03-29 11:26:39,278 [http-nio-8080-exec-5] <==      Total: 2
+2019-03-29 11:26:47,087 [http-nio-8080-exec-9] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-29 11:26:47,092 [http-nio-8080-exec-9] ==> Parameters: 1(Long)
+2019-03-29 11:26:47,096 [http-nio-8080-exec-9] <==      Total: 1
+2019-03-29 11:26:48,040 [http-nio-8080-exec-9] ==>  Preparing: select * from userinfo where isDel =0 
+2019-03-29 11:26:48,041 [http-nio-8080-exec-9] ==> Parameters: 
+2019-03-29 11:26:48,044 [http-nio-8080-exec-9] <==      Total: 8
+2019-03-29 11:26:48,076 [http-nio-8080-exec-4] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-03-29 11:26:48,080 [http-nio-8080-exec-4] ==> Parameters: 8(String)
+2019-03-29 11:26:48,085 [http-nio-8080-exec-4] <==      Total: 1
+2019-03-29 11:26:48,086 [http-nio-8080-exec-4] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 11:26:48,090 [http-nio-8080-exec-4] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 11:26:48,110 [http-nio-8080-exec-4] <==      Total: 13
+2019-03-29 11:26:55,774 [http-nio-8080-exec-5] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.SubmitOrderCode = ? and t.OrderStatus = ? 
+2019-03-29 11:26:55,776 [http-nio-8080-exec-5] ==> Parameters: 8965160824000364(String), 8(String)
+2019-03-29 11:26:55,778 [http-nio-8080-exec-5] <==      Total: 1
+2019-03-29 11:26:55,779 [http-nio-8080-exec-5] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.SubmitOrderCode = ? and t.OrderStatus = ? limit ?, ? 
+2019-03-29 11:26:55,781 [http-nio-8080-exec-5] ==> Parameters: 8965160824000364(String), 8(String), 0(Integer), 50(Integer)
+2019-03-29 11:26:55,785 [http-nio-8080-exec-5] <==      Total: 2
+2019-03-29 11:26:57,936 [http-nio-8080-exec-8] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-29 11:26:57,937 [http-nio-8080-exec-8] ==> Parameters: 1(Long)
+2019-03-29 11:26:57,939 [http-nio-8080-exec-8] <==      Total: 1
+2019-03-29 11:26:58,770 [http-nio-8080-exec-5] ==>  Preparing: select * from userinfo where isDel =0 
+2019-03-29 11:26:58,771 [http-nio-8080-exec-5] ==> Parameters: 
+2019-03-29 11:26:58,774 [http-nio-8080-exec-5] <==      Total: 8
+2019-03-29 11:26:58,806 [http-nio-8080-exec-1] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-03-29 11:26:58,806 [http-nio-8080-exec-1] ==> Parameters: 8(String)
+2019-03-29 11:26:58,809 [http-nio-8080-exec-1] <==      Total: 1
+2019-03-29 11:26:58,811 [http-nio-8080-exec-1] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 11:26:58,813 [http-nio-8080-exec-1] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 11:26:58,828 [http-nio-8080-exec-1] <==      Total: 13
+2019-03-29 11:27:01,014 [http-nio-8080-exec-2] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 
+2019-03-29 11:27:01,016 [http-nio-8080-exec-2] ==> Parameters: 
+2019-03-29 11:27:01,020 [http-nio-8080-exec-2] <==      Total: 1
+2019-03-29 11:27:01,021 [http-nio-8080-exec-2] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 limit ?, ? 
+2019-03-29 11:27:01,025 [http-nio-8080-exec-2] ==> Parameters: 0(Integer), 50(Integer)
+2019-03-29 11:27:01,044 [http-nio-8080-exec-2] <==      Total: 20
+2019-03-29 11:27:04,616 [http-nio-8080-exec-9] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-03-29 11:27:04,618 [http-nio-8080-exec-9] ==> Parameters: 8(String)
+2019-03-29 11:27:04,624 [http-nio-8080-exec-9] <==      Total: 1
+2019-03-29 11:27:04,628 [http-nio-8080-exec-9] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-03-29 11:27:04,630 [http-nio-8080-exec-9] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-03-29 11:27:04,648 [http-nio-8080-exec-9] <==      Total: 13
+2019-03-29 17:07:44,008 [http-nio-8080-exec-10] ==>  Preparing: select * from sys_user t where t.username = ? 
+2019-03-29 17:07:44,135 [http-nio-8080-exec-10] ==> Parameters: admin(String)
+2019-03-29 17:07:44,157 [http-nio-8080-exec-10] <==      Total: 1
+2019-03-29 17:07:44,168 [http-nio-8080-exec-10] ==>  Preparing: select distinct p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId inner join sys_role_user ru on ru.roleId = rp.roleId where ru.userId = ? order by p.sort 
+2019-03-29 17:07:44,176 [http-nio-8080-exec-10] ==> Parameters: 1(Long)
+2019-03-29 17:07:44,188 [http-nio-8080-exec-10] <==      Total: 43
+2019-03-29 17:07:44,298 [taskExecutor-1] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-29 17:07:44,355 [taskExecutor-1] ==> Parameters: 1(Long), 登陆(String), true(Boolean), null
+2019-03-29 17:07:44,488 [taskExecutor-1] <==    Updates: 1
+2019-03-29 17:07:44,567 [http-nio-8080-exec-5] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-03-29 17:07:44,581 [http-nio-8080-exec-5] ==> Parameters: 1(Long)
+2019-03-29 17:07:44,585 [http-nio-8080-exec-5] <==      Total: 1
+2019-03-29 17:07:46,747 [http-nio-8080-exec-6] ==>  Preparing: select count(1) from t_dict t 
+2019-03-29 17:07:46,748 [http-nio-8080-exec-6] ==> Parameters: 
+2019-03-29 17:07:46,750 [http-nio-8080-exec-6] <==      Total: 1
+2019-03-29 17:07:46,754 [http-nio-8080-exec-6] ==>  Preparing: select * from t_dict t order by id asc limit ?, ? 
+2019-03-29 17:07:46,758 [http-nio-8080-exec-6] ==> Parameters: 0(Integer), 10(Integer)
+2019-03-29 17:07:46,762 [http-nio-8080-exec-6] <==      Total: 10
+2019-03-29 17:07:53,519 [http-nio-8080-exec-4] ==>  Preparing: select count(1) from t_dict t 
+2019-03-29 17:07:53,521 [http-nio-8080-exec-4] ==> Parameters: 
+2019-03-29 17:07:53,522 [http-nio-8080-exec-4] <==      Total: 1
+2019-03-29 17:07:53,523 [http-nio-8080-exec-4] ==>  Preparing: select * from t_dict t order by id asc limit ?, ? 
+2019-03-29 17:07:53,524 [http-nio-8080-exec-4] ==> Parameters: 10(Integer), 10(Integer)
+2019-03-29 17:07:53,527 [http-nio-8080-exec-4] <==      Total: 10
+2019-03-29 18:25:14,265 [taskExecutor-2] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-03-29 18:25:14,268 [taskExecutor-2] ==> Parameters: 1(Long), 生成代码(String), true(Boolean), null
+2019-03-29 18:25:14,379 [taskExecutor-2] <==    Updates: 1

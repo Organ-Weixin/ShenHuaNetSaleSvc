@@ -1,0 +1,349 @@
+2019-04-07 09:21:49,947 [main] ==>  Preparing: select * from cinema t where t.Code= ? 
+2019-04-07 09:21:50,127 [main] ==> Parameters: 33014901(String)
+2019-04-07 09:21:50,151 [main] <==      Total: 1
+2019-04-07 09:21:50,153 [main] ==>  Preparing: update cinema set Name=?,Address=?,ScreenCount=?,CinemaId=? where Code=? 
+2019-04-07 09:21:50,158 [main] ==> Parameters: 桐庐晨光国际影城(String), 桐庐晨光国际影城(String), 9(Integer), null, 33014901(String)
+2019-04-07 09:21:50,274 [main] <==    Updates: 1
+2019-04-07 09:21:50,277 [main] ==>  Preparing: delete from screeninfo t where t.ccode = ? 
+2019-04-07 09:21:50,281 [main] ==> Parameters: 33014901(String)
+2019-04-07 09:29:36,972 [main] ==>  Preparing: select * from cinema t where t.Code= ? 
+2019-04-07 09:29:37,123 [main] ==> Parameters: 123123(String)
+2019-04-07 09:29:37,140 [main] <==      Total: 0
+2019-04-07 09:30:46,722 [main] ==>  Preparing: select * from cinema t where t.Code= ? 
+2019-04-07 09:30:46,875 [main] ==> Parameters: 123123(String)
+2019-04-07 09:30:46,891 [main] <==      Total: 0
+2019-04-07 09:33:13,824 [main] ==>  Preparing: select * from cinema t where t.Code= ? 
+2019-04-07 09:33:13,956 [main] ==> Parameters: 33097601(String)
+2019-04-07 09:33:13,977 [main] <==      Total: 1
+2019-04-07 09:33:13,978 [main] ==>  Preparing: update cinema set Name=?,Address=?,ScreenCount=?,CinemaId=? where Code=? 
+2019-04-07 09:33:13,982 [main] ==> Parameters: 浙江金华荣耀激光影城(String), 金华市景睿文化传媒有限公司(String), 9(Integer), 194(String), 33097601(String)
+2019-04-07 09:33:14,114 [main] <==    Updates: 1
+2019-04-07 09:33:14,274 [main] ==>  Preparing: select * from cinema t where t.Code= ? 
+2019-04-07 09:33:14,276 [main] ==> Parameters: 33097601(String)
+2019-04-07 09:33:14,282 [main] <==      Total: 1
+2019-04-07 09:33:14,285 [main] ==>  Preparing: update cinema set Name=?,Address=?,ScreenCount=?,CinemaId=? where Code=? 
+2019-04-07 09:33:14,287 [main] ==> Parameters: 浙江金华荣耀激光影城(String), 金华市景睿文化传媒有限公司(String), 9(Integer), 194(String), 33097601(String)
+2019-04-07 09:33:14,416 [main] <==    Updates: 1
+2019-04-07 09:33:14,421 [main] ==>  Preparing: delete from screeninfo where ccode = ? 
+2019-04-07 09:33:14,425 [main] ==> Parameters: 33097601(String)
+2019-04-07 09:33:14,485 [main] <==    Updates: 9
+2019-04-07 09:33:14,488 [main] ==>  Preparing: insert into screeninfo(Id, CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:33:14,546 [main] ==> Parameters: null, 33097601(String), 0000000000000001(String), 4.20周年庆1号厅(String), 2019-04-07 09:33:14.42(Timestamp), null, 3d(String), 1044(String)
+2019-04-07 09:33:14,576 [main] <==    Updates: 1
+2019-04-07 09:33:14,577 [main] ==>  Preparing: insert into screeninfo(Id, CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:33:14,578 [main] ==> Parameters: 983(Long), 33097601(String), 0000000000000001(String), 4.20周年庆1号厅(String), 2019-04-07 09:33:14.42(Timestamp), null, 3d(String), 1044(String)
+2019-04-07 09:34:01,605 [main] ==>  Preparing: select * from cinema t where t.Code= ? 
+2019-04-07 09:34:01,734 [main] ==> Parameters: 33097601(String)
+2019-04-07 09:34:01,751 [main] <==      Total: 1
+2019-04-07 09:34:01,752 [main] ==>  Preparing: update cinema set Name=?,Address=?,ScreenCount=?,CinemaId=? where Code=? 
+2019-04-07 09:34:01,756 [main] ==> Parameters: 浙江金华荣耀激光影城(String), 金华市景睿文化传媒有限公司(String), 9(Integer), 194(String), 33097601(String)
+2019-04-07 09:34:01,888 [main] <==    Updates: 1
+2019-04-07 09:34:02,078 [main] ==>  Preparing: select * from cinema t where t.Code= ? 
+2019-04-07 09:34:02,079 [main] ==> Parameters: 33097601(String)
+2019-04-07 09:34:02,085 [main] <==      Total: 1
+2019-04-07 09:34:02,086 [main] ==>  Preparing: update cinema set Name=?,Address=?,ScreenCount=?,CinemaId=? where Code=? 
+2019-04-07 09:34:02,087 [main] ==> Parameters: 浙江金华荣耀激光影城(String), 金华市景睿文化传媒有限公司(String), 9(Integer), 194(String), 33097601(String)
+2019-04-07 09:34:02,128 [main] <==    Updates: 1
+2019-04-07 09:34:02,129 [main] ==>  Preparing: delete from screeninfo where ccode = ? 
+2019-04-07 09:34:02,131 [main] ==> Parameters: 33097601(String)
+2019-04-07 09:34:02,175 [main] <==    Updates: 1
+2019-04-07 09:34:02,177 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:34:02,237 [main] ==> Parameters: 33097601(String), 0000000000000001(String), 4.20周年庆1号厅(String), 2019-04-07 09:34:02.129(Timestamp), null, 3d(String), 1044(String)
+2019-04-07 09:34:02,277 [main] <==    Updates: 1
+2019-04-07 09:34:02,279 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:34:02,280 [main] ==> Parameters: 33097601(String), 0000000000000001(String), 4.20周年庆1号厅(String), 2019-04-07 09:34:02.129(Timestamp), null, 3d(String), 1044(String)
+2019-04-07 09:34:02,324 [main] <==    Updates: 1
+2019-04-07 09:34:02,325 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:34:02,325 [main] ==> Parameters: 33097601(String), 0000000000000002(String), 4.20周年庆2号厅(String), 2019-04-07 09:34:02.129(Timestamp), null, 3d(String), 1045(String)
+2019-04-07 09:34:02,371 [main] <==    Updates: 1
+2019-04-07 09:34:02,374 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:34:02,375 [main] ==> Parameters: 33097601(String), 0000000000000002(String), 4.20周年庆2号厅(String), 2019-04-07 09:34:02.129(Timestamp), null, 3d(String), 1045(String)
+2019-04-07 09:34:02,418 [main] <==    Updates: 1
+2019-04-07 09:34:02,420 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:34:02,422 [main] ==> Parameters: 33097601(String), 0000000000000003(String), 4.20周年庆3号厅(String), 2019-04-07 09:34:02.129(Timestamp), null, 3d(String), 1046(String)
+2019-04-07 09:34:02,465 [main] <==    Updates: 1
+2019-04-07 09:34:02,467 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:34:02,469 [main] ==> Parameters: 33097601(String), 0000000000000003(String), 4.20周年庆3号厅(String), 2019-04-07 09:34:02.129(Timestamp), null, 3d(String), 1046(String)
+2019-04-07 09:34:02,623 [main] <==    Updates: 1
+2019-04-07 09:34:02,624 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:34:02,625 [main] ==> Parameters: 33097601(String), 0000000000000004(String), 4.20周年庆4号厅(String), 2019-04-07 09:34:02.129(Timestamp), null, 3d(String), 1047(String)
+2019-04-07 09:34:02,683 [main] <==    Updates: 1
+2019-04-07 09:34:02,684 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:34:02,686 [main] ==> Parameters: 33097601(String), 0000000000000004(String), 4.20周年庆4号厅(String), 2019-04-07 09:34:02.129(Timestamp), null, 3d(String), 1047(String)
+2019-04-07 09:34:02,730 [main] <==    Updates: 1
+2019-04-07 09:34:02,733 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:34:02,734 [main] ==> Parameters: 33097601(String), 0000000000000005(String), 4.20周年庆5号厅(String), 2019-04-07 09:34:02.129(Timestamp), null, 3d(String), 1048(String)
+2019-04-07 09:34:02,777 [main] <==    Updates: 1
+2019-04-07 09:34:02,779 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:34:02,781 [main] ==> Parameters: 33097601(String), 0000000000000005(String), 4.20周年庆5号厅(String), 2019-04-07 09:34:02.129(Timestamp), null, 3d(String), 1048(String)
+2019-04-07 09:34:02,823 [main] <==    Updates: 1
+2019-04-07 09:34:02,825 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:34:02,826 [main] ==> Parameters: 33097601(String), 0000000000000006(String), 4.20周年庆6号厅(String), 2019-04-07 09:34:02.129(Timestamp), null, 3d(String), 1049(String)
+2019-04-07 09:34:02,871 [main] <==    Updates: 1
+2019-04-07 09:34:02,872 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:34:02,873 [main] ==> Parameters: 33097601(String), 0000000000000006(String), 4.20周年庆6号厅(String), 2019-04-07 09:34:02.129(Timestamp), null, 3d(String), 1049(String)
+2019-04-07 09:34:02,917 [main] <==    Updates: 1
+2019-04-07 09:34:02,919 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:34:02,919 [main] ==> Parameters: 33097601(String), 0000000000000007(String), 4.20周年庆7号厅(String), 2019-04-07 09:34:02.129(Timestamp), null, 3d(String), 1050(String)
+2019-04-07 09:34:02,964 [main] <==    Updates: 1
+2019-04-07 09:34:02,966 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:34:02,968 [main] ==> Parameters: 33097601(String), 0000000000000007(String), 4.20周年庆7号厅(String), 2019-04-07 09:34:02.129(Timestamp), null, 3d(String), 1050(String)
+2019-04-07 09:34:03,011 [main] <==    Updates: 1
+2019-04-07 09:34:03,013 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:34:03,013 [main] ==> Parameters: 33097601(String), 0000000000000008(String), 4.20周年庆8号厅(String), 2019-04-07 09:34:02.129(Timestamp), null, 3d(String), 1051(String)
+2019-04-07 09:34:03,071 [main] <==    Updates: 1
+2019-04-07 09:34:03,072 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:34:03,074 [main] ==> Parameters: 33097601(String), 0000000000000008(String), 4.20周年庆8号厅(String), 2019-04-07 09:34:02.129(Timestamp), null, 3d(String), 1051(String)
+2019-04-07 09:34:03,129 [main] <==    Updates: 1
+2019-04-07 09:34:03,142 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:34:03,144 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:34:02.129(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:34:03,199 [main] <==    Updates: 1
+2019-04-07 09:34:03,201 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:34:03,202 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:34:02.129(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:34:03,257 [main] <==    Updates: 1
+2019-04-07 09:49:43,775 [main] ==>  Preparing: select * from cinema t where t.Code= ? 
+2019-04-07 09:49:43,916 [main] ==> Parameters: 33097601(String)
+2019-04-07 09:49:43,962 [main] <==      Total: 1
+2019-04-07 09:49:43,964 [main] ==>  Preparing: update cinema set Name=?,Address=?,ScreenCount=?,CinemaId=? where Code=? 
+2019-04-07 09:49:43,969 [main] ==> Parameters: 浙江金华荣耀激光影城(String), 金华市景睿文化传媒有限公司(String), 9(Integer), 194(String), 33097601(String)
+2019-04-07 09:49:44,104 [main] <==    Updates: 1
+2019-04-07 09:49:44,260 [main] ==>  Preparing: select * from cinema t where t.Code= ? 
+2019-04-07 09:49:44,261 [main] ==> Parameters: 33097601(String)
+2019-04-07 09:49:44,265 [main] <==      Total: 1
+2019-04-07 09:49:44,266 [main] ==>  Preparing: update cinema set Name=?,Address=?,ScreenCount=?,CinemaId=? where Code=? 
+2019-04-07 09:49:44,267 [main] ==> Parameters: 浙江金华荣耀激光影城(String), 金华市景睿文化传媒有限公司(String), 9(Integer), 194(String), 33097601(String)
+2019-04-07 09:49:44,300 [main] <==    Updates: 1
+2019-04-07 09:49:44,301 [main] ==>  Preparing: delete from screeninfo where ccode = ? 
+2019-04-07 09:49:44,302 [main] ==> Parameters: 33097601(String)
+2019-04-07 09:49:44,346 [main] <==    Updates: 18
+2019-04-07 09:49:44,348 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:49:44,379 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:49:44.301(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:49:44,426 [main] <==    Updates: 1
+2019-04-07 09:49:44,429 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:49:44,431 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:49:44.301(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:49:44,547 [main] <==    Updates: 1
+2019-04-07 09:49:44,549 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:49:44,551 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:49:44.301(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:49:44,605 [main] <==    Updates: 1
+2019-04-07 09:49:44,607 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:49:44,607 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:49:44.301(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:49:44,652 [main] <==    Updates: 1
+2019-04-07 09:49:44,654 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:49:44,656 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:49:44.301(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:49:44,699 [main] <==    Updates: 1
+2019-04-07 09:49:44,701 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:49:44,703 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:49:44.301(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:49:44,746 [main] <==    Updates: 1
+2019-04-07 09:49:44,747 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:49:44,747 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:49:44.301(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:49:44,793 [main] <==    Updates: 1
+2019-04-07 09:49:44,795 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:49:44,796 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:49:44.301(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:49:44,839 [main] <==    Updates: 1
+2019-04-07 09:49:44,841 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:49:44,841 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:49:44.301(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:49:44,886 [main] <==    Updates: 1
+2019-04-07 09:49:44,888 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:49:44,890 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:49:44.301(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:49:44,933 [main] <==    Updates: 1
+2019-04-07 09:49:44,935 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:49:44,936 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:49:44.301(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:49:44,980 [main] <==    Updates: 1
+2019-04-07 09:49:44,982 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:49:44,984 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:49:44.301(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:49:45,027 [main] <==    Updates: 1
+2019-04-07 09:49:45,029 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:49:45,031 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:49:44.301(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:49:45,073 [main] <==    Updates: 1
+2019-04-07 09:49:45,074 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:49:45,075 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:49:44.301(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:49:45,134 [main] <==    Updates: 1
+2019-04-07 09:49:45,137 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:49:45,138 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:49:44.301(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:49:45,181 [main] <==    Updates: 1
+2019-04-07 09:49:45,183 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:49:45,187 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:49:44.301(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:49:45,227 [main] <==    Updates: 1
+2019-04-07 09:49:45,240 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:49:45,242 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:49:44.301(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:49:45,285 [main] <==    Updates: 1
+2019-04-07 09:49:45,286 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:49:45,287 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:49:44.301(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:49:45,332 [main] <==    Updates: 1
+2019-04-07 09:52:08,002 [main] ==>  Preparing: select * from cinema t where t.Code= ? 
+2019-04-07 09:52:08,159 [main] ==> Parameters: 33097601(String)
+2019-04-07 09:52:08,174 [main] <==      Total: 1
+2019-04-07 09:52:08,175 [main] ==>  Preparing: update cinema set Name=?,Address=?,ScreenCount=?,CinemaId=? where Code=? 
+2019-04-07 09:52:08,179 [main] ==> Parameters: 浙江金华荣耀激光影城(String), 金华市景睿文化传媒有限公司(String), 9(Integer), 194(String), 33097601(String)
+2019-04-07 09:52:08,309 [main] <==    Updates: 1
+2019-04-07 09:52:08,463 [main] ==>  Preparing: select * from cinema t where t.Code= ? 
+2019-04-07 09:52:08,463 [main] ==> Parameters: 33097601(String)
+2019-04-07 09:52:08,465 [main] <==      Total: 1
+2019-04-07 09:52:08,466 [main] ==>  Preparing: update cinema set Name=?,Address=?,ScreenCount=?,CinemaId=? where Code=? 
+2019-04-07 09:52:08,466 [main] ==> Parameters: 浙江金华荣耀激光影城(String), 金华市景睿文化传媒有限公司(String), 9(Integer), 194(String), 33097601(String)
+2019-04-07 09:52:08,663 [main] <==    Updates: 1
+2019-04-07 09:52:08,668 [main] ==>  Preparing: delete from screeninfo where ccode = ? 
+2019-04-07 09:52:08,672 [main] ==> Parameters: 33097601(String)
+2019-04-07 09:52:08,743 [main] <==    Updates: 18
+2019-04-07 09:52:08,745 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:52:08,808 [main] ==> Parameters: 33097601(String), 0000000000000001(String), 4.20周年庆1号厅(String), 2019-04-07 09:52:08.667(Timestamp), null, 3d(String), 1044(String)
+2019-04-07 09:52:09,039 [main] <==    Updates: 1
+2019-04-07 09:53:16,922 [main] ==>  Preparing: select * from cinema t where t.Code= ? 
+2019-04-07 09:53:17,058 [main] ==> Parameters: 33097601(String)
+2019-04-07 09:53:17,076 [main] <==      Total: 1
+2019-04-07 09:53:17,078 [main] ==>  Preparing: update cinema set Name=?,Address=?,ScreenCount=?,CinemaId=? where Code=? 
+2019-04-07 09:53:17,083 [main] ==> Parameters: 浙江金华荣耀激光影城(String), 金华市景睿文化传媒有限公司(String), 9(Integer), 194(String), 33097601(String)
+2019-04-07 09:53:17,206 [main] <==    Updates: 1
+2019-04-07 09:53:17,363 [main] ==>  Preparing: select * from cinema t where t.Code= ? 
+2019-04-07 09:53:17,364 [main] ==> Parameters: 33097601(String)
+2019-04-07 09:53:17,369 [main] <==      Total: 1
+2019-04-07 09:53:17,372 [main] ==>  Preparing: update cinema set Name=?,Address=?,ScreenCount=?,CinemaId=? where Code=? 
+2019-04-07 09:53:17,373 [main] ==> Parameters: 浙江金华荣耀激光影城(String), 金华市景睿文化传媒有限公司(String), 9(Integer), 194(String), 33097601(String)
+2019-04-07 09:53:17,496 [main] <==    Updates: 1
+2019-04-07 09:53:17,501 [main] ==>  Preparing: delete from screeninfo where ccode = ? 
+2019-04-07 09:53:17,505 [main] ==> Parameters: 33097601(String)
+2019-04-07 09:53:17,543 [main] <==    Updates: 1
+2019-04-07 09:53:17,544 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:53:17,582 [main] ==> Parameters: 33097601(String), 0000000000000001(String), 4.20周年庆1号厅(String), 2019-04-07 09:53:17.5(Timestamp), null, 3d(String), 1044(String)
+2019-04-07 09:53:17,612 [main] <==    Updates: 1
+2019-04-07 09:53:17,613 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:53:17,613 [main] ==> Parameters: 33097601(String), 0000000000000001(String), 4.20周年庆1号厅(String), 2019-04-07 09:53:17.5(Timestamp), null, 3d(String), 1044(String)
+2019-04-07 09:53:17,637 [main] <==    Updates: 1
+2019-04-07 09:53:17,639 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:53:17,641 [main] ==> Parameters: 33097601(String), 0000000000000002(String), 4.20周年庆2号厅(String), 2019-04-07 09:53:17.5(Timestamp), null, 3d(String), 1045(String)
+2019-04-07 09:53:17,673 [main] <==    Updates: 1
+2019-04-07 09:53:17,676 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:53:17,678 [main] ==> Parameters: 33097601(String), 0000000000000002(String), 4.20周年庆2号厅(String), 2019-04-07 09:53:17.5(Timestamp), null, 3d(String), 1045(String)
+2019-04-07 09:53:17,708 [main] <==    Updates: 1
+2019-04-07 09:53:17,709 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:53:17,710 [main] ==> Parameters: 33097601(String), 0000000000000003(String), 4.20周年庆3号厅(String), 2019-04-07 09:53:17.5(Timestamp), null, 3d(String), 1046(String)
+2019-04-07 09:53:17,757 [main] <==    Updates: 1
+2019-04-07 09:53:17,759 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:53:17,760 [main] ==> Parameters: 33097601(String), 0000000000000003(String), 4.20周年庆3号厅(String), 2019-04-07 09:53:17.5(Timestamp), null, 3d(String), 1046(String)
+2019-04-07 09:53:17,793 [main] <==    Updates: 1
+2019-04-07 09:53:17,794 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:53:17,795 [main] ==> Parameters: 33097601(String), 0000000000000004(String), 4.20周年庆4号厅(String), 2019-04-07 09:53:17.5(Timestamp), null, 3d(String), 1047(String)
+2019-04-07 09:53:17,840 [main] <==    Updates: 1
+2019-04-07 09:53:17,842 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:53:17,843 [main] ==> Parameters: 33097601(String), 0000000000000004(String), 4.20周年庆4号厅(String), 2019-04-07 09:53:17.5(Timestamp), null, 3d(String), 1047(String)
+2019-04-07 09:53:17,887 [main] <==    Updates: 1
+2019-04-07 09:53:17,890 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:53:17,892 [main] ==> Parameters: 33097601(String), 0000000000000005(String), 4.20周年庆5号厅(String), 2019-04-07 09:53:17.5(Timestamp), null, 3d(String), 1048(String)
+2019-04-07 09:53:17,934 [main] <==    Updates: 1
+2019-04-07 09:53:17,937 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:53:17,939 [main] ==> Parameters: 33097601(String), 0000000000000005(String), 4.20周年庆5号厅(String), 2019-04-07 09:53:17.5(Timestamp), null, 3d(String), 1048(String)
+2019-04-07 09:53:17,981 [main] <==    Updates: 1
+2019-04-07 09:53:17,984 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:53:17,985 [main] ==> Parameters: 33097601(String), 0000000000000006(String), 4.20周年庆6号厅(String), 2019-04-07 09:53:17.5(Timestamp), null, 3d(String), 1049(String)
+2019-04-07 09:53:18,028 [main] <==    Updates: 1
+2019-04-07 09:53:18,030 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:53:18,030 [main] ==> Parameters: 33097601(String), 0000000000000006(String), 4.20周年庆6号厅(String), 2019-04-07 09:53:17.5(Timestamp), null, 3d(String), 1049(String)
+2019-04-07 09:53:18,075 [main] <==    Updates: 1
+2019-04-07 09:53:18,077 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:53:18,078 [main] ==> Parameters: 33097601(String), 0000000000000007(String), 4.20周年庆7号厅(String), 2019-04-07 09:53:17.5(Timestamp), null, 3d(String), 1050(String)
+2019-04-07 09:53:18,122 [main] <==    Updates: 1
+2019-04-07 09:53:18,123 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:53:18,124 [main] ==> Parameters: 33097601(String), 0000000000000007(String), 4.20周年庆7号厅(String), 2019-04-07 09:53:17.5(Timestamp), null, 3d(String), 1050(String)
+2019-04-07 09:53:18,168 [main] <==    Updates: 1
+2019-04-07 09:53:18,170 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:53:18,171 [main] ==> Parameters: 33097601(String), 0000000000000008(String), 4.20周年庆8号厅(String), 2019-04-07 09:53:17.5(Timestamp), null, 3d(String), 1051(String)
+2019-04-07 09:53:18,215 [main] <==    Updates: 1
+2019-04-07 09:53:18,217 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:53:18,222 [main] ==> Parameters: 33097601(String), 0000000000000008(String), 4.20周年庆8号厅(String), 2019-04-07 09:53:17.5(Timestamp), null, 3d(String), 1051(String)
+2019-04-07 09:53:18,262 [main] <==    Updates: 1
+2019-04-07 09:53:18,282 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:53:18,283 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:53:17.5(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:53:18,320 [main] <==    Updates: 1
+2019-04-07 09:53:18,322 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:53:18,323 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:53:17.5(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:53:18,367 [main] <==    Updates: 1
+2019-04-07 09:58:49,534 [main] ==>  Preparing: select * from cinema t where t.Code= ? 
+2019-04-07 09:58:49,661 [main] ==> Parameters: 33097601(String)
+2019-04-07 09:58:49,676 [main] <==      Total: 1
+2019-04-07 09:58:49,677 [main] ==>  Preparing: update cinema set Name=?,Address=?,ScreenCount=?,CinemaId=? where Code=? 
+2019-04-07 09:58:49,679 [main] ==> Parameters: 浙江金华荣耀激光影城(String), 金华市景睿文化传媒有限公司(String), 9(Integer), 194(String), 33097601(String)
+2019-04-07 09:58:49,820 [main] <==    Updates: 1
+2019-04-07 09:58:49,973 [main] ==>  Preparing: select * from cinema t where t.Code= ? 
+2019-04-07 09:58:49,974 [main] ==> Parameters: 33097601(String)
+2019-04-07 09:58:49,981 [main] <==      Total: 1
+2019-04-07 09:58:49,984 [main] ==>  Preparing: update cinema set Name=?,Address=?,ScreenCount=?,CinemaId=? where Code=? 
+2019-04-07 09:58:49,985 [main] ==> Parameters: 浙江金华荣耀激光影城(String), 金华市景睿文化传媒有限公司(String), 9(Integer), 194(String), 33097601(String)
+2019-04-07 09:58:50,122 [main] <==    Updates: 1
+2019-04-07 09:58:50,126 [main] ==>  Preparing: delete from screeninfo where ccode = ? 
+2019-04-07 09:58:50,130 [main] ==> Parameters: 33097601(String)
+2019-04-07 09:58:50,180 [main] <==    Updates: 18
+2019-04-07 09:58:50,182 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:58:50,239 [main] ==> Parameters: 33097601(String), 0000000000000001(String), 4.20周年庆1号厅(String), 2019-04-07 09:58:50.125(Timestamp), null, 3d(String), 1044(String)
+2019-04-07 09:58:50,299 [main] <==    Updates: 1
+2019-04-07 09:58:50,301 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:58:50,303 [main] ==> Parameters: 33097601(String), 0000000000000002(String), 4.20周年庆2号厅(String), 2019-04-07 09:58:50.125(Timestamp), null, 3d(String), 1045(String)
+2019-04-07 09:58:50,345 [main] <==    Updates: 1
+2019-04-07 09:58:50,348 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:58:50,350 [main] ==> Parameters: 33097601(String), 0000000000000003(String), 4.20周年庆3号厅(String), 2019-04-07 09:58:50.125(Timestamp), null, 3d(String), 1046(String)
+2019-04-07 09:58:50,391 [main] <==    Updates: 1
+2019-04-07 09:58:50,393 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:58:50,394 [main] ==> Parameters: 33097601(String), 0000000000000004(String), 4.20周年庆4号厅(String), 2019-04-07 09:58:50.125(Timestamp), null, 3d(String), 1047(String)
+2019-04-07 09:58:50,438 [main] <==    Updates: 1
+2019-04-07 09:58:50,441 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:58:50,443 [main] ==> Parameters: 33097601(String), 0000000000000005(String), 4.20周年庆5号厅(String), 2019-04-07 09:58:50.125(Timestamp), null, 3d(String), 1048(String)
+2019-04-07 09:58:50,485 [main] <==    Updates: 1
+2019-04-07 09:58:50,487 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:58:50,488 [main] ==> Parameters: 33097601(String), 0000000000000006(String), 4.20周年庆6号厅(String), 2019-04-07 09:58:50.125(Timestamp), null, 3d(String), 1049(String)
+2019-04-07 09:58:50,532 [main] <==    Updates: 1
+2019-04-07 09:58:50,535 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:58:50,536 [main] ==> Parameters: 33097601(String), 0000000000000007(String), 4.20周年庆7号厅(String), 2019-04-07 09:58:50.125(Timestamp), null, 3d(String), 1050(String)
+2019-04-07 09:58:50,579 [main] <==    Updates: 1
+2019-04-07 09:58:50,581 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:58:50,583 [main] ==> Parameters: 33097601(String), 0000000000000008(String), 4.20周年庆8号厅(String), 2019-04-07 09:58:50.125(Timestamp), null, 3d(String), 1051(String)
+2019-04-07 09:58:50,626 [main] <==    Updates: 1
+2019-04-07 09:58:50,629 [main] ==>  Preparing: insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(?, ?, ?, ?, ?, ?, ?) 
+2019-04-07 09:58:50,631 [main] ==> Parameters: 33097601(String), 0000000000000009(String), 9号厅(String), 2019-04-07 09:58:50.125(Timestamp), null, 3d(String), 1078(String)
+2019-04-07 09:58:50,673 [main] <==    Updates: 1
+2019-04-07 16:45:59,787 [http-nio-8080-exec-8] ==>  Preparing: select * from sys_user t where t.username = ? 
+2019-04-07 16:45:59,794 [http-nio-8080-exec-8] ==> Parameters: admin(String)
+2019-04-07 16:45:59,808 [http-nio-8080-exec-8] <==      Total: 1
+2019-04-07 16:45:59,817 [http-nio-8080-exec-8] ==>  Preparing: select distinct p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId inner join sys_role_user ru on ru.roleId = rp.roleId where ru.userId = ? order by p.sort 
+2019-04-07 16:45:59,820 [http-nio-8080-exec-8] ==> Parameters: 1(Long)
+2019-04-07 16:45:59,839 [http-nio-8080-exec-8] <==      Total: 43
+2019-04-07 16:45:59,958 [taskExecutor-1] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-04-07 16:45:59,964 [taskExecutor-1] ==> Parameters: 1(Long), 登陆(String), true(Boolean), null
+2019-04-07 16:46:00,001 [taskExecutor-1] <==    Updates: 1
+2019-04-07 16:46:00,218 [http-nio-8080-exec-2] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-04-07 16:46:00,220 [http-nio-8080-exec-2] ==> Parameters: 1(Long)
+2019-04-07 16:46:00,222 [http-nio-8080-exec-2] <==      Total: 1
+2019-04-07 16:46:08,543 [http-nio-8080-exec-3] ==>  Preparing: select count(1) from file_info t 
+2019-04-07 16:46:08,545 [http-nio-8080-exec-3] ==> Parameters: 
+2019-04-07 16:46:08,706 [http-nio-8080-exec-3] <==      Total: 1
+2019-04-07 16:46:08,740 [http-nio-8080-exec-3] ==>  Preparing: select * from file_info t order by updateTime desc limit ?, ? 
+2019-04-07 16:46:08,742 [http-nio-8080-exec-3] ==> Parameters: 0(Integer), 10(Integer)
+2019-04-07 16:46:08,744 [http-nio-8080-exec-3] <==      Total: 1
+2019-04-07 16:46:08,940 [http-nio-8080-exec-6] ==>  Preparing: select * from t_dict t where t.type = ? 
+2019-04-07 16:46:08,942 [http-nio-8080-exec-6] ==> Parameters: OrderStatusEnum(String)
+2019-04-07 16:46:08,945 [http-nio-8080-exec-6] <==      Total: 11
+2019-04-07 16:46:08,955 [http-nio-8080-exec-7] ==>  Preparing: select * from t_dict t where t.type = ? 
+2019-04-07 16:46:08,955 [http-nio-8080-exec-7] ==> Parameters: payType(String)
+2019-04-07 16:46:08,957 [http-nio-8080-exec-7] <==      Total: 5
+2019-04-07 16:46:08,967 [http-nio-8080-exec-8] ==>  Preparing: select o.id,o.filmname from orders o 
+2019-04-07 16:46:08,968 [http-nio-8080-exec-8] ==> Parameters: 
+2019-04-07 16:46:08,981 [http-nio-8080-exec-8] <==      Total: 50
+2019-04-07 16:46:09,034 [http-nio-8080-exec-3] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-04-07 16:46:09,036 [http-nio-8080-exec-3] ==> Parameters: 8(String)
+2019-04-07 16:46:09,141 [http-nio-8080-exec-3] <==      Total: 1
+2019-04-07 16:46:09,143 [http-nio-8080-exec-3] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-04-07 16:46:09,148 [http-nio-8080-exec-3] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-04-07 16:46:09,213 [http-nio-8080-exec-3] <==      Total: 13
+2019-04-07 16:47:17,891 [http-nio-8080-exec-9] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-04-07 16:47:17,892 [http-nio-8080-exec-9] ==> Parameters: 1(Long)
+2019-04-07 16:47:17,894 [http-nio-8080-exec-9] <==      Total: 1
+2019-04-07 16:47:20,622 [http-nio-8080-exec-6] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-04-07 16:47:20,623 [http-nio-8080-exec-6] ==> Parameters: 1(Long)
+2019-04-07 16:47:20,625 [http-nio-8080-exec-6] <==      Total: 1
+2019-04-07 16:47:24,466 [http-nio-8080-exec-1] ==>  Preparing: select o.id,o.filmname from orders o 
+2019-04-07 16:47:24,466 [http-nio-8080-exec-1] ==> Parameters: 
+2019-04-07 16:47:24,474 [http-nio-8080-exec-1] <==      Total: 50
+2019-04-07 16:47:24,508 [http-nio-8080-exec-6] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-04-07 16:47:24,509 [http-nio-8080-exec-6] ==> Parameters: 8(String)
+2019-04-07 16:47:24,511 [http-nio-8080-exec-6] <==      Total: 1
+2019-04-07 16:47:24,512 [http-nio-8080-exec-6] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-04-07 16:47:24,513 [http-nio-8080-exec-6] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-04-07 16:47:24,529 [http-nio-8080-exec-6] <==      Total: 13

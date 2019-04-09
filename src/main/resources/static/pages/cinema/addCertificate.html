@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院编码<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					 <select class="form-control" id="cinemaname">
+					 	<option>请选择...</option>
+					 </select>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>上级兑换券类型</label>
+				<div class='col-md-10'>
+					<select class="form-control" id="typename">
+					 	<option>请选择...</option>
+					 </select>
+				</div>
+			</div>
+			<div class='form-group' id="types">
+				<label class='col-md-2 control-label'>影片/套餐</label>
+				<div class='col-md-10' id="typeSelect" style="float:left;width:800px;">
+					<select class="form-control" id="cinemaAndSnack">
+					 	<option>影片1</option>
+					 	<option>影片2</option>
+					 	<option>影片3</option>
+					 	<option>影片4</option>
+					 	<option>卖品1</option>
+					 	<option>卖品2</option>
+					 	<option>卖品3</option>
+					 	<option>卖品4</option>
+					 </select>
+				</div>
+				<button style="margin-left:20px" id="addType">+</button>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>兑换券名称<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name="GroupName" data-bv-notempty='true' data-bv-notempty-message='兑换券名称 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>有效期</label>
+				<div class='col-md-10' >
+					<input type="text" class="form-control" style="width:30%;float:left" placeholder="开始时间" id="start">
+					<input type="text" class="form-control" style="margin-left:5%;width:30%;float:left" placeholder="结束时间" id="end">
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>张数<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='ConponNumber' id='ConponNumber' data-bv-notempty='true' data-bv-notempty-message='张数 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>备注</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text'>
+				</div>
+			</div>
+
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="location.href='conpongroupList.html'">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="add()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		    var laydate = layui.laydate;
+		    var form = layui.form
+		    var nowTime = new Date().valueOf();
+		    var start = laydate.render({ 
+		        elem: '#start',
+		        type: 'datetime',
+		        min:nowTime,
+		        done:function(value,date){
+		            endMax = end.config.max;
+		            end.config.min = date;
+		            end.config.min.month = date.month -1;
+		        }
+		   });
+		  var end = laydate.render({ 
+		       elem: '#end',
+		       type: 'datetime',
+		       min : nowTime,
+		       done:function(value,date){
+		           if($.trim(value) == ''){
+		               var curDate = new Date();
+		               date = {'date': curDate.getDate(), 'month': curDate.getMonth()+1, 'year': curDate.getFullYear()};
+		           }
+		           start.config.min = date;
+		           start.config.min.month = date.month -1;
+		       }
+		    });
+		});
+		function add() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var formdata = $("#form").serializeObject();
+
+			$.ajax({
+				type : 'post',
+				url : '/conpongroups',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("添加成功", {shift: -1, time: 1000}, function(){
+                        location.href = "conpongroupList.html";
+                    });
+				}
+			});
+		}
+		//获取影院列表
+		function getCinema(){
+			$.ajax({
+				url:'/conpongroups/getCinemaName',
+				type:'post',
+				success:function(data){
+					for(var i=0; i<data.length;i++){
+						var option = "<option value="+data[i].id+">"+data[i].cinemaName+"</option>";
+						$("#cinemaname").append(option);
+					}
+				}
+			});
+		}
+		getCinema();
+		function getConponsType(){
+			$.ajax({
+				url:'/conpontypes/getCertificatetype',
+				type:'post',
+				success:function(data){
+					for(var i=0; i<data.length;i++){
+						var option = "<option value="+data[i].typeCode+">"+data[i].typeName+"</option>";
+						$("#typename").append(option);
+					}
+				}
+			});
+		}
+		getConponsType();
+		$("#addType").click(function(){
+			var select = "<div class = 'col-md-10' style='float:left;width:800px;margin-left:223px;margin-top:10px'>";
+			select = select +"<select class='form-control' style='folat:left'>";
+			select = select +""+$("#cinemaAndSnack").html()+"";
+			select = select +"</select>";
+			select = select +"</div>";
+			$("#types").append(select);
+		});
+	</script>
+</body>
+</html>

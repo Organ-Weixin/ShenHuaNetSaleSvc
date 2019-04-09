@@ -1,0 +1,51 @@
+2019-04-01 08:50:46,225 [http-nio-8080-exec-8] ==>  Preparing: select * from sys_user t where t.username = ? 
+2019-04-01 08:50:46,234 [http-nio-8080-exec-8] ==> Parameters: admin(String)
+2019-04-01 08:50:46,392 [http-nio-8080-exec-8] <==      Total: 1
+2019-04-01 08:50:46,408 [http-nio-8080-exec-8] ==>  Preparing: select distinct p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId inner join sys_role_user ru on ru.roleId = rp.roleId where ru.userId = ? order by p.sort 
+2019-04-01 08:50:46,413 [http-nio-8080-exec-8] ==> Parameters: 1(Long)
+2019-04-01 08:50:46,438 [http-nio-8080-exec-8] <==      Total: 43
+2019-04-01 08:50:46,557 [taskExecutor-1] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-04-01 08:50:46,565 [taskExecutor-1] ==> Parameters: 1(Long), 登陆(String), true(Boolean), null
+2019-04-01 08:50:46,648 [taskExecutor-1] <==    Updates: 1
+2019-04-01 08:50:46,807 [http-nio-8080-exec-9] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-04-01 08:50:46,811 [http-nio-8080-exec-9] ==> Parameters: 1(Long)
+2019-04-01 08:50:46,821 [http-nio-8080-exec-9] <==      Total: 1
+2019-04-01 10:52:31,297 [http-nio-8080-exec-5] ==>  Preparing: select * from sys_user t where t.username = ? 
+2019-04-01 10:52:31,408 [http-nio-8080-exec-5] ==> Parameters: admin(String)
+2019-04-01 10:52:31,424 [http-nio-8080-exec-5] <==      Total: 1
+2019-04-01 10:52:31,431 [http-nio-8080-exec-5] ==>  Preparing: select distinct p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId inner join sys_role_user ru on ru.roleId = rp.roleId where ru.userId = ? order by p.sort 
+2019-04-01 10:52:31,436 [http-nio-8080-exec-5] ==> Parameters: 1(Long)
+2019-04-01 10:52:31,443 [http-nio-8080-exec-5] <==      Total: 43
+2019-04-01 10:52:31,543 [taskExecutor-1] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-04-01 10:52:31,593 [taskExecutor-1] ==> Parameters: 1(Long), 登陆(String), true(Boolean), null
+2019-04-01 10:52:31,761 [http-nio-8080-exec-1] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-04-01 10:52:31,767 [http-nio-8080-exec-1] ==> Parameters: 1(Long)
+2019-04-01 10:52:31,770 [http-nio-8080-exec-1] <==      Total: 1
+2019-04-01 10:52:31,773 [taskExecutor-1] <==    Updates: 1
+2019-04-01 10:52:42,646 [http-nio-8080-exec-10] ==>  Preparing: select * from t_dict t where t.type = ? 
+2019-04-01 10:52:42,647 [http-nio-8080-exec-10] ==> Parameters: OrderStatusEnum(String)
+2019-04-01 10:52:42,650 [http-nio-8080-exec-10] <==      Total: 11
+2019-04-01 10:52:42,661 [http-nio-8080-exec-3] ==>  Preparing: select * from t_dict t where t.type = ? 
+2019-04-01 10:52:42,662 [http-nio-8080-exec-3] ==> Parameters: payType(String)
+2019-04-01 10:52:42,665 [http-nio-8080-exec-3] <==      Total: 5
+2019-04-01 10:52:42,682 [http-nio-8080-exec-9] ==>  Preparing: select * from userinfo where isDel =0 
+2019-04-01 10:52:42,685 [http-nio-8080-exec-9] ==> Parameters: 
+2019-04-01 10:52:42,688 [http-nio-8080-exec-9] <==      Total: 8
+2019-04-01 10:52:42,798 [http-nio-8080-exec-5] ==>  Preparing: select count(1) from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id right join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? 
+2019-04-01 10:52:42,800 [http-nio-8080-exec-5] ==> Parameters: 8(String)
+2019-04-01 10:52:42,804 [http-nio-8080-exec-5] <==      Total: 1
+2019-04-01 10:52:42,807 [http-nio-8080-exec-5] ==>  Preparing: select os.id,c.id,u.id,us.id,c.name,t.filmname,t.sessionTime, concat(replace(ltrim(replace(t.screencode,'0',' ')),' ','0'),'号厅') as screencode, t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode, concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat, os.price,os.salePrice,t.paytype, os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno, t.mobilePhone,os.addedprice,os.fee,t.orderStatus from orders t left join cinema c on t.cinemacode = c.code left join user_cinema u on t.cinemacode = u.cinemacode left join userinfo us on u.userid = us.id join orderseatdetails os on t.id = os.orderid where us.isdel =0 and t.OrderStatus = ? limit ?, ? 
+2019-04-01 10:52:42,813 [http-nio-8080-exec-5] ==> Parameters: 8(String), 0(Integer), 50(Integer)
+2019-04-01 10:52:42,945 [http-nio-8080-exec-5] <==      Total: 13
+2019-04-01 19:47:00,246 [http-nio-8080-exec-1] ==>  Preparing: select * from sys_user t where t.username = ? 
+2019-04-01 19:47:00,252 [http-nio-8080-exec-1] ==> Parameters: admin(String)
+2019-04-01 19:47:00,256 [http-nio-8080-exec-1] <==      Total: 1
+2019-04-01 19:47:00,258 [http-nio-8080-exec-1] ==>  Preparing: select distinct p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId inner join sys_role_user ru on ru.roleId = rp.roleId where ru.userId = ? order by p.sort 
+2019-04-01 19:47:00,259 [http-nio-8080-exec-1] ==> Parameters: 1(Long)
+2019-04-01 19:47:00,263 [http-nio-8080-exec-1] <==      Total: 43
+2019-04-01 19:47:00,337 [taskExecutor-2] ==>  Preparing: insert into sys_logs(userId, module, flag, remark, createTime) values(?, ?, ?, ?, now()) 
+2019-04-01 19:47:00,338 [taskExecutor-2] ==> Parameters: 1(Long), 登陆(String), true(Boolean), null
+2019-04-01 19:47:00,470 [taskExecutor-2] <==    Updates: 1
+2019-04-01 19:47:00,496 [http-nio-8080-exec-4] ==>  Preparing: select count(1) from t_notice t left join t_notice_read r on r.noticeId = t.id and r.userId = ? where t.status = 1 and r.userId is null 
+2019-04-01 19:47:00,502 [http-nio-8080-exec-4] ==> Parameters: 1(Long)
+2019-04-01 19:47:00,504 [http-nio-8080-exec-4] <==      Total: 1

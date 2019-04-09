@@ -1,0 +1,6 @@
+2019-03-29 18:25:14,194 [http-nio-8080-exec-1] DEBUG -[TemplateUtil.java:47]- 生成java model：Screenseatinfo模板
+2019-03-29 18:25:14,232 [http-nio-8080-exec-1] DEBUG -[TemplateUtil.java:129]- 生成java dao：Screenseatinfo模板
+2019-03-29 18:25:14,249 [http-nio-8080-exec-1] DEBUG -[TemplateUtil.java:243]- 生成controller：Screenseatinfo模板
+2019-03-29 18:25:14,254 [http-nio-8080-exec-1] DEBUG -[TemplateUtil.java:259]- 生成查询页面：Screenseatinfo模板
+2019-03-29 18:25:14,257 [http-nio-8080-exec-1] DEBUG -[TemplateUtil.java:265]- 生成添加页面：Screenseatinfo模板
+2019-03-29 18:25:14,260 [http-nio-8080-exec-1] DEBUG -[TemplateUtil.java:272]- 生成修改页面：Screenseatinfo模板

@@ -1,0 +1,12 @@
+2019-03-30 09:39:22,230 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:47]- 生成java model：Screenseatinfo模板
+2019-03-30 09:39:22,344 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:129]- 生成java dao：Screenseatinfo模板
+2019-03-30 09:39:22,374 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:243]- 生成controller：Screenseatinfo模板
+2019-03-30 09:39:22,379 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:259]- 生成查询页面：Screenseatinfo模板
+2019-03-30 09:39:22,384 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:265]- 生成添加页面：Screenseatinfo模板
+2019-03-30 09:39:22,390 [http-nio-8080-exec-6] DEBUG -[TemplateUtil.java:272]- 生成修改页面：Screenseatinfo模板
+2019-03-30 16:34:13,472 [http-nio-8080-exec-10] DEBUG -[TemplateUtil.java:47]- 生成java model：Sessioninfo模板
+2019-03-30 16:34:13,474 [http-nio-8080-exec-10] DEBUG -[TemplateUtil.java:129]- 生成java dao：Sessioninfo模板
+2019-03-30 16:34:13,475 [http-nio-8080-exec-10] DEBUG -[TemplateUtil.java:243]- 生成controller：Sessioninfo模板
+2019-03-30 16:34:13,478 [http-nio-8080-exec-10] DEBUG -[TemplateUtil.java:259]- 生成查询页面：Sessioninfo模板
+2019-03-30 16:34:13,480 [http-nio-8080-exec-10] DEBUG -[TemplateUtil.java:265]- 生成添加页面：Sessioninfo模板
+2019-03-30 16:34:13,482 [http-nio-8080-exec-10] DEBUG -[TemplateUtil.java:272]- 生成修改页面：Sessioninfo模板
