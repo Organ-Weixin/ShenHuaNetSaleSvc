@@ -9,7 +9,7 @@
 		<result property="FilmName" column="FilmName"/>
 		<result property="Duration" column="Duration"/>
 		<result property="Language" column="Language"/>
-		<association property="FileInfo" javaType="FileInfo">
+		<association property="Filminfo" javaType="Filminfo">
 			<result property="Id" column="Id"/>
 			<result property="FilmCode" column="FilmCode"/>
 			<result property="FilmName" column="FilmName"/>
@@ -22,6 +22,9 @@
 			</if>
 			<if test="params.CCode != null and params.CCode != ''">
 				and s.CCode = #{params.CCode} 
+			</if>
+			<if test="params.Company != null and params.Company != ''">
+				and u.Company = #{params.Company} 
 			</if>
 			<if test="params.StartTime !=null and params.StartTime != ''">
 				and s.StartTime >= #{params.StartTime}
@@ -46,7 +49,64 @@
 		${params.orderBy}
 		limit #{offset}, #{limit}
 	</select>
+	
+	<select id="countSession" resultType="int">
+		select count(1) 
+		from sessioninfo s 
+		left join cinema c on s.CCode=c.code 
+		left join screeninfo sc on s.CCode=sc.CCode and s.ScreenCode=sc.SCode
+		left join userinfo u on s.UserID=u.Id
+		left join priceplan p on p.CinemaCode=s.CCode and p.UserID=u.Id and (p.Code=s.FilmCode or p.Code=s.SCode)  
+		<include refid="where" />
+	</select>
+	<select id="list" resultMap="BaseResultMap">
+		select s.SCode,s.Id,s.CCode,s.ScreenCode,c.Name,u.Company,s.FilmCode,s.FilmName,sc.SName,s.StartTime,s.Duration,s.Language,s.StandardPrice,s.LowestPrice,p.Price  
+		from sessioninfo s 
+		left join cinema c on s.CCode=c.code 
+		left join screeninfo sc on s.CCode=sc.CCode and s.ScreenCode=sc.SCode
+		left join userinfo u on s.UserID=u.Id
+		left join priceplan p on p.CinemaCode=s.CCode and p.UserID=u.Id and (p.Code=s.FilmCode or p.Code=s.SCode) 
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
 
+	<resultMap id="BaseResultMap" type="com.boot.security.server.model.Sessioninfo">
+		<id  property="Id" column="Id"/>
+		<result property="CCode" column="CCode" />
+		<result property="SCode" column="SCode" />
+		<result property="ScreenCode" column="ScreenCode" />
+		<result property="FilmCode" column="FilmCode" />
+		<result property="FilmName" column="FilmName" />
+		<result property="StartTime"  column="StartTime"/>
+		<result property="Duration" column="Duration"/>
+		<result property="Language"  column="Language"/>
+		<result property="StandardPrice"  column="StandardPrice"/>
+		<result property="LowestPrice"  column="LowestPrice"/>
+		<association property="cinema" javaType="Cinema">
+			<result property="code" column="CCode" />
+			<result property="Name" column="Name" />
+		</association>
+		<association property="screeninfo" javaType="Screeninfo">
+			<result property="CCode" column="CCode" />
+			<result property="SName" column="SName" />
+		</association>
+		<association property="priceplan" javaType="Priceplan">
+			<result property="CinemaCode" column="CCode" />
+			<result property="Price" column="Price" />
+		</association>
+		<association property="userinfo" javaType="Userinfo">
+			<result property="id" column="UserID" />
+			<result property="Company" column="Company" />
+		</association>
+	</resultMap>
+
+	<update id="updatePriceplan" parameterType="com.boot.security.server.model.Priceplan" >
+		update pricePlan p set Price = #{Price}
+		where CinemaCode=#{CinemaCode} and Code=#{Code} and UserID=#{UserID}
+	
+	</update>
+	
 	<update id="update">
 		update sessioninfo t
 		<set>
