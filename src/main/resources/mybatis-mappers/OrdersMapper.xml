@@ -27,11 +27,11 @@
 		<result property="ColumnNum" column="ColumnNum"/>
 		<result property="Seat" column="Seat"/>
 		<result property="SalePrice" column="SalePrice"/>
-		<result property="PreferentialPrice" column="PreferentialPrice"/>
+		<result property="CinemaAllowance" column="CinemaAllowance"/>
 		<result property="TotalSale" column="TotalSale"/>
 		<result property="FilmTicketCode" column="FilmTicketCode"/>
 		<result property="Created" column="Created"/>
-		<result property="AddedPrice" column="AddedPrice"/>
+		<result property="AddFee" column="AddFee"/>
 		<result property="Fee" column="Fee"/>
 		<result property="Price" column="Price"/>
 		<result property="Start" column="Start"/>
@@ -113,8 +113,8 @@
 		t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode,
 		concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat,
 		os.price,os.salePrice,t.paytype,
-		os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno,
-		t.mobilePhone,os.addedprice,os.fee,t.orderStatus 
+		os.price+coalesce(os.addFee,0)+os.fee-coalesce(os.cinemaAllowance,0) as totalSale,os.cinemaAllowance,os.created,t.printno,
+		t.mobilePhone,os.addFee,os.fee,t.orderStatus 
 		from orders t left join cinema c on t.cinemacode = c.code   
 		left join user_cinema u on t.cinemacode = u.cinemacode 
 		left join userinfo us on u.userid = us.id 
