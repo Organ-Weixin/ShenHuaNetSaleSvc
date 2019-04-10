@@ -22,6 +22,7 @@ import com.boot.security.server.api.ctms.reply.Dy1905LockSeatCustomResult.ResBea
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.LoveFlagEnum;
+import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Orderseatdetails;
@@ -32,6 +33,7 @@ import com.boot.security.server.model.SessionSeatStatusEnum;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
+import com.boot.security.server.model.YesOrNoEnum;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
@@ -66,7 +68,7 @@ public class Dy1905Interface implements ICTMSInterface {
 		param.put("pAppCode",userCinema.getDefaultUserName());
 		param.put("pCinemaID",userCinema.getCinemaId());
 		param.put("pVerifyInfo",pVerifyInfo);
-		String getScreenResult = HttpHelper.httpClientPost("http://netsale.1905.com/Api/GetScreen",param,"UTF-8");
+		String getScreenResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/GetScreen",param,"UTF-8");
 		System.out.println(getScreenResult);
 		Gson gson = new Gson();
 		Dy1905GetScreenResult Dy1905Reply=gson.fromJson(XmlToJsonUtil.xmltoJson(getScreenResult,"GetScreenResult"), Dy1905GetScreenResult.class);
@@ -119,7 +121,7 @@ public class Dy1905Interface implements ICTMSInterface {
 		param.put("pCinemaID", userCinema.getCinemaId());
 		param.put("pScreenID", screen.getScreenId());
 		param.put("pVerifyInfo",pVerifyInfo);
-		String getScreenSeatResult = HttpHelper.httpClientPost(/*userCinema.getUrl()+*/"http://netsale.1905.com/Api/GetScreenSeat", param,"UTF-8");
+		String getScreenSeatResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/GetScreenSeat", param,"UTF-8");
 		System.out.println(getScreenSeatResult);
 		Gson gson = new Gson();
 		Dy1905GetScreenSeatResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(getScreenSeatResult,"GetScreenSeatResult"),Dy1905GetScreenSeatResult.class);
@@ -182,14 +184,14 @@ public class Dy1905Interface implements ICTMSInterface {
 		Map<String,String> param = new LinkedHashMap<String,String>();
 		param.put("pAppCode",userCinema.getDefaultUserName());
 		param.put("pVerifyInfo",pVerifyInfo);
-		String getFeatureFilmResult = HttpHelper.httpClientPost("http://netsale.1905.com/Api/GetFeatureFilm", param,"UTF-8");
+		String getFeatureFilmResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/GetFeatureFilm", param,"UTF-8");
 		System.out.println(getFeatureFilmResult);
 		Gson gson = new Gson();
 		Dy1905GetFeatureFilmResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(getFeatureFilmResult,"GetFeatureFilmResult"),Dy1905GetFeatureFilmResult.class);
 		if(Dy1905Reply.getGetFeatureFilmResult().getResultCode().equals("0")){
 			QuerySession(userCinema, StartDate, EndDate);
 			List<Filminfo> newFilm = new ArrayList<Filminfo>();
-			List<com.boot.security.server.api.ctms.reply.Dy1905GetFeatureFilmResult.ResBean.FilmsBean.FilmBean> dy1905Films = Dy1905Reply.getGetFeatureFilmResult().getFilms().getFilm();
+			//List<com.boot.security.server.api.ctms.reply.Dy1905GetFeatureFilmResult.ResBean.FilmsBean.FilmBean> dy1905Films = Dy1905Reply.getGetFeatureFilmResult().getFilms().getFilm();
 			List<Sessioninfo> sessionInfoList = sessioninfoService.getFilms(userCinema.getCinemaCode(), StartDate, EndDate);
 			//获取排期中的影片信息
 			for(Sessioninfo sessioninfo : sessionInfoList){
@@ -217,10 +219,9 @@ public class Dy1905Interface implements ICTMSInterface {
 		param.put("pAppCode",userCinema.getDefaultUserName());
 		param.put("pCinemaID",userCinema.getCinemaId());
 		//开始时间入参应为Date 类型
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		param.put("StartDate", "2019-04-04");
+		//param.put("StartDate", StartDate);
 		param.put("pVerifyInfo",pVerifyInfo);
-		String getCinemaSession = HttpHelper.httpClientPost(/*userCinema.getUrl()+*/"http://netsale.1905.com/Api/GetCinemaSession", param,"UTF-8");
+		String getCinemaSession = HttpHelper.httpClientPost(userCinema.getUrl()+"/GetCinemaSession", param,"UTF-8");
 		System.out.println("排期返回结果：");
 		System.out.println(getCinemaSession);
 		Gson gson = new Gson();
@@ -436,7 +437,7 @@ public class Dy1905Interface implements ICTMSInterface {
 		param.put("pVerifyInfo",pVerifyInfo);
 		System.out.println(userCinema.getDefaultUserName()+"----"+order.getOrderBaseInfo().getSessionCode()+"----"
 				+OrderID+"----"+SeatCode+"----"+TicketPrice+"----"+Fee+"----"+pVerifyInfo);
-		String checkSeatStateResult = HttpHelper.httpClientPost(/*userCinema.getUrl()+*/"http://netsale.1905.com/Api/LockSeatCustom", param,"UTF-8");
+		String checkSeatStateResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/LockSeatCustom", param,"UTF-8");
 		System.out.println(checkSeatStateResult);
 		////////////////////////////////////////////////
 		Gson gson = new Gson();
@@ -534,35 +535,9 @@ public class Dy1905Interface implements ICTMSInterface {
 	@Override
 	public CTMSQueryPrintReply QueryPrint(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSQueryPrintReply reply = new CTMSQueryPrintReply();
-		String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + order.getOrderBaseInfo().getLockOrderCode() + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
-		Map<String,String> param = new LinkedHashMap<String,String>();
-		param.put("pAppCode",userCinema.getDefaultUserName());
-		param.put("pOrderID",order.getOrderBaseInfo().getLockOrderCode());
-		param.put("pVerifyInfo",pVerifyInfo);
-		String getOrderStatusResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/GetOrderStatus",param,"UTF-8");
-		Gson gson = new Gson();
-		Dy1905GetOrderStatusResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(getOrderStatusResult, "GetOrderStatusResult"), Dy1905GetOrderStatusResult.class);
-		List<SeatBean> seatList = Dy1905Reply.getGetOrderStatusResult().getSeats().getSeat();
-		if(Dy1905Reply.getGetOrderStatusResult().getResultCode().equals("0")){
-			order.getOrderBaseInfo().setSubmitOrderCode(Dy1905Reply.getGetOrderStatusResult().getOrderNo());
-			order.getOrderBaseInfo().setPrintNo(Dy1905Reply.getGetOrderStatusResult().getPrintNo());
-			order.getOrderBaseInfo().setVerifyCode(Dy1905Reply.getGetOrderStatusResult().getVerifyCode());
-			order.getOrderBaseInfo().setPrintStatus(Integer.parseInt(Dy1905Reply.getGetOrderStatusResult().getPrintStatus()));
-			order.getOrderBaseInfo().setOrderStatus(Integer.valueOf(Dy1905Reply.getGetOrderStatusResult().getOrderStatus()));
-			order.getOrderBaseInfo().setCinemaCode(userCinema.getCinemaCode());
-			order.getOrderBaseInfo().setScreenCode(Dy1905Reply.getGetOrderStatusResult().getScreenCode());
-			order.getOrderBaseInfo().setSessionCode(Dy1905Reply.getGetOrderStatusResult().getSessionCode());
-			order.getOrderBaseInfo().setFilmCode(Dy1905Reply.getGetOrderStatusResult().getFilmCode());
-			for(int i=1;i<seatList.size();i++){
-				order.getOrderSeatDetails().get(i-1).setSeatCode(seatList.get(i-1).getSeatCode());
-				order.getOrderSeatDetails().get(i-1).setFilmTicketCode(seatList.get(i-1).getFilmTicketCode());
-				order.getOrderBaseInfo().setTotalFee(Double.valueOf(Dy1905Reply.getGetOrderStatusResult().getSeats().getSeat().get(i-1).getCinemaFee())+Double.valueOf(Dy1905Reply.getGetOrderStatusResult().getSeats().getSeat().get(i).getCinemaFee()));
-			}
-			reply.Status = StatusEnum.Success;
-		}else{
-			reply.Status = StatusEnum.Failure;
-		}
-		reply.ErrorCode = Dy1905Reply.getGetOrderStatusResult().getResultCode();
+		CTMSQueryTicketReply QueryTicketReply = QueryTicket(userCinema, order);
+		reply.Status = QueryTicketReply.Status;
+		reply.ErrorCode = QueryTicketReply.ErrorCode;
 		return reply;
 	}
 	/*
@@ -603,9 +578,9 @@ public class Dy1905Interface implements ICTMSInterface {
 	@Override
 	public CTMSQueryOrderReply QueryOrder(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSQueryOrderReply reply = new CTMSQueryOrderReply();
-		CTMSQueryPrintReply rep = QueryPrint(userCinema, order);
-		reply.Status = rep.Status;
-		reply.ErrorCode = rep.ErrorCode;
+		CTMSQueryTicketReply QueryTicketReply = QueryTicket(userCinema, order);
+		reply.Status = QueryTicketReply.Status;
+		reply.ErrorCode = QueryTicketReply.ErrorCode;
 		return reply;
 	}
 	/*
@@ -614,9 +589,56 @@ public class Dy1905Interface implements ICTMSInterface {
 	@Override
 	public CTMSQueryTicketReply QueryTicket(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSQueryTicketReply reply = new CTMSQueryTicketReply();
-		CTMSQueryPrintReply rep = QueryPrint(userCinema, order);
-		reply.Status = rep.Status;
-		reply.ErrorCode = rep.ErrorCode;
+		String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + order.getOrderBaseInfo().getLockOrderCode() + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
+		Map<String,String> param = new LinkedHashMap<String,String>();
+		param.put("pAppCode",userCinema.getDefaultUserName());
+		param.put("pOrderID",order.getOrderBaseInfo().getLockOrderCode());
+		param.put("pVerifyInfo",pVerifyInfo);
+		String getOrderStatusResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/GetOrderStatus",param,"UTF-8");
+		Gson gson = new Gson();
+		Dy1905GetOrderStatusResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(getOrderStatusResult, "GetOrderStatusResult"), Dy1905GetOrderStatusResult.class);
+		Orders orderBaseInfo = new Orders();
+		if("0".equals(Dy1905Reply.getGetOrderStatusResult().getResultCode())&&
+				("0".equals(Dy1905Reply.getGetOrderStatusResult().getOrderStatus())||
+				"1".equals(Dy1905Reply.getGetOrderStatusResult().getOrderStatus())||
+				"6".equals(Dy1905Reply.getGetOrderStatusResult().getOrderStatus()))
+			){
+			orderBaseInfo.setPrintStatus(YesOrNoEnum.Yes.getStatusCode());
+			if("1".equals(Dy1905Reply.getGetOrderStatusResult().getOrderStatus())){
+				orderBaseInfo.setPrintTime(new Date());
+			}
+			//退票状态
+			if("1".equals(Dy1905Reply.getGetOrderStatusResult().getRefundStatus())){
+				orderBaseInfo.setOrderStatus(OrderStatusEnum.Refund.getStatusCode());
+				orderBaseInfo.setRefundTime(new Date());
+			}
+			//订单状态
+			if("0".equals(Dy1905Reply.getGetOrderStatusResult().getOrderStatus())){
+				orderBaseInfo.setOrderStatus(OrderStatusEnum.Locked.getStatusCode());
+			}else if("1".equals(Dy1905Reply.getGetOrderStatusResult().getOrderStatus())){
+				orderBaseInfo.setOrderStatus(OrderStatusEnum.Complete.getStatusCode());
+			}else if("6".equals(Dy1905Reply.getGetOrderStatusResult().getOrderStatus())){
+				orderBaseInfo.setOrderStatus(OrderStatusEnum.Released.getStatusCode());
+			}
+			if(Dy1905Reply.getGetOrderStatusResult().getSeats()!=null&&Dy1905Reply.getGetOrderStatusResult().getSeats().getSeat()!=null
+				&&Dy1905Reply.getGetOrderStatusResult().getSeats().getSeat().size()>0){
+				List<SeatBean> seatList = Dy1905Reply.getGetOrderStatusResult().getSeats().getSeat();
+				for(int i=1;i<seatList.size();i++){
+					order.getOrderSeatDetails().get(i-1).setSeatCode(seatList.get(i-1).getSeatCode());
+					order.getOrderSeatDetails().get(i-1).setFilmTicketCode(seatList.get(i-1).getFilmTicketCode());
+					order.getOrderBaseInfo().setTotalFee(Double.valueOf(Dy1905Reply.getGetOrderStatusResult().getSeats().getSeat().get(i-1).getCinemaFee())+Double.valueOf(Dy1905Reply.getGetOrderStatusResult().getSeats().getSeat().get(i).getCinemaFee()));
+				}
+			}
+			order.setOrderBaseInfo(orderBaseInfo);
+			reply.Status = StatusEnum.Success;
+		}else if("0".equals(Dy1905Reply.getGetOrderStatusResult().getResultCode())&&"2".equals(Dy1905Reply.getGetOrderStatusResult().getOrderStatus())){
+			reply.Status = StatusEnum.Failure;
+			reply.ErrorMessage = "未知状态(由于网络问题导致的,需要第三方持续查询此订单,直至获取到0,1,6状态为止)";
+		}
+		else{
+			reply.Status = StatusEnum.Failure;
+		}
+		reply.ErrorCode = Dy1905Reply.getGetOrderStatusResult().getResultCode();
 		return reply;
 	}
 	/*
@@ -649,7 +671,7 @@ public class Dy1905Interface implements ICTMSInterface {
 			Map<String,String> param = new LinkedHashMap<String,String>();
 			param.put("pAppCode",userCinema.getDefaultUserName());
 			param.put("pVerifyInfo",pVerifyInfo);
-			String getCinemaResult = HttpHelper.httpClientPost(/*userCinema.getUrl() +*/"http://netsale.1905.com/Api/GetCinema", param,"UTF-8");
+			String getCinemaResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/GetCinema", param,"UTF-8");
 			System.out.println(getCinemaResult);
 			Gson gson = new Gson();
 			Dy1905GetCinemaResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(getCinemaResult,"GetCinemaResult"), Dy1905GetCinemaResult.class);
