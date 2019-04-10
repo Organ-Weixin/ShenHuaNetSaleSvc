@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.boot.security.server.dao.SessioninfoDao">
@@ -59,6 +60,7 @@
 		left join priceplan p on p.CinemaCode=s.CCode and p.UserID=u.Id and (p.Code=s.FilmCode or p.Code=s.SCode)  
 		<include refid="where" />
 	</select>
+	
 	<select id="list" resultMap="BaseResultMap">
 		select s.SCode,s.Id,s.CCode,s.ScreenCode,c.Name,u.Company,s.FilmCode,s.FilmName,sc.SName,s.StartTime,s.Duration,s.Language,s.StandardPrice,s.LowestPrice,p.Price  
 		from sessioninfo s 
@@ -70,7 +72,6 @@
 		${params.orderBy}
 		limit #{offset}, #{limit}
 	</select>
-
 	<resultMap id="BaseResultMap" type="com.boot.security.server.model.Sessioninfo">
 		<id  property="Id" column="Id"/>
 		<result property="CCode" column="CCode" />
@@ -99,6 +100,7 @@
 			<result property="id" column="UserID" />
 			<result property="Company" column="Company" />
 		</association>
+		
 	</resultMap>
 
 	<update id="updatePriceplan" parameterType="com.boot.security.server.model.Priceplan" >

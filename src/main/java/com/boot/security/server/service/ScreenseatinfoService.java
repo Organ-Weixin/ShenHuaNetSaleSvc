@@ -11,7 +11,7 @@ public interface ScreenseatinfoService {
 	int deleteByScreenCode(String cinemaCode,String screenCode);
 	
 	List<Screenseatinfo> getBySeatCodes(String cinemacode,String screencode,String seatcodes);
-	
+	List<Screenseatinfo> getGroupByGroupCode(String cinemacode,String screencode);
 	List<Screenseatinfo> getByCinemaCodeAndScreenCode(String cinemacode,String screencode);
 	int deleteByCinemaCodeAndScreenCode(String cinemacode,String screencode);
 	int save(Screenseatinfo screenseatinfo);

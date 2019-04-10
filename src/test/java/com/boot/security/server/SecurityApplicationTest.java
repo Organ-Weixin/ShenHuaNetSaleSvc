@@ -16,7 +16,6 @@ import com.boot.security.server.model.Usercinemaview;
 @RunWith(SpringRunner.class)
 
 public class SecurityApplicationTest {
-	////\\3311
 	@Test
 	public void test() throws Exception{
 		Dy1905Interface di = new Dy1905Interface();

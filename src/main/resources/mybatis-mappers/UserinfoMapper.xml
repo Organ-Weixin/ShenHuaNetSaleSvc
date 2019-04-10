@@ -5,89 +5,71 @@
 
 	<sql id="where">
 		<where>
-			<if test="params.Id != null and params.Id != ''">
-				and Id = #{params.Id} 
-			</if>
 			<if test="params.UserName != null and params.UserName != ''">
-				and UserName = #{params.UserName} 
-			</if>
-			<if test="params.Password != null and params.Password != ''">
-				and Password = #{params.Password} 
+				and t.UserName like concat('%', #{params.UserName}, '%') 
 			</if>
 			<if test="params.Company != null and params.Company != ''">
-				and Company = #{params.Company} 
-			</if>
-			<if test="params.Address != null and params.Address != ''">
-				and Address = #{params.Address} 
+				or t.Company like concat('%', #{params.Company}, '%')
 			</if>
 			<if test="params.Tel != null and params.Tel != ''">
-				and Tel = #{params.Tel} 
+				or t.Tel like concat('%',#{params.Tel}, '%') 
 			</if>
 			<if test="params.Advance != null and params.Advance != ''">
-				and Advance = #{params.Advance} 
+				and t.Advance = #{params.Advance} 
 			</if>
 			<if test="params.IsDel != null and params.IsDel != ''">
-				and IsDel = #{params.IsDel} 
+				and t.IsDel = #{params.IsDel} 
 			</if>
-			<if test="params.BeginDate != null and params.BeginDate != ''">
-				and BeginDate = #{params.BeginDate} 
-			</if>
-			<if test="params.EndDate != null and params.EndDate != ''">
-				and EndDate = #{params.EndDate} 
-			</if>
-		
 		</where>
 	</sql>
-
+	
 	<select id="count" resultType="int">
-		select count(1) from userinfo t
+		select count(1) from (select * from userinfo where userinfo.IsDel='0') t  
 		<include refid="where" />
 	</select>
-
+	
 	<select id="list" resultType="Userinfo">
-		select * from userinfo t
+		select * from (select * from userinfo where userinfo.IsDel='0') t   
 		<include refid="where" />
-		${params.orderBy}
-		limit #{offset}, #{limit}
+		${params.orderBy} 
+        limit #{offset}, #{limit}
 	</select>
-
-	<update id="update">
-		update userinfo t
+	
+	<update id="update" >
+		update userinfo t 
 		<set>
 			<if test="Id != null">
-				Id = #{Id}, 
+				t.Id = #{Id}, 
 			</if>
 			<if test="UserName != null">
-				UserName = #{UserName}, 
+				t.UserName = #{UserName}, 
 			</if>
 			<if test="Password != null">
-				Password = #{Password}, 
+				t.Password = #{Password}, 
 			</if>
 			<if test="Company != null">
-				Company = #{Company}, 
+				t.Company = #{Company}, 
 			</if>
 			<if test="Address != null">
-				Address = #{Address}, 
+				t.Address = #{Address}, 
 			</if>
 			<if test="Tel != null">
-				Tel = #{Tel}, 
+				t.Tel = #{Tel}, 
 			</if>
 			<if test="Advance != null">
-				Advance = #{Advance}, 
+				t.Advance = #{Advance}, 
 			</if>
 			<if test="IsDel != null">
-				IsDel = #{IsDel}, 
+				t.IsDel = #{IsDel}, 
 			</if>
 			<if test="BeginDate != null">
-				BeginDate = #{BeginDate}, 
+				t.BeginDate = #{BeginDate}, 
 			</if>
 			<if test="EndDate != null">
-				EndDate = #{EndDate}, 
+				t.EndDate = #{EndDate}, 
 			</if>
-
 		</set>
-
-		where t.id = #{id}
+		where t.Id = #{Id}
 	</update>
-
+	
 </mapper>

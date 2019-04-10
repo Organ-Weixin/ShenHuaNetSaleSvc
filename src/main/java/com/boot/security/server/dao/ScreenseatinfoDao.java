@@ -17,6 +17,11 @@ public interface ScreenseatinfoDao {
 	///根据影院、影厅编码获取座位信息
 	@Select("select * from screenseatinfo t where t.CinemaCode = #{cinemacode} and t.ScreenCode = #{screencode}")
 	List<Screenseatinfo> getByCinemaCodeAndScreenCode(@Param("cinemacode")String cinemacode,@Param("screencode")String screencode);
+	
+	//根据场区编码分组，去重复
+	@Select("select * from screenseatinfo t where t.CinemaCode = #{cinemacode} and t.ScreenCode = #{screencode} GROUP BY GroupCode")
+	List<Screenseatinfo> getGroupByGroupCode(@Param("cinemacode") String cinemacode,@Param("screencode") String screencode);
+		
 	////
 	@Select("select * from screenseatinfo t where t.cinemacode = #{cinemacode} and t.screencode=#{screencode} and t.seatcode in(#{seatcodes})")
     List<Screenseatinfo> getBySeatCodes(@Param("cinemacode")String cinemacode,@Param("screencode")String screencode,@Param("seatcodes")String seatcodes);

@@ -33,6 +33,37 @@ public class Sessioninfo extends BaseEntity<Long> {
 	private String MarketingCode;
 	private String MarketingName;
 	
+	private Cinema cinema;
+	private Screeninfo screeninfo;
+	private Userinfo userinfo;
+	private Priceplan priceplan;
+	
+	public Cinema getCinema() {
+		return cinema;
+	}
+	public void setCinema(Cinema cinema) {
+		this.cinema = cinema;
+	}
+	public Screeninfo getScreeninfo() {
+		return screeninfo;
+	}
+	public void setScreeninfo(Screeninfo screeninfo) {
+		this.screeninfo = screeninfo;
+	}
+	public Userinfo getUserinfo() {
+		return userinfo;
+	}
+	public void setUserinfo(Userinfo userinfo) {
+		this.userinfo = userinfo;
+	}
+	public Priceplan getPriceplan() {
+		return priceplan;
+	}
+	public void setPriceplan(Priceplan priceplan) {
+		this.priceplan = priceplan;
+	}
+	
+	
 	public Long getId() {
 		return Id;
 	}

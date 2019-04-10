@@ -21,6 +21,9 @@ public interface FilminfoDao {
     
     @Select("select * from filminfo t where t.filmcode = #{filmcode}")
     Filminfo getByFilmCode(String filmcode);
+    
+    @Select("select * from filminfo  where FilmName = #{filmName}")
+    List<Filminfo> getFilmByFilmName(String filmName);
 
     @Delete("delete from filminfo where id = #{id}")
     int delete(Long id);

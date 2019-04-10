@@ -36,4 +36,13 @@ public class CTMSBaseReply {
         ErrorCode = "-1";
         ErrorMessage = "电影1905不存在该影院或电影1905未对当前合作伙伴开通该影院的权限";
     }
+    /// <summary>
+    /// 凤凰佳影获取影院Id时返回错误信息
+    /// </summary>
+    public void GetYkCinemaNotValidReply()
+    {
+        Status = StatusEnum.Failure;
+        ErrorCode = "-1";
+        ErrorMessage = "凤凰佳影不存在该影院或凤凰佳影未对当前合作伙伴开通该影院的权限";
+    }
 }

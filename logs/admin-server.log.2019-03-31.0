@@ -1,6 +1,0 @@
-2019-03-31 12:08:00,899 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:47]- 生成java model：Filminfo模板
-2019-03-31 12:08:00,912 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:129]- 生成java dao：Filminfo模板
-2019-03-31 12:08:00,922 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:243]- 生成controller：Filminfo模板
-2019-03-31 12:08:00,924 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:259]- 生成查询页面：Filminfo模板
-2019-03-31 12:08:00,926 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:265]- 生成添加页面：Filminfo模板
-2019-03-31 12:08:00,941 [http-nio-8080-exec-8] DEBUG -[TemplateUtil.java:272]- 生成修改页面：Filminfo模板

@@ -11,7 +11,9 @@ import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import com.boot.security.server.model.Priceplan;
 import com.boot.security.server.model.Sessioninfo;
+import com.boot.security.server.model.Userinfo;
 
 @Mapper
 public interface SessioninfoDao {
@@ -42,6 +44,10 @@ public interface SessioninfoDao {
 	//通过影院编码、排期编码、用户id查询影片信息
 	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.scode = #{sessioncode} and t.userID = #{userid}")
 	Sessioninfo getByCinemaCodeAndSessionCodeAndUserId(@Param("cinemacode")String cinemacode,@Param("sessioncode")String sessioncode,@Param("userid")Long userid);
+	
+	//分组查询，去除重复数据
+    @Select("select * from sessioninfo t where t.UserID=#{userId} and t.CCode = #{cinemacode} and t.StartTime>=#{StartDate} and t.StartTime<=#{EndDate} GROUP BY FilmName")
+    List<Sessioninfo> getByCCodeGroupByFilm(@Param("userId") Long userId,@Param("cinemacode") String cinemacode,@Param("StartDate") Date StartDate,@Param("EndDate") Date EndDate);
     
     int update(Sessioninfo sessioninfo);
     //增加
@@ -54,6 +60,22 @@ public interface SessioninfoDao {
     int save(Sessioninfo sessioninfo);
     
     int count(@Param("params") Map<String, Object> params);
+    
+    int countSession(@Param("params") Map<String, Object> params);
 
     List<Sessioninfo> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    
+    
+    
+    @Select("select * from priceplan where CinemaCode=#{CinemaCode} and Code=#{Code} and UserID=#{UserID}")
+    Priceplan selectPrice(Priceplan priceplan);
+    
+    //新增价格数据
+    @Insert("insert into priceplan (CinemaCode,Code,UserID,Price,Type) values (#{CinemaCode},#{Code},#{UserID},#{Price},#{Type})")
+    int addPriceplan(Priceplan priceplan);
+    int updatePriceplan(Priceplan priceplan);
+    
+    //获取渠道
+    @Select("select * from userinfo where IsDel='0'")
+    List<Userinfo> getCompany();
 }

@@ -2,8 +2,6 @@ package com.boot.security.server.api.ctms.reply;
 
 import java.util.List;
 
-import com.boot.security.server.api.ctms.reply.CxQueryCinemaInfoResult.ResBean;
-
 public class YkGetSchedulesResult {
 	private String api;
 	private String v;
@@ -81,134 +79,115 @@ public class YkGetSchedulesResult {
 		}
 
 		public static class ScheduleBean {
-			private String lowestPrice;
-			private String sessionCode;
-			private String throughStatus;
-			private String standardPrice;
-			private String saleStatus;
-			private filmBean film;
-			private String showDateTime;
-			private String feeType;
-			private String cinemaLinkId;
-			private String hallId;
-			private String scheduleKey;
-			private String stopSellingTime;
-			private String ticketFee;
 			private String scheduleId;
-
+			private String scheduleKey;
+			private String cinemaLinkId;
+			private String showDateTime;
+			private String hallId;
+			private String standardPrice;
+			private String lowestPrice;
+			private String settlePrice;
+			private String ticketFee;
+			private String feeType;
+			private String throughStatus;
+			private String stopSellingTime;
+			private String saleStatus;
+			private String sessionCode;
+			private filmBean film;
+			
 			// private List<benefitCardPriceBean> benefitCardPrices;
 			// private List<areaSettlePriceBean> areaSettlePrices;
 			// private String areaId;
-			public String getSessionCode() {
-				return sessionCode;
-			}
-
-			public void setSessionCode(String sessionCode) {
-				this.sessionCode = sessionCode;
-			}
-
-			public String getLowestPrice() {
-				return lowestPrice;
-			}
-
-			public void setLowestPrice(String lowestPrice) {
-				this.lowestPrice = lowestPrice;
-			}
-
-			public String getThroughStatus() {
-				return throughStatus;
-			}
-
-			public void setThroughStatus(String throughStatus) {
-				this.throughStatus = throughStatus;
-			}
-
-			public String getStandardPrice() {
-				return standardPrice;
-			}
-
-			public void setStandardPrice(String standardPrice) {
-				this.standardPrice = standardPrice;
-			}
-
-			public String getShowDateTime() {
-				return showDateTime;
-			}
-
-			public void setShowDateTime(String showDateTime) {
-				this.showDateTime = showDateTime;
-			}
-
-			public String getStopSellingTime() {
-				return stopSellingTime;
-			}
-
-			public void setStopSellingTime(String stopSellingTime) {
-				this.stopSellingTime = stopSellingTime;
-			}
-
-			public String getSaleStatus() {
-				return saleStatus;
-			}
-
-			public void setSaleStatus(String saleStatus) {
-				this.saleStatus = saleStatus;
-			}
-
-			public filmBean getFilm() {
-				return film;
-			}
-
-			public void setFilm(filmBean film) {
-				this.film = film;
-			}
-
-			public String getCinemaLinkId() {
-				return cinemaLinkId;
-			}
-
-			public void setCinemaLinkId(String cinemaLinkId) {
-				this.cinemaLinkId = cinemaLinkId;
-			}
-
-			public String getHallId() {
-				return hallId;
-			}
-
-			public void setHallId(String hallId) {
-				this.hallId = hallId;
-			}
-
-			public String getScheduleKey() {
-				return scheduleKey;
-			}
-
-			public void setScheduleKey(String scheduleKey) {
-				this.scheduleKey = scheduleKey;
-			}
-
-			public String getTicketFee() {
-				return ticketFee;
-			}
-
-			public void setTicketFee(String ticketFee) {
-				this.ticketFee = ticketFee;
-			}
-
-			public String getFeeType() {
-				return feeType;
-			}
-
-			public void setFeeType(String feeType) {
-				this.feeType = feeType;
-			}
-
+			
 			public String getScheduleId() {
 				return scheduleId;
 			}
-
 			public void setScheduleId(String scheduleId) {
 				this.scheduleId = scheduleId;
+			}
+			public String getScheduleKey() {
+				return scheduleKey;
+			}
+			public void setScheduleKey(String scheduleKey) {
+				this.scheduleKey = scheduleKey;
+			}
+			public String getCinemaLinkId() {
+				return cinemaLinkId;
+			}
+			public void setCinemaLinkId(String cinemaLinkId) {
+				this.cinemaLinkId = cinemaLinkId;
+			}
+			public String getShowDateTime() {
+				return showDateTime;
+			}
+			public void setShowDateTime(String showDateTime) {
+				this.showDateTime = showDateTime;
+			}
+			public String getHallId() {
+				return hallId;
+			}
+			public void setHallId(String hallId) {
+				this.hallId = hallId;
+			}
+			public String getStandardPrice() {
+				return standardPrice;
+			}
+			public void setStandardPrice(String standardPrice) {
+				this.standardPrice = standardPrice;
+			}
+			public String getLowestPrice() {
+				return lowestPrice;
+			}
+			public void setLowestPrice(String lowestPrice) {
+				this.lowestPrice = lowestPrice;
+			}
+			public String getSettlePrice() {
+				return settlePrice;
+			}
+			public void setSettlePrice(String settlePrice) {
+				this.settlePrice = settlePrice;
+			}
+			public String getTicketFee() {
+				return ticketFee;
+			}
+			public void setTicketFee(String ticketFee) {
+				this.ticketFee = ticketFee;
+			}
+			public String getFeeType() {
+				return feeType;
+			}
+			public void setFeeType(String feeType) {
+				this.feeType = feeType;
+			}
+			public String getThroughStatus() {
+				return throughStatus;
+			}
+			public void setThroughStatus(String throughStatus) {
+				this.throughStatus = throughStatus;
+			}
+			public String getStopSellingTime() {
+				return stopSellingTime;
+			}
+			public void setStopSellingTime(String stopSellingTime) {
+				this.stopSellingTime = stopSellingTime;
+			}
+			public String getSaleStatus() {
+				return saleStatus;
+			}
+			public void setSaleStatus(String saleStatus) {
+				this.saleStatus = saleStatus;
+			}
+			public String getSessionCode() {
+				return sessionCode;
+			}
+			public void setSessionCode(String sessionCode) {
+				this.sessionCode = sessionCode;
+			}
+			public filmBean getFilm() {
+				return film;
+			}
+			public void setFilm(filmBean film) {
+				this.film = film;
 			}
 
 			/*
@@ -383,4 +362,5 @@ public class YkGetSchedulesResult {
 			}
 		}
 	}
+	
 }

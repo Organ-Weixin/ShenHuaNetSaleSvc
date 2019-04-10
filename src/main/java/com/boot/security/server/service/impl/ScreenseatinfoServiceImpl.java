@@ -50,4 +50,10 @@ public class ScreenseatinfoServiceImpl implements ScreenseatinfoService{
 		return 0;
 	}
 
+	@Override
+	public List<Screenseatinfo> getGroupByGroupCode(String cinemacode, String screencode) {
+		
+		return screenseatinfoDao.getGroupByGroupCode(cinemacode, screencode);
+	}
+
 }
