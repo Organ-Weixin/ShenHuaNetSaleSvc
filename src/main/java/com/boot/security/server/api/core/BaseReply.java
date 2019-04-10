@@ -42,7 +42,7 @@ public class BaseReply {
     /// </summary>
     public void SetSuccessReply()
     {
-        Status = StatusEnum.Success.getStatusName();
+        Status = StatusEnum.Success.getStatusCode();
         ErrorCode = ErrorCodeEnum.Success.getCode();
         ErrorMessage = ErrorCodeEnum.Success.getMessage();
     }

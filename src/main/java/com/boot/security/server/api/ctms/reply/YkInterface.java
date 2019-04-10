@@ -70,7 +70,7 @@ public class YkInterface implements ICTMSInterface {
 		
 		String sign = createSign(userCinema.getDefaultPassword(), param);
 		String getCinemasResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",userCinema.getDefaultPassword(), FormatParam(param), sign),null,"UTF-8");
-
+		System.out.println("Yk影院返回："+getCinemasResult);
 		Gson gson = new Gson();
 		YkGetCinemasResult CinemaListResult = gson.fromJson(getCinemasResult, YkGetCinemasResult.class);
 		if ("0".equals(CinemaListResult.getRetCode()) && "SUCCESS".equals(CinemaListResult.getData().getBizCode())) {
@@ -79,38 +79,30 @@ public class YkInterface implements ICTMSInterface {
 			List<YkCinema> cinemaList = CinemaListResult.getData().getDataList();
 			for(YkCinema fCinema : cinemaList){
 				//更新或添加影院信息
-                Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
-                if(userCinema.getCinemaCode().equals(fCinema.getCinemaId())){
-                    cinema.setName(fCinema.getName());
-                    cinema.setAddress(fCinema.getCity());
-                    cinema.setScreenCount(fCinema.getHallCount());
-                    cinema.setCinemaId(fCinema.getCinemaLinkId());	//影院内部编码
-                    _cinemaService.update(cinema);
-                    
-                  //更新影厅信息
-                    List<Screeninfo> newScreens = new ArrayList<Screeninfo>();
-                    List<Halls> screens=fCinema.getHalls();
-                    for(Halls hall:screens){
-                    	Screeninfo screen=new Screeninfo();//先读取本地
-                    	YkModelMapper.ScreenMapToEntity(hall, screen);
-                    	screen.setCCode(userCinema.getCinemaCode());
-                    	newScreens.add(screen);
-                    }
-                    //先删除旧影影厅
-        			_screeninfoService.deleteByCinemaCode(userCinema.getCinemaCode());
-        			//插入影厅信息
-        			for(Screeninfo screen:newScreens){
-        				_screeninfoService.save(screen);
-        			}
-                } else {
-                	reply.GetYkCinemaNotValidReply();
-        			
-                    return reply;
+            	Cinema cinema = _cinemaService.getByCinemaCode(fCinema.getCinemaId());
+                cinema.setName(fCinema.getName());
+                cinema.setAddress(fCinema.getCity());
+                cinema.setScreenCount(fCinema.getHallCount());
+                cinema.setCinemaId(fCinema.getCinemaLinkId());	//影院内部编码
+                _cinemaService.update(cinema);
+            
+                //更新影厅信息
+                List<Screeninfo> newScreens = new ArrayList<Screeninfo>();
+                List<Halls> screens=fCinema.getHalls();
+                for(Halls hall:screens){
+                	Screeninfo screen=new Screeninfo();//先读取本地
+                	YkModelMapper.ScreenMapToEntity(hall, screen);
+                	screen.setCCode(fCinema.getCinemaId());
+                	newScreens.add(screen);
                 }
-                
-    			reply.Status = StatusEnum.Success;
-    			
-			} 
+                //先删除旧影影厅
+    			_screeninfoService.deleteByCinemaCode(fCinema.getCinemaId());
+    			//插入影厅信息
+    			for(Screeninfo screen:newScreens){
+    				_screeninfoService.save(screen);
+    			}
+			}
+			reply.Status = StatusEnum.Success;
 		} else {
 			reply.Status = StatusEnum.Failure;
 		}
@@ -830,8 +822,11 @@ public class YkInterface implements ICTMSInterface {
 		//Dy1905GetCinemaResult result=QueryCinemaId();
 		//System.out.println(result.getGetCinemaResult().getCinemas().getCinema().get(0).getCinemaName());
 		
-		String str="2019-04-16 21:30:00";
-		Date dd=new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(str);
-		System.out.println(dd);
+		
+		if (StatusEnum.Success.getStatusCode().equals("Success")) {
+			System.out.println(111);
+		} else {
+			System.out.println(222);
+		}
 	}
 }

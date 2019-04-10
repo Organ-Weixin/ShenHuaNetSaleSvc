@@ -3,6 +3,7 @@ package com.boot.security.server.api.core;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -116,6 +117,7 @@ public class NetSaleSvcCore {
 			reply.Cinemas.CinemaCount = 0;
 		} else {
 			reply.Cinemas.CinemaCount = cinemaList.size();
+			reply.Cinemas.Cinema = new ArrayList<QueryCinemaListReplyCinema>();
 			for (Usercinemaview cinema : cinemaList) {
 				QueryCinemaListReplyCinema replycinema = reply.Cinemas.new QueryCinemaListReplyCinema();
 				ModelMapper.MapFrom(replycinema, cinema);
@@ -159,7 +161,7 @@ public class NetSaleSvcCore {
 			CTMSReply = _CTMSInterface.QueryCinema(userCinema);
 		} catch (Exception e) {
 		}
-		if (CTMSReply.Status == StatusEnum.Success) {
+		if (StatusEnum.Success.equals(CTMSReply.Status)) {
 			// 获取影院影厅列表
 			reply.Cinema = reply.new QueryCinemaReplyCinema();
 			reply.Cinema.Code = userCinema.getCinemaCode();
@@ -171,6 +173,7 @@ public class NetSaleSvcCore {
 				reply.Cinema.ScreenCount = 0;
 			} else {
 				reply.Cinema.ScreenCount = ScreenList.size();
+				reply.Cinema.Screen = new ArrayList<QueryCinemaReplyScreen>();
 				for (Screeninfo screen : ScreenList) {
 					QueryCinemaReplyScreen replyscreen = reply.Cinema.new QueryCinemaReplyScreen();
 					ModelMapper.MapFrom(replyscreen, screen);
