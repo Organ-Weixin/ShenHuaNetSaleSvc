@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="../../layui/css/layui.css" media="all" />
+</head>
+<body>
+    <div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div>
+                <header style="height: 100%">
+                    <div align="left">
+	                    <table style="width: 100%">
+	                   		<tr>
+	                   			<td>
+		                   			<form class="form-inline" onsubmit="return false">
+										<div class="form-group">
+											渠道：
+											<select class="form-control input-sm" id="channel" style="width:150px;">
+												<option value="">渠道</option>
+											</select>
+											排期时间：
+											<input id="sessionDate" type="text" class="form-control" placeholder="排期时间">
+											关键字：
+											<input id="keyword" type="text" class="form-control" placeholder="请输入搜索关键字">
+											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
+										</div>
+									</form>
+	                   			</td>
+	                   			
+	                   		</tr> 
+	                    </table>
+					</div>
+                </header>
+                
+                <div>
+                    <div class="widget-body no-padding">
+                        <table id="dt-table" class="table table-striped table-bordered table-hover" style="width:100%">
+                            <thead>
+                                <tr>
+                                </tr>                       
+                                <tr>
+									<th>#</th>
+									<th>影院名称</th>
+									<th>渠道名称</th>
+									<th>影片名称</th>
+									<th>影厅名称</th>
+									<th>放映时间</th>
+									<th>时长(分钟)</th>
+									<th>语言</th>
+									<th>标准价</th>
+									<th>最低价</th>
+									<th>设置价</th>
+									<th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/jq.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript" src="../../js/my/permission.js"></script>
+<script type="text/javascript">
+var pers = checkPermission();
+
+var example;
+function init(){
+	example = 
+    	$('#dt-table').DataTable({
+        	"searching": false,
+        	"processing": false,
+        	"serverSide" : true,
+        	"language": {
+                "url": "/js/plugin/datatables/Chinese.lang"
+            },
+        	"ajax": {
+        		"url" : "/sessioninfos",
+        		"type":"get",
+        		"data":function(d){
+    				d.Company = $("#channel").val();
+    				d.StartTime = $("#sessionDate").val();
+    				d.FilmName = $("#keyword").val();
+    			}
+        	},
+        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
+            "columns": [
+            	{	"data" : null, 
+            		"defaultContent" : "",
+					"render" : function(data, type, full, meta){
+						return meta.row + 1 + meta.settings._iDisplayStart;
+						}
+				},
+				{	
+					"data": "cinema",
+                    "sDefaultContent": "",
+                    "orderable":false,
+                    "render": function (data,type,row,meta) {
+                        var cinema=row['cinema'];
+                    	return cinema['name'];
+                    }
+				},
+				{	
+					"data": "userinfo",
+                    "sDefaultContent": "",
+                    "render": function (data,type,row,meta) {
+                        var userinfo=row['userinfo'];
+                    	return userinfo['company'];
+                    }
+				},
+				{"data" : "filmName", "defaultContent" : ""},
+				{	
+					"data": "screeninfo",
+                    "sDefaultContent": "",
+                    "orderable":false,
+                    "render": function (data,type,row,meta) {
+                        var screeninfo=row['screeninfo'];
+                    	return screeninfo['sname'];
+                    }
+				},
+				{"data" : "startTime", "defaultContent" : ""},
+				{"data" : "duration", "defaultContent" : ""},
+				{"data" : "language", "defaultContent" : ""},
+				{"data" : "standardPrice", "defaultContent" : ""},
+				{"data" : "lowestPrice", "defaultContent" : ""},
+				{	
+					"data": "priceplan",
+                    "sDefaultContent": 0,
+                    "orderable":false,
+                    "render": function (data,type,row,meta) {
+                        var priceplan=row['priceplan'];
+                    	return priceplan['price'];
+                    }
+				},
+				{ 
+					"data": "sessioninfo", 
+					"sDefaultContent": "价格设置",
+					"orderable":false,
+			        "render": function (data, type, row) {
+             		           var id=row['id'];		
+             		           var href = "updateSessioninfo.html?Id=" + id;
+                               var edit = buttonEdit(href, "", pers,row);
+
+                                return edit;
+               	            }		
+				},
+                
+            ],
+           "order": [[ 3, "asc" ]]
+        } );
+}
+
+getCompany();
+function getCompany(){
+	$.ajax({
+        type:"post",
+        url:"/sessioninfos/getCompany",
+        success:function(data){
+			for(var i=0; i<data.length;i++){
+				var option = "<option value="+data[i].company+">"+data[i].company+"</option>";
+				$("#channel").append(option);
+			}
+        },
+        error:function(){
+            J.alert('Error');
+        }
+    })
+}
+
+
+layui.use(['layer','laydate'], function(){
+    var layer = layui.layer;
+    var laydate = layui.laydate;
+    laydate.render({
+       elem: '#sessionDate',
+    });
+});
+
+$("#searchBt").click(function(){
+	example.ajax.reload();
+});
+
+init();
+</script>

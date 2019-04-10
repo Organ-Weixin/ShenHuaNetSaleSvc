@@ -30,6 +30,9 @@ public interface UserinfoDao {
     @Insert("insert into userinfo(Id, UserName, Password, Company, Address, Tel, Advance, IsDel, BeginDate, EndDate) values(#{Id}, #{UserName}, #{Password}, #{Company}, #{Address}, #{Tel}, #{Advance}, #{IsDel}, #{BeginDate}, #{EndDate})")
     int save(Userinfo userinfo);
     
+    @Select("select * from userinfo where userName=#{userName}")
+	Userinfo selcectByUserName(String userName);
+    
     int count(@Param("params") Map<String, Object> params);
 
     List<Userinfo> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);

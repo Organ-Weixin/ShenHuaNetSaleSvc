@@ -21,4 +21,6 @@ public interface SessioninfoService {
 	int delete(String ccode,Date StartTime);
 	
 	List<Sessioninfo> getFilms(String CCode,Date StartTime,Date EndTime);
+	
+	List<Sessioninfo> getByCCodeGroupByFilm(Long userid,String cinemacode,Date StartDate,Date EndDate);
 }

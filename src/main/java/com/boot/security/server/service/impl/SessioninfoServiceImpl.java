@@ -68,6 +68,12 @@ public class SessioninfoServiceImpl implements SessioninfoService{
 		// TODO Auto-generated method stub
 		return sessioninfoDao.deleteByCinemaCode(ccode, StartTime);
 	}
+
+	@Override
+	public List<Sessioninfo> getByCCodeGroupByFilm(Long userid, String cinemacode, Date StartDate, Date EndDate) {
+		
+		return sessioninfoDao.getByCCodeGroupByFilm(userid, cinemacode, StartDate, EndDate);
+	}
 	
 	
 }

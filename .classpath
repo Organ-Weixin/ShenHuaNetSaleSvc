@@ -28,7 +28,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="E:/jarPackage/axis-1.4.jar"/>
-	<classpathentry kind="lib" path="E:/jarPackage/com.springsource.javax.xml.rpc-1.1.0.jar"/>
+	<classpathentry kind="lib" path="E:/资料/jar包/axis-1.4.jar"/>
+	<classpathentry kind="lib" path="E:/资料/jar包/com.springsource.javax.xml.rpc-1.1.0.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
