@@ -1,12 +1,14 @@
 package com.boot.security.server.model;
 
 public enum YesOrNoEnum {
-	Yes("是",1),
-	No("否",0);
+	Yes("是","Yes","1"),
+	No("否","No","0");
 	private String StatusName;
-	private int StatusCode;
-	YesOrNoEnum(String StatusName,int StatusCode){
+	private String StatusFlag;
+	private String StatusCode;
+	YesOrNoEnum(String StatusName,String StatusFlag,String StatusCode){
 		this.StatusName=StatusName;
+		this.StatusFlag=StatusFlag;
 		this.StatusCode=StatusCode;
 	}
 	public String getStatusName() {
@@ -15,12 +17,19 @@ public enum YesOrNoEnum {
 	public void setStatusName(String statusName) {
 		StatusName = statusName;
 	}
-	public int getStatusCode() {
+	public String getStatusCode() {
 		return StatusCode;
 	}
-	public void setStatusCode(int statusCode) {
+	public void setStatusCode(String statusCode) {
 		StatusCode = statusCode;
 	}
+	public String getStatusFlag() {
+		return StatusFlag;
+	}
+	public void setStatusFlag(String statusFlag) {
+		StatusFlag = statusFlag;
+	}
+	
 	
 
 }
