@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.boot.security.server.api.ctms.reply.CxQueryCinemaInfoResult.ResBean.CinemaBean.ScreensBean.ScreenVOBean;
 import com.boot.security.server.api.ctms.reply.CxQueryFilmInfoByDatePeriodResult.ResBean.FilmInfoVOsBean.FilmInfoVOBean;
 import com.boot.security.server.api.ctms.reply.CxQueryPlanInfoByDatePeriodResult.ResBean.CinemaPlansBean.CinemaPlanBean;
@@ -51,12 +54,14 @@ public class CxInterface implements ICTMSInterface {
 	FilminfoServiceImpl _filminfoService = SpringUtil.getBean(FilminfoServiceImpl.class);
 	SessioninfoServiceImpl _sessioninfoService = SpringUtil.getBean(SessioninfoServiceImpl.class);
 	private static final String pCompress = "0";
+	
+	protected static Logger log = LoggerFactory.getLogger(CxInterface.class);
      
 	public CxInterface() {
 		cxService = new WebService();
 	}
 
-	// region 查询影厅信息 
+	// region 查询影厅信息 （完成）
 	public CTMSQueryCinemaReply QueryCinema(Usercinemaview userCinema) {
 		CTMSQueryCinemaReply reply = new CTMSQueryCinemaReply();
 		CxQueryCinemaInfoResult cxReply = cxService.QueryCinemaInfo(userCinema);
@@ -66,7 +71,6 @@ public class CxInterface implements ICTMSInterface {
 			cinema.setName(cxReply.getQueryCinemaInfoResult().getCinema().getCinemaName());
 			cinema.setAddress(cxReply.getQueryCinemaInfoResult().getCinema().getAddress());
 			cinema.setScreenCount(Integer.parseInt(cxReply.getQueryCinemaInfoResult().getCinema().getScreenCount()));
-			cinema.setCinemaId("0000");
 			_cinemaService.update(cinema);
 			// 更新影厅信息
 			// List<Screeninfo> oldScreens=
@@ -95,14 +99,14 @@ public class CxInterface implements ICTMSInterface {
 	}
 	// endregion
 
-	// region 查询影厅座位
+	// region 查询影厅座位（完成）
 	@Override
 	public CTMSQuerySeatReply QuerySeat(Usercinemaview userCinema, Screeninfo screen) {
 		CTMSQuerySeatReply reply = new CTMSQuerySeatReply();
 		CxQuerySeatInfoResult cxReply = cxService.QuerySeatInfo(userCinema, screen.getSCode());
-		if (cxReply.getQuerySeatInfoResult().getResultCode() == "0") {
+		if ("0".equals(cxReply.getQuerySeatInfoResult().getResultCode())) {
 			// 更新影厅座位
-			List<Screenseatinfo> newSeats = null;
+			List<Screenseatinfo> newSeats = new ArrayList<Screenseatinfo>();
 			List<ScreenSiteBean> screenSites = cxReply.getQuerySeatInfoResult().getScreenSites().getScreenSite();
 			for (ScreenSiteBean screenSite : screenSites) {
 				Screenseatinfo seat = new Screenseatinfo();// 创建实例
@@ -146,7 +150,7 @@ public class CxInterface implements ICTMSInterface {
 	}
 	// endregion
 
-	// region 查询影片
+	// region 查询影片（完成）
 	@Override
 	public CTMSQueryFilmReply QueryFilm(Usercinemaview userCinema, Date StartDate, Date EndDate) throws ParseException {
 		CTMSQueryFilmReply reply = new CTMSQueryFilmReply();
@@ -159,7 +163,7 @@ public class CxInterface implements ICTMSInterface {
 			if (FilmList.size() > 0) {
 				// 去除重复
 				FilmList = FilmList.stream().distinct().collect(Collectors.toList());
-				List<Filminfo> FilmInfos = null;
+				List<Filminfo> FilmInfos = new ArrayList<Filminfo>();
 				for (FilmInfoVOBean filmVo : FilmList) {
 					Filminfo filmInfo = _filminfoService.getByFilmCode(filmVo.getFilmCode());
 					if (filmInfo == null) {
@@ -186,7 +190,7 @@ public class CxInterface implements ICTMSInterface {
 	}
 	// endregion
 
-	// region 查询排期场次
+	// region 查询排期场次(完成)
 	@Override
 	public CTMSQuerySessionReply QuerySession(Usercinemaview userCinema, Date StartDate, Date EndDate)
 			throws Exception {
@@ -199,7 +203,7 @@ public class CxInterface implements ICTMSInterface {
 			List<CinemaPlanBean> CinemaPlans = cxReply.getQueryPlanInfoByDatePeriodResult().getCinemaPlans()
 					.getCinemaPlan();
 			if (CinemaPlans.size() > 0) {
-				List<Sessioninfo> newSessions = null;
+				List<Sessioninfo> newSessions = new ArrayList<Sessioninfo>();
 				for (CinemaPlanBean cinemaplan : CinemaPlans) {
 					Sessioninfo session = new Sessioninfo();// 先创建实例
 					CxModelMapper.MapToEntity(cinemaplan, session);
@@ -225,14 +229,14 @@ public class CxInterface implements ICTMSInterface {
 	}
 	// endregion
 
-	// region 查询场次座位
+	// region 查询场次座位（完成）
 	@Override
 	public CTMSQuerySessionSeatReply QuerySessionSeat(Usercinemaview userCinema, String SessionCode,
 			SessionSeatStatusEnum Status) {
 		CTMSQuerySessionSeatReply reply = new CTMSQuerySessionSeatReply();
 		CxQueryPlanSeatResult cxReply = cxService.QueryPlanSeat(userCinema, SessionCode, Status.getStatusCode());
 		if (cxReply.getQueryPlanSeatResult().getResultCode().equals("0")) {
-			List<SessionSeat> sessionseats = null;
+			List<SessionSeat> sessionseats = new ArrayList<SessionSeat>();
 			for (PlanSiteStateBean plansite : cxReply.getQueryPlanSeatResult().getPlanSiteStates().getPlanSiteState()) {
 				SessionSeat sessionseat = new SessionSeat();
 				sessionseat.setSeatCode(plansite.getSeatCode());
@@ -252,7 +256,7 @@ public class CxInterface implements ICTMSInterface {
 	}
 	// endregion
 
-	// region 锁座
+	// region 锁座（完成）
 	@Override
 	public CTMSLockSeatReply LockSeat(Usercinemaview userCinema, OrderView order) {
 		CTMSLockSeatReply reply = new CTMSLockSeatReply();
@@ -274,7 +278,7 @@ public class CxInterface implements ICTMSInterface {
 	}
 	// endregion
 
-	// region 释放座位
+	// region 释放座位（完成）
 	@Override
 	public CTMSReleaseSeatReply ReleaseSeat(Usercinemaview userCinema, OrderView order) {
 		CTMSReleaseSeatReply reply = new CTMSReleaseSeatReply();
@@ -293,7 +297,7 @@ public class CxInterface implements ICTMSInterface {
 	}
 	// endregion
 
-	// region 提交订单
+	// region 提交订单（完成）
 	@Override
 	public CTMSSubmitOrderReply SubmitOrder(Usercinemaview userCinema, OrderView order) {
 		CTMSSubmitOrderReply reply = new CTMSSubmitOrderReply();
@@ -303,9 +307,12 @@ public class CxInterface implements ICTMSInterface {
 			order.getOrderBaseInfo().setPrintNo(cxReply.getSubmitOrderResult().getPrintNo());
 			order.getOrderBaseInfo().setVerifyCode(cxReply.getSubmitOrderResult().getVerifyCode());
 			for (Orderseatdetails orderseat : order.getOrderSeatDetails()) {
-				SeatInfoBean seatinfobean = (SeatInfoBean) cxReply.getSubmitOrderResult().getSeatInfos().getSeatInfo()
-						.stream().filter((SeatInfoBean b) -> b.getSeatCode() == orderseat.getSeatCode())
+				log.info("SeatCode："+orderseat.getSeatCode());
+				List<SeatInfoBean> seatinfobeans = cxReply.getSubmitOrderResult().getSeatInfos().getSeatInfo()
+						.stream().filter(item->item.getSeatCode().equals(orderseat.getSeatCode()))
 						.collect(Collectors.toList());
+				SeatInfoBean seatinfobean = seatinfobeans.get(0);
+				log.info("SeatInfoBean："+seatinfobean.getSeatCode());
 				if (seatinfobean != null) {
 					orderseat.setFilmTicketCode(seatinfobean.getFilmTicketCode());
 				}
@@ -324,7 +331,7 @@ public class CxInterface implements ICTMSInterface {
 	}
 	// endregion
 
-	//region 查询出票状态
+	//region 查询出票状态（完成）
 	@Override
 	public CTMSQueryPrintReply QueryPrint(Usercinemaview userCinema, OrderView order) throws ParseException {
 		CTMSQueryPrintReply reply = new CTMSQueryPrintReply();
@@ -349,7 +356,7 @@ public class CxInterface implements ICTMSInterface {
 	}
 	//endregion
 	
-	//region 退票
+	//region 退票（完成）
 	@Override
 	public CTMSRefundTicketReply RefundTicket(Usercinemaview userCinema, OrderView order) {
 		CTMSRefundTicketReply reply = new CTMSRefundTicketReply();
@@ -371,11 +378,12 @@ public class CxInterface implements ICTMSInterface {
 	}
 	//endregion
 
-	//region 查询订单
+	//region 查询订单（完成）
 	@Override
 	public CTMSQueryOrderReply QueryOrder(Usercinemaview userCinema, OrderView order) throws ParseException {
 		CTMSQueryOrderReply reply = new CTMSQueryOrderReply();
 		CxQueryOrderStatusResult cxReply=cxService.QueryOrderStatus(userCinema,order.getOrderBaseInfo().getSubmitOrderCode());
+		log.info(cxReply.getQueryOrderStatusResult().getResultCode());
 		if (cxReply.getQueryOrderStatusResult().getResultCode().equals("0") &&cxReply.getQueryOrderStatusResult().getOrderStatus()!="1")
         {
             if (cxReply.getQueryOrderStatusResult().getOrderStatus()=="2")
@@ -388,6 +396,7 @@ public class CxInterface implements ICTMSInterface {
             QueryPrint(userCinema, order);
 
             reply.Status = StatusEnum.Success;
+            log.info(reply.Status.getStatusCode());
         }
         else if (cxReply.getQueryOrderStatusResult().getOrderStatus()=="1")
         {
@@ -405,7 +414,7 @@ public class CxInterface implements ICTMSInterface {
 	}
 	//endregion
 	
-	//region 查询影票
+	//region 查询影票（完成）
 	@Override
 	public CTMSQueryTicketReply QueryTicket(Usercinemaview userCinema, OrderView order) {
 		CTMSQueryTicketReply reply = new CTMSQueryTicketReply();
@@ -415,9 +424,10 @@ public class CxInterface implements ICTMSInterface {
             if (cxReply.getQueryTicketInfoResult().getTickets() != null && cxReply.getQueryTicketInfoResult().getTickets().getTicket() != null && cxReply.getQueryTicketInfoResult().getTickets().getTicket().size()>0)
             {
             	for (Orderseatdetails orderseat : order.getOrderSeatDetails()) {
-            		TicketBean ticketbean = (TicketBean) cxReply.getQueryTicketInfoResult().getTickets().getTicket()
-    						.stream().filter((TicketBean b) -> b.getSeatCode() == orderseat.getSeatCode())
+            		List<TicketBean> ticketbeans = cxReply.getQueryTicketInfoResult().getTickets().getTicket()
+    						.stream().filter(item->item.getSeatCode().equals(orderseat.getSeatCode()))
     						.collect(Collectors.toList());
+            		TicketBean ticketbean = ticketbeans.get(0);
     				if (ticketbean != null) {
     					orderseat.setTicketInfoCode(ticketbean.getTicketInfoCode());
     					orderseat.setFilmTicketCode(ticketbean.getTicketCode());
@@ -439,7 +449,7 @@ public class CxInterface implements ICTMSInterface {
 	}
 	//endregion
 
-	//region 确认出票
+	//region 确认出票(完成)
 	@Override
 	public CTMSFetchTicketReply FetchTicket(Usercinemaview userCinema, OrderView order) {
 		CTMSFetchTicketReply reply = new CTMSFetchTicketReply();
