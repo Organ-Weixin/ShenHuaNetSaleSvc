@@ -155,6 +155,7 @@ public class ModelMapper {
         order.getOrderBaseInfo().setTotalSalePrice(queryXmlObj.SubmitOrder.Order.Seat.stream().mapToDouble(SubmitOrderQueryXmlSeat::getRealPrice).sum());
         order.getOrderBaseInfo().setTotalFee(queryXmlObj.SubmitOrder.Order.Seat.stream().mapToDouble(SubmitOrderQueryXmlSeat::getFee).sum());
         order.getOrderBaseInfo().setMobilePhone(queryXmlObj.SubmitOrder.Order.MobilePhone);
+        order.getOrderBaseInfo().setUpdated(new Date());
         if (order.getOrderBaseInfo().getIsMemberPay()==1)
         {
             order.getOrderBaseInfo().setPaySeqNo(queryXmlObj.SubmitOrder.Order.PaySeqNo);
@@ -166,6 +167,7 @@ public class ModelMapper {
         		seat.setPrice(seatinfo.get(0).getPrice());
         		seat.setSalePrice(seatinfo.get(0).getRealPrice());
         		seat.setFee(seatinfo.get(0).getFee());
+        		seat.setUpdated(new Date());
         	}
         }
         return order;

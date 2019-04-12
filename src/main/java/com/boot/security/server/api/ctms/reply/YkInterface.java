@@ -73,42 +73,48 @@ public class YkInterface implements ICTMSInterface {
 		System.out.println("Yk影院返回："+getCinemasResult);
 		Gson gson = new Gson();
 		YkGetCinemasResult CinemaListResult = gson.fromJson(getCinemasResult, YkGetCinemasResult.class);
-		if ("0".equals(CinemaListResult.getRetCode()) && "SUCCESS".equals(CinemaListResult.getData().getBizCode())) {
-//			List<FHJYCinema> cinemaList=CinemaListResult.getData().getDataList().stream().
-//					filter((FHJYCinema cinema)->cinema.getCinemaId().equals(userCinema.getCinemaCode())).collect(Collectors.toList());
-			List<YkCinema> cinemaList = CinemaListResult.getData().getDataList();
-			for(YkCinema fCinema : cinemaList){
-				//更新或添加影院信息
-            	Cinema cinema = _cinemaService.getByCinemaCode(fCinema.getCinemaId());
-                cinema.setName(fCinema.getName());
-                cinema.setAddress(fCinema.getCity());
-                cinema.setScreenCount(fCinema.getHallCount());
-                cinema.setCinemaId(fCinema.getCinemaLinkId());	//影院内部编码
-                _cinemaService.update(cinema);
-            
-                //更新影厅信息
-                List<Screeninfo> newScreens = new ArrayList<Screeninfo>();
-                List<Halls> screens=fCinema.getHalls();
-                for(Halls hall:screens){
-                	Screeninfo screen=new Screeninfo();//先读取本地
-                	YkModelMapper.ScreenMapToEntity(hall, screen);
-                	screen.setCCode(fCinema.getCinemaId());
-                	newScreens.add(screen);
-                }
-                //先删除旧影影厅
-    			_screeninfoService.deleteByCinemaCode(fCinema.getCinemaId());
-    			//插入影厅信息
-    			for(Screeninfo screen:newScreens){
-    				_screeninfoService.save(screen);
-    			}
+		if ("0".equals(CinemaListResult.getRetCode())) {
+			if("SUCCESS".equals(CinemaListResult.getData().getBizCode())){
+//				List<FHJYCinema> cinemaList=CinemaListResult.getData().getDataList().stream().
+//						filter((FHJYCinema cinema)->cinema.getCinemaId().equals(userCinema.getCinemaCode())).collect(Collectors.toList());
+				List<YkCinema> cinemaList = CinemaListResult.getData().getDataList();
+				for(YkCinema fCinema : cinemaList){
+					//更新或添加影院信息
+	            	Cinema cinema = _cinemaService.getByCinemaCode(fCinema.getCinemaId());
+	                cinema.setName(fCinema.getName());
+	                cinema.setAddress(fCinema.getCity());
+	                cinema.setScreenCount(fCinema.getHallCount());
+	                cinema.setCinemaId(fCinema.getCinemaLinkId());	//影院内部编码
+	                _cinemaService.update(cinema);
+	            
+	                //更新影厅信息
+	                List<Screeninfo> newScreens = new ArrayList<Screeninfo>();
+	                List<Halls> screens=fCinema.getHalls();
+	                for(Halls hall:screens){
+	                	Screeninfo screen=new Screeninfo();//先读取本地
+	                	YkModelMapper.ScreenMapToEntity(hall, screen);
+	                	screen.setCCode(fCinema.getCinemaId());
+	                	newScreens.add(screen);
+	                }
+	                //先删除旧影影厅
+	    			_screeninfoService.deleteByCinemaCode(fCinema.getCinemaId());
+	    			//插入影厅信息
+	    			for(Screeninfo screen:newScreens){
+	    				_screeninfoService.save(screen);
+	    			}
+				}
+				reply.Status = StatusEnum.Success;
+			} else {
+				reply.Status = StatusEnum.Failure;
 			}
-			reply.Status = StatusEnum.Success;
+			reply.ErrorCode=CinemaListResult.getData().getBizCode();
+			reply.ErrorMessage=CinemaListResult.getData().getBizMsg();
+			
 		} else {
 			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode=CinemaListResult.getRetCode();
+			reply.ErrorMessage=CinemaListResult.getRetMsg();
 		}
-
-		reply.ErrorCode=CinemaListResult.getData().getBizCode();
-		reply.ErrorMessage=CinemaListResult.getData().getBizMsg();
 
 		return reply;
 	
@@ -136,37 +142,43 @@ public class YkInterface implements ICTMSInterface {
 //		System.out.println("影厅座位返回："+getSeatsResult);
 		Gson gson = new Gson();
 		YkGetSeatsResult seatsResult = gson.fromJson(getSeatsResult, YkGetSeatsResult.class);
-		if ("0".equals(seatsResult.getRetCode()) && "SUCCESS".equals(seatsResult.getData().getBizCode())) {	
-			List<Screenseatinfo> newScreen = new ArrayList<Screenseatinfo>();
-			List<SeatPlan> seatPlan=seatsResult.getData().getData().getSeatPlanList();
-			for(int i=0;i<seatPlan.size();i++){
-				List<Sections> screenseats =seatPlan.get(i).getSections();
-				for(int j=0;j<screenseats.size();j++){
-					List<Seats> seats = screenseats.get(j).getSeats();
-					for(Seats seat:seats){
-						Screenseatinfo screenseat=new Screenseatinfo();
-						screenseat.setCinemaCode(userCinema.getCinemaCode());
-						screenseat.setScreenCode(screen.getSCode());
-						screenseat.setGroupCode(screenseats.get(j).getSectionId());
-						YkModelMapper.SeatMapToEntity(seat, screenseat);
-						newScreen.add(screenseat);
+		if ("0".equals(seatsResult.getRetCode())) {
+			if("SUCCESS".equals(seatsResult.getData().getBizCode())){
+				List<Screenseatinfo> newScreen = new ArrayList<Screenseatinfo>();
+				List<SeatPlan> seatPlan=seatsResult.getData().getData().getSeatPlanList();
+				for(int i=0;i<seatPlan.size();i++){
+					List<Sections> screenseats =seatPlan.get(i).getSections();
+					for(int j=0;j<screenseats.size();j++){
+						List<Seats> seats = screenseats.get(j).getSeats();
+						for(Seats seat:seats){
+							Screenseatinfo screenseat=new Screenseatinfo();
+							screenseat.setCinemaCode(userCinema.getCinemaCode());
+							screenseat.setScreenCode(screen.getSCode());
+							screenseat.setGroupCode(screenseats.get(j).getSectionId());
+							YkModelMapper.SeatMapToEntity(seat, screenseat);
+							newScreen.add(screenseat);
+						}
 					}
 				}
+				//删除旧影厅座位
+				_screenseatinfoService.deleteByScreenCode(userCinema.getCinemaCode(), screen.getSCode());
+				//插入新影厅座位信息
+				for(Screenseatinfo screenseat:newScreen){
+					_screenseatinfoService.save(screenseat);
+				}
+				
+				reply.Status = StatusEnum.Success;
+			} else {
+				reply.Status = StatusEnum.Failure;
 			}
-			//删除旧影厅座位
-			_screenseatinfoService.deleteByScreenCode(userCinema.getCinemaCode(), screen.getSCode());
-			//插入新影厅座位信息
-			for(Screenseatinfo screenseat:newScreen){
-				_screenseatinfoService.save(screenseat);
-			}
+			reply.ErrorCode=seatsResult.getData().getBizCode();
+			reply.ErrorMessage=seatsResult.getData().getBizMsg();
 			
-			reply.Status = StatusEnum.Success;
 		} else {
 			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode=seatsResult.getRetCode();
+			reply.ErrorMessage=seatsResult.getRetMsg();
 		}
-		
-		reply.ErrorCode=seatsResult.getData().getBizCode();
-		reply.ErrorMessage=seatsResult.getData().getBizMsg();
 		
 		return reply;
 	}
@@ -255,31 +267,38 @@ public class YkInterface implements ICTMSInterface {
 		Gson gson = new Gson();
 		YkGetSchedulesResult ykReply=gson.fromJson(getSchedulesResult, YkGetSchedulesResult.class);
 		System.out.println("排期返回："+getSchedulesResult);
-		if ("0".equals(ykReply.getRetCode()) && "SUCCESS".equals(ykReply.getData().getBizCode())){
-			//更新排期
-			List<Sessioninfo> newSessions = new ArrayList<Sessioninfo>();
-			List<ScheduleBean> scheduleBeans=ykReply.getData().getDataList();
+		if ("0".equals(ykReply.getRetCode())){
+			if("SUCCESS".equals(ykReply.getData().getBizCode())){
+				//更新排期
+				List<Sessioninfo> newSessions = new ArrayList<Sessioninfo>();
+				List<ScheduleBean> scheduleBeans=ykReply.getData().getDataList();
+				
+				for(ScheduleBean scheduleBean:scheduleBeans)
+				{
+					Sessioninfo session=new Sessioninfo();//实例化
+					YkModelMapper.MapToEntity(scheduleBean,session);
+					session.setCCode(userCinema.getCinemaCode());
+					session.setUserID(userCinema.getUserId());
+					newSessions.add(session);
+				}
+				//删除原有的排期
+				_sessioninfoService.deleteByCinemaCodeAndDate(userCinema.getUserId(), userCinema.getCinemaCode(), StartDate, EndDate);
+				//插入排期信息
+				for(Sessioninfo session:newSessions){
+					_sessioninfoService.save(session);
+				}
+				reply.Status = StatusEnum.Success;
+			} else {
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = ykReply.getData().getBizCode();
+			reply.ErrorMessage = ykReply.getData().getBizMsg();
 			
-			for(ScheduleBean scheduleBean:scheduleBeans)
-			{
-				Sessioninfo session=new Sessioninfo();//实例化
-				YkModelMapper.MapToEntity(scheduleBean,session);
-				session.setCCode(userCinema.getCinemaCode());
-				session.setUserID(userCinema.getUserId());
-				newSessions.add(session);
-			}
-			//删除原有的排期
-			_sessioninfoService.deleteByCinemaCodeAndDate(userCinema.getUserId(), userCinema.getCinemaCode(), StartDate, EndDate);
-			//插入排期信息
-			for(Sessioninfo session:newSessions){
-				_sessioninfoService.save(session);
-			}
-			reply.Status = StatusEnum.Success;
 		} else {
             reply.Status = StatusEnum.Failure;
+            reply.ErrorCode = ykReply.getRetCode();
+			reply.ErrorMessage = ykReply.getRetMsg();
         }
-		reply.ErrorCode = ykReply.getData().getBizCode();
-		reply.ErrorMessage = ykReply.getData().getBizMsg();
 		
 		return reply;
 	}
@@ -400,23 +419,32 @@ public class YkInterface implements ICTMSInterface {
 		YkLockSeatsResult lockSeatsResult = gson.fromJson(getLockSeatsResult, YkLockSeatsResult.class);
 		
 		Orders newOrder = order.getOrderBaseInfo();
-		if ("0".equals(lockSeatsResult.getRetCode()) && "SUCCESS".equals(lockSeatsResult.getData().getBizCode())) {
-			Date nowDate = new Date();
-			newOrder.setLockOrderCode(lockSeatsResult.getData().getData().getLockOrderId());
-			newOrder.setAutoUnlockDatetime(new Date(nowDate.getTime()+10*60*1000));		//粤科没有自动解锁时间返回，此处默认锁定10分钟
-			newOrder.setLockTime(nowDate);
-			newOrder.setOrderStatus(OrderStatusEnum.Locked.getStatusCode());
-			
-			reply.Status = StatusEnum.Success;
+		if ("0".equals(lockSeatsResult.getRetCode())) {
+			if("SUCCESS".equals(lockSeatsResult.getData().getBizCode())){
+				Date nowDate = new Date();
+				newOrder.setLockOrderCode(lockSeatsResult.getData().getData().getLockOrderId());
+				newOrder.setAutoUnlockDatetime(new Date(nowDate.getTime()+10*60*1000));		//粤科没有自动解锁时间返回，此处默认锁定10分钟
+				newOrder.setLockTime(nowDate);
+				newOrder.setOrderStatus(OrderStatusEnum.Locked.getStatusCode());
+				
+				reply.Status = StatusEnum.Success;
+			} else {
+				newOrder.setOrderStatus(OrderStatusEnum.LockFail.getStatusCode());
+				newOrder.setErrorMessage(lockSeatsResult.getData().getBizMsg());
+				
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = lockSeatsResult.getData().getBizCode();
+			reply.ErrorMessage = lockSeatsResult.getData().getBizMsg();
 		} else {
 			newOrder.setOrderStatus(OrderStatusEnum.LockFail.getStatusCode());
-			newOrder.setErrorMessage(lockSeatsResult.getData().getBizMsg());
+			newOrder.setErrorMessage(lockSeatsResult.getRetMsg());
 			
 			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = lockSeatsResult.getRetCode();
+			reply.ErrorMessage = lockSeatsResult.getRetMsg();
 		}
 		order.setOrderBaseInfo(newOrder);
-		reply.ErrorCode = lockSeatsResult.getData().getBizCode();
-		reply.ErrorMessage = lockSeatsResult.getData().getBizMsg();
 		
 		return reply;
 	}
@@ -442,20 +470,26 @@ public class YkInterface implements ICTMSInterface {
 		Gson gson = new Gson();
 		YkReleaseSeatsResult ykResult = gson.fromJson(releaseSeatsResult, YkReleaseSeatsResult.class);
 		
-		Orders newOrder = new Orders();
-		if("0".equals(ykResult.getRetCode()) && "SUCCESS".equals(ykResult.getData().getBizCode())){
-			newOrder.setOrderStatus(OrderStatusEnum.Released.getStatusCode());
+		if("0".equals(ykResult.getRetCode())){
+			if("SUCCESS".equals(ykResult.getData().getBizCode())){
+				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Released.getStatusCode());
+				
+				reply.Status = StatusEnum.Success;
+			} else {
+				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.ReleaseFail.getStatusCode());
+				order.getOrderBaseInfo().setErrorMessage(ykResult.getData().getBizMsg());
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = ykResult.getData().getBizCode();
+			reply.ErrorMessage = ykResult.getData().getBizMsg();
 			
-			reply.Status = StatusEnum.Success;
 		} else {
-			newOrder.setOrderStatus(OrderStatusEnum.ReleaseFail.getStatusCode());
-			newOrder.setErrorMessage(ykResult.getData().getBizMsg());
-			
+			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.ReleaseFail.getStatusCode());
+			order.getOrderBaseInfo().setErrorMessage(ykResult.getRetMsg());
 			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = ykResult.getRetCode();
+			reply.ErrorMessage = ykResult.getRetMsg();
 		}
-		order.setOrderBaseInfo(newOrder);
-		reply.ErrorCode = ykResult.getData().getBizCode();
-		reply.ErrorMessage = ykResult.getData().getBizMsg();
 		
 		return reply;
 	}
@@ -497,39 +531,46 @@ public class YkInterface implements ICTMSInterface {
 		String sign = createSign(userCinema.getDefaultPassword(), param);
 		String confirmOrderResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
 				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
-		System.out.println("确认订单返回："+confirmOrderResult);
+//		System.out.println("确认订单返回："+confirmOrderResult);
 		Gson gson = new Gson();
 		YkConfirmOrderResult ykResult = gson.fromJson(confirmOrderResult, YkConfirmOrderResult.class);
 		
-		if("0".equals(ykResult.getRetCode()) && "SUCCESS".equals(ykResult.getData().getBizCode())){
-			OrderBean orderBean = ykResult.getData().getData();
-			order.getOrderBaseInfo().setSubmitOrderCode(orderBean.getOrderId());	//平台订单号
-			order.getOrderBaseInfo().setPrintNo(orderBean.getConfirmationId());		//取票号
-			order.getOrderBaseInfo().setPrintpassword(orderBean.getBookingId());	//影院订单号，存为打印编号
-			String str = creatOutLockId();
-			order.getOrderBaseInfo().setVerifyCode(str.substring(str.length()-6));	//取票验证码，随机生成的6位数字
-			List<Tickets> ticketsList = orderBean.getTickets();
-			for(int i=0;i<ticketsList.size();i++){
-				if(ticketsList.get(i).getSeatId().equals(order.getOrderSeatDetails().get(i).getSeatCode())){
-					order.getOrderSeatDetails().get(i).setFilmTicketCode(ticketsList.get(i).getTicketNo());  //票号
-					order.getOrderSeatDetails().get(i).setSeatId(ticketsList.get(i).getSeatCode());		//座位编码，用于上报 专资办使用
-					order.getOrderSeatDetails().get(i).setRowNum(ticketsList.get(i).getRowId());	//行号
-					order.getOrderSeatDetails().get(i).setColumnNum(ticketsList.get(i).getColumnId());	//列号
-					order.getOrderSeatDetails().get(i).setFee(Double.valueOf(ticketsList.get(i).getServiceFee()));	//服务费
-					
+		if("0".equals(ykResult.getRetCode())){
+			if("SUCCESS".equals(ykResult.getData().getBizCode())){
+				OrderBean orderBean = ykResult.getData().getData();
+				order.getOrderBaseInfo().setSubmitOrderCode(orderBean.getOrderId());	//平台订单号
+				order.getOrderBaseInfo().setPrintNo(orderBean.getConfirmationId());		//取票号
+				order.getOrderBaseInfo().setPrintpassword(orderBean.getBookingId());	//影院订单号，存为打印编号
+				String str = creatOutLockId();
+				order.getOrderBaseInfo().setVerifyCode(str.substring(str.length()-6));	//取票验证码，随机生成的6位数字
+				List<Tickets> ticketsList = orderBean.getTickets();
+				for(int i=0;i<ticketsList.size();i++){
+					if(ticketsList.get(i).getSeatId().equals(order.getOrderSeatDetails().get(i).getSeatCode())){
+						order.getOrderSeatDetails().get(i).setFilmTicketCode(ticketsList.get(i).getTicketNo());  //票号
+						order.getOrderSeatDetails().get(i).setSeatId(ticketsList.get(i).getSeatCode());		//座位编码，用于上报 专资办使用
+						order.getOrderSeatDetails().get(i).setRowNum(ticketsList.get(i).getRowId());	//行号
+						order.getOrderSeatDetails().get(i).setColumnNum(ticketsList.get(i).getColumnId());	//列号
+						order.getOrderSeatDetails().get(i).setFee(Double.valueOf(ticketsList.get(i).getServiceFee()));	//服务费
+					}
 				}
-				
+				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Complete.getStatusCode());	//订单状态
+				order.getOrderBaseInfo().setSubmitTime(new Date());					//订单提交时间
+				reply.Status = StatusEnum.Success;
+			} else {
+				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.SubmitFail.getStatusCode());
+				order.getOrderBaseInfo().setErrorMessage(ykResult.getData().getBizMsg());
+				reply.Status = StatusEnum.Failure;
 			}
-			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Complete.getStatusCode());	//订单状态
-			order.getOrderBaseInfo().setSubmitTime(new Date());					//订单提交时间
-			reply.Status = StatusEnum.Success;
+			reply.ErrorCode = ykResult.getData().getBizCode();
+			reply.ErrorMessage = ykResult.getData().getBizMsg();
+			
 		} else {
 			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.SubmitFail.getStatusCode());
-			order.getOrderBaseInfo().setErrorMessage(ykResult.getData().getBizMsg());
+			order.getOrderBaseInfo().setErrorMessage(ykResult.getRetMsg());
 			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = ykResult.getRetCode();
+			reply.ErrorMessage = ykResult.getRetMsg();
 		}
-		reply.ErrorCode = ykResult.getData().getBizCode();
-		reply.ErrorMessage = ykResult.getData().getBizMsg();
 		
 		return reply;
 	}
@@ -595,20 +636,26 @@ public class YkInterface implements ICTMSInterface {
 		String sign = createSign(userCinema.getDefaultPassword(), param);
 		String refundOrderResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
 				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
-//		System.out.println("退票返回："+refundOrderResult);
+		System.out.println("退票返回："+refundOrderResult);
 		Gson gson = new Gson();
 		YkRefundOrderResult ykResult = gson.fromJson(refundOrderResult, YkRefundOrderResult.class);
 		
-		if("0".equals(ykResult.getRetCode()) && "SUCCESS".equals(ykResult.getData().getBizCode())){
-			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Refund.getStatusCode());
-			order.getOrderBaseInfo().setRefundTime(new Date());		//退票时间
-			
-			reply.Status = StatusEnum.Success;
+		if("0".equals(ykResult.getRetCode())){
+			if("SUCCESS".equals(ykResult.getData().getBizCode())){
+				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Refund.getStatusCode());
+				order.getOrderBaseInfo().setRefundTime(new Date());		//退票时间
+				
+				reply.Status = StatusEnum.Success;
+			} else {
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = ykResult.getData().getBizCode();
+			reply.ErrorMessage=ykResult.getData().getBizMsg();
 		} else {
 			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = ykResult.getRetCode();
+			reply.ErrorMessage = ykResult.getRetMsg();
 		}
-		reply.ErrorCode = ykResult.getData().getBizCode();
-		reply.ErrorMessage=ykResult.getData().getBizMsg();
 		
 		return reply;
 	}
@@ -634,39 +681,46 @@ public class YkInterface implements ICTMSInterface {
 		Gson gson = new Gson();
 		YkGetOrderInfoResult ykResult = gson.fromJson(getOrderInfoResult, YkGetOrderInfoResult.class);
 		
-		if("0".equals(ykResult.getRetCode()) && "SUCCESS".equals(ykResult.getData().getBizCode())){
-			order.getOrderBaseInfo().setScreenCode(ykResult.getData().getData().getHallId());	//影厅编码
-			order.getOrderBaseInfo().setFilmCode(ykResult.getData().getData().getFilmCode());	//影片编码
-			order.getOrderBaseInfo().setFilmName(ykResult.getData().getData().getShortName());	//影片名称
-			order.getOrderBaseInfo().setSessionTime(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(ykResult.getData().getData().getShowDateTime()));	//放映时间
-			List<com.boot.security.server.api.ctms.reply.YkGetOrderInfoResult.DataBean.OrderInfo.Tickets> ticketList = ykResult.getData().getData().getTickets();
-			if(ticketList != null && ticketList.size()>0){
-				for(int i=0;i<ticketList.size();i++){
-					if(ticketList.get(i).getTicketNo().equals(order.getOrderSeatDetails().get(i).getFilmTicketCode())){	//票号相同
-						order.getOrderSeatDetails().get(i).setRowNum(ticketList.get(i).getRowId());		//行号
-						order.getOrderSeatDetails().get(i).setColumnNum(ticketList.get(i).getColumnId());	//列号
-						
-						if("Y".equals(ticketList.get(i).getPrintStatus())){	//打票状态：Y 已打票 N 未打票
-							order.getOrderSeatDetails().get(i).setPrintFlag(1);
-							order.getOrderBaseInfo().setPrintTime(new Date());	//粤科没有返回打印时间
-						} else {
-							order.getOrderSeatDetails().get(i).setPrintFlag(0);
-						}
-						//退票状态：Y 已退票
-						if("Y".equals(ticketList.get(i).getRefundStatus())){
-							order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Refund.getStatusCode());
-							order.getOrderBaseInfo().setRefundTime(new Date());
+		if("0".equals(ykResult.getRetCode())){
+			if("SUCCESS".equals(ykResult.getData().getBizCode())){
+				order.getOrderBaseInfo().setScreenCode(ykResult.getData().getData().getHallId());	//影厅编码
+				order.getOrderBaseInfo().setFilmCode(ykResult.getData().getData().getFilmCode());	//影片编码
+				order.getOrderBaseInfo().setFilmName(ykResult.getData().getData().getShortName());	//影片名称
+				order.getOrderBaseInfo().setSessionTime(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(ykResult.getData().getData().getShowDateTime()));	//放映时间
+				List<com.boot.security.server.api.ctms.reply.YkGetOrderInfoResult.DataBean.OrderInfo.Tickets> ticketList = ykResult.getData().getData().getTickets();
+				if(ticketList != null && ticketList.size()>0){
+					for(int i=0;i<ticketList.size();i++){
+						if(ticketList.get(i).getTicketNo().equals(order.getOrderSeatDetails().get(i).getFilmTicketCode())){	//票号相同
+							order.getOrderSeatDetails().get(i).setRowNum(ticketList.get(i).getRowId());		//行号
+							order.getOrderSeatDetails().get(i).setColumnNum(ticketList.get(i).getColumnId());	//列号
+							
+							if("Y".equals(ticketList.get(i).getPrintStatus())){	//打票状态：Y 已打票 N 未打票
+								order.getOrderSeatDetails().get(i).setPrintFlag(1);
+								order.getOrderBaseInfo().setPrintTime(new Date());	//粤科没有返回打印时间
+							} else {
+								order.getOrderSeatDetails().get(i).setPrintFlag(0);
+							}
+							//退票状态：Y 已退票
+							if("Y".equals(ticketList.get(i).getRefundStatus())){
+								order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Refund.getStatusCode());
+								order.getOrderBaseInfo().setRefundTime(new Date());
+							}
 						}
 					}
 				}
+				
+				reply.Status = StatusEnum.Success;
+			} else {
+				reply.Status = StatusEnum.Failure;
 			}
+			reply.ErrorCode = ykResult.getData().getBizCode();
+			reply.ErrorMessage=ykResult.getData().getBizMsg();
 			
-			reply.Status = StatusEnum.Success;
 		} else {
 			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = ykResult.getRetCode();
+			reply.ErrorMessage = ykResult.getRetMsg();
 		}
-		reply.ErrorCode = ykResult.getData().getBizCode();
-		reply.ErrorMessage=ykResult.getData().getBizMsg();
 		
 		return reply;
 	}
@@ -688,44 +742,50 @@ public class YkInterface implements ICTMSInterface {
 		String sign = createSign(userCinema.getDefaultPassword(), param);
 		String getTicketInfoResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
 				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
-//		System.out.println("影票信息返回："+getTicketInfoResult);
+		System.out.println("影票信息返回："+getTicketInfoResult);
 		Gson gson = new Gson();
 		YkGetTicketInfoResult ykResult = gson.fromJson(getTicketInfoResult, YkGetTicketInfoResult.class);
 		
-		if("0".equals(ykResult.getRetCode()) && "SUCCESS".equals(ykResult.getData().getBizCode())){
-			order.getOrderBaseInfo().setPrintpassword(ykResult.getData().getData().getPrintId());	//打印编号
-			order.getOrderBaseInfo().setSessionTime(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(ykResult.getData().getData().getShowDateTime()));
-			order.getOrderBaseInfo().setScreenCode(ykResult.getData().getData().getHallId());
-			order.getOrderBaseInfo().setFilmCode(ykResult.getData().getData().getFilmCode());
-			order.getOrderBaseInfo().setFilmName(ykResult.getData().getData().getShortName());
-			order.getOrderBaseInfo().setCreated(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(ykResult.getData().getData().getCreateDateTime()));
-			List<com.boot.security.server.api.ctms.reply.YkGetTicketInfoResult.DataBean.TicketBean.Tickets> tickets = ykResult.getData().getData().getTickets();
-			for(int i=0;i<tickets.size();i++){
-				if(tickets.get(i).getTicketNo().equals(order.getOrderSeatDetails().get(i).getFilmTicketCode())){
-					order.getOrderSeatDetails().get(i).setTicketInfoCode(tickets.get(i).getInfoCode());	//二维码
-					order.getOrderSeatDetails().get(i).setPrice(Double.valueOf(tickets.get(i).getTicketPrice()));
-					order.getOrderSeatDetails().get(i).setFee(Double.valueOf(tickets.get(i).getTicketFee()));
-					if("Y".equals(tickets.get(i).getPrintStatus())){	//打票状态：已打票
-						order.getOrderSeatDetails().get(i).setPrintFlag(1);
-						order.getOrderBaseInfo().setPrintStatus(1);
-						order.getOrderBaseInfo().setPrintTime(new Date());
-					} else {
-						order.getOrderSeatDetails().get(i).setPrintFlag(0);
-						order.getOrderBaseInfo().setPrintStatus(0);
-					}
-					//退票状态：已退票
-					if("Y".equals(tickets.get(i).getRefundStatus())){	
-						order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Refund.getStatusCode());
-						order.getOrderBaseInfo().setRefundTime(new Date());
+		if("0".equals(ykResult.getRetCode())){
+			if("SUCCESS".equals(ykResult.getData().getBizCode())){
+				order.getOrderBaseInfo().setPrintpassword(ykResult.getData().getData().getPrintId());	//打印编号
+				order.getOrderBaseInfo().setSessionTime(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(ykResult.getData().getData().getShowDateTime()));
+				order.getOrderBaseInfo().setScreenCode(ykResult.getData().getData().getHallId());
+				order.getOrderBaseInfo().setFilmCode(ykResult.getData().getData().getFilmCode());
+				order.getOrderBaseInfo().setFilmName(ykResult.getData().getData().getShortName());
+				order.getOrderBaseInfo().setCreated(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(ykResult.getData().getData().getCreateDateTime()));
+				List<com.boot.security.server.api.ctms.reply.YkGetTicketInfoResult.DataBean.TicketBean.Tickets> tickets = ykResult.getData().getData().getTickets();
+				for(int i=0;i<tickets.size();i++){
+					if(tickets.get(i).getTicketNo().equals(order.getOrderSeatDetails().get(i).getFilmTicketCode())){
+						order.getOrderSeatDetails().get(i).setTicketInfoCode(tickets.get(i).getInfoCode());	//二维码
+						order.getOrderSeatDetails().get(i).setPrice(Double.valueOf(tickets.get(i).getTicketPrice()));
+						order.getOrderSeatDetails().get(i).setFee(Double.valueOf(tickets.get(i).getTicketFee()));
+						if("Y".equals(tickets.get(i).getPrintStatus())){	//打票状态：已打票
+							order.getOrderSeatDetails().get(i).setPrintFlag(1);
+							order.getOrderBaseInfo().setPrintStatus(1);
+							order.getOrderBaseInfo().setPrintTime(new Date());
+						} else {
+							order.getOrderSeatDetails().get(i).setPrintFlag(0);
+							order.getOrderBaseInfo().setPrintStatus(0);
+						}
+						//退票状态：已退票
+						if("Y".equals(tickets.get(i).getRefundStatus())){	
+							order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Refund.getStatusCode());
+							order.getOrderBaseInfo().setRefundTime(new Date());
+						}
 					}
 				}
+				reply.Status = StatusEnum.Success;
+			} else {
+				reply.Status = StatusEnum.Failure;
 			}
-			reply.Status = StatusEnum.Success;
+			reply.ErrorCode = ykResult.getData().getBizCode();
+			reply.ErrorMessage = ykResult.getData().getBizMsg();
 		} else {
 			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = ykResult.getRetCode();
+			reply.ErrorMessage = ykResult.getRetMsg();
 		}
-		reply.ErrorCode = ykResult.getData().getBizCode();
-		reply.ErrorMessage=ykResult.getData().getBizMsg();
 		
 		return reply;
 	}
@@ -751,17 +811,22 @@ public class YkInterface implements ICTMSInterface {
 		Gson gson = new Gson();
 		YkPrintTicketResult ykResult = gson.fromJson(printTicketResult, YkPrintTicketResult.class);
 		
-		if("0".equals(ykResult.getRetCode()) && "SUCCESS".equals(ykResult.getData().getBizCode())){
-			order.getOrderBaseInfo().setPrintStatus(YesOrNoEnum.Yes.getStatusCode());
-			order.getOrderBaseInfo().setPrintTime(new Date());
-			
-			reply.Status = StatusEnum.Success;
-			
+		if("0".equals(ykResult.getRetCode())){
+			if("SUCCESS".equals(ykResult.getData().getBizCode())){
+				order.getOrderBaseInfo().setPrintStatus(1);
+				order.getOrderBaseInfo().setPrintTime(new Date());
+				
+				reply.Status = StatusEnum.Success;
+			} else {
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = ykResult.getData().getBizCode();
+			reply.ErrorMessage=ykResult.getData().getBizMsg();
 		} else {
 			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = ykResult.getRetCode();
+			reply.ErrorMessage = ykResult.getRetMsg();
 		}
-		reply.ErrorCode = ykResult.getData().getBizCode();
-		reply.ErrorMessage=ykResult.getData().getBizMsg();
 		
 		return reply;
 	}

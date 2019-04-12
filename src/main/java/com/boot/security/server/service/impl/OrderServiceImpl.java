@@ -96,7 +96,7 @@ public class OrderServiceImpl implements OrderService{
 
 	@Override
 	public int Update(OrderView orderview) {
-		ordersDao.update(orderview.getOrderBaseInfo());
+		ordersDao.updateByLockOrderCode(orderview.getOrderBaseInfo());
 		for(Orderseatdetails orderseat:orderview.getOrderSeatDetails()){
 			orderseatdetailssDao.update(orderseat);
 		}
