@@ -21,7 +21,7 @@ public class BaseReply {
 	public static String ID_FetchTicketReply="ID_FetchTicketReply";
 	public BaseReply()
     {
-        Status = StatusEnum.Failure.getStatusName();
+        Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.Exception.getCode();
         ErrorMessage = ErrorCodeEnum.Exception.getMessage();
     }
@@ -32,7 +32,7 @@ public class BaseReply {
     /// <param name="CTMSReply"></param>
     public void GetErrorFromCTMSReply(CTMSBaseReply CTMSReply)
     {
-        Status = CTMSReply.Status.getStatusName();
+        Status = CTMSReply.Status.getStatusCode();
         ErrorCode = CTMSReply.ErrorCode;
         ErrorMessage = CTMSReply.ErrorMessage;
     }
@@ -42,7 +42,7 @@ public class BaseReply {
     /// </summary>
     public void SetSuccessReply()
     {
-        Status = StatusEnum.Success.getStatusName();
+        Status = StatusEnum.Success.getStatusCode();
         ErrorCode = ErrorCodeEnum.Success.getCode();
         ErrorMessage = ErrorCodeEnum.Success.getMessage();
     }
@@ -51,7 +51,7 @@ public class BaseReply {
     /// </summary>
     public void SetNecessaryParamMissReply(String ParamName)
     {
-        Status = StatusEnum.Failure.getStatusName();
+        Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.NecessaryParamMiss.getCode();
         ErrorMessage = ParamName+ErrorCodeEnum.NecessaryParamMiss.getMessage();
     }
@@ -60,7 +60,7 @@ public class BaseReply {
     /// </summary>
     public void SetUserCredentialInvalidReply()
     {
-        Status = StatusEnum.Failure.getStatusName();
+        Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.UserCredentialInvalid.getCode();
         ErrorMessage = ErrorCodeEnum.UserCredentialInvalid.getMessage();
     }
@@ -69,7 +69,7 @@ public class BaseReply {
     /// </summary>
     public void SetCinemaInvalidReply()
     {
-        Status = StatusEnum.Failure.getStatusName();
+        Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.CinemaInvalid.getCode();
         ErrorMessage = ErrorCodeEnum.CinemaInvalid.getMessage();
     }
@@ -78,7 +78,7 @@ public class BaseReply {
     /// </summary>
     public void SetScreenInvalidReply()
     {
-        Status = StatusEnum.Failure.getStatusName();
+        Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.ScreenInvalid.getCode();
         ErrorMessage = ErrorCodeEnum.ScreenInvalid.getMessage();
     }
@@ -87,7 +87,7 @@ public class BaseReply {
     /// </summary>
     public void SetStartDateInvalidReply()
     {
-        Status = StatusEnum.Failure.getStatusName();
+        Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.StartDateInvalid.getCode();
         ErrorMessage = ErrorCodeEnum.StartDateInvalid.getMessage();
     }
@@ -97,7 +97,7 @@ public class BaseReply {
     /// </summary>
     public void SetEndDateInvalidReply()
     {
-        Status = StatusEnum.Failure.getStatusName();
+        Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.EndDateInvalid.getCode();
         ErrorMessage = ErrorCodeEnum.EndDateInvalid.getMessage();
     }
@@ -107,7 +107,7 @@ public class BaseReply {
     /// </summary>
     public void SetDateInvalidReply()
     {
-        Status = StatusEnum.Failure.getStatusName();
+        Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.DateInvalid.getCode();
         ErrorMessage = ErrorCodeEnum.DateInvalid.getMessage();
     }
@@ -117,7 +117,7 @@ public class BaseReply {
     /// </summary>
     public void SetSessionInvalidReply()
     {
-        Status = StatusEnum.Failure.getStatusName();
+        Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.SessionInvalid.getCode();
         ErrorMessage = ErrorCodeEnum.SessionInvalid.getMessage();
     }
@@ -127,7 +127,7 @@ public class BaseReply {
     /// </summary>
     public void SetSessionSeatStatusInvalidReply()
     {
-        Status = StatusEnum.Failure.getStatusName();
+        Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.SessionSeatStatusInvalid.getCode();
         ErrorMessage = ErrorCodeEnum.SessionSeatStatusInvalid.getMessage();
     }
@@ -138,7 +138,7 @@ public class BaseReply {
     /// <param name="ParamName"></param>
     public void SetXmlDeserializeFailReply(String ParamName)
     {
-        Status = StatusEnum.Failure.getStatusName();
+        Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.XmlDeserializeFail.getCode();
         ErrorMessage = ParamName+ErrorCodeEnum.XmlDeserializeFail.getMessage();
     }
@@ -148,7 +148,7 @@ public class BaseReply {
     /// </summary>
     public void SetSeatCountInvalidReply()
     {
-        Status = StatusEnum.Failure.getStatusName();
+        Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.SeatCountInvalid.getCode();
         ErrorMessage = ErrorCodeEnum.SeatCountInvalid.getMessage();
     }
@@ -158,7 +158,7 @@ public class BaseReply {
     /// </summary>
     public void SetOrderNotExistReply()
     {
-        Status = StatusEnum.Failure.getStatusName();
+        Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.OrderNotExist.getCode();
         ErrorMessage = ErrorCodeEnum.OrderNotExist.getMessage();
     }
@@ -168,7 +168,7 @@ public class BaseReply {
     /// </summary>
     public void SetMemberPaySeqNoNotExistReply()
     {
-        Status = StatusEnum.Failure.getStatusName();
+        Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.PaySeqNoNotExist.getCode();
         ErrorMessage = ErrorCodeEnum.PaySeqNoNotExist.getMessage();
     }
@@ -177,7 +177,7 @@ public class BaseReply {
     /// </summary>
     public void SetChannelOrderCodeAlreadyExistReply()
     {
-        Status = StatusEnum.Failure.getStatusName();
+        Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.ChannelOrderCodeAlreadyExist.getCode();
         ErrorMessage = ErrorCodeEnum.ChannelOrderCodeAlreadyExist.getMessage();
     }
@@ -186,7 +186,7 @@ public class BaseReply {
     /// </summary>
     public void SetMemberCardInvalidReply()
     {
-        Status = StatusEnum.Failure.getStatusName();
+        Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.MemberCardInvalid.getCode();
         ErrorMessage = ErrorCodeEnum.MemberCardInvalid.getMessage();
     }
@@ -195,7 +195,7 @@ public class BaseReply {
     /// </summary>
     public void SetCardChargeTypeInvalidReply()
     {
-        Status = StatusEnum.Failure.getStatusName();
+        Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.CardChargeTypeInvalid.getCode();
         ErrorMessage = ErrorCodeEnum.CardChargeTypeInvalid.getMessage();
     }
@@ -204,7 +204,7 @@ public class BaseReply {
     /// </summary>
     public void SetCardLevelInvalidReply()
     {
-        Status = StatusEnum.Failure.getStatusName();
+        Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.CardLevelInvalid.getCode();
         ErrorMessage = ErrorCodeEnum.CardLevelInvalid.getMessage();
     }
