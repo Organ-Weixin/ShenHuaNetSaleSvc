@@ -25,7 +25,7 @@ public class YkModelMapper {
         }
         entity.setStandardPrice(Double.parseDouble(model.getStandardPrice()));
         entity.setLowestPrice(Double.parseDouble(model.getLowestPrice()));
-        entity.setSettlePrice(Double.parseDouble(model.getSettlePrice()));
+        entity.setSettlePrice(Double.parseDouble(model.getSettlePrice()==null?"0":model.getSettlePrice()));
         entity.setTicketFee(Double.parseDouble(model.getTicketFee()));
         entity.setIsAvalible(1);
         entity.setPlaythroughFlag(model.getThroughStatus());

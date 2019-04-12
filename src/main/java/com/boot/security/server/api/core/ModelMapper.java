@@ -2,21 +2,19 @@ package com.boot.security.server.api.core;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.boot.security.server.api.core.LockSeatQueryXml.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat;
+import com.boot.security.server.api.core.LockSeatQueryXml.LockSeatBean.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat;
 import com.boot.security.server.api.core.QueryCinemaListReply.QueryCinemaListReplyCinemas.QueryCinemaListReplyCinema;
 import com.boot.security.server.api.core.QueryCinemaReply.QueryCinemaReplyCinema.QueryCinemaReplyScreen;
 import com.boot.security.server.api.core.QueryFilmReply.QueryFilmReplyFilms.QueryFilmReplyFilm;
 import com.boot.security.server.api.core.QuerySeatReply.QuerySeatReplyCinema.QuerySeatReplyScreen.QuerySeatReplySeat;
 import com.boot.security.server.api.core.QuerySessionReply.QuerySessionReplySessions.QuerySessionReplySession;
-import com.boot.security.server.api.core.QuerySessionReply.QuerySessionReplySessions.QuerySessionReplySession.QuerySessionReplyFilms;
 import com.boot.security.server.api.core.QuerySessionReply.QuerySessionReplySessions.QuerySessionReplySession.QuerySessionReplyFilms.QuerySessionReplyFilm;
-import com.boot.security.server.api.core.ReleaseSeatReply.ReleaseSeatReplyOrder.ReleaseSeatReplySeat;
-import com.boot.security.server.api.core.QuerySessionReply.QuerySessionReplySessions.QuerySessionReplySession.QuerySessionReplyPrice;
-import com.boot.security.server.api.core.SubmitOrderQueryXml.SubmitOrderQueryXmlOrder.SubmitOrderQueryXmlSeat;
+import com.boot.security.server.api.core.SubmitOrderQueryXml.SubmitOrderBean.SubmitOrderQueryXmlOrder.SubmitOrderQueryXmlSeat;
 import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.OrderStatusEnum;
@@ -26,7 +24,6 @@ import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
 import com.boot.security.server.model.Sessioninfo;
-import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 
 public class ModelMapper {
@@ -60,7 +57,7 @@ public class ModelMapper {
     }
 	public static QueryFilmReplyFilm MapFrom(QueryFilmReplyFilm film, Filminfo entity)
     {
-        film.setCast(entity.getFilmCode());
+        film.setCode(entity.getFilmCode());
         film.setName(entity.getFilmName());
         film.setVersion(entity.getVersion());
         film.setDuration(entity.getDuration());
@@ -82,6 +79,7 @@ public class ModelMapper {
         //session.setPlaythroughFlag(StatusEnum.valueOf(entity.getPlaythroughFlag()));
 
         session.Films =session.new QuerySessionReplyFilms();
+        session.Films.Film = new ArrayList<QuerySessionReplyFilm>();
         QuerySessionReplyFilm film =session.Films.new QuerySessionReplyFilm();
         film.setCode(entity.getFilmCode());
         film.setName(entity.getFilmName());
@@ -89,7 +87,7 @@ public class ModelMapper {
         film.setDuration(entity.getDuration().toString());
         film.setSequence(entity.getSequence().toString());
         film.setLanguage(entity.getLanguage());
-        session.Films.getFilm().add(film);
+        session.Films.Film.add(film);
 
         session.Price = session.new QuerySessionReplyPrice();
         session.Price.setStandardPrice(new DecimalFormat("#.00").format(entity.getStandardPrice()));
@@ -102,7 +100,7 @@ public class ModelMapper {
             LockSeatQueryXml queryXmlObj, Sessioninfo sessionInfo)
         {
             //订单基本信息
-		Orders orderBaseInfo = new Orders();
+			Orders orderBaseInfo = new Orders();
             orderBaseInfo.setCinemaCode(userCinema.getCinemaCode());
             orderBaseInfo.setUserId(userCinema.getUserId());
             orderBaseInfo.setSessionCode(sessionInfo.getSCode());
@@ -110,15 +108,20 @@ public class ModelMapper {
             orderBaseInfo.setSessionTime(sessionInfo.getStartTime());
             orderBaseInfo.setFilmCode(sessionInfo.getFilmCode());
             orderBaseInfo.setFilmName(sessionInfo.getFilmName());
-            orderBaseInfo.setTicketCount(queryXmlObj.Order.Count);
-            orderBaseInfo.setTotalPrice(queryXmlObj.Order.Seat.stream().mapToDouble(LockSeatQueryXmlSeat::getPrice).sum());
-            orderBaseInfo.setTotalFee(queryXmlObj.Order.Seat.stream().mapToDouble(LockSeatQueryXmlSeat::getFee).sum());
+            orderBaseInfo.setTicketCount(queryXmlObj.LockSeat.Order.Count);
+            orderBaseInfo.setTotalPrice(queryXmlObj.LockSeat.Order.Seat.stream().mapToDouble(LockSeatQueryXmlSeat::getPrice).sum());
+            orderBaseInfo.setTotalFee(queryXmlObj.LockSeat.Order.Seat.stream().mapToDouble(LockSeatQueryXmlSeat::getFee).sum());
+            //接入商总售价, 暂定
+            double totalSalePrice = queryXmlObj.LockSeat.Order.Seat.stream().mapToDouble(LockSeatQueryXmlSeat::getPrice).sum()+queryXmlObj.LockSeat.Order.Seat.stream().mapToDouble(LockSeatQueryXmlSeat::getFee).sum();
+            orderBaseInfo.setTotalSalePrice(totalSalePrice);
             orderBaseInfo.setOrderStatus(OrderStatusEnum.Created.getStatusCode());
             orderBaseInfo.setCreated(new Date());
+            orderBaseInfo.setDeleted(0);	//订单删除标识
+            orderBaseInfo.setIsMemberPay(Integer.valueOf(queryXmlObj.LockSeat.Order.PayType));
             if (userCinema.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode())
             {
                 //数据库中会员及非会员支付类型以逗号分隔存于PayType字段中，会员在前
-                if (queryXmlObj.Order.PayType == "1")
+                if ("1".equals(queryXmlObj.LockSeat.Order.PayType))
                 {
                     orderBaseInfo.setIsMemberPay(1);
                     orderBaseInfo.setPayType(userCinema.getPayType().split(",")[0]);
@@ -130,12 +133,15 @@ public class ModelMapper {
                 }
             }
             order.setOrderBaseInfo(orderBaseInfo);
-            List<Orderseatdetails> seats=null;
-            for(LockSeatQueryXmlSeat xmlseat:queryXmlObj.Order.Seat){
+            
+            List<Orderseatdetails> seats = new ArrayList<Orderseatdetails>();
+            for(LockSeatQueryXmlSeat xmlseat:queryXmlObj.LockSeat.Order.Seat){
             	Orderseatdetails seat=new Orderseatdetails();
             	seat.setSeatCode(xmlseat.getSeatCode());
             	seat.setPrice(xmlseat.getPrice());
             	seat.setFee(xmlseat.getFee());
+            	seat.setSalePrice(xmlseat.getPrice()+xmlseat.getFee()); //暂定
+            	seat.setDeleted(0);
             	seat.setCreated(new Date());
             	seats.add(seat);
             }
@@ -145,20 +151,21 @@ public class ModelMapper {
 	
 	public static OrderView MapFrom(OrderView order, SubmitOrderQueryXml queryXmlObj)
     {
-        order.getOrderBaseInfo().setTotalPrice(queryXmlObj.Order.Seat.stream().mapToDouble(SubmitOrderQueryXmlSeat::getPrice).sum());
-        order.getOrderBaseInfo().setTotalSalePrice(queryXmlObj.Order.Seat.stream().mapToDouble(SubmitOrderQueryXmlSeat::getRealPrice).sum());
-        order.getOrderBaseInfo().setTotalFee(queryXmlObj.Order.Seat.stream().mapToDouble(SubmitOrderQueryXmlSeat::getFee).sum());
-        order.getOrderBaseInfo().setMobilePhone(queryXmlObj.Order.MobilePhone);
+        order.getOrderBaseInfo().setTotalPrice(queryXmlObj.SubmitOrder.Order.Seat.stream().mapToDouble(SubmitOrderQueryXmlSeat::getPrice).sum());
+        order.getOrderBaseInfo().setTotalSalePrice(queryXmlObj.SubmitOrder.Order.Seat.stream().mapToDouble(SubmitOrderQueryXmlSeat::getRealPrice).sum());
+        order.getOrderBaseInfo().setTotalFee(queryXmlObj.SubmitOrder.Order.Seat.stream().mapToDouble(SubmitOrderQueryXmlSeat::getFee).sum());
+        order.getOrderBaseInfo().setMobilePhone(queryXmlObj.SubmitOrder.Order.MobilePhone);
         if (order.getOrderBaseInfo().getIsMemberPay()==1)
         {
-            order.getOrderBaseInfo().setPaySeqNo(queryXmlObj.Order.PaySeqNo);
+            order.getOrderBaseInfo().setPaySeqNo(queryXmlObj.SubmitOrder.Order.PaySeqNo);
         }
         for(Orderseatdetails seat :order.getOrderSeatDetails()){
-        	SubmitOrderQueryXmlSeat seatinfo = (SubmitOrderQueryXmlSeat) queryXmlObj.Order.Seat.stream().filter((SubmitOrderQueryXmlSeat s) -> s.getSeatCode()==seat.getSeatCode()).collect(Collectors.toList());
+        	List<SubmitOrderQueryXmlSeat> seatinfo =queryXmlObj.SubmitOrder.Order.Seat.stream().
+        			filter((SubmitOrderQueryXmlSeat s) -> seat.getSeatCode().equals(s.getSeatCode())).collect(Collectors.toList());
         	if(seatinfo!=null){
-        		seat.setPrice(seatinfo.getPrice());
-        		seat.setSalePrice(seatinfo.getRealPrice());
-        		seat.setFee(seatinfo.getFee());
+        		seat.setPrice(seatinfo.get(0).getPrice());
+        		seat.setSalePrice(seatinfo.get(0).getRealPrice());
+        		seat.setFee(seatinfo.get(0).getFee());
         	}
         }
         return order;

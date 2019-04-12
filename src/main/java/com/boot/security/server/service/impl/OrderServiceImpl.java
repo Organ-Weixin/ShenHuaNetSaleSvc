@@ -73,7 +73,9 @@ public class OrderServiceImpl implements OrderService{
 	@Override
 	public int Insert(OrderView orderview) {
 		ordersDao.save(orderview.getOrderBaseInfo());
+		Orders order = ordersDao.getByLockOrderCode(orderview.getOrderBaseInfo().getCinemaCode(), orderview.getOrderBaseInfo().getLockOrderCode());
 		for(Orderseatdetails orderseat:orderview.getOrderSeatDetails()){
+			orderseat.setOrderId(order.getId());	//将orders表成功插入的数据id作为orderseatdetails表的OrderId
 			orderseatdetailssDao.save(orderseat);
 		}
 		return 1;//暂时的

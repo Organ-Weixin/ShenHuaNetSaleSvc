@@ -191,8 +191,10 @@ public class YkInterface implements ICTMSInterface {
 				Filminfo film = new Filminfo();
 				film.setFilmCode(sessioninfo.getFilmCode());
 				film.setFilmName(sessioninfo.getFilmName());
+				film.setVersion(sessioninfo.getDimensional());
 				film.setDuration(sessioninfo.getDuration().toString());
-				_filminfoService.save(film);
+				film.setPublishDate(sessioninfo.getStartTime());	//公映日期排期没有，用放映时间
+//				_filminfoService.save(film);
 				films.add(film);
 			} else if(filmlist.size()>1){
 				for(Filminfo ffilminfo : filmlist){
@@ -252,7 +254,7 @@ public class YkInterface implements ICTMSInterface {
 				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
 		Gson gson = new Gson();
 		YkGetSchedulesResult ykReply=gson.fromJson(getSchedulesResult, YkGetSchedulesResult.class);
-//		System.out.println("排期返回："+getSchedulesResult);
+		System.out.println("排期返回："+getSchedulesResult);
 		if ("0".equals(ykReply.getRetCode()) && "SUCCESS".equals(ykReply.getData().getBizCode())){
 			//更新排期
 			List<Sessioninfo> newSessions = new ArrayList<Sessioninfo>();
@@ -327,7 +329,7 @@ public class YkInterface implements ICTMSInterface {
 			String sign = createSign(userCinema.getDefaultPassword(), param);
 			String getScheduleSoldSeats = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
 					userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
-//			System.out.println("座位状态返回："+getScheduleSoldSeats);
+			System.out.println("座位状态返回："+getScheduleSoldSeats);
 			Gson gson = new Gson();
 			YkGetScheduleSoldSeatsResult scheduleSoldSeatsResult = gson.fromJson(getScheduleSoldSeats, YkGetScheduleSoldSeatsResult.class);
 			
@@ -344,7 +346,7 @@ public class YkInterface implements ICTMSInterface {
 				}
 				List<SessionSeat>  newseatlist=  seatlist;
 				if (!Status.equals(SessionSeatStatusEnum.All)) {
-					newseatlist = newseatlist.stream().filter((SessionSeat ss)->Status.getStatusCode().equals(ss.getStatus())).collect(Collectors.toList());
+					newseatlist = newseatlist.stream().filter((SessionSeat ss)->Status.equals(ss.getStatus())).collect(Collectors.toList());
 					
                 }
 				reply.setSessionSeats(newseatlist);
@@ -356,7 +358,7 @@ public class YkInterface implements ICTMSInterface {
 			reply.ErrorCode = scheduleSoldSeatsResult.getData().getBizCode();
 			reply.ErrorMessage = scheduleSoldSeatsResult.getData().getBizMsg();
 		}
-		
+		System.out.println("Yk座位状态:"+new Gson().toJson(reply));
 		return reply;
 	}
 
@@ -393,11 +395,11 @@ public class YkInterface implements ICTMSInterface {
 		String getLockSeatsResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
 				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
 		
-//		System.out.println("锁座返回："+getLockSeatsResult);
+		System.out.println("锁座返回："+getLockSeatsResult);
 		Gson gson = new Gson();
 		YkLockSeatsResult lockSeatsResult = gson.fromJson(getLockSeatsResult, YkLockSeatsResult.class);
 		
-		Orders newOrder = new Orders();
+		Orders newOrder = order.getOrderBaseInfo();
 		if ("0".equals(lockSeatsResult.getRetCode()) && "SUCCESS".equals(lockSeatsResult.getData().getBizCode())) {
 			Date nowDate = new Date();
 			newOrder.setLockOrderCode(lockSeatsResult.getData().getData().getLockOrderId());
@@ -495,7 +497,7 @@ public class YkInterface implements ICTMSInterface {
 		String sign = createSign(userCinema.getDefaultPassword(), param);
 		String confirmOrderResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
 				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
-//		System.out.println("确认订单返回："+confirmOrderResult);
+		System.out.println("确认订单返回："+confirmOrderResult);
 		Gson gson = new Gson();
 		YkConfirmOrderResult ykResult = gson.fromJson(confirmOrderResult, YkConfirmOrderResult.class);
 		

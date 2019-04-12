@@ -87,7 +87,19 @@ public class XmlToJsonUtil {
 			//递归
 			iterateNodes(e,object,apiResultName);
 		}
-		json.put(nodeName, object);
+		if ((apiResultName + "_" + nodeName).equals("SubmitOrderResult_SeatInfo")
+				|| (apiResultName + "_" + nodeName).equals("SubmitOrderResult_SaleMerInfo")
+				|| (apiResultName + "_" + nodeName).equals("QueryCinemaListResult_Cinema")
+				|| (apiResultName + "_" + nodeName).equals("LockSeatQueryXml_Seat")
+				|| (apiResultName + "_" + nodeName).equals("SubmitOrderQueryXml_Seat")
+					) 
+			{
+				JSONArray qq = new JSONArray();
+				qq.add(object);
+				json.put(nodeName, qq);
+			} else {
+				json.put(nodeName, object);
+			}
 		return ;
 	}
 
