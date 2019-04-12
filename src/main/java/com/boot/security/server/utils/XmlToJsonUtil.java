@@ -88,8 +88,9 @@ public class XmlToJsonUtil {
 			iterateNodes(e,object,apiResultName);
 		}
 		if ((apiResultName + "_" + nodeName).equals("SubmitOrderResult_SeatInfo")
-				|| (apiResultName + "_" + nodeName).equals("SubmitOrderResult_SaleMerInfo")
 				|| (apiResultName + "_" + nodeName).equals("QueryCinemaListResult_Cinema")
+				|| (apiResultName + "_" + nodeName).equals("QueryTicketInfoResult_Ticket")
+				|| (apiResultName + "_" + nodeName).equals("ApplyFetchTicketResult_Ticket")
 				|| (apiResultName + "_" + nodeName).equals("LockSeatQueryXml_Seat")
 				|| (apiResultName + "_" + nodeName).equals("SubmitOrderQueryXml_Seat")
 					) 

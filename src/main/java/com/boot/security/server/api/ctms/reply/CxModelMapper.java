@@ -42,7 +42,7 @@ public class CxModelMapper {
         entity.setVersion(model.getVersion());
         entity.setDuration(model.getDuration().toString());
         if(model.getPublishDate()!=null){
-        	entity.setPublishDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(model.getPublishDate()));
+        	entity.setPublishDate(new SimpleDateFormat("yyyy-MM-dd").parse(model.getPublishDate()));
         }
         entity.setPublisher(model.getPublisher());
         entity.setProducer(model.getProducer());
@@ -57,7 +57,7 @@ public class CxModelMapper {
         entity.setSCode(model.getFeatureAppNo());
         entity.setStartTime(model.getStartTime());
 
-        FilmBean filmInfo=model.getFilms().getFilm().get(0);
+        FilmBean filmInfo=model.getFilms().getFilm();
         if(filmInfo!=null){
         	entity.setFilmCode(filmInfo.getFilmCode());
         	entity.setFilmName(filmInfo.getFilmName());

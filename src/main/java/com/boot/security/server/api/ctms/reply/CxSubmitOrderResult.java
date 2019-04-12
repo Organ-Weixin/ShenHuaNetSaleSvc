@@ -28,7 +28,7 @@ public class CxSubmitOrderResult {
         private SaleMerInfosBean SaleMerInfos;//卖品
 
         public static class SeatInfosBean {
-            List<SeatInfoBean> SeatInfo;
+            private List<SeatInfoBean> SeatInfo;
 
             public List<SeatInfoBean> getSeatInfo() {
                 return SeatInfo;

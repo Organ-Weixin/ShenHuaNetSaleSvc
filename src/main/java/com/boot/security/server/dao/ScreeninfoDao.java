@@ -38,7 +38,7 @@ public interface ScreeninfoDao {
     int update(Screeninfo screeninfo);
  
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into screeninfo(Id, CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(#{Id}, #{CCode}, #{SCode}, #{SName}, #{UpdateTime}, #{SeatCount}, #{Type}, #{ScreenId})")
+    @Insert("insert into screeninfo(CCode, SCode, SName, UpdateTime, SeatCount, Type, ScreenId) values(#{CCode}, #{SCode}, #{SName}, #{UpdateTime}, #{SeatCount}, #{Type}, #{ScreenId})")
     int save(Screeninfo screeninfo);
     
     int count(@Param("params") Map<String, Object> params);

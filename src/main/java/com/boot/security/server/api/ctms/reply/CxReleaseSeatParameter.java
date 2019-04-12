@@ -81,6 +81,7 @@ public class CxReleaseSeatParameter implements Serializable {
 		public void setSeatCode(List<String> seatCode) {
 			SeatCode = seatCode;
 		}
+		
 	}
     
 
