@@ -3,12 +3,12 @@ package com.boot.security.server.api.ctms.reply;
 import java.util.Date;
 import java.util.List;
 
-import com.boot.security.server.model.StatusEnum;
+
 
 /*
  * 电影1905获取对应影院对应日期的排期
  * */
-public class Dy1905GetCinemaSessionResult {
+public class Dy1905GetCinemaAllSessionResult {
 	private ResBean GetCinemaSessionResult;
 	
 	public ResBean getGetCinemaSessionResult() {
@@ -48,21 +48,11 @@ public class Dy1905GetCinemaSessionResult {
 			}
 			public static class SessionBean{
 				private String SessionNo;
-				private String SessionDate;
+				private Date SessionDate;
 				private Date StartTime;
-				private Date TotalTime;
+				private String TotalTime;
 				private String Consecutive;
 				private String FilmCount;
-				private String ScreenNo;
-				private String ScreenNType;
-				private String CinemaNo;
-				private String AppPrice;
-				private String SettlementPrice;
-				private String StandardPrice;
-				private String LowestPrice;
-				private String Fee;
-				private String Type;
-				private String Status;
 				private FilmsBean Films;
 				public String getSessionNo() {
 					return SessionNo;
@@ -70,10 +60,10 @@ public class Dy1905GetCinemaSessionResult {
 				public void setSessionNo(String sessionNo) {
 					SessionNo = sessionNo;
 				}
-				public String getSessionDate() {
+				public Date getSessionDate() {
 					return SessionDate;
 				}
-				public void setSessionDate(String sessionDate) {
+				public void setSessionDate(Date sessionDate) {
 					SessionDate = sessionDate;
 				}
 				public Date getStartTime() {
@@ -82,10 +72,10 @@ public class Dy1905GetCinemaSessionResult {
 				public void setStartTime(Date startTime) {
 					StartTime = startTime;
 				}
-				public Date getTotalTime() {
+				public String getTotalTime() {
 					return TotalTime;
 				}
-				public void setTotalTime(Date totalTime) {
+				public void setTotalTime(String totalTime) {
 					TotalTime = totalTime;
 				}
 				public String getConsecutive() {
@@ -100,76 +90,15 @@ public class Dy1905GetCinemaSessionResult {
 				public void setFilmCount(String filmCount) {
 					FilmCount = filmCount;
 				}
-				public String getScreenNo() {
-					return ScreenNo;
-				}
-				public void setScreenNo(String screenNo) {
-					ScreenNo = screenNo;
-				}
-				public String getScreenNType() {
-					return ScreenNType;
-				}
-				public void setScreenNType(String screenNType) {
-					ScreenNType = screenNType;
-				}
-				public String getCinemaNo() {
-					return CinemaNo;
-				}
-				public void setCinemaNo(String cinemaNo) {
-					CinemaNo = cinemaNo;
-				}
-				public String getAppPrice() {
-					return AppPrice;
-				}
-				public void setAppPrice(String appPrice) {
-					AppPrice = appPrice;
-				}
-				public String getSettlementPrice() {
-					return SettlementPrice;
-				}
-				public void setSettlementPrice(String settlementPrice) {
-					SettlementPrice = settlementPrice;
-				}
-				public String getStandardPrice() {
-					return StandardPrice;
-				}
-				public void setStandardPrice(String standardPrice) {
-					StandardPrice = standardPrice;
-				}
-				public String getLowestPrice() {
-					return LowestPrice;
-				}
-				public void setLowestPrice(String lowestPrice) {
-					LowestPrice = lowestPrice;
-				}
-				public String getFee() {
-					return Fee;
-				}
-				public void setFee(String fee) {
-					Fee = fee;
-				}
-				public String getType() {
-					return Type;
-				}
-				public void setType(String type) {
-					Type = type;
-				}
-				public String getStatus() {
-					return Status;
-				}
-				public void setStatus(String status) {
-					Status = status;
-				}
 				public FilmsBean getFilms() {
 					return Films;
 				}
 				public void setFilms(FilmsBean films) {
 					Films = films;
 				}
-				
 				public static class FilmsBean{
 					private List<FilmBean> Film;
-					
+
 					public List<FilmBean> getFilm() {
 						return Film;
 					}
@@ -177,7 +106,6 @@ public class Dy1905GetCinemaSessionResult {
 					public void setFilm(List<FilmBean> film) {
 						Film = film;
 					}
-
 					public static class FilmBean{
 						private String FilmNo;
 						private String FilmName;
@@ -207,9 +135,84 @@ public class Dy1905GetCinemaSessionResult {
 						public void setLanguage(String language) {
 							Language = language;
 						}
-						
-						
 					}
+				}
+				private String ScreenNo;
+				private String ScreenNType;
+				private String CinemaNo;
+				private String AppPrice;
+				private Double SettlementPrice;
+				private Double StandartPrice;
+				private Double LowestPrice;
+				private Double Fee;
+				private Double CinemaFee;
+				private String Type;
+				private String Status;
+				public String getScreenNo() {
+					return ScreenNo;
+				}
+				public void setScreenNo(String screenNo) {
+					ScreenNo = screenNo;
+				}
+				public String getScreenNType() {
+					return ScreenNType;
+				}
+				public void setScreenNType(String screenNType) {
+					ScreenNType = screenNType;
+				}
+				public String getCinemaNo() {
+					return CinemaNo;
+				}
+				public void setCinemaNo(String cinemaNo) {
+					CinemaNo = cinemaNo;
+				}
+				public String getAppPrice() {
+					return AppPrice;
+				}
+				public void setAppPrice(String appPrice) {
+					AppPrice = appPrice;
+				}
+				public Double getSettlementPrice() {
+					return SettlementPrice;
+				}
+				public void setSettlementPrice(Double settlementPrice) {
+					SettlementPrice = settlementPrice;
+				}
+				public Double getStandartPrice() {
+					return StandartPrice;
+				}
+				public void setStandartPrice(Double standartPrice) {
+					StandartPrice = standartPrice;
+				}
+				public Double getLowestPrice() {
+					return LowestPrice;
+				}
+				public void setLowestPrice(Double lowestPrice) {
+					LowestPrice = lowestPrice;
+				}
+				public Double getFee() {
+					return Fee;
+				}
+				public void setFee(Double fee) {
+					Fee = fee;
+				}
+				public Double getCinemaFee() {
+					return CinemaFee;
+				}
+				public void setCinemaFee(Double cinemaFee) {
+					CinemaFee = cinemaFee;
+				}
+				public String getType() {
+					return Type;
+				}
+				public void setType(String type) {
+					Type = type;
+				}
+				public String getStatus() {
+					return Status;
+				}
+				public void setStatus(String status) {
+					Status = status;
 				}
 			}
 		}
