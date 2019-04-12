@@ -338,8 +338,8 @@ public class CxInterface implements ICTMSInterface {
 		CxQueryDeliveryStatusResult cxReply=cxService.QueryDeliveryStatus(userCinema,order.getOrderBaseInfo().getPrintNo(),order.getOrderBaseInfo().getVerifyCode());
 		if (cxReply.getQueryDeliveryStatusResult().getResultCode().equals("0"))
         {
-            order.getOrderBaseInfo().setPrintStatus(YesOrNoEnum.valueOf(cxReply.getQueryDeliveryStatusResult().getPrintStatus()).getStatusCode());
-            if (order.getOrderBaseInfo().getPrintStatus() == YesOrNoEnum.Yes.getStatusCode())
+            order.getOrderBaseInfo().setPrintStatus(Integer.valueOf(YesOrNoEnum.valueOf(cxReply.getQueryDeliveryStatusResult().getPrintStatus()).getStatusCode()));
+            if (order.getOrderBaseInfo().getPrintStatus() == 1)
             {
                 order.getOrderBaseInfo().setPrintTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(cxReply.getQueryDeliveryStatusResult().getPrintTime()));
             }
@@ -466,7 +466,7 @@ public class CxInterface implements ICTMSInterface {
                     CxFetchTicketResult cxfetchReply = cxService.FetchTicket(userCinema,order.getOrderBaseInfo().getPrintNo());
                     if (cxfetchReply.getFetchTicketResult().getResultCode().equals("0"))
                     {
-                        order.getOrderBaseInfo().setPrintStatus(YesOrNoEnum.Yes.getStatusCode());
+                        order.getOrderBaseInfo().setPrintStatus(1);
                         order.getOrderBaseInfo().setPrintTime(new Date());
                         reply.Status = StatusEnum.Success;
                     }
