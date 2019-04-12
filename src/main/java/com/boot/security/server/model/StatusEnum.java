@@ -1,11 +1,11 @@
 package com.boot.security.server.model;
 
 public enum StatusEnum {
-	Failure("失败",0),
-	Success("成功",1);
+	Failure("失败","Failure"),
+	Success("成功","Success");
 	private String StatusName;
-	private int StatusCode;
-	StatusEnum(String StatusName,int StatusCode){
+	private String StatusCode;
+	StatusEnum(String StatusName,String StatusCode){
 		this.StatusName=StatusName;
 		this.StatusCode=StatusCode;
 	}
@@ -15,10 +15,10 @@ public enum StatusEnum {
 	public void setStatusName(String statusName) {
 		StatusName = statusName;
 	}
-	public int getStatusCode() {
+	public String getStatusCode() {
 		return StatusCode;
 	}
-	public void setStatusCode(int statusCode) {
+	public void setStatusCode(String statusCode) {
 		StatusCode = statusCode;
 	}
 	

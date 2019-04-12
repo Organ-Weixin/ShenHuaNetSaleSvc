@@ -5,7 +5,7 @@ import java.util.Date;
 public class Orderseatdetails extends BaseEntity<Long>{
 
 	private Long Id;
-	private Integer OrderId;
+	private Long OrderId;
 	private String SeatCode;
 	private String RowNum;
 	private String ColumnNum;
@@ -33,10 +33,10 @@ public class Orderseatdetails extends BaseEntity<Long>{
 	public void setId(Long Id) {
 		this.Id = Id;
 	}
-	public Integer getOrderId() {
+	public Long getOrderId() {
 		return OrderId;
 	}
-	public void setOrderId(Integer OrderId) {
+	public void setOrderId(Long OrderId) {
 		this.OrderId = OrderId;
 	}
 	public String getSeatCode() {

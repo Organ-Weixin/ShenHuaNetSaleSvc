@@ -25,7 +25,7 @@ public class Usercinemaview extends BaseEntity<Long> {
 	private String RealPassword;
 
 	public String getRealUserName() {
-		return UserName.isEmpty() ? DefaultUserName : UserName;
+		return UserName==null||UserName.isEmpty() ? DefaultUserName : UserName;
 	}
 
 	public void setRealUserName(String realUserName) {
@@ -33,7 +33,7 @@ public class Usercinemaview extends BaseEntity<Long> {
 	}
 
 	public String getRealPassword() {
-		return Password.isEmpty() ? DefaultPassword : Password;
+		return Password==null || Password.isEmpty() ? DefaultPassword : Password;
 	}
 
 	public void setRealPassword(String realPassword) {
