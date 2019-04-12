@@ -92,6 +92,10 @@ public class XmlToJsonUtil {
 				|| (apiResultName + "_" + nodeName).equals("QueryCinemaListResult_Cinema")
 				|| (apiResultName + "_" + nodeName).equals("RealCheckSeatStateResult_SeatInfo")
 				|| (apiResultName + "_" + nodeName).equals("GetCinemaSessionResult_Film")
+				|| (apiResultName + "_" + nodeName).equals("QueryTicketInfoResult_Ticket")
+				|| (apiResultName + "_" + nodeName).equals("ApplyFetchTicketResult_Ticket")
+				|| (apiResultName + "_" + nodeName).equals("LockSeatQueryXml_Seat")
+				|| (apiResultName + "_" + nodeName).equals("SubmitOrderQueryXml_Seat")
 					) 
 			{
 				JSONArray qq = new JSONArray();

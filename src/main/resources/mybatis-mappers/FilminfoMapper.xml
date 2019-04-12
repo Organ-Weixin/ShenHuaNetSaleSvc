@@ -93,7 +93,7 @@
 
 		</set>
 
-		where t.id = #{id}
+		where t.FilmCode = #{FilmCode}
 	</update>
 	
 

@@ -2,10 +2,18 @@ package com.boot.security.server.utils;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+
+import com.boot.security.server.api.ctms.reply.CxApplyFetchTicketParameter;
+import com.boot.security.server.api.ctms.reply.CxApplyFetchTicketParameter.CxApplyFetchTicketXmlTickets;
+import com.boot.security.server.api.ctms.reply.CxApplyFetchTicketParameter.CxApplyFetchTicketXmlTickets.CxApplyFetchTicketXmlTicket;
+import com.boot.security.server.model.Role;
 
 /**
  * Jaxb工具类 xml和java类相互转换
@@ -35,7 +43,6 @@ public class JaxbXmlUtil {
      */
     public static String convertToXml(Object obj, String encoding) throws Exception {
         String result = null;
-
         JAXBContext context = JAXBContext.newInstance(obj.getClass());
         Marshaller marshaller = context.createMarshaller();
         // 指定是否使用换行和缩排对已编组 XML 数据进行格式化的属性名称。
@@ -65,4 +72,24 @@ public class JaxbXmlUtil {
         obj = (T) unmarshaller.unmarshal(new StringReader(xml));
         return obj;
     }
+    
+    public static void main(String[] args) throws Exception {
+    	CxApplyFetchTicketParameter applyParam = new CxApplyFetchTicketParameter();
+		applyParam.setAppCode("QJUSER");
+		applyParam.setCinemaCode("62549174");
+		CxApplyFetchTicketXmlTickets Tickets = new CxApplyFetchTicketParameter.CxApplyFetchTicketXmlTickets();
+		List<CxApplyFetchTicketXmlTicket> Ticket = new ArrayList<CxApplyFetchTicketXmlTicket>();
+		CxApplyFetchTicketXmlTicket ti = new CxApplyFetchTicketXmlTicket();
+		ti.setPrintNo("6254917450251556");
+		ti.setVerifyCodeMD5("0622551459517645");
+		Ticket.add(ti);
+		Tickets.setTicket(Ticket);
+		applyParam.setTickets(Tickets);
+		
+		applyParam.setCompress("0");
+		applyParam.setVerifyInfo("1234567889");
+		
+		String ApplyFetchTicketXml = convertToXml(applyParam);
+		System.out.println(ApplyFetchTicketXml);
+	}
 }

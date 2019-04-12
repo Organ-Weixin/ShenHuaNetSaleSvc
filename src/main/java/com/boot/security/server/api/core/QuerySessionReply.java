@@ -80,7 +80,7 @@ public class QuerySessionReply extends BaseReply {
 				Price = price;
 			}
 			public class QuerySessionReplyFilms{
-				private List<QuerySessionReplyFilm> Film;
+				public List<QuerySessionReplyFilm> Film;
 
 				public List<QuerySessionReplyFilm> getFilm() {
 					return Film;

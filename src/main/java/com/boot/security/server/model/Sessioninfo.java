@@ -37,6 +37,7 @@ public class Sessioninfo extends BaseEntity<Long> {
 	private Screeninfo screeninfo;
 	private Userinfo userinfo;
 	private Priceplan priceplan;
+	private Filminfo Filminfo;
 	
 	public Cinema getCinema() {
 		return cinema;
@@ -232,5 +233,11 @@ public class Sessioninfo extends BaseEntity<Long> {
 	public void setMarketingName(String marketingName) {
 		MarketingName = marketingName;
 	}
-
+	public Filminfo getFilminfo() {
+		return Filminfo;
+	}
+	public void setFilminfo(Filminfo filminfo) {
+		Filminfo = filminfo;
+	}
+	
 }

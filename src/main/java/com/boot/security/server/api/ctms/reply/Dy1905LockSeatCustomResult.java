@@ -51,7 +51,7 @@ public class Dy1905LockSeatCustomResult {
 				private String TicketPrice;
 				private String SeatRow;
 				private String SeatCol;
-				private Date AutoUnlockDatetime;
+				private Long AutoUnlockDatetime;
 				public String getSeatNo() {
 					return SeatNo;
 				}
@@ -76,10 +76,10 @@ public class Dy1905LockSeatCustomResult {
 				public void setSeatCol(String seatCol) {
 					SeatCol = seatCol;
 				}
-				public Date getAutoUnlockDatetime() {
+				public Long getAutoUnlockDatetime() {
 					return AutoUnlockDatetime;
 				}
-				public void setAutoUnlockDatetime(Date autoUnlockDatetime) {
+				public void setAutoUnlockDatetime(Long autoUnlockDatetime) {
 					AutoUnlockDatetime = autoUnlockDatetime;
 				}
 			}

@@ -10,6 +10,7 @@
 		<result property="FilmName" column="FilmName"/>
 		<result property="Duration" column="Duration"/>
 		<result property="Language" column="Language"/>
+		<result property="FilmCode" column="FilmCode"/>
 		<association property="Filminfo" javaType="Filminfo">
 			<result property="Id" column="Id"/>
 			<result property="FilmCode" column="FilmCode"/>
@@ -31,10 +32,42 @@
 				and s.StartTime >= #{params.StartTime}
 			</if>
 			<if test="params.EndTime !=null and params.EndTime != ''">
-				and #{params.EndTime} >= s.EndTime  
+				and #{params.EndTime} >= s.StartTime  
 			</if>
 		</where>
 	</sql>
+	<sql id="deleteWhere">
+		<where>
+			<if test="params.CCode != null and params.CCode != ''">
+			    CCode = #{params.CCode} 
+			</if>
+			<if test="params.UserId != null and params.UserId != ''">
+				and UserId = #{params.UserId} 
+			</if>
+			<if test="params.StartTime !=null and params.StartTime != ''">
+				and StartTime >= #{params.StartTime}
+			</if>
+			<if test="params.EndTime !=null and params.EndTime != ''">
+				and #{params.EndTime} >= StartTime  
+			</if>
+		</where>
+	</sql>
+	<!-- <sql id="filmWhere">
+		<where>
+			<if test="params.CCode != null and params.CCode != ''">
+			   	and t.CCode = #{params.CCode} 
+			</if>
+			<if test="params.UserId != null and params.UserId != ''">
+				and t.UserId = #{params.UserId} 
+			</if>
+			<if test="params.StartTime !=null and params.StartTime != ''">
+				and t.StartTime >= #{params.StartTime}
+			</if>
+			<if test="params.EndTime !=null and params.EndTime != ''">
+				and #{params.EndTime} >= t.StartTime  
+			</if>
+		</where>
+	</sql> -->
 
 	<select id="count" resultType="int">
 		select count(1) from filminfo f left join sessioninfo s 
@@ -43,12 +76,9 @@
 	</select>
 
 	<select id="getFilms" resultMap="Films">
-		select f.id,s.* from filminfo f left join sessioninfo s 
-		on f.FilmCode = s.FilmCode
+		select s.* from sessioninfo s
 		<include refid="where" />
-		group by f.FilmCode
-		${params.orderBy}
-		limit #{offset}, #{limit}
+		group by s.FilmCode
 	</select>
 	
 	<select id="countSession" resultType="int">
@@ -72,6 +102,12 @@
 		${params.orderBy}
 		limit #{offset}, #{limit}
 	</select>
+	
+	<delete id="deleteByCinemaCode">
+		delete from sessioninfo 
+		<include refid="deleteWhere"/>
+	</delete>
+	
 	<resultMap id="BaseResultMap" type="com.boot.security.server.model.Sessioninfo">
 		<id  property="Id" column="Id"/>
 		<result property="CCode" column="CCode" />

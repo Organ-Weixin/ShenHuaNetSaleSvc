@@ -75,7 +75,7 @@
 
 		</set>
 
-		where t.id = #{id}
+		where t.CCode = #{CCode} and t.SCode = #{SCode}
 	</update>
 
 </mapper>

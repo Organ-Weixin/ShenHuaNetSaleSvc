@@ -24,7 +24,7 @@ public interface MiddlewareDao {
     int update(Middleware middleware);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into middleware(Title,Url,MemberUrl,UserName,Password,Type) values(#{title},#{url},#{memberUrl},#{userName},#{password},#{type})")
+    @Insert("insert into middleware(Title, Url, MemberUrl, UserName, Password, CinemaCode, Type, CinemaCount, IsDel) values(#{Title}, #{Url}, #{MemberUrl}, #{UserName}, #{Password}, #{CinemaCode}, #{Type}, #{CinemaCount}, #{IsDel})")
     int save(Middleware middleware);
     
     int count(@Param("params") Map<String, Object> params);

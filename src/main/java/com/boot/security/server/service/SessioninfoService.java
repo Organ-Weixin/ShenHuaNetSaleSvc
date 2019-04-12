@@ -2,6 +2,7 @@ package com.boot.security.server.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -12,15 +13,18 @@ public interface SessioninfoService {
 	Sessioninfo getBySessionCode(Long userid,String cinemacode,String sessioncode);
 	List<Sessioninfo> getByCinemaCodeAndDate(Long userid,String cinemacode,Date StartDate,Date EndDate);
 	int deleteByCinemaCodeAndDate(Long userid,String cinemacode,Date StartDate,Date EndDate);
+	
 	int save(Sessioninfo sessioninfo);
 	
 	List<Sessioninfo> getByCCode(String ccode,Date StartTime);
 	
 	Sessioninfo getByCinemaCodeAndSessionCodeAndUserId(String cinemacode,String sessioncode,Long userid);
 	
-	int delete(String ccode,Date StartTime);
+	int delete(Long id);
 	
-	List<Sessioninfo> getFilms(String CCode,Date StartTime,Date EndTime);
+	int deleteByCinemaCode(Map<String, Object> params);
+	
+	List<Sessioninfo> getFilms(Map<String, Object> params);
 	
 	List<Sessioninfo> getByCCodeGroupByFilm(Long userid,String cinemacode,Date StartDate,Date EndDate);
 }

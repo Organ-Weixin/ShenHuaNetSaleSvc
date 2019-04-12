@@ -1,9 +1,12 @@
 package com.boot.security.server.api.ctms.reply;
 
 import java.lang.management.LockInfo;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,9 +14,11 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import com.boot.security.server.api.core.ModelMapper;
+import com.boot.security.server.api.ctms.reply.CxQueryPlanInfoByDatePeriodResult.ResBean.CinemaPlansBean.CinemaPlanBean;
+import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaAllSessionResult.ResBean.SessionsBean.SessionBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaResult.ResBean.CinemasBean.CinemaBean;
-import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaSessionResult.ResBean.SessionsBean.SessionBean;
-import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaSessionResult.ResBean.SessionsBean.SessionBean.FilmsBean.FilmBean;
+import com.boot.security.server.api.ctms.reply.Dy1905GetFeatureFilmResult.ResBean.FilmsBean.FilmBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetOrderStatusResult.ResBean.SeatsBean.SeatBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetScreenResult.ResBean.ScreensBean.ScreenBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetScreenSeatResult.ResBean.ScreenSeatsBean.ScreenSeatBean;
@@ -35,6 +40,7 @@ import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.YesOrNoEnum;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
+import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
@@ -43,12 +49,17 @@ import com.boot.security.server.utils.MD5Util;
 import com.boot.security.server.utils.SpringUtil;
 import com.boot.security.server.utils.XmlToJsonUtil;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.internal.bind.TimeTypeAdapter;
+import com.oristartech.tsp.ws.soap.DoubleDefaultAdapter;
+import com.oristartech.tsp.ws.soap.IntegerDefaultAdapter;
 public class Dy1905Interface implements ICTMSInterface {
 	
 	CinemaServiceImpl cinemaService = SpringUtil.getBean(CinemaServiceImpl.class);
 	ScreeninfoServiceImpl screeninfoService = SpringUtil.getBean(ScreeninfoServiceImpl.class);
 	ScreenseatinfoServiceImpl screenseatinfoService = SpringUtil.getBean(ScreenseatinfoServiceImpl.class);
 	SessioninfoServiceImpl sessioninfoService = SpringUtil.getBean(SessioninfoServiceImpl.class);
+	FilminfoServiceImpl filminfoService = SpringUtil.getBean(FilminfoServiceImpl.class);
 	/*
 	 *
 	 * */
@@ -75,16 +86,11 @@ public class Dy1905Interface implements ICTMSInterface {
 		System.out.println(Dy1905Reply.getGetScreenResult().getResultCode());
 		if (Dy1905Reply.getGetScreenResult().getResultCode().equals("0"))
         {
-			System.out.println("更新数据库");
-			//System.out.println(userCinema.getCinemaCode());
 			//更新影院信息
 			Cinema cinema = cinemaService.getByCinemaCode(userCinema.getCinemaCode());
-			System.out.println(cinema+"----------------------");
-			//System.out.println(cinema.getName()+"========================");
 			cinema.setScreenCount(Dy1905Reply.getGetScreenResult().getScreens().getScreen().size());
 			cinemaService.update(cinema);
 			//更新影厅信息
-			//List<Screeninfo> oldScreens= screeninfoService.getByCinemaCode(userCinema.getCinemaCode());
 			List<Screeninfo> newScreens = new ArrayList<Screeninfo>();
 			List<ScreenBean> dyscreens=Dy1905Reply.getGetScreenResult().getScreens().getScreen();
 			for(ScreenBean dyscreen:dyscreens)
@@ -126,41 +132,41 @@ public class Dy1905Interface implements ICTMSInterface {
 		Gson gson = new Gson();
 		Dy1905GetScreenSeatResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(getScreenSeatResult,"GetScreenSeatResult"),Dy1905GetScreenSeatResult.class);
 		if(Dy1905Reply.getGetScreenSeatResult().getResultCode().equals("0")){
+			//更新影厅信息
+			Screeninfo screeninfo = new Screeninfo();
+			screeninfo.setCCode(userCinema.getCinemaCode());
+			screeninfo.setSCode(screen.getSCode());
+			screeninfo.setSeatCount(Dy1905Reply.getGetScreenSeatResult().getScreenSeats().getScreenSeat().size());
+			screeninfoService.update(screeninfo);
 			List<Screenseatinfo> newScreenSeat = new ArrayList<Screenseatinfo>();
 			List<ScreenSeatBean> dy1905ScreenSeats = Dy1905Reply.getGetScreenSeatResult().getScreenSeats().getScreenSeat();
-			System.out.println("查询情侣座列表-------------------------------------");
 			System.out.println(userCinema.getCinemaCode()+"=================="+screen.getSCode());
-			List<Screenseatinfo> newSeats = screenseatinfoService.queryLoveSeats(userCinema.getCinemaCode(),screen.getSCode());
-			System.out.println("处理情侣座------------------------------------");
 			////////////////////////
 			for(ScreenSeatBean dy1905ScreenSeat :dy1905ScreenSeats){
 				Screenseatinfo screenSeat = new Screenseatinfo();
+				Dy1905ModelMapper.MapToEntity(dy1905ScreenSeat,screenSeat);
 				screenSeat.setCinemaCode(userCinema.getCinemaCode());
 				screenSeat.setScreenCode(screen.getSCode());
 				screenSeat.setStatus("Available");
-				if(!"2".equals(dy1905ScreenSeat.getSeatTypeNo())){
-					screenSeat.setLoveFlag("N");
-				}else{
-					//处理情侣座
-					Map<String, List<Screenseatinfo>> groupSeats = newSeats.stream()
-							.collect(Collectors.groupingBy(Screenseatinfo::getGroupCode));
-					for (Map.Entry<String, List<Screenseatinfo>> entry : groupSeats.entrySet()) {
-						if (entry.getValue().size() == 2) {
-							Screenseatinfo firstSeat = entry.getValue().get(0);
-							Screenseatinfo SecondSeat = entry.getValue().get(1);
-							if (firstSeat.getXCoord() < SecondSeat.getXCoord()) {
-								firstSeat.setLoveFlag(LoveFlagEnum.LEFT.getFlagCode());
-								SecondSeat.setLoveFlag(LoveFlagEnum.RIGHT.getFlagCode());
-							} else {
-								firstSeat.setLoveFlag(LoveFlagEnum.RIGHT.getFlagCode());
-								SecondSeat.setLoveFlag(LoveFlagEnum.LEFT.getFlagCode());
-							}
-						}
-					}
-				}
-				Dy1905ModelMapper.MapToEntity(dy1905ScreenSeat,screenSeat);
+				screenSeat.setLoveFlag(LoveFlagEnum.Normal.getFlagCode());
 				newScreenSeat.add(screenSeat);
 			}
+			Map<String, List<Screenseatinfo>> groupSeats = newScreenSeat.stream()
+					.collect(Collectors.groupingBy(Screenseatinfo::getGroupCode));
+			for (Map.Entry<String, List<Screenseatinfo>> entry : groupSeats.entrySet()) {
+				if (entry.getValue().size() == 2) {
+					Screenseatinfo firstSeat = entry.getValue().get(0);
+					Screenseatinfo SecondSeat = entry.getValue().get(1);
+					if (firstSeat.getXCoord() < SecondSeat.getXCoord()) {
+						firstSeat.setLoveFlag(LoveFlagEnum.LEFT.getFlagCode());
+						SecondSeat.setLoveFlag(LoveFlagEnum.RIGHT.getFlagCode());
+					} else {
+						firstSeat.setLoveFlag(LoveFlagEnum.RIGHT.getFlagCode());
+						SecondSeat.setLoveFlag(LoveFlagEnum.LEFT.getFlagCode());
+					}
+				}
+			}
+			newScreenSeat.forEach(seat -> seat.setGroupCode("0000000000000001"));	
 			//删除旧座位
 			screenseatinfoService.deleteByScreenCode(userCinema.getCinemaCode(), screen.getSCode());
 			//插入座位信息
@@ -191,13 +197,40 @@ public class Dy1905Interface implements ICTMSInterface {
 		if(Dy1905Reply.getGetFeatureFilmResult().getResultCode().equals("0")){
 			QuerySession(userCinema, StartDate, EndDate);
 			List<Filminfo> newFilm = new ArrayList<Filminfo>();
-			//List<com.boot.security.server.api.ctms.reply.Dy1905GetFeatureFilmResult.ResBean.FilmsBean.FilmBean> dy1905Films = Dy1905Reply.getGetFeatureFilmResult().getFilms().getFilm();
-			List<Sessioninfo> sessionInfoList = sessioninfoService.getFilms(userCinema.getCinemaCode(), StartDate, EndDate);
-			//获取排期中的影片信息
-			for(Sessioninfo sessioninfo : sessionInfoList){
-				Filminfo film = new Filminfo();
-				film.setDuration(String.valueOf(sessioninfo.getDuration()));
-				newFilm.add(film);
+			Map<String,Object> params = new HashMap();
+			params.put("CCode", userCinema.getCinemaCode());
+			if(StartDate!=null){
+				params.put("StartTime", new SimpleDateFormat("yyyy-MM-dd").format(StartDate));
+			}
+			if(EndDate!=null){
+				params.put("EndTime", new SimpleDateFormat("yyyy-MM-dd").format(EndDate));
+			}
+			List<Sessioninfo> sessionInfoList = sessioninfoService.getFilms(params);
+			System.out.println("排期中的影片数量"+sessionInfoList.size());
+			if(sessionInfoList.size()>0){
+				sessionInfoList = sessionInfoList.stream().distinct().collect(Collectors.toList());
+				//获取排期中的影片信息
+				for(Sessioninfo sessioninfo : sessionInfoList){
+					Filminfo film = filminfoService.getByFilmCode(sessioninfo.getFilmCode());
+					List<FilmBean> dy1905Films = Dy1905Reply.getGetFeatureFilmResult().getFilms().getFilm().stream()
+											.filter((FilmBean filmbean)->filmbean.getFilmNo().equals(sessioninfo.getFilmCode()))
+											.collect(Collectors.toList());
+					System.out.println("匹配排期中的影片"+dy1905Films.size());
+					if(film==null){
+						film = new Filminfo();
+						film.setFilmCode(sessioninfo.getFilmCode());
+						film.setFilmName(sessioninfo.getFilmName());
+						film.setDuration(String.valueOf(sessioninfo.getDuration()));
+						filminfoService.save(film);
+					}else{
+						film = new Filminfo();
+						film.setFilmCode(sessioninfo.getFilmCode());
+						film.setFilmName(sessioninfo.getFilmName());
+						film.setDuration(String.valueOf(sessioninfo.getDuration()));
+						filminfoService.update(film);
+					}
+					newFilm.add(film);
+				}
 			}
 				reply.setFilms(newFilm);
 				reply.Status = StatusEnum.Success;
@@ -214,37 +247,45 @@ public class Dy1905Interface implements ICTMSInterface {
 	public CTMSQuerySessionReply QuerySession(Usercinemaview userCinema, Date StartDate,Date EndDate)
 			throws Exception {
 		CTMSQuerySessionReply reply = new CTMSQuerySessionReply();
-		String pVerifyInfo=MD5Util.MD5Encode(userCinema.getDefaultUserName()+userCinema.getCinemaId()+StartDate+userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
+		String pVerifyInfo=MD5Util.MD5Encode(userCinema.getDefaultUserName()+userCinema.getCinemaId()+userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
 		Map<String,String> param = new LinkedHashMap();
 		param.put("pAppCode",userCinema.getDefaultUserName());
 		param.put("pCinemaID",userCinema.getCinemaId());
-		//开始时间入参应为Date 类型
-		//param.put("StartDate", StartDate);
 		param.put("pVerifyInfo",pVerifyInfo);
-		String getCinemaSession = HttpHelper.httpClientPost(userCinema.getUrl()+"/GetCinemaSession", param,"UTF-8");
+		String getCinemaSession = HttpHelper.httpClientPost(userCinema.getUrl()+"/GetCinemaAllSession", param,"UTF-8");
 		System.out.println("排期返回结果：");
 		System.out.println(getCinemaSession);
-		Gson gson = new Gson();
-		Dy1905GetCinemaSessionResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(getCinemaSession,"GetCinemaSessionResult"), Dy1905GetCinemaSessionResult.class);
+		Gson gson = new GsonBuilder().setDateFormat("HH:mm").create();
+		Dy1905GetCinemaAllSessionResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(getCinemaSession,"GetCinemaSessionResult"), Dy1905GetCinemaAllSessionResult.class);
+		System.out.println("返回结果已转换XML");
 		if(Dy1905Reply.getGetCinemaSessionResult().getResultCode().equals("0")){
-			List<Sessioninfo> newSessioninfo = new ArrayList<Sessioninfo>();
 			List<SessionBean> dy1905Sessions = Dy1905Reply.getGetCinemaSessionResult().getSessions().getSession();
-			for(SessionBean dy1905Session :dy1905Sessions){
-				for(int i=0;i<dy1905Sessions.size();i++){
-					List<FilmBean> dy1905Films = Dy1905Reply.getGetCinemaSessionResult().getSessions().getSession().get(i).getFilms().getFilm();
-					for(FilmBean dy1905Film : dy1905Films){
-						Sessioninfo sessioninfo = new Sessioninfo();
-						Dy1905ModelMapper.MaptoEntity(dy1905Session, dy1905Film, sessioninfo);
-						newSessioninfo.add(sessioninfo);
-					}
+			if(dy1905Sessions.size()>0){
+				List<Sessioninfo> newSessions = new ArrayList();
+				for (SessionBean cinemaplan : dy1905Sessions) {
+					Sessioninfo session = new Sessioninfo();// 先创建实例
+					Dy1905ModelMapper.MaptoEntity(cinemaplan,session);
+					session.setCCode(userCinema.getCinemaCode());
+					session.setUserID(userCinema.getUserId());
+					newSessions.add(session);
 				}
+				System.out.println("放映计划数量"+dy1905Sessions.size());
+			//删除旧的放映信息
+			Map<String,Object> params = new HashMap();
+			params.put("CCode", userCinema.getCinemaCode());
+			params.put("UserId", userCinema.getUserId());
+			if(StartDate!=null){
+				params.put("StartTime", new SimpleDateFormat("yyyy-MM-dd").format(StartDate));
 			}
-			//删除旧放映信息
-			sessioninfoService.delete(userCinema.getCinemaCode(), StartDate);
+			if(EndDate!=null){
+				params.put("EndTime", new SimpleDateFormat("yyyy-MM-dd").format(EndDate));
+			}
+			sessioninfoService.deleteByCinemaCode(params);
 			//添加新的放映信息
-			for(Sessioninfo sessioninfo :newSessioninfo){
+			for(Sessioninfo sessioninfo :newSessions){
 				sessioninfoService.save(sessioninfo);
 			}
+		}
 			reply.Status = StatusEnum.Success;
 		}else{
 			reply.Status = StatusEnum.Failure;
@@ -270,21 +311,34 @@ public class Dy1905Interface implements ICTMSInterface {
 		Dy1905GetSessionSeatResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(getSessionSeatResult,"GetSessionSeatResult"),Dy1905GetSessionSeatResult.class);
 		List<SessionSeatBean> Dy1905SessionSeatList = new ArrayList<SessionSeatBean>();
 		List<SessionSeat> SessionSeatList = new ArrayList<SessionSeat>();
+		if(Status==null&&Dy1905Reply.getGetSessionSeatResult().getResultCode().equals("0")){
+			Dy1905SessionSeatList = Dy1905Reply.getGetSessionSeatResult().getSessionSeats().getSessionSeat();
+			for(SessionSeatBean Dy1905SessionSeat :Dy1905SessionSeatList){
+				SessionSeat sessionSeats = new SessionSeat();
+				sessionSeats.setSeatCode(Dy1905SessionSeat.getSeatNo());
+				sessionSeats.setRowNum(Dy1905SessionSeat.getSeatRow());
+				sessionSeats.setColumnNum(Dy1905SessionSeat.getSeatCol());
+				sessionSeats.setStatus(SessionSeatStatusEnum.All);
+				SessionSeatList.add(sessionSeats);
+			}
+			reply.setSessionSeats(SessionSeatList);
+			reply.Status = StatusEnum.Success;
+		}else{
 		switch(Status.getStatusCode()){
 			//所有  ：1 --> 直接返回全部
 			case "All":
 				if(Dy1905Reply.getGetSessionSeatResult().getResultCode().equals("0")){
 					Dy1905SessionSeatList = Dy1905Reply.getGetSessionSeatResult().getSessionSeats().getSessionSeat();
 					for(SessionSeatBean Dy1905SessionSeat :Dy1905SessionSeatList){
-							for(SessionSeat SessionSeat :SessionSeatList){
-								Status.setStatusCode(Dy1905SessionSeat.getSeatStatus());
-								SessionSeat.setSeatCode(Dy1905SessionSeat.getSeatNo());
-								SessionSeat.setRowNum(Dy1905SessionSeat.getSeatRow());
-								SessionSeat.setColumnNum(Dy1905SessionSeat.getSeatCol());
-								//SessionSeat.setStatus(Dy1905SessionSeat.getSeatStatus());
-								SessionSeat.setStatus(SessionSeatStatusEnum.valueOf(Dy1905SessionSeat.getSeatStatus()));
-							}
+						SessionSeat sessionSeats = new SessionSeat();
+						sessionSeats.setSeatCode(Dy1905SessionSeat.getSeatNo());
+						sessionSeats.setRowNum(Dy1905SessionSeat.getSeatRow());
+						sessionSeats.setColumnNum(Dy1905SessionSeat.getSeatCol());
+						sessionSeats.setStatus(SessionSeatStatusEnum.All);
+						SessionSeatList.add(sessionSeats);
 					}
+					reply.setSessionSeats(SessionSeatList);
+					System.out.println();
 					reply.Status = StatusEnum.Success;
 				}else{
 					reply.Status = StatusEnum.Failure;
@@ -296,14 +350,15 @@ public class Dy1905Interface implements ICTMSInterface {
 					Dy1905SessionSeatList = Dy1905Reply.getGetSessionSeatResult().getSessionSeats().getSessionSeat().stream()
 					.filter((SessionSeatBean sessionSeat)->sessionSeat.getSeatStatus().equals("0")).collect(Collectors.toList());
 					for(SessionSeatBean Dy1905SessionSeat :Dy1905SessionSeatList){
-						for(SessionSeat SessionSeat :SessionSeatList){
-							SessionSeat.setSeatCode(Dy1905SessionSeat.getSeatNo());
-							SessionSeat.setRowNum(Dy1905SessionSeat.getSeatRow());
-							SessionSeat.setColumnNum(Dy1905SessionSeat.getSeatCol());
-							//SessionSeat.setStatus(Dy1905SessionSeat.getSeatStatus());
-							SessionSeat.setStatus(SessionSeatStatusEnum.valueOf(Dy1905SessionSeat.getSeatStatus()));
-						}
+						SessionSeat sessionSeats = new SessionSeat();
+						sessionSeats.setSeatCode(Dy1905SessionSeat.getSeatNo());
+						sessionSeats.setRowNum(Dy1905SessionSeat.getSeatRow());
+						sessionSeats.setColumnNum(Dy1905SessionSeat.getSeatCol());
+						sessionSeats.setStatus(SessionSeatStatusEnum.Available);
+						SessionSeatList.add(sessionSeats);
 					}
+					reply.setSessionSeats(SessionSeatList);
+					System.out.println();
 					reply.Status = StatusEnum.Success;
 				}else{
 					reply.Status = StatusEnum.Failure;
@@ -315,14 +370,15 @@ public class Dy1905Interface implements ICTMSInterface {
 					Dy1905SessionSeatList = Dy1905Reply.getGetSessionSeatResult().getSessionSeats().getSessionSeat().stream()
 					.filter((SessionSeatBean sessionSeat)->sessionSeat.getSeatStatus().equals("3")).collect(Collectors.toList());
 					for(SessionSeatBean Dy1905SessionSeat :Dy1905SessionSeatList){
-						for(SessionSeat SessionSeat :SessionSeatList){
-							SessionSeat.setSeatCode(Dy1905SessionSeat.getSeatNo());
-							SessionSeat.setRowNum(Dy1905SessionSeat.getSeatRow());
-							SessionSeat.setColumnNum(Dy1905SessionSeat.getSeatCol());
-							//SessionSeat.setStatus(Dy1905SessionSeat.getSeatStatus());
-							SessionSeat.setStatus(SessionSeatStatusEnum.valueOf(Dy1905SessionSeat.getSeatStatus()));
-						}
+						SessionSeat sessionSeats = new SessionSeat();
+						sessionSeats.setSeatCode(Dy1905SessionSeat.getSeatNo());
+						sessionSeats.setRowNum(Dy1905SessionSeat.getSeatRow());
+						sessionSeats.setColumnNum(Dy1905SessionSeat.getSeatCol());
+						sessionSeats.setStatus(SessionSeatStatusEnum.Locked);
+						SessionSeatList.add(sessionSeats);
 					}
+					reply.setSessionSeats(SessionSeatList);
+					System.out.println();
 					reply.Status = StatusEnum.Success;
 				}else{
 					reply.Status = StatusEnum.Failure;
@@ -334,14 +390,15 @@ public class Dy1905Interface implements ICTMSInterface {
 					Dy1905SessionSeatList = Dy1905Reply.getGetSessionSeatResult().getSessionSeats().getSessionSeat().stream()
 					.filter((SessionSeatBean sessionSeat)->sessionSeat.getSeatStatus().equals("1")).collect(Collectors.toList());
 					for(SessionSeatBean Dy1905SessionSeat :Dy1905SessionSeatList){
-						for(SessionSeat SessionSeat :SessionSeatList){
-							SessionSeat.setSeatCode(Dy1905SessionSeat.getSeatNo());
-							SessionSeat.setRowNum(Dy1905SessionSeat.getSeatRow());
-							SessionSeat.setColumnNum(Dy1905SessionSeat.getSeatCol());
-							//SessionSeat.setStatus(Dy1905SessionSeat.getSeatStatus());
-							SessionSeat.setStatus(SessionSeatStatusEnum.valueOf(Dy1905SessionSeat.getSeatStatus()));
-						}
+						SessionSeat sessionSeats = new SessionSeat();
+						sessionSeats.setSeatCode(Dy1905SessionSeat.getSeatNo());
+						sessionSeats.setRowNum(Dy1905SessionSeat.getSeatRow());
+						sessionSeats.setColumnNum(Dy1905SessionSeat.getSeatCol());
+						sessionSeats.setStatus(SessionSeatStatusEnum.Sold);
+						SessionSeatList.add(sessionSeats);
 					}
+					reply.setSessionSeats(SessionSeatList);
+					System.out.println();
 					reply.Status = StatusEnum.Success;
 				}else{
 					reply.Status = StatusEnum.Failure;
@@ -352,14 +409,15 @@ public class Dy1905Interface implements ICTMSInterface {
 				if(Dy1905Reply.getGetSessionSeatResult().getResultCode().equals("0")){
 					Dy1905SessionSeatList = Dy1905Reply.getGetSessionSeatResult().getSessionSeats().getSessionSeat();
 					for(SessionSeatBean Dy1905SessionSeat :Dy1905SessionSeatList){
-						for(SessionSeat SessionSeat :SessionSeatList){
-							SessionSeat.setSeatCode(Dy1905SessionSeat.getSeatNo());
-							SessionSeat.setRowNum(Dy1905SessionSeat.getSeatRow());
-							SessionSeat.setColumnNum(Dy1905SessionSeat.getSeatCol());
-							//SessionSeat.setStatus(Dy1905SessionSeat.getSeatStatus());
-							SessionSeat.setStatus(SessionSeatStatusEnum.valueOf(Dy1905SessionSeat.getSeatStatus()));
-						}
+						SessionSeat sessionSeats = new SessionSeat();
+						sessionSeats.setSeatCode(Dy1905SessionSeat.getSeatNo());
+						sessionSeats.setRowNum(Dy1905SessionSeat.getSeatRow());
+						sessionSeats.setColumnNum(Dy1905SessionSeat.getSeatCol());
+						sessionSeats.setStatus(SessionSeatStatusEnum.Booked);
+						SessionSeatList.add(sessionSeats);
 					}
+					reply.setSessionSeats(SessionSeatList);
+					System.out.println();
 					reply.Status = StatusEnum.Success;
 				}else{
 					reply.Status = StatusEnum.Failure;
@@ -371,19 +429,24 @@ public class Dy1905Interface implements ICTMSInterface {
 					Dy1905SessionSeatList = Dy1905Reply.getGetSessionSeatResult().getSessionSeats().getSessionSeat().stream()
 					.filter((SessionSeatBean sessionSeat)->sessionSeat.getSeatStatus().equals("-1")).collect(Collectors.toList());
 					for(SessionSeatBean Dy1905SessionSeat :Dy1905SessionSeatList){
-						for(SessionSeat SessionSeat :SessionSeatList){
-							SessionSeat.setSeatCode(Dy1905SessionSeat.getSeatNo());
-							SessionSeat.setRowNum(Dy1905SessionSeat.getSeatRow());
-							SessionSeat.setColumnNum(Dy1905SessionSeat.getSeatCol());
-							//SessionSeat.setStatus(Dy1905SessionSeat.getSeatStatus());
-							SessionSeat.setStatus(SessionSeatStatusEnum.valueOf(Dy1905SessionSeat.getSeatStatus()));
-						}
+						SessionSeat sessionSeats = new SessionSeat();
+						sessionSeats.setSeatCode(Dy1905SessionSeat.getSeatNo());
+						sessionSeats.setRowNum(Dy1905SessionSeat.getSeatRow());
+						sessionSeats.setColumnNum(Dy1905SessionSeat.getSeatCol());
+						sessionSeats.setStatus(SessionSeatStatusEnum.Unavailable);
+						SessionSeatList.add(sessionSeats);
 					}
+					reply.setSessionSeats(SessionSeatList);
+					System.out.println();
 					reply.Status = StatusEnum.Success;
 				}else{
 					reply.Status = StatusEnum.Failure;
 				}
 				break;
+			case "Illegal":
+				Dy1905SessionSeatList = new ArrayList();
+				reply.Status = StatusEnum.Failure;
+				break;	
 				//非法座位状态  ：0 -->其他状态码
 			default:
 				Dy1905SessionSeatList = null;
@@ -391,7 +454,8 @@ public class Dy1905Interface implements ICTMSInterface {
 				reply.Status = StatusEnum.Failure;
 				break;	
 		}
-		reply.setSessionSeats(SessionSeatList);
+		}
+		System.out.println("返回给中间件信息"+reply.getSessionSeats().size());
 		reply.ErrorCode = Dy1905Reply.getGetSessionSeatResult().getResultCode();
 		return reply;
 	}
@@ -440,7 +504,9 @@ public class Dy1905Interface implements ICTMSInterface {
 		String checkSeatStateResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/LockSeatCustom", param,"UTF-8");
 		System.out.println(checkSeatStateResult);
 		////////////////////////////////////////////////
-		Gson gson = new Gson();
+		Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd")
+				.registerTypeAdapter(Integer.class, new IntegerDefaultAdapter())
+				.registerTypeAdapter(Double.class, new DoubleDefaultAdapter()).create();
 		Dy1905LockSeatCustomResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(checkSeatStateResult,"RealCheckSeatStateResult"),Dy1905LockSeatCustomResult.class);
 		List<LockInfo> newLockSeat = new ArrayList();
 		Orders orderBaseInfo = new Orders();
@@ -452,9 +518,11 @@ public class Dy1905Interface implements ICTMSInterface {
 				order.getOrderSeatDetails().get(i).setPrice(Double.valueOf(dy1905LockSeat.get(i).getTicketPrice()));
 				order.getOrderSeatDetails().get(i).setXCoord(Integer.parseInt(dy1905LockSeat.get(i).getSeatRow()));
 				order.getOrderSeatDetails().get(i).setYCoord(Integer.parseInt(dy1905LockSeat.get(i).getSeatCol()));
-				orderBaseInfo.setAutoUnlockDatetime(dy1905LockSeat.get(i).getAutoUnlockDatetime());
+				Date date = new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(new Date(dy1905LockSeat.get(i).getAutoUnlockDatetime() * 1000)));  
+				orderBaseInfo.setAutoUnlockDatetime(date);
 			}
 			order.setOrderBaseInfo(orderBaseInfo);;
+			System.out.println("锁座编码"+order.getOrderBaseInfo().getLockOrderCode());
 			reply.Status = StatusEnum.Success;
 		}else{
 			reply.Status = StatusEnum.Failure;
@@ -516,12 +584,15 @@ public class Dy1905Interface implements ICTMSInterface {
 		String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + order.getOrderBaseInfo().getLockOrderCode() + SeatCode + TicketPrice + Fee + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
 		param.put("pVerifyInfo",pVerifyInfo);
 		String sellTicketResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/SellTicketCustom/v2",param,"UTF-8");
+		System.out.println("订单结果"+sellTicketResult);
 		Gson gson = new Gson();
 		Dy1905SellTicketCustomResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(sellTicketResult, "SellTicketResult"),Dy1905SellTicketCustomResult.class);
 		if(Dy1905Reply.getSellTicketResult().getResultCode().equals("0")){
 			order.getOrderBaseInfo().setSubmitOrderCode(Dy1905Reply.getSellTicketResult().getOrderNo());
 			order.getOrderBaseInfo().setPrintNo(Dy1905Reply.getSellTicketResult().getPrintNo());
 			order.getOrderBaseInfo().setVerifyCode(Dy1905Reply.getSellTicketResult().getVerifyCode());
+			System.out.println("订单编码"+order.getOrderBaseInfo().getSubmitOrderCode()+"-----打印编码"+order.getOrderBaseInfo().getPrintNo()+
+					"-----验证码"+order.getOrderBaseInfo().getVerifyCode());
 			reply.Status = StatusEnum.Success;
 		}else{
 			reply.Status = StatusEnum.Failure;
@@ -546,25 +617,20 @@ public class Dy1905Interface implements ICTMSInterface {
 	@Override
 	public CTMSRefundTicketReply RefundTicket(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSRefundTicketReply reply = new CTMSRefundTicketReply();
-		///订单编号由自己生成   20字符（数字字母组合）
-		String OrderID = String.valueOf(new Date().getTime());
-		for (int i = 0; i < 7; i++) {
-			// 得到随机字母
-			char c = (char) ((Math.random() * 26) + 97);
-			// 拼接成字符串
-			OrderID += (c + "");
-		}
-		String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + OrderID + order.getOrderBaseInfo().getPrintNo() + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
+		String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + order.getOrderBaseInfo().getLockOrderCode() + order.getOrderBaseInfo().getPrintNo() + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
 		Map<String,String> param = new LinkedHashMap<String,String>();
 		param.put("pAppCode",userCinema.getDefaultUserName());
-		param.put("pOrderID",OrderID);
+		param.put("pOrderID",order.getOrderBaseInfo().getLockOrderCode());
 		param.put("pPrintNo", order.getOrderBaseInfo().getPrintNo());
 		param.put("pVerifyInfo",pVerifyInfo);
 		String realCheckSeatStateResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/RefundTicket",param,"UTF-8");
+		System.out.println(realCheckSeatStateResult);
 		Gson gson = new Gson();
 		Dy1905RefundTicketResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(realCheckSeatStateResult, "RealCheckSeatStateResult"), Dy1905RefundTicketResult.class);
 		if(Dy1905Reply.getRealCheckSeatStateResult().getResultCode().equals("0")){
 			order.getOrderBaseInfo().setSubmitOrderCode(Dy1905Reply.getRealCheckSeatStateResult().getOrderNo());
+			order.getOrderBaseInfo().setRefundTime(new Date());
+			System.out.println("订单编码"+order.getOrderBaseInfo().getSubmitOrderCode());
 			reply.Status = StatusEnum.Success;
 		}else{
 			reply.Status = StatusEnum.Failure;
@@ -595,6 +661,7 @@ public class Dy1905Interface implements ICTMSInterface {
 		param.put("pOrderID",order.getOrderBaseInfo().getLockOrderCode());
 		param.put("pVerifyInfo",pVerifyInfo);
 		String getOrderStatusResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/GetOrderStatus",param,"UTF-8");
+		System.out.println(getOrderStatusResult);
 		Gson gson = new Gson();
 		Dy1905GetOrderStatusResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(getOrderStatusResult, "GetOrderStatusResult"), Dy1905GetOrderStatusResult.class);
 		Orders orderBaseInfo = new Orders();
@@ -604,18 +671,19 @@ public class Dy1905Interface implements ICTMSInterface {
 				"6".equals(Dy1905Reply.getGetOrderStatusResult().getOrderStatus()))
 			){
 			orderBaseInfo.setPrintStatus(YesOrNoEnum.Yes.getStatusCode());
-			if("1".equals(Dy1905Reply.getGetOrderStatusResult().getOrderStatus())){
-				orderBaseInfo.setPrintTime(new Date());
+			if("1".equals(Dy1905Reply.getGetOrderStatusResult().getPrintStatus())){
+				orderBaseInfo.setOrderStatus(OrderStatusEnum.Complete.getStatusCode());
+				System.out.println("订单已打印");
 			}
 			//退票状态
 			if("1".equals(Dy1905Reply.getGetOrderStatusResult().getRefundStatus())){
 				orderBaseInfo.setOrderStatus(OrderStatusEnum.Refund.getStatusCode());
-				orderBaseInfo.setRefundTime(new Date());
+				System.out.println("订单已退票");
 			}
 			//订单状态
 			if("0".equals(Dy1905Reply.getGetOrderStatusResult().getOrderStatus())){
 				orderBaseInfo.setOrderStatus(OrderStatusEnum.Locked.getStatusCode());
-			}else if("1".equals(Dy1905Reply.getGetOrderStatusResult().getOrderStatus())){
+			}else if("1".equals(Dy1905Reply.getGetOrderStatusResult().getOrderStatus())&&"0".equals(Dy1905Reply.getGetOrderStatusResult().getRefundStatus())){
 				orderBaseInfo.setOrderStatus(OrderStatusEnum.Complete.getStatusCode());
 			}else if("6".equals(Dy1905Reply.getGetOrderStatusResult().getOrderStatus())){
 				orderBaseInfo.setOrderStatus(OrderStatusEnum.Released.getStatusCode());
@@ -628,6 +696,7 @@ public class Dy1905Interface implements ICTMSInterface {
 					order.getOrderSeatDetails().get(i-1).setFilmTicketCode(seatList.get(i-1).getFilmTicketCode());
 					order.getOrderBaseInfo().setTotalFee(Double.valueOf(Dy1905Reply.getGetOrderStatusResult().getSeats().getSeat().get(i-1).getCinemaFee())+Double.valueOf(Dy1905Reply.getGetOrderStatusResult().getSeats().getSeat().get(i).getCinemaFee()));
 				}
+				System.out.println("保存的订单座位数量"+order.getOrderSeatDetails().size());
 			}
 			order.setOrderBaseInfo(orderBaseInfo);
 			reply.Status = StatusEnum.Success;
@@ -671,6 +740,7 @@ public class Dy1905Interface implements ICTMSInterface {
 			Map<String,String> param = new LinkedHashMap<String,String>();
 			param.put("pAppCode",userCinema.getDefaultUserName());
 			param.put("pVerifyInfo",pVerifyInfo);
+			System.out.println("用户名："+userCinema.getDefaultUserName()+"---密码："+userCinema.getDefaultPassword()+"---请求地址："+userCinema.getUrl());
 			String getCinemaResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/GetCinema", param,"UTF-8");
 			System.out.println(getCinemaResult);
 			Gson gson = new Gson();
@@ -706,6 +776,8 @@ public class Dy1905Interface implements ICTMSInterface {
 		Usercinemaview userCinema = new Usercinemaview();
 		//userCinema.setCinemaId("194");
 		userCinema.setDefaultUserName("1000000035");
+		userCinema.setDefaultPassword("66a16ca61f729e0c846983f8c0f4fd53");
+		userCinema.setUrl("http://netsale.1905.com/Api");
 		//userCinema.setCinemaCode("33097601");
 		//33097601
 		/*userCinema.setDefaultPassword("66a16ca61f729e0c846983f8c0f4fd53");
