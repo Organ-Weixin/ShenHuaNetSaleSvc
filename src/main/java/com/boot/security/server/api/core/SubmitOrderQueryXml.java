@@ -94,6 +94,23 @@ public class SubmitOrderQueryXml {
 			
 			private Double Fee;
 			
+			private Double AddFee;
+			private Double CinemaAllowance;
+			
+			@XmlElement(name="AddFee")
+			public Double getAddFee() {
+				return AddFee;
+			}
+			public void setAddFee(Double addFee) {
+				AddFee = addFee;
+			}
+			@XmlElement(name="CinemaAllowance")
+			public Double getCinemaAllowance() {
+				return CinemaAllowance;
+			}
+			public void setCinemaAllowance(Double cinemaAllowance) {
+				CinemaAllowance = cinemaAllowance;
+			}
 			@XmlElement(name="SeatCode")
 			public String getSeatCode() {
 				return SeatCode;
