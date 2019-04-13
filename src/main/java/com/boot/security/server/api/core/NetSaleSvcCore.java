@@ -464,7 +464,7 @@ public class NetSaleSvcCore {
 
 	// region 锁座(完成)
 	public LockSeatReply LockSeat(String Username, String Password, String QueryXml)
-			throws JsonSyntaxException, Exception {
+			throws JsonSyntaxException, Exception { 
 		LockSeatReply lockSeatReply = new LockSeatReply();
 
 		if (!ReplyExtension.RequestInfoGuard(lockSeatReply, Username, Password, QueryXml)) {
@@ -911,7 +911,7 @@ public class NetSaleSvcCore {
 			reply.Order = reply.new QueryOrderReplyOrder();
 			reply.Order.OrderCode = order.getOrderBaseInfo().getSubmitOrderCode();
 			reply.Order.CinemaCode = userCinema.getCinemaCode();
-			reply.Order.CinemaType = CinemaTypeEnum.valueOf(userCinema.getCinemaType().toString());
+			reply.Order.CinemaType = userCinema.getCinemaType().toString();
 			reply.Order.CinemaName = userCinema.getCinemaName();
 			Screeninfo screenInfo = _screenInfoService.getByScreenCode(userCinema.getCinemaCode(),
 					order.getOrderBaseInfo().getScreenCode());

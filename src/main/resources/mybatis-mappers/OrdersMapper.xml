@@ -242,4 +242,116 @@
 		and t.PrintNo = #{PrintNo}
 		and t.VerifyCode = #{VerifyCode}
 	</update>
+	
+	<update id="updateByLockOrderCode">
+		update orders t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="CinemaCode != null">
+				CinemaCode = #{CinemaCode}, 
+			</if>
+			<if test="UserId != null">
+				UserId = #{UserId}, 
+			</if>
+			<if test="SessionCode != null">
+				SessionCode = #{SessionCode}, 
+			</if>
+			<if test="ScreenCode != null">
+				ScreenCode = #{ScreenCode}, 
+			</if>
+			<if test="SessionTime != null">
+				SessionTime = #{SessionTime}, 
+			</if>
+			<if test="FilmCode != null">
+				FilmCode = #{FilmCode}, 
+			</if>
+			<if test="FilmName != null">
+				FilmName = #{FilmName}, 
+			</if>
+			<if test="TicketCount != null">
+				TicketCount = #{TicketCount}, 
+			</if>
+			<if test="TotalPrice != null">
+				TotalPrice = #{TotalPrice}, 
+			</if>
+			<if test="TotalFee != null">
+				TotalFee = #{TotalFee}, 
+			</if>
+			<if test="TotalSalePrice != null">
+				TotalSalePrice = #{TotalSalePrice}, 
+			</if>
+			<if test="OrderStatus != null">
+				OrderStatus = #{OrderStatus}, 
+			</if>
+			<if test="MobilePhone != null">
+				MobilePhone = #{MobilePhone}, 
+			</if>
+			<if test="LockTime != null">
+				LockTime = #{LockTime}, 
+			</if>
+			<if test="AutoUnlockDatetime != null">
+				AutoUnlockDatetime = #{AutoUnlockDatetime}, 
+			</if>
+			<if test="LockOrderCode != null">
+				LockOrderCode = #{LockOrderCode}, 
+			</if>
+			<if test="SubmitTime != null">
+				SubmitTime = #{SubmitTime}, 
+			</if>
+			<if test="SubmitOrderCode != null">
+				SubmitOrderCode = #{SubmitOrderCode}, 
+			</if>
+			<if test="PrintNo != null">
+				PrintNo = #{PrintNo}, 
+			</if>
+			<if test="VerifyCode != null">
+				VerifyCode = #{VerifyCode}, 
+			</if>
+			<if test="PrintStatus != null">
+				PrintStatus = #{PrintStatus}, 
+			</if>
+			<if test="PrintTime != null">
+				PrintTime = #{PrintTime}, 
+			</if>
+			<if test="RefundTime != null">
+				RefundTime = #{RefundTime}, 
+			</if>
+			<if test="Created != null">
+				Created = #{Created}, 
+			</if>
+			<if test="Updated != null">
+				Updated = #{Updated}, 
+			</if>
+			<if test="Deleted != null">
+				Deleted = #{Deleted}, 
+			</if>
+			<if test="ErrorMessage != null">
+				ErrorMessage = #{ErrorMessage}, 
+			</if>
+			<if test="SerialNum != null">
+				SerialNum = #{SerialNum}, 
+			</if>
+			<if test="IsMemberPay != null">
+				IsMemberPay = #{IsMemberPay}, 
+			</if>
+			<if test="PayType != null">
+				PayType = #{PayType}, 
+			</if>
+			<if test="Printpassword != null">
+				Printpassword = #{Printpassword}, 
+			</if>
+			<if test="PaySeqNo != null">
+				PaySeqNo = #{PaySeqNo}, 
+			</if>
+			<if test="IDCardNumber != null">
+				IDCardNumber = #{IDCardNumber}, 
+			</if>
+
+		</set>
+
+		where t.CinemaCode = #{CinemaCode}
+		and t.LockOrderCode = #{LockOrderCode}
+	</update>
 </mapper>
