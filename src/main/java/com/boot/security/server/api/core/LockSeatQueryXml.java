@@ -17,7 +17,7 @@ public class LockSeatQueryXml{
 	@XmlElement(name="CinemaCode")
 	public String getCinemaCode() {
 		return CinemaCode;
-	}
+	} 
 	public void setCinemaCode(String cinemaCode) {
 		CinemaCode = cinemaCode;
 	}

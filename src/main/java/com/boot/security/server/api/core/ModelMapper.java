@@ -139,7 +139,7 @@ public class ModelMapper {
             	seat.setSeatCode(xmlseat.getSeatCode());
             	seat.setPrice(xmlseat.getPrice());
             	seat.setFee(xmlseat.getFee());
-            	seat.setAddFee(xmlseat.getAddFee());
+            	seat.setAddFee(xmlseat.getAddFee()); 
             	seat.setCinemaAllowance(xmlseat.getCinemaAllowance());
             	//实际销售价格计算 =上报价格+服务费+增值服务费-影院补贴
             	Double SalePrice=xmlseat.getPrice()+xmlseat.getFee()+xmlseat.getAddFee()-xmlseat.getCinemaAllowance();
