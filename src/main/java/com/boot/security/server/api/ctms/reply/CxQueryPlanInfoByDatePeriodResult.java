@@ -69,7 +69,7 @@ public class CxQueryPlanInfoByDatePeriodResult {
                 private FilmsBean Films;
                 private PriceBean Price;
                 public static class FilmsBean{
-                    private List<FilmBean> Film;
+                    private FilmBean Film;
                     public static class FilmBean{
                         private	String  FilmCode;//	影片编码
                         private	String  FilmName;//	影片名称
@@ -118,11 +118,11 @@ public class CxQueryPlanInfoByDatePeriodResult {
                         }
                     }
 
-                    public List<FilmBean> getFilm() {
+                    public FilmBean getFilm() {
                         return Film;
                     }
 
-                    public void setFilm(List<FilmBean> film) {
+                    public void setFilm(FilmBean film) {
                         Film = film;
                     }
                 }

@@ -15,8 +15,12 @@ public class CTMSInterfaceFactory {
         {
             case 2:
                 return new CxInterface();
+            case 8:
+            	return new MtxInterface();
             case 64:
             	return new YkInterface();
+            case 32:
+            	return new Dy1905Interface();
             default:
                 return new DefaultCTMSInterface();
         }

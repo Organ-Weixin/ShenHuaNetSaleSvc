@@ -20,7 +20,7 @@ public class QueryOrderReply extends BaseReply {
 	public class QueryOrderReplyOrder{
 		public String OrderCode;
 		public String CinemaCode;
-		public CinemaTypeEnum CinemaType;
+		public String CinemaType;
 		public String CinemaName;
 		public String ScreenCode;
 		public String ScreenName;
@@ -43,10 +43,10 @@ public class QueryOrderReply extends BaseReply {
 		public void setCinemaCode(String cinemaCode) {
 			CinemaCode = cinemaCode;
 		}
-		public CinemaTypeEnum getCinemaType() {
+		public String getCinemaType() {
 			return CinemaType;
 		}
-		public void setCinemaType(CinemaTypeEnum cinemaType) {
+		public void setCinemaType(String cinemaType) {
 			CinemaType = cinemaType;
 		}
 		public String getCinemaName() {

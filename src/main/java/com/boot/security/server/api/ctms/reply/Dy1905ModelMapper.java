@@ -48,6 +48,7 @@ public class Dy1905ModelMapper {
     		entity.setFilmCode(filmInfo.getFilmNo());
     		entity.setFilmName(filmInfo.getFilmName());
     		entity.setLanguage(filmInfo.getLanguage());
+    		entity.setDimensional(filmInfo.getFilmType());
     		entity.setSequence(1);
     	}
     	String totalTime = model.getTotalTime().toString();
@@ -56,9 +57,10 @@ public class Dy1905ModelMapper {
     	entity.setLowestPrice(model.getLowestPrice());;
     	entity.setSettlePrice(model.getSettlementPrice());
     	entity.setTicketFee(model.getFee());
+    	entity.setAddFee((double) 0);
+    	entity.setCinemaAllowance((double) 0);
     	entity.setIsAvalible(Integer.valueOf(model.getStatus()));
     	entity.setPlaythroughFlag(model.getConsecutive());
-    	entity.setDimensional(model.getType());
     	return entity;
     }
 }

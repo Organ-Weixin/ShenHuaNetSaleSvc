@@ -221,12 +221,17 @@ public class Dy1905Interface implements ICTMSInterface {
 						film.setFilmCode(sessioninfo.getFilmCode());
 						film.setFilmName(sessioninfo.getFilmName());
 						film.setDuration(String.valueOf(sessioninfo.getDuration()));
+						System.out.println("排期中影片类型"+sessioninfo.getDimensional());
+						System.out.println("影片类型"+film.getVersion());
 						filminfoService.save(film);
 					}else{
 						film = new Filminfo();
 						film.setFilmCode(sessioninfo.getFilmCode());
 						film.setFilmName(sessioninfo.getFilmName());
 						film.setDuration(String.valueOf(sessioninfo.getDuration()));
+						film.setVersion(sessioninfo.getDimensional());
+						System.out.println("排期中影片类型"+sessioninfo.getDimensional());
+						System.out.println("影片类型"+film.getVersion());
 						filminfoService.update(film);
 					}
 					newFilm.add(film);
@@ -269,7 +274,6 @@ public class Dy1905Interface implements ICTMSInterface {
 					session.setUserID(userCinema.getUserId());
 					newSessions.add(session);
 				}
-				System.out.println("放映计划数量"+dy1905Sessions.size());
 			//删除旧的放映信息
 			Map<String,Object> params = new HashMap();
 			params.put("CCode", userCinema.getCinemaCode());
@@ -670,7 +674,7 @@ public class Dy1905Interface implements ICTMSInterface {
 				"1".equals(Dy1905Reply.getGetOrderStatusResult().getOrderStatus())||
 				"6".equals(Dy1905Reply.getGetOrderStatusResult().getOrderStatus()))
 			){
-			orderBaseInfo.setPrintStatus(YesOrNoEnum.Yes.getStatusCode());
+			orderBaseInfo.setPrintStatus(Integer.valueOf(Dy1905Reply.getGetOrderStatusResult().getPrintStatus()));
 			if("1".equals(Dy1905Reply.getGetOrderStatusResult().getPrintStatus())){
 				orderBaseInfo.setOrderStatus(OrderStatusEnum.Complete.getStatusCode());
 				System.out.println("订单已打印");

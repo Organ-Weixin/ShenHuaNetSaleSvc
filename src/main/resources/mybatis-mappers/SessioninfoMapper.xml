@@ -15,6 +15,7 @@
 			<result property="Id" column="Id"/>
 			<result property="FilmCode" column="FilmCode"/>
 			<result property="FilmName" column="FilmName"/>
+			<result property="FilmType" column="FilmType"/>
 		</association>
 	</resultMap>
 	<sql id="where">
@@ -52,22 +53,6 @@
 			</if>
 		</where>
 	</sql>
-	<!-- <sql id="filmWhere">
-		<where>
-			<if test="params.CCode != null and params.CCode != ''">
-			   	and t.CCode = #{params.CCode} 
-			</if>
-			<if test="params.UserId != null and params.UserId != ''">
-				and t.UserId = #{params.UserId} 
-			</if>
-			<if test="params.StartTime !=null and params.StartTime != ''">
-				and t.StartTime >= #{params.StartTime}
-			</if>
-			<if test="params.EndTime !=null and params.EndTime != ''">
-				and #{params.EndTime} >= t.StartTime  
-			</if>
-		</where>
-	</sql> -->
 
 	<select id="count" resultType="int">
 		select count(1) from filminfo f left join sessioninfo s 

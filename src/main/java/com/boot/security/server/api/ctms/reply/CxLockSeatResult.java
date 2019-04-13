@@ -22,12 +22,24 @@ public class CxLockSeatResult {
         private String FeatureAppNo;//放映计划编码
         private LockSeatInfosBean SeatInfos;
         public static class LockSeatInfosBean{
-            private  List<String> SeatCode;
-            public List<String> getSeatCode() {
-                return SeatCode;
+            private  List<SeatInfoBean> SeatInfo;
+            public List<SeatInfoBean> getSeatCode() {
+                return SeatInfo;
             }
-            public void setSeatCode(List<String> seatCode) {
-                SeatCode = seatCode;
+            public void setSeatCode(List<SeatInfoBean> SeatInfo) {
+            	SeatInfo = SeatInfo;
+            }
+            public static class SeatInfoBean{
+            	private String SeatCode;
+
+				public String getSeatCode() {
+					return SeatCode;
+				}
+
+				public void setSeatCode(String seatCode) {
+					SeatCode = seatCode;
+				}
+            	
             }
         }
 

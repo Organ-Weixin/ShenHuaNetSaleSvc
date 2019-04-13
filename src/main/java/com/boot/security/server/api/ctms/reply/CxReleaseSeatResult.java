@@ -49,16 +49,27 @@ public class CxReleaseSeatResult {
 			SeatInfos = seatInfos;
 		}
 		public static class SeatInfosBean{
-			private List<String> SeatCode;
+			private List<SeatInfoBean> SeatInfo;
 
-			public List<String> getSeatCode() {
-				return SeatCode;
+			public List<SeatInfoBean> getSeatCode() {
+				return SeatInfo;
 			}
 
-			public void setSeatCode(List<String> seatCode) {
-				SeatCode = seatCode;
+			public void setSeatCode(List<SeatInfoBean> SeatInfo) {
+				SeatInfo = SeatInfo;
 			}
-			
+			public static class SeatInfoBean{
+				private String SeatCode;
+
+				public String getSeatCode() {
+					return SeatCode;
+				}
+
+				public void setSeatCode(String seatCode) {
+					SeatCode = seatCode;
+				}
+				
+			}
 		}
 		
 	}

@@ -6,48 +6,46 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 //设置生成的xml的根节点的名称
 @XmlRootElement(name="ApplyFetchTicketParameter")
-//设置根据字段还是方法生成
-@XmlAccessorType(XmlAccessType.FIELD)
-public class CxApplyFetchTicketParameter implements Serializable {
-	//xml节点的名称
-    @XmlElement(name="AppCode")
+public class CxApplyFetchTicketParameter {
     private String AppCode;
-    @XmlElement(name="CinemaCode")
     private String CinemaCode;
-    @XmlElement(name="Tickets")
     private CxApplyFetchTicketXmlTickets Tickets;
-    @XmlElement(name="Compress")
     private String Compress;
-    @XmlElement(name="VerifyInfo")
     private String VerifyInfo;
+    @XmlElement(name="AppCode")
 	public String getAppCode() {
 		return AppCode;
 	}
 	public void setAppCode(String appCode) {
 		AppCode = appCode;
 	}
+	@XmlElement(name="CinemaCode")
 	public String getCinemaCode() {
 		return CinemaCode;
 	}
 	public void setCinemaCode(String cinemaCode) {
 		CinemaCode = cinemaCode;
 	}
+	@XmlElement(name="Tickets")
 	public CxApplyFetchTicketXmlTickets getTickets() {
 		return Tickets;
 	}
 	public void setTickets(CxApplyFetchTicketXmlTickets tickets) {
 		Tickets = tickets;
 	}
+	@XmlElement(name="Compress")
 	public String getCompress() {
 		return Compress;
 	}
 	public void setCompress(String compress) {
 		Compress = compress;
 	}
+	@XmlElement(name="VerifyInfo")
 	public String getVerifyInfo() {
 		return VerifyInfo;
 	}
@@ -55,9 +53,10 @@ public class CxApplyFetchTicketParameter implements Serializable {
 		VerifyInfo = verifyInfo;
 	}
 	public static class CxApplyFetchTicketXmlTickets{
-		@XmlElement(name="Ticket")
+		
 		private List<CxApplyFetchTicketXmlTicket> Ticket;
 
+		@XmlElement(name="Ticket")
 		public List<CxApplyFetchTicketXmlTicket> getTicket() {
 			return Ticket;
 		}
@@ -66,16 +65,16 @@ public class CxApplyFetchTicketParameter implements Serializable {
 			Ticket = ticket;
 		}
 		public static class CxApplyFetchTicketXmlTicket{
-			@XmlElement(name="PrintNo")
 			private String PrintNo;
-			@XmlElement(name="VerifyCodeMD5")
 			private String VerifyCodeMD5;
+			@XmlElement(name="PrintNo")
 			public String getPrintNo() {
 				return PrintNo;
 			}
 			public void setPrintNo(String printNo) {
 				PrintNo = printNo;
 			}
+			@XmlElement(name="VerifyCodeMD5")
 			public String getVerifyCodeMD5() {
 				return VerifyCodeMD5;
 			}
