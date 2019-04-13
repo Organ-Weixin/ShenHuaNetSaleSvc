@@ -7,14 +7,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.boot.security.server.api.core.LockSeatQueryXml.LockSeatBean.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat;
+import com.boot.security.server.api.core.LockSeatQueryXml.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat;
 import com.boot.security.server.api.core.QueryCinemaListReply.QueryCinemaListReplyCinemas.QueryCinemaListReplyCinema;
 import com.boot.security.server.api.core.QueryCinemaReply.QueryCinemaReplyCinema.QueryCinemaReplyScreen;
 import com.boot.security.server.api.core.QueryFilmReply.QueryFilmReplyFilms.QueryFilmReplyFilm;
 import com.boot.security.server.api.core.QuerySeatReply.QuerySeatReplyCinema.QuerySeatReplyScreen.QuerySeatReplySeat;
 import com.boot.security.server.api.core.QuerySessionReply.QuerySessionReplySessions.QuerySessionReplySession;
 import com.boot.security.server.api.core.QuerySessionReply.QuerySessionReplySessions.QuerySessionReplySession.QuerySessionReplyFilms.QuerySessionReplyFilm;
-import com.boot.security.server.api.core.SubmitOrderQueryXml.SubmitOrderBean.SubmitOrderQueryXmlOrder.SubmitOrderQueryXmlSeat;
+import com.boot.security.server.api.core.SubmitOrderQueryXml.SubmitOrderQueryXmlOrder.SubmitOrderQueryXmlSeat;
 import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.OrderStatusEnum;
@@ -61,7 +61,9 @@ public class ModelMapper {
         film.setName(entity.getFilmName());
         film.setVersion(entity.getVersion());
         film.setDuration(entity.getDuration());
-        film.setPublishDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(entity.getPublishDate()));
+        if(entity.getPublishDate() != null){
+        	film.setPublishDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(entity.getPublishDate()));
+        }
         film.setPublisher(entity.getPublisher());
         film.setProducer(entity.getProducer());
         film.setDirector(entity.getDirector());
@@ -108,20 +110,20 @@ public class ModelMapper {
             orderBaseInfo.setSessionTime(sessionInfo.getStartTime());
             orderBaseInfo.setFilmCode(sessionInfo.getFilmCode());
             orderBaseInfo.setFilmName(sessionInfo.getFilmName());
-            orderBaseInfo.setTicketCount(queryXmlObj.LockSeat.Order.Count);
-            orderBaseInfo.setTotalPrice(queryXmlObj.LockSeat.Order.Seat.stream().mapToDouble(LockSeatQueryXmlSeat::getPrice).sum());
-            orderBaseInfo.setTotalFee(queryXmlObj.LockSeat.Order.Seat.stream().mapToDouble(LockSeatQueryXmlSeat::getFee).sum());
+            orderBaseInfo.setTicketCount(queryXmlObj.getOrder().getCount());
+            orderBaseInfo.setTotalPrice(queryXmlObj.getOrder().getSeat().stream().mapToDouble(LockSeatQueryXmlSeat::getPrice).sum());
+            orderBaseInfo.setTotalFee(queryXmlObj.getOrder().getSeat().stream().mapToDouble(LockSeatQueryXmlSeat::getFee).sum());
             //接入商总售价, 暂定
-            double totalSalePrice = queryXmlObj.LockSeat.Order.Seat.stream().mapToDouble(LockSeatQueryXmlSeat::getPrice).sum()+queryXmlObj.LockSeat.Order.Seat.stream().mapToDouble(LockSeatQueryXmlSeat::getFee).sum();
+            double totalSalePrice = queryXmlObj.getOrder().getSeat().stream().mapToDouble(LockSeatQueryXmlSeat::getPrice).sum()+queryXmlObj.getOrder().getSeat().stream().mapToDouble(LockSeatQueryXmlSeat::getFee).sum();
             orderBaseInfo.setTotalSalePrice(totalSalePrice);
             orderBaseInfo.setOrderStatus(OrderStatusEnum.Created.getStatusCode());
             orderBaseInfo.setCreated(new Date());
             orderBaseInfo.setDeleted(0);	//订单删除标识
-            orderBaseInfo.setIsMemberPay(Integer.valueOf(queryXmlObj.LockSeat.Order.PayType));
+            orderBaseInfo.setIsMemberPay(Integer.valueOf(queryXmlObj.getOrder().getPayType()));
             if (userCinema.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode())
             {
                 //数据库中会员及非会员支付类型以逗号分隔存于PayType字段中，会员在前
-                if ("1".equals(queryXmlObj.LockSeat.Order.PayType))
+                if ("1".equals(queryXmlObj.getOrder().getPayType()))
                 {
                     orderBaseInfo.setIsMemberPay(1);
                     orderBaseInfo.setPayType(userCinema.getPayType().split(",")[0]);
@@ -135,12 +137,16 @@ public class ModelMapper {
             order.setOrderBaseInfo(orderBaseInfo);
             
             List<Orderseatdetails> seats = new ArrayList<Orderseatdetails>();
-            for(LockSeatQueryXmlSeat xmlseat:queryXmlObj.LockSeat.Order.Seat){
+            for(LockSeatQueryXmlSeat xmlseat:queryXmlObj.getOrder().getSeat()){
             	Orderseatdetails seat=new Orderseatdetails();
             	seat.setSeatCode(xmlseat.getSeatCode());
             	seat.setPrice(xmlseat.getPrice());
             	seat.setFee(xmlseat.getFee());
-            	seat.setSalePrice(xmlseat.getPrice()+xmlseat.getFee()); //暂定
+            	seat.setAddFee(xmlseat.getAddFee()); 
+            	seat.setCinemaAllowance(xmlseat.getCinemaAllowance());
+            	//实际销售价格计算 =上报价格+服务费+增值服务费-影院补贴
+            	Double SalePrice=xmlseat.getPrice()+xmlseat.getFee()+xmlseat.getAddFee()-xmlseat.getCinemaAllowance();
+            	seat.setSalePrice(SalePrice);
             	seat.setDeleted(0);
             	seat.setCreated(new Date());
             	seats.add(seat);
@@ -151,17 +157,17 @@ public class ModelMapper {
 	
 	public static OrderView MapFrom(OrderView order, SubmitOrderQueryXml queryXmlObj)
     {
-        order.getOrderBaseInfo().setTotalPrice(queryXmlObj.SubmitOrder.Order.Seat.stream().mapToDouble(SubmitOrderQueryXmlSeat::getPrice).sum());
-        order.getOrderBaseInfo().setTotalSalePrice(queryXmlObj.SubmitOrder.Order.Seat.stream().mapToDouble(SubmitOrderQueryXmlSeat::getRealPrice).sum());
-        order.getOrderBaseInfo().setTotalFee(queryXmlObj.SubmitOrder.Order.Seat.stream().mapToDouble(SubmitOrderQueryXmlSeat::getFee).sum());
-        order.getOrderBaseInfo().setMobilePhone(queryXmlObj.SubmitOrder.Order.MobilePhone);
+        order.getOrderBaseInfo().setTotalPrice(queryXmlObj.getOrder().getSeat().stream().mapToDouble(SubmitOrderQueryXmlSeat::getPrice).sum());
+        order.getOrderBaseInfo().setTotalSalePrice(queryXmlObj.getOrder().getSeat().stream().mapToDouble(SubmitOrderQueryXmlSeat::getRealPrice).sum());
+        order.getOrderBaseInfo().setTotalFee(queryXmlObj.getOrder().getSeat().stream().mapToDouble(SubmitOrderQueryXmlSeat::getFee).sum());
+        order.getOrderBaseInfo().setMobilePhone(queryXmlObj.getOrder().getMobilePhone());
         order.getOrderBaseInfo().setUpdated(new Date());
         if (order.getOrderBaseInfo().getIsMemberPay()==1)
         {
-            order.getOrderBaseInfo().setPaySeqNo(queryXmlObj.SubmitOrder.Order.PaySeqNo);
+            order.getOrderBaseInfo().setPaySeqNo(queryXmlObj.getOrder().getPaySeqNo());
         }
         for(Orderseatdetails seat :order.getOrderSeatDetails()){
-        	List<SubmitOrderQueryXmlSeat> seatinfo =queryXmlObj.SubmitOrder.Order.Seat.stream().
+        	List<SubmitOrderQueryXmlSeat> seatinfo =queryXmlObj.getOrder().getSeat().stream().
         			filter((SubmitOrderQueryXmlSeat s) -> seat.getSeatCode().equals(s.getSeatCode())).collect(Collectors.toList());
         	if(seatinfo!=null){
         		seat.setPrice(seatinfo.get(0).getPrice());

@@ -205,8 +205,8 @@ public class YkInterface implements ICTMSInterface {
 				film.setFilmName(sessioninfo.getFilmName());
 				film.setVersion(sessioninfo.getDimensional());
 				film.setDuration(sessioninfo.getDuration().toString());
-				film.setPublishDate(sessioninfo.getStartTime());	//公映日期排期没有，用放映时间
-//				_filminfoService.save(film);
+//				film.setPublishDate(sessioninfo.getStartTime());	//公映日期排期没有，用放映时间
+				_filminfoService.save(film);
 				films.add(film);
 			} else if(filmlist.size()>1){
 				for(Filminfo ffilminfo : filmlist){
@@ -234,7 +234,8 @@ public class YkInterface implements ICTMSInterface {
 
 	/*
 	 * 查询排期列表
-	 *
+	 *、粤科的营业日：是指影院的实际营业时间，即：当天的 06:00:00 到第二天的 05:59:59； 
+	 *	示例：showDateTime =2016-01-06 02:00 的营业日为 2016-01-05
 	 */
 	@Override
 	public CTMSQuerySessionReply QuerySession(Usercinemaview userCinema, Date StartDate, Date EndDate) throws Exception {
@@ -246,10 +247,10 @@ public class YkInterface implements ICTMSInterface {
 		calendar.setTime(start);
 		calendar.add(calendar.DATE, -1);
 		start = calendar.getTime();
-		// 将结束时间加上1天以便符合粤科接口规范
+		// 将结束时间减上1天以便符合粤科接口规范
 		Date end = EndDate;
 		calendar.setTime(end);
-		calendar.add(calendar.DATE, 1);
+		calendar.add(calendar.DATE, -1);
 		end = calendar.getTime();
 
 		Map<String, String> param = new LinkedHashMap();
@@ -282,7 +283,9 @@ public class YkInterface implements ICTMSInterface {
 					newSessions.add(session);
 				}
 				//删除原有的排期
-				_sessioninfoService.deleteByCinemaCodeAndDate(userCinema.getUserId(), userCinema.getCinemaCode(), StartDate, EndDate);
+				Date newStartDate = new Date(StartDate .getTime() - 1000*60*60*18);	//开始日期前一天的6:00:00
+				Date newEndDate = new Date(EndDate .getTime() + 1000*60*60*6);		//结束日期后一天的6:00:00
+				_sessioninfoService.deleteByCinemaCodeAndDate(userCinema.getUserId(), userCinema.getCinemaCode(), newStartDate, newEndDate);
 				//插入排期信息
 				for(Sessioninfo session:newSessions){
 					_sessioninfoService.save(session);
@@ -377,7 +380,7 @@ public class YkInterface implements ICTMSInterface {
 			reply.ErrorCode = scheduleSoldSeatsResult.getData().getBizCode();
 			reply.ErrorMessage = scheduleSoldSeatsResult.getData().getBizMsg();
 		}
-		System.out.println("Yk座位状态:"+new Gson().toJson(reply));
+		
 		return reply;
 	}
 

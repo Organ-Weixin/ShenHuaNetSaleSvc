@@ -14,6 +14,7 @@ public class UserCinema extends BaseEntity<Long> {
 	private String PayType;
 	private Double RealPrice;
 	private Date ExpDate;
+	private Userinfo Userinfo;
 
 	public Long getId() {
 		return Id;
@@ -75,5 +76,11 @@ public class UserCinema extends BaseEntity<Long> {
 	public void setExpDate(Date ExpDate) {
 		this.ExpDate = ExpDate;
 	}
-
+	public Userinfo getUserinfo() {
+		return Userinfo;
+	}
+	public void setUserinfo(Userinfo userinfo) {
+		Userinfo = userinfo;
+	}
+	
 }

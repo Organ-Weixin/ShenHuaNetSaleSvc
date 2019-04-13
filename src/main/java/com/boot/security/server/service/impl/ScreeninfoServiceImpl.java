@@ -33,7 +33,7 @@ public class ScreeninfoServiceImpl  implements ScreeninfoService{
 	@Override
 	public int update(Screeninfo screeninfo) {
 		// TODO Auto-generated method stub
-		return 0;
+		return screeninfoDao.update(screeninfo);
 	}
 
 	@Override

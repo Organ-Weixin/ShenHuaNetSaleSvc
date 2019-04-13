@@ -10,19 +10,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 //设置生成的xml的根节点的名称
 @XmlRootElement(name="SubmitOrder")
-//设置根据字段还是方法生成
-@XmlAccessorType(XmlAccessType.FIELD)
 public class SubmitOrderQueryXml {
-	@XmlAttribute(name="CinemaCode")
-	public String CinemaCode;
-	@XmlElement(name="Order")
-	public SubmitOrderQueryXmlOrder Order;
+	
+	private String CinemaCode;
+	
+	private SubmitOrderQueryXmlOrder Order;
+	@XmlElement(name="CinemaCode")
 	public String getCinemaCode() {
 		return CinemaCode;
 	}
 	public void setCinemaCode(String cinemaCode) {
 		CinemaCode = cinemaCode;
 	}
+	@XmlElement(name="Order")
 	public SubmitOrderQueryXmlOrder getOrder() {
 		return Order;
 	}
@@ -30,48 +30,54 @@ public class SubmitOrderQueryXml {
 		Order = order;
 	}
 	public static class SubmitOrderQueryXmlOrder{
-		@XmlAttribute(name="PaySeqNo")
-		public String PaySeqNo;
-		@XmlAttribute(name="OrderCode")
-		public String OrderCode;
-		@XmlAttribute(name="SessionCode")
-		public String SessionCode;
-		@XmlAttribute(name="Count")
-		public int Count;
-		@XmlAttribute(name="MobilePhone")
-		public String MobilePhone;
-		@XmlElement(name="Seat")
-		public List<SubmitOrderQueryXmlSeat> Seat;
+		
+		private String PaySeqNo;
+		
+		private String OrderCode;
+		
+		private String SessionCode;
+		
+		private int Count;
+		
+		private String MobilePhone;
+		
+		private List<SubmitOrderQueryXmlSeat> Seat;
+		@XmlElement(name="PaySeqNo")
 		public String getPaySeqNo() {
 			return PaySeqNo;
 		}
 		public void setPaySeqNo(String paySeqNo) {
 			PaySeqNo = paySeqNo;
 		}
+		@XmlElement(name="OrderCode")
 		public String getOrderCode() {
 			return OrderCode;
 		}
 		public void setOrderCode(String orderCode) {
 			OrderCode = orderCode;
 		}
+		@XmlElement(name="SessionCode")
 		public String getSessionCode() {
 			return SessionCode;
 		}
 		public void setSessionCode(String sessionCode) {
 			SessionCode = sessionCode;
 		}
+		@XmlElement(name="Count")
 		public int getCount() {
 			return Count;
 		}
 		public void setCount(int count) {
 			Count = count;
 		}
+		@XmlElement(name="MobilePhone")
 		public String getMobilePhone() {
 			return MobilePhone;
 		}
 		public void setMobilePhone(String mobilePhone) {
 			MobilePhone = mobilePhone;
 		}
+		@XmlElement(name="Seat")
 		public List<SubmitOrderQueryXmlSeat> getSeat() {
 			return Seat;
 		}
@@ -79,32 +85,54 @@ public class SubmitOrderQueryXml {
 			Seat = seat;
 		}
 		public static class SubmitOrderQueryXmlSeat{
-			@XmlAttribute(name="SeatCode")
-			 public String SeatCode;
-			@XmlAttribute(name="Price")
-			 public Double Price;
-			@XmlAttribute(name="RealPrice")
-			 public Double RealPrice;
-			@XmlAttribute(name="Fee")
-			 public Double Fee;
+			
+			private String SeatCode;
+			
+			private Double Price;
+			
+			private Double RealPrice;
+			
+			private Double Fee;
+			
+			private Double AddFee;
+			private Double CinemaAllowance;
+			
+			@XmlElement(name="AddFee")
+			public Double getAddFee() {
+				return AddFee;
+			}
+			public void setAddFee(Double addFee) {
+				AddFee = addFee;
+			}
+			@XmlElement(name="CinemaAllowance")
+			public Double getCinemaAllowance() {
+				return CinemaAllowance;
+			}
+			public void setCinemaAllowance(Double cinemaAllowance) {
+				CinemaAllowance = cinemaAllowance;
+			}
+			@XmlElement(name="SeatCode")
 			public String getSeatCode() {
 				return SeatCode;
 			}
 			public void setSeatCode(String seatCode) {
 				SeatCode = seatCode;
 			}
+			@XmlElement(name="Price")
 			public Double getPrice() {
 				return Price;
 			}
 			public void setPrice(Double price) {
 				Price = price;
 			}
+			@XmlElement(name="RealPrice")
 			public Double getRealPrice() {
 				return RealPrice;
 			}
 			public void setRealPrice(Double realPrice) {
 				RealPrice = realPrice;
 			}
+			@XmlElement(name="Fee")
 			public Double getFee() {
 				return Fee;
 			}

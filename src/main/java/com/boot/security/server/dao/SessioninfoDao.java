@@ -34,12 +34,11 @@ public interface SessioninfoDao {
 	@Select("select * from sessioninfo where CCode = #{ccode} and Date(StartTime) > #{StartTime}")
 	List<Sessioninfo> getByCCode(@Param("ccode")String ccode,@Param("StartTime")Date StartTime);
 	
-	//通过影院编码、开始时间删除排期
-	@Delete("delete from sessioninfo where CCode = #{ccode} and Date(StartTime) > #{StartTime}")
-	int deleteByCinemaCode(@Param("ccode")String ccode,@Param("StartTime")Date StartTime);
+	//通过影院编码、日期、删除排期
+	int deleteByCinemaCode(@Param("params")Map<String, Object> params);
 	
-	//通过影院编码、开始时间、结束时间获取影片信息
-	List<Sessioninfo> getFilms(@Param("CCode")String CCode,@Param("StartTime")Date StartTime,@Param("EndTime")Date EndTime);
+	//通过影院编码获取影片信息
+	List<Sessioninfo> getFilms(@Param("params")Map<String, Object> params);
 	
 	//通过影院编码、排期编码、用户id查询影片信息
 	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.scode = #{sessioncode} and t.userID = #{userid}")
@@ -50,13 +49,12 @@ public interface SessioninfoDao {
     List<Sessioninfo> getByCCodeGroupByFilm(@Param("userId") Long userId,@Param("cinemacode") String cinemacode,@Param("StartDate") Date StartDate,@Param("EndDate") Date EndDate);
     
     int update(Sessioninfo sessioninfo);
-    //增加
 
     @Delete("delete from sessioninfo where id = #{id}")
     int delete(Long id);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into sessioninfo(Id, CCode, SCode, ScreenCode, StartTime, FilmCode, FilmName, Duration, Language, UpdateTime, StandardPrice, LowestPrice, SettlePrice, TicketFee,AddFee,CinemaAllowance, IsAvalible, PlaythroughFlag, Dimensional, Sequence, UserID, ListingPrice, FeatureNo, SessionId, SessionKey, InternalUpdateTime) values(#{Id}, #{CCode}, #{SCode}, #{ScreenCode}, #{StartTime}, #{FilmCode}, #{FilmName}, #{Duration}, #{Language}, #{UpdateTime}, #{StandardPrice}, #{LowestPrice}, #{SettlePrice}, #{TicketFee},#{AddFee},#{CinemaAllowance}, #{IsAvalible}, #{PlaythroughFlag}, #{Dimensional}, #{Sequence}, #{UserID}, #{ListingPrice}, #{FeatureNo}, #{SessionId}, #{SessionKey}, #{InternalUpdateTime})")
+    @Insert("insert into sessioninfo(CCode, SCode, ScreenCode, StartTime, FilmCode, FilmName, Duration, Language, UpdateTime, StandardPrice, LowestPrice, SettlePrice, AddFee, CinemaAllowance, TicketFee, IsAvalible, PlaythroughFlag, Dimensional, Sequence, UserID, ListingPrice, FeatureNo, SessionId, SessionKey, InternalUpdateTime) values(#{CCode}, #{SCode}, #{ScreenCode}, #{StartTime}, #{FilmCode}, #{FilmName}, #{Duration}, #{Language}, #{UpdateTime}, #{StandardPrice}, #{LowestPrice}, #{SettlePrice}, #{TicketFee},#{AddFee},#{CinemaAllowance}, #{IsAvalible}, #{PlaythroughFlag}, #{Dimensional}, #{Sequence}, #{UserID}, #{ListingPrice}, #{FeatureNo}, #{SessionId}, #{SessionKey}, #{InternalUpdateTime})")
     int save(Sessioninfo sessioninfo);
     
     int count(@Param("params") Map<String, Object> params);
@@ -64,8 +62,6 @@ public interface SessioninfoDao {
     int countSession(@Param("params") Map<String, Object> params);
 
     List<Sessioninfo> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
-    
-    
     
     @Select("select * from priceplan where CinemaCode=#{CinemaCode} and Code=#{Code} and UserID=#{UserID}")
     Priceplan selectPrice(Priceplan priceplan);

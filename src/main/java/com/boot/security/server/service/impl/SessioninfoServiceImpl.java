@@ -2,6 +2,7 @@ package com.boot.security.server.service.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,13 +45,6 @@ public class SessioninfoServiceImpl implements SessioninfoService{
 		return sessioninfoDao.getBySessionCode(userid, cinemacode, sessioncode);
 	}
 
-
-	@Override
-	public List<Sessioninfo> getFilms(String CCode, Date StartTime, Date EndTime) {
-		// TODO Auto-generated method stub
-		return sessioninfoDao.getFilms(CCode, StartTime, EndTime);
-	}
-
 	@Override
 	public List<Sessioninfo> getByCCode(String ccode, Date StartTime) {
 		// TODO Auto-generated method stub
@@ -63,17 +57,29 @@ public class SessioninfoServiceImpl implements SessioninfoService{
 		return sessioninfoDao.getByCinemaCodeAndSessionCodeAndUserId(cinemacode, sessioncode, userid);
 	}
 
-	@Override
-	public int delete(String ccode, Date StartTime) {
-		// TODO Auto-generated method stub
-		return sessioninfoDao.deleteByCinemaCode(ccode, StartTime);
-	}
 
 	@Override
 	public List<Sessioninfo> getByCCodeGroupByFilm(Long userid, String cinemacode, Date StartDate, Date EndDate) {
 		
 		return sessioninfoDao.getByCCodeGroupByFilm(userid, cinemacode, StartDate, EndDate);
 	}
+
+	@Override
+	public int delete(Long id) {
+		// TODO Auto-generated method stub
+		return sessioninfoDao.delete(id);
+	}
 	
-	
+	@Override
+	public int deleteByCinemaCode(Map<String, Object> params) {
+		return sessioninfoDao.deleteByCinemaCode(params);
+	}
+
+	@Override
+	public List<Sessioninfo> getFilms(Map<String, Object> params) {
+		// TODO Auto-generated method stub
+		return sessioninfoDao.getFilms(params);
+	}
+
+
 }
