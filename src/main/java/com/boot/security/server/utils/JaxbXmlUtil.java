@@ -10,6 +10,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import com.boot.security.server.api.core.LockSeatQueryXml;
+import com.boot.security.server.api.core.LockSeatQueryXml.LockSeatQueryXmlOrder;
+import com.boot.security.server.api.core.LockSeatQueryXml.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat;
 import com.boot.security.server.api.ctms.reply.CxApplyFetchTicketParameter;
 import com.boot.security.server.api.ctms.reply.CxApplyFetchTicketParameter.CxApplyFetchTicketXmlTickets;
 import com.boot.security.server.api.ctms.reply.CxApplyFetchTicketParameter.CxApplyFetchTicketXmlTickets.CxApplyFetchTicketXmlTicket;
@@ -74,7 +77,7 @@ public class JaxbXmlUtil {
     }
     
     public static void main(String[] args) throws Exception {
-    	CxApplyFetchTicketParameter applyParam = new CxApplyFetchTicketParameter();
+    	/*CxApplyFetchTicketParameter applyParam = new CxApplyFetchTicketParameter();
 		applyParam.setAppCode("QJUSER");
 		applyParam.setCinemaCode("62549174");
 		CxApplyFetchTicketXmlTickets Tickets = new CxApplyFetchTicketParameter.CxApplyFetchTicketXmlTickets();
@@ -87,9 +90,22 @@ public class JaxbXmlUtil {
 		applyParam.setTickets(Tickets);
 		
 		applyParam.setCompress("0");
-		applyParam.setVerifyInfo("1234567889");
-		
-		String ApplyFetchTicketXml = convertToXml(applyParam);
+		applyParam.setVerifyInfo("1234567889");*/
+    	LockSeatQueryXml queryxml=new LockSeatQueryXml();
+    	queryxml.setCinemaCode("62549174");
+    	LockSeatQueryXmlOrder order=new LockSeatQueryXmlOrder();
+    	order.setPayType("0");
+    	order.setSessionCode("2423201904130016");
+    	order.setCount(1);
+    	List<LockSeatQueryXmlSeat> seats=new ArrayList<LockSeatQueryXmlSeat>();
+    	LockSeatQueryXmlSeat seat=new LockSeatQueryXmlSeat();
+    	seat.setSeatCode("6254917404#01#01");
+    	seat.setPrice(45D);
+    	seat.setFee(0D);
+    	seats.add(seat);
+    	order.setSeat(seats);
+    	queryxml.setOrder(order);
+		String ApplyFetchTicketXml = convertToXml(queryxml);
 		System.out.println(ApplyFetchTicketXml);
 	}
 }

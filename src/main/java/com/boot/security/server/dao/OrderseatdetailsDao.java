@@ -27,7 +27,7 @@ public interface OrderseatdetailsDao {
     int update(Orderseatdetails orderseatdetails);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into orderseatdetails(Id, OrderId, SeatCode, RowNum, ColumnNum, XCoord, YCoord, Price, SalePrice, Fee, FilmTicketCode, TicketInfoCode, PrintFlag, SeatId, Created, Updated, Deleted) values(#{Id}, #{OrderId}, #{SeatCode}, #{RowNum}, #{ColumnNum}, #{XCoord}, #{YCoord}, #{Price}, #{SalePrice}, #{Fee}, #{FilmTicketCode}, #{TicketInfoCode}, #{PrintFlag}, #{SeatId}, #{Created}, #{Updated}, #{Deleted})")
+    @Insert("insert into orderseatdetails(Id, OrderId, SeatCode, RowNum, ColumnNum, XCoord, YCoord, Price, SalePrice, Fee, AddFee,CinemaAllowance,FilmTicketCode, TicketInfoCode, PrintFlag, SeatId, Created, Updated, Deleted) values(#{Id}, #{OrderId}, #{SeatCode}, #{RowNum}, #{ColumnNum}, #{XCoord}, #{YCoord}, #{Price}, #{SalePrice}, #{Fee}, #{AddFee},#{CinemaAllowance},#{FilmTicketCode}, #{TicketInfoCode}, #{PrintFlag}, #{SeatId}, #{Created}, #{Updated}, #{Deleted})")
     int save(Orderseatdetails orderseatdetails);
     
     int count(@Param("params") Map<String, Object> params);

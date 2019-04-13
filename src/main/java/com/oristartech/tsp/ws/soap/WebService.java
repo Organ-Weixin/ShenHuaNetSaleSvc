@@ -100,7 +100,8 @@ public class WebService {
 					"0", MD5Util.getCxSign(param, userCinema.getDefaultPassword()));
 			Gson gson = new Gson();
 			// log.info(result);
-			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "QueryCinemaListResult"),
+			String json=XmlToJsonUtil.xmltoJson(result, "QueryCinemaListResult");
+			return gson.fromJson(json,
 					CxQueryCinemaListResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -127,7 +128,9 @@ public class WebService {
 					userCinema.getCinemaCode(), "0", MD5Util.getCxSign(param, userCinema.getRealPassword()));
 			Gson gson = new Gson();
 			// log.info(result);
-			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "QueryCinemaInfoResult"),
+			String json=XmlToJsonUtil.xmltoJson(result, "QueryCinemaInfoResult");
+			log.info(json);
+			return gson.fromJson(json,
 					CxQueryCinemaInfoResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();

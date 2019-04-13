@@ -752,7 +752,7 @@ public class YkInterface implements ICTMSInterface {
 		YkPrintTicketResult ykResult = gson.fromJson(printTicketResult, YkPrintTicketResult.class);
 		
 		if("0".equals(ykResult.getRetCode()) && "SUCCESS".equals(ykResult.getData().getBizCode())){
-			order.getOrderBaseInfo().setPrintStatus(YesOrNoEnum.Yes.getStatusCode());
+			order.getOrderBaseInfo().setPrintStatus(1);
 			order.getOrderBaseInfo().setPrintTime(new Date());
 			
 			reply.Status = StatusEnum.Success;
