@@ -110,7 +110,7 @@ public class WebService {
 	}
 	// endregion
 
-	// region 查询影厅
+	// region 查询影厅(完成)
 	/**
 	 * 查询一个电影院的信息，包含了所有影厅的数量，座位数等
 	 * 
@@ -121,11 +121,11 @@ public class WebService {
 	public static CxQueryCinemaInfoResult QueryCinemaInfo(Usercinemaview userCinema) {
 		try {
 			Map<String, String> param = new LinkedHashMap();
-			param.put("pAppCode", userCinema.getDefaultUserName());
+			param.put("pAppCode", userCinema.getRealUserName());
 			param.put("pCinemaCode", userCinema.getCinemaCode());
 			param.put("pCompress", "0");
-			String result = WebService.cinemaTss(userCinema.getUrl()).queryCinemaInfo(userCinema.getDefaultUserName(),
-					userCinema.getCinemaCode(), "0", MD5Util.getCxSign(param, userCinema.getDefaultPassword()));
+			String result = WebService.cinemaTss(userCinema.getUrl()).queryCinemaInfo(userCinema.getRealUserName(),
+					userCinema.getCinemaCode(), "0", MD5Util.getCxSign(param, userCinema.getRealPassword()));
 			Gson gson = new Gson();
 			// log.info(result);
 			String json=XmlToJsonUtil.xmltoJson(result, "QueryCinemaInfoResult");
@@ -139,7 +139,7 @@ public class WebService {
 	}
 	// endregion
 
-	// region 查询座位
+	// region 查询座位(完成)
 	/**
 	 * 查询某个影院的某个影厅座位信息 包含编号，坐标等信息
 	 * 
@@ -169,7 +169,7 @@ public class WebService {
 	}
 	// endregion
 
-	// region 查询影片信息
+	// region 查询影片信息(不用)
 	public static CxQueryFilmInfoResult QueryFilmInfo(Usercinemaview userCinema, String PlanDate) {
 		try {
 			Map<String, String> param = new LinkedHashMap();
@@ -188,7 +188,7 @@ public class WebService {
 	}
 	// endregion
 
-	// region 按时间段查询影片信息
+	// region 按时间段查询影片信息(完成)
 	public static CxQueryFilmInfoByDatePeriodResult QueryFilmInfoByDatePeriod(Usercinemaview userCinema,
 			String pPlanStartDate, String pPlanEndDate) {
 		try {
@@ -215,7 +215,7 @@ public class WebService {
 	}
 	// endregion
 
-	// region 按时间段查询场次信息
+	// region 按时间段查询场次信息(完成)
 	public static CxQueryPlanInfoByDatePeriodResult QueryPlanInfoByDatePeriod(Usercinemaview userCinema,
 			String pPlanStartDate, String pPlanEndDate) {
 		try {
@@ -229,6 +229,7 @@ public class WebService {
 			String result = WebService.cinemaTss(userCinema.getUrl()).queryPlanInfoByDatePeriod(
 					userCinema.getRealUserName(), userCinema.getCinemaCode(), pPlanStartDate, pPlanEndDate, "0",
 					MD5Util.getCxSign(param, userCinema.getRealPassword()));
+			log.info(result);
 			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss")
 					.registerTypeAdapter(Integer.class, new IntegerDefaultAdapter())
 					.registerTypeAdapter(Double.class, new DoubleDefaultAdapter()).create();
@@ -242,7 +243,7 @@ public class WebService {
 	}
 	// endregion
 
-	// region 查询场次座位
+	// region 查询场次座位(完成)
 	public static CxQueryPlanSeatResult QueryPlanSeat(Usercinemaview userCinema, String pFeatureAppNo, String pStatus) {
 		try {
 			Map<String, String> param = new LinkedHashMap();
@@ -257,7 +258,7 @@ public class WebService {
 					userCinema.getCinemaCode(), pFeatureAppNo, pStatus, "0",
 					MD5Util.getCxSign(param, userCinema.getRealPassword()));
 			Gson gson = new Gson();
-			// log.info(result);
+			log.info(result);
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "QueryPlanSeatResult"), CxQueryPlanSeatResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -266,7 +267,7 @@ public class WebService {
 	}
 	// endregion
 
-	// region 锁座
+	// region 锁座(完成)
 	public static CxLockSeatResult LockSeat(Usercinemaview userCinema, OrderView orderview) {
 		try {
 			// 用来生成验证码
@@ -277,17 +278,17 @@ public class WebService {
 			StringBuffer SeatInfos = new StringBuffer();
 			orderview.getOrderSeatDetails().forEach(n -> SeatInfos.append(n.getSeatCode()));
 			map.put("SeatInfos", SeatInfos.toString());
+			//log.info("SeatInfos:"+SeatInfos.toString());
 			map.put("Compress", "0");
-
 			// 最后的请求参数
 			CxLockSeatParameter param = new CxLockSeatParameter();
 			param.setAppCode(userCinema.getRealUserName());
 			param.setCinemaCode(userCinema.getCinemaCode());
 			param.setFeatureAppNo(orderview.getOrderBaseInfo().getSessionCode());// 场次编码
 			CxLockSeatXmlSeatInfos seatInfos = new CxLockSeatParameter.CxLockSeatXmlSeatInfos();
-			List<String> seatcodes = null;
-			orderview.getOrderSeatDetails().forEach(n -> seatcodes.add(n.getSeatCode()));
-			seatInfos.setSeatCode(seatcodes);
+			List<String> seacodes = new ArrayList<String>();
+			orderview.getOrderSeatDetails().forEach(n -> seacodes.add(n.getSeatCode()));
+			seatInfos.setSeatCode(seacodes);
 			param.setSeatInfos(seatInfos);
 			param.setCompress("0");
 			String VerifyInfo = MD5Util.getCxSign(map, userCinema.getRealPassword());
@@ -295,8 +296,10 @@ public class WebService {
 
 			// 把请求参数转成XML
 			String LockSeatXml = JaxbXmlUtil.convertToXml(param);
+			log.info(LockSeatXml);
+			log.info(userCinema.getUrl());
 			String result = WebService.cinemaTss(userCinema.getUrl()).lockSeat(LockSeatXml);
-			// log.info(result);
+			log.info(result);
 			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss")
 					.registerTypeAdapter(Integer.class, new IntegerDefaultAdapter())
 					.registerTypeAdapter(Double.class, new DoubleDefaultAdapter()).create();
@@ -308,7 +311,7 @@ public class WebService {
 	}
 	// endregion
 
-	// region 释放座位
+	// region 释放座位(完成)
 	public static CxReleaseSeatResult ReleaseSeat(Usercinemaview userCinema, OrderView orderview) {
 		try {
 			// 用来生成验证码
@@ -329,7 +332,7 @@ public class WebService {
 			param.setOrderCode(orderview.getOrderBaseInfo().getLockOrderCode());// 锁座订单号
 			param.setFeatureAppNo(orderview.getOrderBaseInfo().getSessionCode());// 场次编码
 			CxReleaseSeatXmlSeatInfos seatInfos = new CxReleaseSeatParameter.CxReleaseSeatXmlSeatInfos();
-			List<String> seatcodes = null;
+			List<String> seatcodes = new ArrayList<String>();
 			orderview.getOrderSeatDetails().forEach(n -> seatcodes.add(n.getSeatCode()));
 			seatInfos.setSeatCode(seatcodes);
 			param.setSeatInfos(seatInfos);
@@ -340,7 +343,7 @@ public class WebService {
 			// 把请求参数转成XML
 			String ReleaseSeatXml = JaxbXmlUtil.convertToXml(param);
 			String result = WebService.cinemaTss(userCinema.getUrl()).releaseSeat(ReleaseSeatXml);
-			// log.info(result);
+			log.info(result);
 			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss")
 					.registerTypeAdapter(Integer.class, new IntegerDefaultAdapter())
 					.registerTypeAdapter(Double.class, new DoubleDefaultAdapter()).create();
@@ -352,7 +355,7 @@ public class WebService {
 	}
 	// endregion
 
-	// region 提交订单
+	// region 提交订单(完成)
 	public static CxSubmitOrderResult SubmitOrder(Usercinemaview userCinema, OrderView orderview) {
 		try {
 			// 用来生成验证码
@@ -365,13 +368,16 @@ public class WebService {
 			StringBuffer SeatInfos = new StringBuffer();
 			orderview.getOrderSeatDetails()
 					.forEach(n -> SeatInfos.append(n.getSeatCode())// 座位编号
-							.append(new DecimalFormat("#.00").format(n.getPrice() + n.getFee() + n.getAddFee()))// 总票价
-							.append(new DecimalFormat("#.00").format(n.getFee()))// 网络代售服务费
-							.append(new DecimalFormat("#.00").format(n.getAddFee()))// 增值服务费
-							.append(new DecimalFormat("#.00").format(n.getCinemaAllowance()))// 影院补贴
-							.append(orderview.getOrderBaseInfo().getMarketingCode()));// 活动标识
+							.append(new DecimalFormat("#0.00").format(n.getPrice() + n.getFee() + n.getAddFee()))// 总票价
+							.append(new DecimalFormat("#0.00").format(n.getFee()))// 网络代售服务费
+							.append(new DecimalFormat("#0.00").format(n.getAddFee()))// 增值服务费
+							.append(new DecimalFormat("#0.00").format(n.getCinemaAllowance()))// 影院补贴
+							/*.append(orderview.getOrderBaseInfo().getMarketingCode())*/);// 活动标识
 			map.put("SeatInfos", SeatInfos.toString());
 			map.put("Compress", "0");
+			log.info("==========================");
+			log.info(SeatInfos.toString());
+			log.info("==========================");
 
 			// 最后的请求参数
 			CxSubmitOrderParameter param = new CxSubmitOrderParameter();
@@ -381,7 +387,7 @@ public class WebService {
 			param.setFeatureAppNo(orderview.getOrderBaseInfo().getSessionCode());// 场次编码
 			param.setMobilePhone(orderview.getOrderBaseInfo().getMobilePhone());
 			CxSubmitOrderXmlSeatInfos seatInfos = new CxSubmitOrderParameter.CxSubmitOrderXmlSeatInfos();
-			List<CxSubmitOrderXmlSeatInfo> seatInfo = null;
+			List<CxSubmitOrderXmlSeatInfo> seatInfo = new ArrayList<CxSubmitOrderXmlSeatInfo>();
 			for (Orderseatdetails orderdetail : orderview.getOrderSeatDetails()) {
 				CxSubmitOrderXmlSeatInfo seat = new CxSubmitOrderXmlSeatInfo();
 				seat.setSeatCode(orderdetail.getSeatCode());
@@ -389,7 +395,7 @@ public class WebService {
 				seat.setServiceCharge(new DecimalFormat("#.00").format(orderdetail.getFee()));
 				seat.setServiceAddFee(new DecimalFormat("#.00").format(orderdetail.getAddFee()));
 				seat.setCinemaAllowance(new DecimalFormat("#.00").format(orderdetail.getCinemaAllowance()));
-				seat.setMarketingCode(orderview.getOrderBaseInfo().getMarketingCode());
+				//seat.setMarketingCode(orderview.getOrderBaseInfo().getMarketingCode());
 				seatInfo.add(seat);
 			}
 			seatInfos.setSeatInfo(seatInfo);
@@ -401,7 +407,7 @@ public class WebService {
 			// 把请求参数转成XML
 			String SubmitOrderXml = JaxbXmlUtil.convertToXml(param);
 			String result = WebService.cinemaTss(userCinema.getUrl()).submitOrder(SubmitOrderXml);
-			// log.info(result);
+			log.info(result);
 			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss")
 					.registerTypeAdapter(Integer.class, new IntegerDefaultAdapter())
 					.registerTypeAdapter(Double.class, new DoubleDefaultAdapter()).create();
@@ -413,7 +419,7 @@ public class WebService {
 	}
 	// endregion
 
-	// region 查询出票状态
+	// region 查询出票状态(完成)
 	/**
 	 * 根据取票序号、取票验证码查询取货状态
 	 * 
@@ -437,7 +443,7 @@ public class WebService {
 					userCinema.getCinemaCode(), pPrintNo, pVerifyCode, "0",
 					MD5Util.getCxSign(param, userCinema.getRealPassword()));
 			Gson gson = new Gson();
-			// log.info(result);
+			log.info(result);
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "QueryDeliveryStatusResult"),
 					CxQueryDeliveryStatusResult.class);
 		} catch (Exception e) {
@@ -447,7 +453,7 @@ public class WebService {
 	}
 	// endregion
 
-	// region 退票
+	// region 退票(完成)
 	public static CxCancelOrderResult CancelOrder(Usercinemaview userCinema, String pPrintNo, String pVerifyCode) {
 		try {
 			Map<String, String> param = new LinkedHashMap();
@@ -471,7 +477,7 @@ public class WebService {
 	}
 	// endregion
 
-	// region 查询订单信息
+	// region 查询订单信息(完成)
 	public static CxQueryOrderStatusResult QueryOrderStatus(Usercinemaview userCinema, String pOrderCode) {
 		try {
 			Map<String, String> param = new LinkedHashMap();
@@ -495,7 +501,7 @@ public class WebService {
 	}
 	// endregion
 
-	// region 查询影票信息
+	// region 查询影票信息(完成)
 	public static CxQueryTicketInfoResult QueryTicketInfo(Usercinemaview userCinema, String PrintNo) {
 		try {
 			// 用来生成验证码
@@ -511,7 +517,7 @@ public class WebService {
 			param.setAppCode(userCinema.getRealUserName());
 			param.setCinemaCode(userCinema.getCinemaCode());
 			CxQueryTicketInfoXmlTickets Tickets = new CxQueryTicketInfoParameter.CxQueryTicketInfoXmlTickets();
-			List<CxQueryTicketInfoXmlTicket> Ticket = null;
+			List<CxQueryTicketInfoXmlTicket> Ticket = new ArrayList<CxQueryTicketInfoXmlTicket>();
 			CxQueryTicketInfoXmlTicket ti = new CxQueryTicketInfoXmlTicket();
 			ti.setPrintNo(PrintNo);
 			Ticket.add(ti);
@@ -524,6 +530,7 @@ public class WebService {
 			// 把请求参数转成XML
 			String QueryTicketInfoXml = JaxbXmlUtil.convertToXml(param);
 			String result = WebService.cinemaTss(userCinema.getUrl()).queryTicketInfo(QueryTicketInfoXml);
+			log.info(result);
 
 			// log.info(MD5Util.getCxSign(param, PayConstant.signkey));
 			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -538,7 +545,7 @@ public class WebService {
 	}
 	// endregion
 
-	// region 电影票出票请求
+	// region 电影票出票请求（完成）
 	public static CxApplyFetchTicketResult ApplyFetchTicket(Usercinemaview userCinema, String PrintNo,
 			String VerifyCode) {
 		try {
@@ -547,7 +554,7 @@ public class WebService {
 			map.put("pAppCode", userCinema.getRealUserName());
 			map.put("pCinemaCode", userCinema.getCinemaCode());
 			map.put("PrintNo", PrintNo);
-			map.put("VerifyCodeMD5",VerifyCode);
+			map.put("VerifyCodeMD5",MD5Util.MD5Encode(VerifyCode,"UTF-8"));
 			map.put("pCompress", "0");
 			// log.info(param.toString());
 
@@ -556,10 +563,10 @@ public class WebService {
 			applyParam.setAppCode(userCinema.getRealUserName());
 			applyParam.setCinemaCode(userCinema.getCinemaCode());
 			CxApplyFetchTicketXmlTickets Tickets = new CxApplyFetchTicketParameter.CxApplyFetchTicketXmlTickets();
-			List<CxApplyFetchTicketXmlTicket> Ticket = null;
+			List<CxApplyFetchTicketXmlTicket> Ticket = new ArrayList<CxApplyFetchTicketXmlTicket>();
 			CxApplyFetchTicketXmlTicket ti = new CxApplyFetchTicketXmlTicket();
 			ti.setPrintNo(PrintNo);
-			ti.setVerifyCodeMD5(VerifyCode);
+			ti.setVerifyCodeMD5(MD5Util.MD5Encode(VerifyCode,"UTF-8"));
 			Ticket.add(ti);
 			Tickets.setTicket(Ticket);
 			applyParam.setTickets(Tickets);
@@ -569,7 +576,9 @@ public class WebService {
 
 			// 把请求参数转成XML
 			String ApplyFetchTicketXml = JaxbXmlUtil.convertToXml(applyParam);
+			log.info(ApplyFetchTicketXml);
 			String result = WebService.cinemaTss(userCinema.getUrl()).applyFetchTicket(ApplyFetchTicketXml);
+			log.info(result);
 
 			// log.info(MD5Util.getCxSign(param, PayConstant.signkey));
 			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -584,7 +593,7 @@ public class WebService {
 	}
 	// endregion
 	
-	//region 确认出票
+	//region 确认出票（完成）
 	public static CxFetchTicketResult FetchTicket(Usercinemaview userCinema, String PrintNo) {
 		try {
 			// 用来生成验证码
@@ -600,7 +609,7 @@ public class WebService {
 			Param.setAppCode(userCinema.getRealUserName());
 			Param.setCinemaCode(userCinema.getCinemaCode());
 			CxFetchTicketXmlTickets Tickets = new CxFetchTicketParameter.CxFetchTicketXmlTickets();
-			List<CxFetchTicketXmlTicket> Ticket = null;
+			List<CxFetchTicketXmlTicket> Ticket = new ArrayList<CxFetchTicketXmlTicket>();
 			CxFetchTicketXmlTicket ti = new CxFetchTicketXmlTicket();
 			ti.setPrintNo(PrintNo);
 			Ticket.add(ti);
@@ -613,6 +622,7 @@ public class WebService {
 			// 把请求参数转成XML
 			String FetchTicketXml = JaxbXmlUtil.convertToXml(Param);
 			String result = WebService.cinemaTss(userCinema.getUrl()).fetchTicket(FetchTicketXml);
+			log.info(result);
 
 			// log.info(MD5Util.getCxSign(param, PayConstant.signkey));
 			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -625,6 +635,7 @@ public class WebService {
 		}
 		return null;
 	}
+	//endregion
 
 	public static void main(String args[]) {
 		try {

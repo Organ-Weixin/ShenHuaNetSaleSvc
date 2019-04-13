@@ -84,7 +84,7 @@ public class NetSaleSvcCore {
 	public static NetSaleSvcCore getInstance() {
 		if (_instance != null) {
 			return _instance;
-		} else { 
+		} else {
 			_instance = new NetSaleSvcCore();
 		}
 		return _instance;
@@ -464,7 +464,7 @@ public class NetSaleSvcCore {
 
 	// region 锁座(完成)
 	public LockSeatReply LockSeat(String Username, String Password, String QueryXml)
-			throws JsonSyntaxException, Exception { 
+			throws JsonSyntaxException, Exception {
 		LockSeatReply lockSeatReply = new LockSeatReply();
 
 		if (!ReplyExtension.RequestInfoGuard(lockSeatReply, Username, Password, QueryXml)) {
@@ -508,17 +508,18 @@ public class NetSaleSvcCore {
 		List<String> seatcodeslist = order.getOrderSeatDetails().stream().map(Orderseatdetails::getSeatCode)
 				.collect(Collectors.toList());
 		String seatcodes = String.join(",", seatcodeslist);
-		List<Screenseatinfo> seatInfos = _seatInfoService.getBySeatCodes(userCinema.getCinemaCode(),
-				sessionInfo.getScreenCode(), seatcodes);
+		log.info("====="+seatcodes);
+		//List<Screenseatinfo> seatInfos = _seatInfoService.getBySeatCodes(userCinema.getCinemaCode(),sessionInfo.getScreenCode(), seatcodes);
+		//log.info(seatInfos.toString());
 		for (Orderseatdetails seat : order.getOrderSeatDetails()) {
-			List<Screenseatinfo> seatinfo = seatInfos.stream()
-					.filter((Screenseatinfo s) -> seat.getSeatCode().equals(s.getSeatCode())).collect(Collectors.toList());
-			if (seatinfo != null || seatinfo.size()>0) {
-				seat.setRowNum(seatinfo.get(0).getRowNum());
-				seat.setColumnNum(seatinfo.get(0).getColumnNum());
+			//List<Screenseatinfo> seatinfo = seatInfos.stream().filter((Screenseatinfo s) -> seat.getSeatCode().equals(s.getSeatCode())).collect(Collectors.toList());
+			Screenseatinfo seatinfo=_seatInfoService.getBySeatCode(userCinema.getCinemaCode(),sessionInfo.getScreenCode(),seat.getSeatCode());
+			if (seatinfo != null) {
+				seat.setRowNum(seatinfo.getRowNum());
+				seat.setColumnNum(seatinfo.getColumnNum());
 				// 因为vista这个奇葩要用到坐标来锁座，所以把坐标也保存到订单座位
-				seat.setXCoord(seatinfo.get(0).getXCoord());
-				seat.setYCoord(seatinfo.get(0).getYCoord());
+				seat.setXCoord(seatinfo.getXCoord());
+				seat.setYCoord(seatinfo.getYCoord());
 			}
 		}
 		return LockSeat(lockSeatReply, userCinema, order);
@@ -636,7 +637,7 @@ public class NetSaleSvcCore {
 	}
 	// endregion
 
-	// region 提交订单
+	// region 提交订单(完成)
 	public SubmitOrderReply SubmitOrder(String Username, String Password, String QueryXml)
 			throws JsonSyntaxException, Exception {
 		SubmitOrderReply submitOrderReply = new SubmitOrderReply();
@@ -730,6 +731,7 @@ public class NetSaleSvcCore {
 			ex.printStackTrace();
 		} finally {
 			// 更新订单信息
+			order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
 			_orderService.Update(order);
 		}
 
@@ -737,7 +739,7 @@ public class NetSaleSvcCore {
 	}
 	// endregion
 
-	// region 查询出票状态
+	// region 查询出票状态(完成)
 	public QueryPrintReply QueryPrint(String Username, String Password, String CinemaCode, String PrintNo,
 			String VerifyCode) {
 		QueryPrintReply queryPrintReply = new QueryPrintReply();
@@ -777,13 +779,12 @@ public class NetSaleSvcCore {
 			e.printStackTrace();
 		}
 
-		if (CTMSReply.Status == StatusEnum.Success) {
+		if (StatusEnum.Success.equals(CTMSReply.Status)) {
 			reply.Order = reply.new QueryPrintReplyOrder();
 			reply.Order.OrderCode = order.getOrderBaseInfo().getSubmitOrderCode();
 			reply.Order.PrintNo = order.getOrderBaseInfo().getPrintNo();
 			reply.Order.VerifyCode = order.getOrderBaseInfo().getVerifyCode();
-			reply.Order.Status = YesOrNoEnum.valueOf(order.getOrderBaseInfo().getPrintStatus().toString())
-					.getStatusName();
+			reply.Order.Status = order.getOrderBaseInfo().getPrintStatus() == 1?"Yes":"No";
 			reply.Order.PrintTime = order.getOrderBaseInfo().getPrintTime() == null ? ""
 					: new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderBaseInfo().getPrintTime());
 			reply.SetSuccessReply();
@@ -792,12 +793,13 @@ public class NetSaleSvcCore {
 		}
 
 		// 更新订单信息
+		order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
 		_orderService.UpdateOrderBaseInfo(order.getOrderBaseInfo());
 		return reply;
 	}
 	// endregion
 
-	// region 退票
+	// region 退票（完成）
 	public RefundTicketReply RefundTicket(String Username, String Password, String CinemaCode, String PrintNo,
 			String VerifyCode) {
 		RefundTicketReply refundTicketReply = new RefundTicketReply();
@@ -834,13 +836,12 @@ public class NetSaleSvcCore {
 			CTMSRefundTicketReply CTMSReply = null;
 			CTMSReply = _CTMSInterface.RefundTicket(userCinema, order);
 
-			if (CTMSReply.Status == StatusEnum.Success) {
+			if (StatusEnum.Success.equals(CTMSReply.Status)) {
 				reply.Order = reply.new RefundTicketReplyOrder();
 				reply.Order.OrderCode = order.getOrderBaseInfo().getSubmitOrderCode();
 				reply.Order.PrintNo = order.getOrderBaseInfo().getPrintNo();
 				reply.Order.VerifyCode = order.getOrderBaseInfo().getVerifyCode();
-				reply.Order.Status = order.getOrderBaseInfo().getOrderStatus() == OrderStatusEnum.Refund.getStatusCode()
-						? YesOrNoEnum.Yes : YesOrNoEnum.No;
+				reply.Order.Status = order.getOrderBaseInfo().getOrderStatus() == 9? YesOrNoEnum.Yes : YesOrNoEnum.No;
 				reply.Order.RefundTime = reply.Order.Status == YesOrNoEnum.Yes
 						? order.getOrderBaseInfo().getRefundTime() == null ? ""
 								: new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -854,13 +855,14 @@ public class NetSaleSvcCore {
 
 		} finally {
 			// 更新订单信息
+			order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
 			_orderService.UpdateOrderBaseInfo(order.getOrderBaseInfo());
 		}
 		return reply;
 	}
 	// endregion
 
-	// region 查询订单信息
+	// region 查询订单信息（完成）
 	public QueryOrderReply QueryOrder(String Username, String Password, String CinemaCode, String OrderCode) {
 		QueryOrderReply queryOrderReply = new QueryOrderReply();
 		if (!ReplyExtension.RequestInfoGuard(queryOrderReply, Username, Password, CinemaCode, OrderCode)) {
@@ -897,7 +899,7 @@ public class NetSaleSvcCore {
 			e.printStackTrace();
 		}
 
-		if (CTMSReply.Status == StatusEnum.Success) {
+		if (StatusEnum.Success.equals(CTMSReply.Status)) {
 			reply.Order = reply.new QueryOrderReplyOrder();
 			reply.Order.OrderCode = order.getOrderBaseInfo().getSubmitOrderCode();
 			reply.Order.CinemaCode = userCinema.getCinemaCode();
@@ -919,9 +921,9 @@ public class NetSaleSvcCore {
 			reply.Order.VerifyCode = order.getOrderBaseInfo().getVerifyCode();
 
 			QueryOrderReplyFilms films = reply.Order.new QueryOrderReplyFilms();
-			List<QueryOrderReplyFilm> filmlist = null;
+			List<QueryOrderReplyFilm> filmlist = new ArrayList<QueryOrderReplyFilm>();
 
-			QueryOrderReplyFilm film = reply.Order.Films.new QueryOrderReplyFilm();
+			QueryOrderReplyFilm film = films.new QueryOrderReplyFilm();
 			film.setCode(order.getOrderBaseInfo().getFilmCode());
 			film.setName(order.getOrderBaseInfo().getFilmName());
 			film.setDuration(sessionInfo == null ? "0"
@@ -934,19 +936,17 @@ public class NetSaleSvcCore {
 			reply.Order.Films = films;
 
 			QueryOrderReplySeats seats = reply.Order.new QueryOrderReplySeats();
-			List<QueryOrderReplySeat> seatlist = null;
+			List<QueryOrderReplySeat> seatlist = new ArrayList<QueryOrderReplySeat>();
 			for (Orderseatdetails orderseat : order.getOrderSeatDetails()) {
-				QueryOrderReplySeat replyseat = reply.Order.Seats.new QueryOrderReplySeat();
+				QueryOrderReplySeat replyseat = seats.new QueryOrderReplySeat();
 				replyseat.setSeatCode(orderseat.getSeatCode());
 				replyseat.setRowNum(orderseat.getRowNum());
 				replyseat.setColumnNum(orderseat.getColumnNum());
 				replyseat.setFilmTicketCode(orderseat.getFilmTicketCode());
-				replyseat.setPrintStatus(YesOrNoEnum.valueOf(order.getOrderBaseInfo().getPrintStatus().toString()));
+				replyseat.setPrintStatus(order.getOrderBaseInfo().getPrintStatus()==1?"Yes":"No");
 				replyseat.setPrintTime(order.getOrderBaseInfo().getPrintTime() == null ? ""
 						: new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderBaseInfo().getPrintTime()));
-				replyseat.setRefundStatus(OrderStatusEnum
-						.valueOf(order.getOrderBaseInfo().getOrderStatus().toString()) == OrderStatusEnum.Refund
-								? YesOrNoEnum.Yes : YesOrNoEnum.No);
+				replyseat.setRefundStatus(order.getOrderBaseInfo().getOrderStatus()==9? "Yes" : "No");
 				replyseat.setRefundTime(order.getOrderBaseInfo().getRefundTime() == null ? ""
 						: new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderBaseInfo().getRefundTime()));
 				seatlist.add(replyseat);
@@ -960,12 +960,13 @@ public class NetSaleSvcCore {
 		}
 
 		// 更新订单信息
+		order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
 		_orderService.Update(order);
 		return reply;
 	}
 	// endregion
 	
-	//region 查询影票信息
+	//region 查询影票信息(完成)
 	public QueryTicketReply QueryTicket(String Username, String Password, String CinemaCode,
             String PrintNo, String VerifyCode)
         {
@@ -1008,13 +1009,13 @@ public class NetSaleSvcCore {
 			e.printStackTrace();
 		}
 
-        if (CTMSReply.Status == StatusEnum.Success)
+        if (StatusEnum.Success.equals(CTMSReply.Status))
         {
             Screeninfo screenInfo = _screenInfoService.getByScreenCode(userCinema.getCinemaCode(), order.getOrderBaseInfo().getScreenCode());
-            
-            List<QueryTicketReplyTicket> ticketlist=null;
+            QueryTicketReplyTickets tickets=reply.new QueryTicketReplyTickets();
+            List<QueryTicketReplyTicket> ticketlist=new ArrayList<QueryTicketReplyTicket>();
             for(Orderseatdetails orderseat:order.getOrderSeatDetails()){
-            	QueryTicketReplyTicket ticket=reply.Tickets.new QueryTicketReplyTicket();
+            	QueryTicketReplyTicket ticket=tickets.new QueryTicketReplyTicket();
             	ticket.setPrintNo(order.getOrderBaseInfo().getPrintNo());
             	ticket.setTicketInfoCode(orderseat.getTicketInfoCode());
             	ticket.setCinemaCode(userCinema.getCinemaCode());
@@ -1030,10 +1031,9 @@ public class NetSaleSvcCore {
             	ticket.setSeatName(orderseat.getRowNum()+"排"+orderseat.getColumnNum()+"座");
             	ticket.setPrice(new DecimalFormat("#.00").format(orderseat.getPrice()));
             	ticket.setService(new DecimalFormat("#.00").format(orderseat.getFee()));
-            	ticket.setPrintFlag(orderseat.getPrintFlag()==null?"否":YesOrNoEnum.valueOf(orderseat.getPrintFlag().toString()).getStatusName());
+            	ticket.setPrintFlag(orderseat.getPrintFlag()==null?"0":String.valueOf(orderseat.getPrintFlag()));
             	ticketlist.add(ticket);
             }
-            QueryTicketReplyTickets tickets=reply.new QueryTicketReplyTickets();
             tickets.setCount(ticketlist.size());
             tickets.setTicket(ticketlist);
             reply.Tickets = tickets;
@@ -1045,13 +1045,14 @@ public class NetSaleSvcCore {
         }
 
         //更新订单信息
+        order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
         _orderService.Update(order);
 
         return reply;
     }
 	//endregion
 	
-	//region 确认出票
+	//region 确认出票(完成)
 	public FetchTicketReply FetchTicket(String Username, String Password, String CinemaCode,
             String PrintNo, String VerifyCode)
         {
@@ -1095,7 +1096,7 @@ public class NetSaleSvcCore {
 			e.printStackTrace();
 		}
 
-        if (CTMSReply.Status == StatusEnum.Success)
+        if (StatusEnum.Success.equals(CTMSReply.Status))
         {
             reply.SetSuccessReply();
         }
@@ -1105,6 +1106,7 @@ public class NetSaleSvcCore {
         }
 
         //更新订单信息
+        order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
         _orderService.UpdateOrderBaseInfo(order.getOrderBaseInfo());
 
         return reply;

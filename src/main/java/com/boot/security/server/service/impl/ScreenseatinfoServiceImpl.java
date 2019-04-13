@@ -56,4 +56,9 @@ public class ScreenseatinfoServiceImpl implements ScreenseatinfoService{
 		return screenseatinfoDao.getGroupByGroupCode(cinemacode, screencode);
 	}
 
+	@Override
+	public Screenseatinfo getBySeatCode(String cinemacode, String screencode, String seatcode) {
+		return screenseatinfoDao.getBySeatCode(cinemacode, screencode, seatcode);
+	}
+
 }

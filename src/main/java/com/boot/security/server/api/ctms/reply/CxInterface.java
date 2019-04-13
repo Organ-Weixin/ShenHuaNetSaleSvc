@@ -260,6 +260,7 @@ public class CxInterface implements ICTMSInterface {
 	@Override
 	public CTMSLockSeatReply LockSeat(Usercinemaview userCinema, OrderView order) {
 		CTMSLockSeatReply reply = new CTMSLockSeatReply();
+		log.info("===========================2=====");
 		CxLockSeatResult cxReply = cxService.LockSeat(userCinema, order);
 		if (cxReply.getLockSeatResult().getResultCode().equals("0")) {
 			order.getOrderBaseInfo().setLockOrderCode(cxReply.getLockSeatResult().getOrderCode());

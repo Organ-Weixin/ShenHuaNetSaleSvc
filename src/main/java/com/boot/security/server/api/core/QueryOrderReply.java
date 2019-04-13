@@ -167,9 +167,9 @@ public class QueryOrderReply extends BaseReply {
 		        public String RowNum;
 		        public String ColumnNum;
 		        public String FilmTicketCode;
-		        public YesOrNoEnum PrintStatus;
+		        public String PrintStatus;
 		        public String PrintTime;
-		        public YesOrNoEnum RefundStatus;
+		        public String RefundStatus;
 		        public String RefundTime;
 				public String getSeatCode() {
 					return SeatCode;
@@ -195,10 +195,10 @@ public class QueryOrderReply extends BaseReply {
 				public void setFilmTicketCode(String filmTicketCode) {
 					FilmTicketCode = filmTicketCode;
 				}
-				public YesOrNoEnum getPrintStatus() {
+				public String getPrintStatus() {
 					return PrintStatus;
 				}
-				public void setPrintStatus(YesOrNoEnum printStatus) {
+				public void setPrintStatus(String printStatus) {
 					PrintStatus = printStatus;
 				}
 				public String getPrintTime() {
@@ -207,10 +207,10 @@ public class QueryOrderReply extends BaseReply {
 				public void setPrintTime(String printTime) {
 					PrintTime = printTime;
 				}
-				public YesOrNoEnum getRefundStatus() {
+				public String getRefundStatus() {
 					return RefundStatus;
 				}
-				public void setRefundStatus(YesOrNoEnum refundStatus) {
+				public void setRefundStatus(String refundStatus) {
 					RefundStatus = refundStatus;
 				}
 				public String getRefundTime() {

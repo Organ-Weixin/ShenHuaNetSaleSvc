@@ -1400,3 +1400,630 @@
 2019-04-13 11:14:40,392 [main] ==>  Preparing: select * from screenseatinfo t where t.cinemacode = ? and t.screencode=? and t.seatcode in(?) 
 2019-04-13 11:14:40,397 [main] ==> Parameters: 33096401(String), 1068(String), ,118049,118050(String)
 2019-04-13 11:14:41,797 [main] <==      Total: 0
+2019-04-13 14:55:17,800 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 14:55:18,168 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 14:55:18,210 [main] <==      Total: 1
+2019-04-13 14:55:18,236 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 14:55:18,240 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 14:55:18,262 [main] <==      Total: 1
+2019-04-13 14:55:18,271 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 14:55:18,275 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 14:55:20,548 [main] <==      Total: 1
+2019-04-13 14:55:20,583 [main] ==>  Preparing: select * from screenseatinfo t where t.cinemacode = ? and t.screencode=? and t.seatcode in(?) 
+2019-04-13 14:55:20,589 [main] ==> Parameters: 62549174(String), 0000000000000001(String), 6254917401#03#05(String)
+2019-04-13 14:55:21,775 [main] <==      Total: 1
+2019-04-13 14:58:11,346 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 14:58:11,736 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 14:58:11,779 [main] <==      Total: 1
+2019-04-13 14:58:11,817 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 14:58:11,822 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 14:58:11,847 [main] <==      Total: 1
+2019-04-13 14:58:11,859 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 14:58:11,863 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 14:58:14,120 [main] <==      Total: 1
+2019-04-13 14:58:14,156 [main] ==>  Preparing: select * from screenseatinfo t where t.cinemacode = ? and t.screencode=? and t.seatcode in(?) 
+2019-04-13 14:58:14,160 [main] ==> Parameters: 62549174(String), 0000000000000001(String), 6254917401#03#05(String)
+2019-04-13 14:58:15,230 [main] <==      Total: 1
+2019-04-13 14:59:53,367 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 14:59:53,620 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 14:59:53,667 [main] <==      Total: 1
+2019-04-13 14:59:53,691 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 14:59:53,695 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 14:59:53,726 [main] <==      Total: 1
+2019-04-13 14:59:53,735 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 14:59:53,739 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 14:59:56,055 [main] <==      Total: 1
+2019-04-13 14:59:56,096 [main] ==>  Preparing: select * from screenseatinfo t where t.cinemacode = ? and t.screencode=? and t.seatcode in(?) 
+2019-04-13 14:59:56,100 [main] ==> Parameters: 62549174(String), 0000000000000001(String), 6254917401#03#07(String)
+2019-04-13 14:59:57,214 [main] <==      Total: 1
+2019-04-13 15:03:03,487 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 15:03:03,838 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 15:03:04,059 [main] <==      Total: 1
+2019-04-13 15:03:04,088 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 15:03:04,093 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 15:03:04,130 [main] <==      Total: 1
+2019-04-13 15:03:04,140 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 15:03:04,144 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 15:03:06,416 [main] <==      Total: 1
+2019-04-13 15:03:06,460 [main] ==>  Preparing: select * from screenseatinfo t where t.cinemacode = ? and t.screencode=? and t.seatcode in(?) 
+2019-04-13 15:03:06,463 [main] ==> Parameters: 62549174(String), 0000000000000001(String), 6254917401#03#07(String)
+2019-04-13 15:03:07,714 [main] <==      Total: 1
+2019-04-13 15:05:17,482 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 15:05:17,828 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 15:05:17,871 [main] <==      Total: 1
+2019-04-13 15:05:17,901 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 15:05:17,905 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 15:05:17,935 [main] <==      Total: 1
+2019-04-13 15:05:17,945 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 15:05:17,949 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 15:05:20,201 [main] <==      Total: 1
+2019-04-13 15:05:20,241 [main] ==>  Preparing: select * from screenseatinfo t where t.cinemacode = ? and t.screencode=? and t.seatcode in(?) 
+2019-04-13 15:05:20,244 [main] ==> Parameters: 62549174(String), 0000000000000001(String), 6254917401#03#07(String)
+2019-04-13 15:05:21,352 [main] <==      Total: 1
+2019-04-13 15:08:25,733 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 15:08:26,033 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 15:08:26,094 [main] <==      Total: 1
+2019-04-13 15:08:26,129 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 15:08:26,132 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 15:08:26,158 [main] <==      Total: 1
+2019-04-13 15:08:26,171 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 15:08:26,176 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 15:08:30,233 [main] <==      Total: 1
+2019-04-13 15:08:30,269 [main] ==>  Preparing: select * from screenseatinfo t where t.cinemacode = ? and t.screencode=? and t.seatcode in(?) 
+2019-04-13 15:08:30,274 [main] ==> Parameters: 62549174(String), 0000000000000001(String), 6254917401#03#07(String)
+2019-04-13 15:08:31,549 [main] <==      Total: 1
+2019-04-13 15:11:36,508 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 15:11:37,158 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 15:11:37,264 [main] <==      Total: 1
+2019-04-13 15:11:37,329 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 15:11:37,335 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 15:11:37,361 [main] <==      Total: 1
+2019-04-13 15:11:37,371 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 15:11:37,376 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 15:11:39,657 [main] <==      Total: 1
+2019-04-13 15:11:39,694 [main] ==>  Preparing: select * from screenseatinfo t where t.cinemacode = ? and t.screencode=? and t.seatcode in(?) 
+2019-04-13 15:11:39,698 [main] ==> Parameters: 62549174(String), 0000000000000001(String), 6254917401#03#07(String)
+2019-04-13 15:11:40,799 [main] <==      Total: 1
+2019-04-13 15:12:55,640 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 15:12:55,987 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 15:12:56,049 [main] <==      Total: 1
+2019-04-13 15:12:56,087 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 15:12:56,091 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 15:12:56,116 [main] <==      Total: 1
+2019-04-13 15:12:56,126 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 15:12:56,131 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 15:12:58,446 [main] <==      Total: 1
+2019-04-13 15:12:58,489 [main] ==>  Preparing: select * from screenseatinfo t where t.cinemacode = ? and t.screencode=? and t.seatcode in(?) 
+2019-04-13 15:12:58,492 [main] ==> Parameters: 62549174(String), 0000000000000001(String), 6254917401#03#07(String)
+2019-04-13 15:12:59,684 [main] <==      Total: 1
+2019-04-13 15:17:10,590 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 15:17:10,929 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 15:17:10,978 [main] <==      Total: 1
+2019-04-13 15:17:11,014 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 15:17:11,019 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 15:17:11,053 [main] <==      Total: 1
+2019-04-13 15:17:11,062 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 15:17:11,068 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 15:17:13,367 [main] <==      Total: 1
+2019-04-13 15:17:13,406 [main] ==>  Preparing: select * from screenseatinfo t where t.cinemacode = ? and t.screencode=? and t.seatcode in(?) 
+2019-04-13 15:17:13,409 [main] ==> Parameters: 62549174(String), 0000000000000001(String), 6254917401#03#07(String)
+2019-04-13 15:17:14,786 [main] <==      Total: 1
+2019-04-13 15:30:24,496 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 15:30:24,893 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 15:30:24,964 [main] <==      Total: 1
+2019-04-13 15:30:24,999 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 15:30:25,005 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 15:30:25,033 [main] <==      Total: 1
+2019-04-13 15:30:25,046 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 15:30:25,050 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 15:30:27,365 [main] <==      Total: 1
+2019-04-13 15:30:27,412 [main] ==>  Preparing: select * from screenseatinfo t where t.cinemacode = ? and t.screencode=? and t.seatcode in(?) 
+2019-04-13 15:30:27,418 [main] ==> Parameters: 62549174(String), 0000000000000001(String), 6254917401#03#07(String)
+2019-04-13 15:30:28,724 [main] <==      Total: 1
+2019-04-13 15:41:39,053 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 15:41:39,436 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 15:41:39,490 [main] <==      Total: 1
+2019-04-13 15:41:39,521 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 15:41:39,524 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 15:41:39,551 [main] <==      Total: 1
+2019-04-13 15:41:39,575 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 15:41:39,580 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 15:41:41,898 [main] <==      Total: 1
+2019-04-13 15:41:41,943 [main] ==>  Preparing: select * from screenseatinfo t where t.cinemacode = ? and t.screencode=? and t.seatcode in(?) 
+2019-04-13 15:41:41,947 [main] ==> Parameters: 62549174(String), 0000000000000001(String), 6254917401#03#07(String)
+2019-04-13 15:41:43,119 [main] <==      Total: 1
+2019-04-13 15:44:13,890 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 15:44:14,327 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 15:44:14,390 [main] <==      Total: 1
+2019-04-13 15:44:14,437 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 15:44:14,447 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 15:44:14,482 [main] <==      Total: 1
+2019-04-13 15:44:14,494 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 15:44:14,498 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 15:44:16,778 [main] <==      Total: 1
+2019-04-13 15:44:16,812 [main] ==>  Preparing: select * from screenseatinfo t where t.cinemacode = ? and t.screencode=? and t.seatcode in(?) 
+2019-04-13 15:44:16,818 [main] ==> Parameters: 62549174(String), 0000000000000001(String), 6254917401#03#07(String)
+2019-04-13 15:44:17,968 [main] <==      Total: 1
+2019-04-13 15:44:19,240 [main] ==>  Preparing: insert into orders(Id, CinemaCode, UserId, SessionCode, ScreenCode, SessionTime, FilmCode, FilmName, TicketCount, TotalPrice, TotalFee, TotalSalePrice, OrderStatus, MobilePhone, LockTime, AutoUnlockDatetime, LockOrderCode, SubmitTime, SubmitOrderCode, PrintNo, VerifyCode, PrintStatus, PrintTime, RefundTime, Created, Updated, Deleted, ErrorMessage, SerialNum, IsMemberPay, PayType, Printpassword, PaySeqNo, IDCardNumber) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
+2019-04-13 15:44:19,408 [main] ==> Parameters: null, 62549174(String), 12(Long), 2423201904130014(String), 0000000000000001(String), 2019-04-13 22:05:00.0(Timestamp), 001104962018(String), 我不是药神(String), 1(Integer), 50.0(Double), 0.0(Double), 50.0(Double), 2(Integer), null, 2019-04-13 15:44:19.177(Timestamp), 2019-04-13 15:52:15.0(Timestamp), 2423190413000020(String), null, null, null, null, null, null, null, 2019-04-13 15:44:16.799(Timestamp), null, 0(Integer), null, null, 0(Integer), null, null, null, null
+2019-04-13 15:44:19,435 [main] <==    Updates: 1
+2019-04-13 15:44:19,437 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.lockordercode = ? 
+2019-04-13 15:44:19,440 [main] ==> Parameters: 62549174(String), 2423190413000020(String)
+2019-04-13 15:44:19,459 [main] <==      Total: 1
+2019-04-13 15:44:19,462 [main] ==>  Preparing: insert into orderseatdetails(Id, OrderId, SeatCode, RowNum, ColumnNum, XCoord, YCoord, Price, SalePrice, Fee, AddFee,CinemaAllowance,FilmTicketCode, TicketInfoCode, PrintFlag, SeatId, Created, Updated, Deleted) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?, ?, ?, ?, ?, ?, ?) 
+2019-04-13 15:44:19,477 [main] ==> Parameters: null, 95(Long), 6254917401#03#07(String), 3(String), 7(String), 10(Integer), 5(Integer), 50.0(Double), 50.0(Double), 0.0(Double), 0.0(Double), 0.0(Double), null, null, null, null, 2019-04-13 15:44:16.8(Timestamp), null, 0(Integer)
+2019-04-13 15:44:19,499 [main] <==    Updates: 1
+2019-04-13 15:50:07,609 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 15:50:07,929 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 15:50:07,981 [main] <==      Total: 1
+2019-04-13 15:50:08,019 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 15:50:08,023 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 15:50:08,051 [main] <==      Total: 1
+2019-04-13 15:50:08,103 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.lockordercode = ? 
+2019-04-13 15:50:08,106 [main] ==> Parameters: 62549174(String), 2423190413000020(String)
+2019-04-13 15:50:08,132 [main] <==      Total: 1
+2019-04-13 15:50:08,135 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 15:50:08,138 [main] ==> Parameters: 95(Long)
+2019-04-13 15:50:08,154 [main] <==      Total: 1
+2019-04-13 15:50:09,117 [main] ==>  Preparing: update orders t SET Id = ?, CinemaCode = ?, UserId = ?, SessionCode = ?, ScreenCode = ?, SessionTime = ?, FilmCode = ?, FilmName = ?, TicketCount = ?, TotalPrice = ?, TotalFee = ?, TotalSalePrice = ?, OrderStatus = ?, LockTime = ?, AutoUnlockDatetime = ?, LockOrderCode = ?, Created = ?, Deleted = ?, ErrorMessage = ?, IsMemberPay = ? where t.CinemaCode = ? and t.LockOrderCode = ? 
+2019-04-13 15:50:09,135 [main] ==> Parameters: 95(Long), 62549174(String), 12(Long), 2423201904130014(String), 0000000000000001(String), 2019-04-13 22:05:00.0(Timestamp), 001104962018(String), 我不是药神(String), 1(Integer), 50.0(Double), 0.0(Double), 50.0(Double), 7(Integer), 2019-04-13 15:44:19.0(Timestamp), 2019-04-13 15:52:15.0(Timestamp), 2423190413000020(String), 2019-04-13 15:44:17.0(Timestamp), 0(Integer), 校验信息错误(String), 0(Integer), 62549174(String), 2423190413000020(String)
+2019-04-13 15:50:09,166 [main] <==    Updates: 1
+2019-04-13 15:50:09,171 [main] ==>  Preparing: update orderseatdetails t SET Id = ?, OrderId = ?, SeatCode = ?, RowNum = ?, ColumnNum = ?, XCoord = ?, YCoord = ?, Price = ?, SalePrice = ?, Fee = ?, AddFee = ?, CinemaAllowance = ?, Created = ?, Deleted = ? where t.id = ? 
+2019-04-13 15:50:09,178 [main] ==> Parameters: 160(Long), 95(Long), 6254917401#03#07(String), 3(String), 7(String), 10(Integer), 5(Integer), 50.0(Double), 50.0(Double), 0.0(Double), 0.0(Double), 0.0(Double), 2019-04-13 15:44:17.0(Timestamp), 0(Integer), 160(Long)
+2019-04-13 15:50:09,196 [main] <==    Updates: 1
+2019-04-13 16:07:30,847 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 16:07:31,198 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 16:07:31,280 [main] <==      Total: 1
+2019-04-13 16:07:31,327 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 16:07:31,330 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 16:07:31,365 [main] <==      Total: 1
+2019-04-13 16:07:31,474 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.lockordercode = ? 
+2019-04-13 16:07:31,479 [main] ==> Parameters: 62549174(String), 2423190413000020(String)
+2019-04-13 16:07:31,571 [main] <==      Total: 1
+2019-04-13 16:07:31,578 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 16:07:31,585 [main] ==> Parameters: 95(Long)
+2019-04-13 16:07:31,630 [main] <==      Total: 1
+2019-04-13 16:07:32,880 [main] ==>  Preparing: update orders t SET Id = ?, CinemaCode = ?, UserId = ?, SessionCode = ?, ScreenCode = ?, SessionTime = ?, FilmCode = ?, FilmName = ?, TicketCount = ?, TotalPrice = ?, TotalFee = ?, TotalSalePrice = ?, OrderStatus = ?, LockTime = ?, AutoUnlockDatetime = ?, LockOrderCode = ?, Created = ?, Deleted = ?, ErrorMessage = ?, IsMemberPay = ? where t.CinemaCode = ? and t.LockOrderCode = ? 
+2019-04-13 16:07:32,895 [main] ==> Parameters: 95(Long), 62549174(String), 12(Long), 2423201904130014(String), 0000000000000001(String), 2019-04-13 22:05:00.0(Timestamp), 001104962018(String), 我不是药神(String), 1(Integer), 50.0(Double), 0.0(Double), 50.0(Double), 7(Integer), 2019-04-13 15:44:19.0(Timestamp), 2019-04-13 15:52:15.0(Timestamp), 2423190413000020(String), 2019-04-13 15:44:17.0(Timestamp), 0(Integer), 网络代售系统异常: 订单交易确认出错，订单中的座位已经超时释放。(错误码：20111)(String), 0(Integer), 62549174(String), 2423190413000020(String)
+2019-04-13 16:07:32,952 [main] <==    Updates: 1
+2019-04-13 16:07:32,966 [main] ==>  Preparing: update orderseatdetails t SET Id = ?, OrderId = ?, SeatCode = ?, RowNum = ?, ColumnNum = ?, XCoord = ?, YCoord = ?, Price = ?, SalePrice = ?, Fee = ?, AddFee = ?, CinemaAllowance = ?, Created = ?, Deleted = ? where t.id = ? 
+2019-04-13 16:07:32,979 [main] ==> Parameters: 160(Long), 95(Long), 6254917401#03#07(String), 3(String), 7(String), 10(Integer), 5(Integer), 50.0(Double), 50.0(Double), 0.0(Double), 0.0(Double), 0.0(Double), 2019-04-13 15:44:17.0(Timestamp), 0(Integer), 160(Long)
+2019-04-13 16:07:33,062 [main] <==    Updates: 1
+2019-04-13 16:09:59,490 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 16:09:59,752 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 16:09:59,801 [main] <==      Total: 1
+2019-04-13 16:09:59,835 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 16:09:59,839 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 16:09:59,861 [main] <==      Total: 1
+2019-04-13 16:09:59,880 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 16:09:59,885 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 16:10:02,154 [main] <==      Total: 1
+2019-04-13 16:10:02,196 [main] ==>  Preparing: select * from screenseatinfo t where t.cinemacode = ? and t.screencode=? and t.seatcode in(?) 
+2019-04-13 16:10:02,200 [main] ==> Parameters: 62549174(String), 0000000000000001(String), 6254917401#03#07(String)
+2019-04-13 16:10:03,305 [main] <==      Total: 1
+2019-04-13 16:10:04,725 [main] ==>  Preparing: insert into orders(Id, CinemaCode, UserId, SessionCode, ScreenCode, SessionTime, FilmCode, FilmName, TicketCount, TotalPrice, TotalFee, TotalSalePrice, OrderStatus, MobilePhone, LockTime, AutoUnlockDatetime, LockOrderCode, SubmitTime, SubmitOrderCode, PrintNo, VerifyCode, PrintStatus, PrintTime, RefundTime, Created, Updated, Deleted, ErrorMessage, SerialNum, IsMemberPay, PayType, Printpassword, PaySeqNo, IDCardNumber) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
+2019-04-13 16:10:04,805 [main] ==> Parameters: null, 62549174(String), 12(Long), 2423201904130014(String), 0000000000000001(String), 2019-04-13 22:05:00.0(Timestamp), 001104962018(String), 我不是药神(String), 1(Integer), 50.0(Double), 0.0(Double), 50.0(Double), 2(Integer), null, 2019-04-13 16:10:04.334(Timestamp), 2019-04-13 16:18:00.0(Timestamp), 2423190413000023(String), null, null, null, null, null, null, null, 2019-04-13 16:10:02.176(Timestamp), null, 0(Integer), null, null, 0(Integer), null, null, null, null
+2019-04-13 16:10:04,855 [main] <==    Updates: 1
+2019-04-13 16:10:04,857 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.lockordercode = ? 
+2019-04-13 16:10:04,860 [main] ==> Parameters: 62549174(String), 2423190413000023(String)
+2019-04-13 16:10:04,954 [main] <==      Total: 1
+2019-04-13 16:10:04,956 [main] ==>  Preparing: insert into orderseatdetails(Id, OrderId, SeatCode, RowNum, ColumnNum, XCoord, YCoord, Price, SalePrice, Fee, AddFee,CinemaAllowance,FilmTicketCode, TicketInfoCode, PrintFlag, SeatId, Created, Updated, Deleted) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?, ?, ?, ?, ?, ?, ?) 
+2019-04-13 16:10:04,960 [main] ==> Parameters: null, 96(Long), 6254917401#03#07(String), 3(String), 7(String), 10(Integer), 5(Integer), 50.0(Double), 50.0(Double), 0.0(Double), 0.0(Double), 0.0(Double), null, null, null, null, 2019-04-13 16:10:02.176(Timestamp), null, 0(Integer)
+2019-04-13 16:10:05,018 [main] <==    Updates: 1
+2019-04-13 16:12:09,116 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 16:12:09,427 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 16:12:09,482 [main] <==      Total: 1
+2019-04-13 16:12:09,516 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 16:12:09,521 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 16:12:09,546 [main] <==      Total: 1
+2019-04-13 16:12:09,609 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.lockordercode = ? 
+2019-04-13 16:12:09,612 [main] ==> Parameters: 62549174(String), 2423190413000023(String)
+2019-04-13 16:12:09,633 [main] <==      Total: 1
+2019-04-13 16:12:09,635 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 16:12:09,637 [main] ==> Parameters: 96(Long)
+2019-04-13 16:12:09,653 [main] <==      Total: 1
+2019-04-13 16:12:11,514 [main] ==>  Preparing: update orders t SET Id = ?, CinemaCode = ?, UserId = ?, SessionCode = ?, ScreenCode = ?, SessionTime = ?, FilmCode = ?, FilmName = ?, TicketCount = ?, TotalPrice = ?, TotalFee = ?, TotalSalePrice = ?, OrderStatus = ?, LockTime = ?, AutoUnlockDatetime = ?, LockOrderCode = ?, SubmitTime = ?, SubmitOrderCode = ?, PrintNo = ?, VerifyCode = ?, Created = ?, Deleted = ?, IsMemberPay = ? where t.CinemaCode = ? and t.LockOrderCode = ? 
+2019-04-13 16:12:11,538 [main] ==> Parameters: 96(Long), 62549174(String), 12(Long), 2423201904130014(String), 0000000000000001(String), 2019-04-13 22:05:00.0(Timestamp), 001104962018(String), 我不是药神(String), 1(Integer), 50.0(Double), 0.0(Double), 50.0(Double), 8(Integer), 2019-04-13 16:10:04.0(Timestamp), 2019-04-13 16:18:00.0(Timestamp), 2423190413000023(String), 2019-04-13 16:12:11.436(Timestamp), 2423190413000023(String), 6254917430283910(String), 0622853499117043(String), 2019-04-13 16:10:02.0(Timestamp), 0(Integer), 0(Integer), 62549174(String), 2423190413000023(String)
+2019-04-13 16:12:11,561 [main] <==    Updates: 1
+2019-04-13 16:12:11,566 [main] ==>  Preparing: update orderseatdetails t SET Id = ?, OrderId = ?, SeatCode = ?, RowNum = ?, ColumnNum = ?, XCoord = ?, YCoord = ?, Price = ?, SalePrice = ?, Fee = ?, AddFee = ?, CinemaAllowance = ?, FilmTicketCode = ?, Created = ?, Deleted = ? where t.id = ? 
+2019-04-13 16:12:11,573 [main] ==> Parameters: 161(Long), 96(Long), 6254917401#03#07(String), 3(String), 7(String), 10(Integer), 5(Integer), 50.0(Double), 50.0(Double), 0.0(Double), 0.0(Double), 0.0(Double), 2423400005028321(String), 2019-04-13 16:10:02.0(Timestamp), 0(Integer), 161(Long)
+2019-04-13 16:12:11,597 [main] <==    Updates: 1
+2019-04-13 16:16:09,064 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 16:16:09,417 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 16:16:09,485 [main] <==      Total: 1
+2019-04-13 16:16:09,497 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 16:16:09,502 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 16:16:09,527 [main] <==      Total: 1
+2019-04-13 16:16:09,585 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.printno = ? and t.verifycode=? 
+2019-04-13 16:16:09,591 [main] ==> Parameters: 62549174(String), 6254917430283910(String), 0622853499117043(String)
+2019-04-13 16:16:09,617 [main] <==      Total: 1
+2019-04-13 16:16:09,619 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 16:16:09,621 [main] ==> Parameters: 96(Long)
+2019-04-13 16:16:09,644 [main] <==      Total: 1
+2019-04-13 16:19:47,582 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 16:19:47,926 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 16:19:47,978 [main] <==      Total: 1
+2019-04-13 16:19:47,993 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 16:19:47,997 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 16:19:48,014 [main] <==      Total: 1
+2019-04-13 16:19:48,069 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.printno = ? and t.verifycode=? 
+2019-04-13 16:19:48,078 [main] ==> Parameters: 62549174(String), 6254917430283910(String), 0622853499117043(String)
+2019-04-13 16:19:48,098 [main] <==      Total: 1
+2019-04-13 16:19:48,101 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 16:19:48,103 [main] ==> Parameters: 96(Long)
+2019-04-13 16:19:48,123 [main] <==      Total: 1
+2019-04-13 16:19:49,118 [main] ==>  Preparing: update orders t SET Id = ?, CinemaCode = ?, UserId = ?, SessionCode = ?, ScreenCode = ?, SessionTime = ?, FilmCode = ?, FilmName = ?, TicketCount = ?, TotalPrice = ?, TotalFee = ?, TotalSalePrice = ?, OrderStatus = ?, LockTime = ?, AutoUnlockDatetime = ?, LockOrderCode = ?, SubmitTime = ?, SubmitOrderCode = ?, PrintNo = ?, VerifyCode = ?, PrintStatus = ?, Created = ?, Deleted = ?, IsMemberPay = ? where t.Id = ? 
+2019-04-13 16:19:49,134 [main] ==> Parameters: 96(Long), 62549174(String), 12(Long), 2423201904130014(String), 0000000000000001(String), 2019-04-13 22:05:00.0(Timestamp), 001104962018(String), 我不是药神(String), 1(Integer), 50.0(Double), 0.0(Double), 50.0(Double), 8(Integer), 2019-04-13 16:10:04.0(Timestamp), 2019-04-13 16:18:00.0(Timestamp), 2423190413000023(String), 2019-04-13 16:12:11.0(Timestamp), 2423190413000023(String), 6254917430283910(String), 0622853499117043(String), 0(Integer), 2019-04-13 16:10:02.0(Timestamp), 0(Integer), 0(Integer), 96(Long)
+2019-04-13 16:19:49,165 [main] <==    Updates: 1
+2019-04-13 16:22:35,485 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 16:22:35,842 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 16:22:35,895 [main] <==      Total: 1
+2019-04-13 16:22:35,907 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 16:22:35,912 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 16:22:35,941 [main] <==      Total: 1
+2019-04-13 16:22:36,000 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.submitordercode = ? 
+2019-04-13 16:22:36,007 [main] ==> Parameters: 62549174(String), 2423190413000023(String)
+2019-04-13 16:22:36,031 [main] <==      Total: 1
+2019-04-13 16:22:36,035 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 16:22:36,037 [main] ==> Parameters: 96(Long)
+2019-04-13 16:22:36,053 [main] <==      Total: 1
+2019-04-13 16:22:37,424 [main] ==>  Preparing: select * from screeninfo t where t.ccode = ? and t.scode=? 
+2019-04-13 16:22:37,427 [main] ==> Parameters: 62549174(String), 0000000000000001(String)
+2019-04-13 16:22:37,497 [main] <==      Total: 1
+2019-04-13 16:22:37,509 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 16:22:37,514 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 16:22:39,834 [main] <==      Total: 1
+2019-04-13 16:25:32,474 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 16:25:32,852 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 16:25:32,930 [main] <==      Total: 1
+2019-04-13 16:25:32,944 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 16:25:32,948 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 16:25:32,985 [main] <==      Total: 1
+2019-04-13 16:25:33,033 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.submitordercode = ? 
+2019-04-13 16:25:33,063 [main] ==> Parameters: 62549174(String), 2423190413000023(String)
+2019-04-13 16:25:33,086 [main] <==      Total: 1
+2019-04-13 16:25:33,088 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 16:25:33,091 [main] ==> Parameters: 96(Long)
+2019-04-13 16:25:33,118 [main] <==      Total: 1
+2019-04-13 16:25:34,239 [main] ==>  Preparing: select * from screeninfo t where t.ccode = ? and t.scode=? 
+2019-04-13 16:25:34,241 [main] ==> Parameters: 62549174(String), 0000000000000001(String)
+2019-04-13 16:25:34,283 [main] <==      Total: 1
+2019-04-13 16:25:34,291 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 16:25:34,295 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 16:25:36,654 [main] <==      Total: 1
+2019-04-13 16:28:20,556 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 16:28:20,843 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 16:28:20,885 [main] <==      Total: 1
+2019-04-13 16:28:20,900 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 16:28:20,904 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 16:28:20,928 [main] <==      Total: 1
+2019-04-13 16:28:20,970 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.submitordercode = ? 
+2019-04-13 16:28:20,974 [main] ==> Parameters: 62549174(String), 2423190413000023(String)
+2019-04-13 16:28:20,999 [main] <==      Total: 1
+2019-04-13 16:28:21,002 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 16:28:21,007 [main] ==> Parameters: 96(Long)
+2019-04-13 16:28:21,026 [main] <==      Total: 1
+2019-04-13 16:28:22,104 [main] ==>  Preparing: select * from screeninfo t where t.ccode = ? and t.scode=? 
+2019-04-13 16:28:22,107 [main] ==> Parameters: 62549174(String), 0000000000000001(String)
+2019-04-13 16:28:22,137 [main] <==      Total: 1
+2019-04-13 16:28:22,147 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 16:28:22,153 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 16:28:24,406 [main] <==      Total: 1
+2019-04-13 16:33:31,984 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 16:33:32,337 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 16:33:32,384 [main] <==      Total: 1
+2019-04-13 16:33:32,398 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 16:33:32,402 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 16:33:32,432 [main] <==      Total: 1
+2019-04-13 16:33:32,478 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.submitordercode = ? 
+2019-04-13 16:33:32,484 [main] ==> Parameters: 62549174(String), 2423190413000023(String)
+2019-04-13 16:33:32,501 [main] <==      Total: 1
+2019-04-13 16:33:32,504 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 16:33:32,506 [main] ==> Parameters: 96(Long)
+2019-04-13 16:33:32,531 [main] <==      Total: 1
+2019-04-13 16:33:33,539 [main] ==>  Preparing: select * from screeninfo t where t.ccode = ? and t.scode=? 
+2019-04-13 16:33:33,543 [main] ==> Parameters: 62549174(String), 0000000000000001(String)
+2019-04-13 16:33:33,583 [main] <==      Total: 1
+2019-04-13 16:33:33,594 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 16:33:33,598 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 16:33:35,942 [main] <==      Total: 1
+2019-04-13 16:39:20,918 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 16:39:21,260 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 16:39:21,309 [main] <==      Total: 1
+2019-04-13 16:39:21,324 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 16:39:21,328 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 16:39:21,355 [main] <==      Total: 1
+2019-04-13 16:39:21,407 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.submitordercode = ? 
+2019-04-13 16:39:21,413 [main] ==> Parameters: 62549174(String), 2423190413000023(String)
+2019-04-13 16:39:21,434 [main] <==      Total: 1
+2019-04-13 16:39:21,437 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 16:39:21,442 [main] ==> Parameters: 96(Long)
+2019-04-13 16:39:21,461 [main] <==      Total: 1
+2019-04-13 16:39:22,593 [main] ==>  Preparing: select * from screeninfo t where t.ccode = ? and t.scode=? 
+2019-04-13 16:39:22,597 [main] ==> Parameters: 62549174(String), 0000000000000001(String)
+2019-04-13 16:39:22,627 [main] <==      Total: 1
+2019-04-13 16:39:22,636 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 16:39:22,644 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 16:39:24,953 [main] <==      Total: 1
+2019-04-13 16:42:31,920 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 16:42:32,270 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 16:42:32,318 [main] <==      Total: 1
+2019-04-13 16:42:32,344 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 16:42:32,347 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 16:42:32,361 [main] <==      Total: 1
+2019-04-13 16:42:32,407 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.submitordercode = ? 
+2019-04-13 16:42:32,412 [main] ==> Parameters: 62549174(String), 2423190413000023(String)
+2019-04-13 16:42:32,430 [main] <==      Total: 1
+2019-04-13 16:42:32,433 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 16:42:32,436 [main] ==> Parameters: 96(Long)
+2019-04-13 16:42:32,453 [main] <==      Total: 1
+2019-04-13 16:42:33,509 [main] ==>  Preparing: select * from screeninfo t where t.ccode = ? and t.scode=? 
+2019-04-13 16:42:33,513 [main] ==> Parameters: 62549174(String), 0000000000000001(String)
+2019-04-13 16:42:33,546 [main] <==      Total: 1
+2019-04-13 16:42:33,558 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 16:42:33,563 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 16:42:35,892 [main] <==      Total: 1
+2019-04-13 16:53:13,166 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 16:53:13,420 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 16:53:13,466 [main] <==      Total: 1
+2019-04-13 16:53:13,477 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 16:53:13,483 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 16:53:13,497 [main] <==      Total: 1
+2019-04-13 16:53:13,550 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.submitordercode = ? 
+2019-04-13 16:53:13,554 [main] ==> Parameters: 62549174(String), 2423190413000023(String)
+2019-04-13 16:53:13,571 [main] <==      Total: 1
+2019-04-13 16:53:13,574 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 16:53:13,576 [main] ==> Parameters: 96(Long)
+2019-04-13 16:53:13,593 [main] <==      Total: 1
+2019-04-13 16:53:14,599 [main] ==>  Preparing: select * from screeninfo t where t.ccode = ? and t.scode=? 
+2019-04-13 16:53:14,604 [main] ==> Parameters: 62549174(String), 0000000000000001(String)
+2019-04-13 16:53:14,628 [main] <==      Total: 1
+2019-04-13 16:53:14,649 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 16:53:14,653 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 16:53:16,996 [main] <==      Total: 1
+2019-04-13 16:58:22,309 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 16:58:22,612 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 16:58:22,675 [main] <==      Total: 1
+2019-04-13 16:58:22,687 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 16:58:22,692 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 16:58:22,721 [main] <==      Total: 1
+2019-04-13 16:58:22,782 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.submitordercode = ? 
+2019-04-13 16:58:22,788 [main] ==> Parameters: 62549174(String), 2423190413000023(String)
+2019-04-13 16:58:22,810 [main] <==      Total: 1
+2019-04-13 16:58:22,812 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 16:58:22,815 [main] ==> Parameters: 96(Long)
+2019-04-13 16:58:22,830 [main] <==      Total: 1
+2019-04-13 16:58:24,096 [main] ==>  Preparing: select * from screeninfo t where t.ccode = ? and t.scode=? 
+2019-04-13 16:58:24,098 [main] ==> Parameters: 62549174(String), 0000000000000001(String)
+2019-04-13 16:58:24,126 [main] <==      Total: 1
+2019-04-13 16:58:24,135 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 16:58:24,140 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 16:58:26,440 [main] <==      Total: 1
+2019-04-13 16:58:26,556 [main] ==>  Preparing: update orders t SET Id = ?, CinemaCode = ?, UserId = ?, SessionCode = ?, ScreenCode = ?, SessionTime = ?, FilmCode = ?, FilmName = ?, TicketCount = ?, TotalPrice = ?, TotalFee = ?, TotalSalePrice = ?, OrderStatus = ?, LockTime = ?, AutoUnlockDatetime = ?, LockOrderCode = ?, SubmitTime = ?, SubmitOrderCode = ?, PrintNo = ?, VerifyCode = ?, PrintStatus = ?, Created = ?, Deleted = ?, IsMemberPay = ? where t.CinemaCode = ? and t.LockOrderCode = ? 
+2019-04-13 16:58:26,571 [main] ==> Parameters: 96(Long), 62549174(String), 12(Long), 2423201904130014(String), 0000000000000001(String), 2019-04-13 22:05:00.0(Timestamp), 001104962018(String), 我不是药神(String), 1(Integer), 50.0(Double), 0.0(Double), 50.0(Double), 8(Integer), 2019-04-13 16:10:04.0(Timestamp), 2019-04-13 16:18:00.0(Timestamp), 2423190413000023(String), 2019-04-13 16:12:11.0(Timestamp), 2423190413000023(String), 6254917430283910(String), 0622853499117043(String), 0(Integer), 2019-04-13 16:10:02.0(Timestamp), 0(Integer), 0(Integer), 62549174(String), 2423190413000023(String)
+2019-04-13 16:58:26,600 [main] <==    Updates: 1
+2019-04-13 16:58:26,604 [main] ==>  Preparing: update orderseatdetails t SET Id = ?, OrderId = ?, SeatCode = ?, RowNum = ?, ColumnNum = ?, XCoord = ?, YCoord = ?, Price = ?, SalePrice = ?, Fee = ?, AddFee = ?, CinemaAllowance = ?, FilmTicketCode = ?, Created = ?, Deleted = ? where t.id = ? 
+2019-04-13 16:58:26,609 [main] ==> Parameters: 161(Long), 96(Long), 6254917401#03#07(String), 3(String), 7(String), 10(Integer), 5(Integer), 50.0(Double), 50.0(Double), 0.0(Double), 0.0(Double), 0.0(Double), 2423400005028321(String), 2019-04-13 16:10:02.0(Timestamp), 0(Integer), 161(Long)
+2019-04-13 16:58:26,637 [main] <==    Updates: 1
+2019-04-13 17:06:42,230 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 17:06:42,582 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 17:06:42,649 [main] <==      Total: 1
+2019-04-13 17:06:42,660 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 17:06:42,664 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 17:06:42,696 [main] <==      Total: 1
+2019-04-13 17:06:42,746 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.printno = ? and t.verifycode=? 
+2019-04-13 17:06:42,752 [main] ==> Parameters: 62549174(String), 6254917430283910(String), 0622853499117043(String)
+2019-04-13 17:06:42,768 [main] <==      Total: 1
+2019-04-13 17:06:42,771 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 17:06:42,774 [main] ==> Parameters: 96(Long)
+2019-04-13 17:06:42,788 [main] <==      Total: 1
+2019-04-13 17:06:43,776 [main] ==>  Preparing: select * from screeninfo t where t.ccode = ? and t.scode=? 
+2019-04-13 17:06:43,786 [main] ==> Parameters: 62549174(String), 0000000000000001(String)
+2019-04-13 17:06:43,832 [main] <==      Total: 1
+2019-04-13 17:08:01,888 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 17:08:02,148 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 17:08:02,189 [main] <==      Total: 1
+2019-04-13 17:08:02,203 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 17:08:02,209 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 17:08:02,224 [main] <==      Total: 1
+2019-04-13 17:08:02,269 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.printno = ? and t.verifycode=? 
+2019-04-13 17:08:02,279 [main] ==> Parameters: 62549174(String), 6254917430283910(String), 0622853499117043(String)
+2019-04-13 17:08:02,296 [main] <==      Total: 1
+2019-04-13 17:08:02,299 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 17:08:02,301 [main] ==> Parameters: 96(Long)
+2019-04-13 17:08:02,315 [main] <==      Total: 1
+2019-04-13 17:08:03,493 [main] ==>  Preparing: select * from screeninfo t where t.ccode = ? and t.scode=? 
+2019-04-13 17:08:03,497 [main] ==> Parameters: 62549174(String), 0000000000000001(String)
+2019-04-13 17:08:03,582 [main] <==      Total: 1
+2019-04-13 17:10:23,936 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 17:10:24,286 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 17:10:24,331 [main] <==      Total: 1
+2019-04-13 17:10:24,348 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 17:10:24,352 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 17:10:24,367 [main] <==      Total: 1
+2019-04-13 17:10:24,420 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.printno = ? and t.verifycode=? 
+2019-04-13 17:10:24,428 [main] ==> Parameters: 62549174(String), 6254917430283910(String), 0622853499117043(String)
+2019-04-13 17:10:24,446 [main] <==      Total: 1
+2019-04-13 17:10:24,449 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 17:10:24,452 [main] ==> Parameters: 96(Long)
+2019-04-13 17:10:24,468 [main] <==      Total: 1
+2019-04-13 17:10:25,461 [main] ==>  Preparing: select * from screeninfo t where t.ccode = ? and t.scode=? 
+2019-04-13 17:10:25,465 [main] ==> Parameters: 62549174(String), 0000000000000001(String)
+2019-04-13 17:10:25,503 [main] <==      Total: 1
+2019-04-13 17:19:00,294 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 17:19:00,799 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 17:19:00,877 [main] <==      Total: 1
+2019-04-13 17:19:00,906 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 17:19:00,911 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 17:19:00,928 [main] <==      Total: 1
+2019-04-13 17:19:01,014 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.printno = ? and t.verifycode=? 
+2019-04-13 17:19:01,020 [main] ==> Parameters: 62549174(String), 6254917430283910(String), 0622853499117043(String)
+2019-04-13 17:19:01,044 [main] <==      Total: 1
+2019-04-13 17:19:01,046 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 17:19:01,049 [main] ==> Parameters: 96(Long)
+2019-04-13 17:19:01,097 [main] <==      Total: 1
+2019-04-13 17:21:16,538 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 17:21:16,892 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 17:21:16,946 [main] <==      Total: 1
+2019-04-13 17:21:16,964 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 17:21:16,969 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 17:21:16,992 [main] <==      Total: 1
+2019-04-13 17:21:17,038 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.printno = ? and t.verifycode=? 
+2019-04-13 17:21:17,042 [main] ==> Parameters: 62549174(String), 6254917430283910(String), 0622853499117043(String)
+2019-04-13 17:21:17,062 [main] <==      Total: 1
+2019-04-13 17:21:17,066 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 17:21:17,069 [main] ==> Parameters: 96(Long)
+2019-04-13 17:21:17,092 [main] <==      Total: 1
+2019-04-13 17:21:17,959 [main] ==>  Preparing: select * from screeninfo t where t.ccode = ? and t.scode=? 
+2019-04-13 17:21:17,969 [main] ==> Parameters: 62549174(String), 0000000000000001(String)
+2019-04-13 17:21:18,054 [main] <==      Total: 1
+2019-04-13 17:30:43,032 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 17:30:43,404 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 17:30:43,449 [main] <==      Total: 1
+2019-04-13 17:30:43,462 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 17:30:43,468 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 17:30:43,490 [main] <==      Total: 1
+2019-04-13 17:30:43,560 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.printno = ? and t.verifycode=? 
+2019-04-13 17:30:43,569 [main] ==> Parameters: 62549174(String), 6254917430283910(String), 0622853499117043(String)
+2019-04-13 17:30:43,588 [main] <==      Total: 1
+2019-04-13 17:30:43,593 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 17:30:43,605 [main] ==> Parameters: 96(Long)
+2019-04-13 17:30:43,626 [main] <==      Total: 1
+2019-04-13 17:30:44,631 [main] ==>  Preparing: select * from screeninfo t where t.ccode = ? and t.scode=? 
+2019-04-13 17:30:44,634 [main] ==> Parameters: 62549174(String), 0000000000000001(String)
+2019-04-13 17:30:44,658 [main] <==      Total: 1
+2019-04-13 17:30:44,759 [main] ==>  Preparing: update orders t SET Id = ?, CinemaCode = ?, UserId = ?, SessionCode = ?, ScreenCode = ?, SessionTime = ?, FilmCode = ?, FilmName = ?, TicketCount = ?, TotalPrice = ?, TotalFee = ?, TotalSalePrice = ?, OrderStatus = ?, LockTime = ?, AutoUnlockDatetime = ?, LockOrderCode = ?, SubmitTime = ?, SubmitOrderCode = ?, PrintNo = ?, VerifyCode = ?, PrintStatus = ?, Created = ?, Deleted = ?, IsMemberPay = ? where t.CinemaCode = ? and t.LockOrderCode = ? 
+2019-04-13 17:30:44,783 [main] ==> Parameters: 96(Long), 62549174(String), 12(Long), 2423201904130014(String), 0000000000000001(String), 2019-04-13 22:05:00.0(Timestamp), 001104962018(String), 我不是药神(String), 1(Integer), 50.0(Double), 0.0(Double), 50.0(Double), 8(Integer), 2019-04-13 16:10:04.0(Timestamp), 2019-04-13 16:18:00.0(Timestamp), 2423190413000023(String), 2019-04-13 16:12:11.0(Timestamp), 2423190413000023(String), 6254917430283910(String), 0622853499117043(String), 0(Integer), 2019-04-13 16:10:02.0(Timestamp), 0(Integer), 0(Integer), 62549174(String), 2423190413000023(String)
+2019-04-13 17:30:44,817 [main] <==    Updates: 1
+2019-04-13 17:30:44,824 [main] ==>  Preparing: update orderseatdetails t SET Id = ?, OrderId = ?, SeatCode = ?, RowNum = ?, ColumnNum = ?, XCoord = ?, YCoord = ?, Price = ?, SalePrice = ?, Fee = ?, AddFee = ?, CinemaAllowance = ?, FilmTicketCode = ?, TicketInfoCode = ?, PrintFlag = ?, Created = ?, Deleted = ? where t.id = ? 
+2019-04-13 17:30:44,833 [main] ==> Parameters: 161(Long), 96(Long), 6254917401#03#07(String), 3(String), 7(String), 10(Integer), 5(Integer), 50.0(Double), 50.0(Double), 0.0(Double), 0.0(Double), 0.0(Double), 2423400005028321(String), 000000000000(String), 0(Integer), 2019-04-13 16:10:02.0(Timestamp), 0(Integer), 161(Long)
+2019-04-13 17:30:44,865 [main] <==    Updates: 1
+2019-04-13 17:34:18,201 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 17:34:18,563 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 17:34:18,607 [main] <==      Total: 1
+2019-04-13 17:34:18,627 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 17:34:18,633 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 17:34:18,653 [main] <==      Total: 1
+2019-04-13 17:34:18,732 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.printno = ? and t.verifycode=? 
+2019-04-13 17:34:18,739 [main] ==> Parameters: 62549174(String), 6254917430283910(String), 0622853499117043(String)
+2019-04-13 17:34:18,806 [main] <==      Total: 1
+2019-04-13 17:34:18,809 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 17:34:18,812 [main] ==> Parameters: 96(Long)
+2019-04-13 17:34:18,835 [main] <==      Total: 1
+2019-04-13 17:34:20,891 [main] ==>  Preparing: update orders t SET Id = ?, CinemaCode = ?, UserId = ?, SessionCode = ?, ScreenCode = ?, SessionTime = ?, FilmCode = ?, FilmName = ?, TicketCount = ?, TotalPrice = ?, TotalFee = ?, TotalSalePrice = ?, OrderStatus = ?, LockTime = ?, AutoUnlockDatetime = ?, LockOrderCode = ?, SubmitTime = ?, SubmitOrderCode = ?, PrintNo = ?, VerifyCode = ?, PrintStatus = ?, RefundTime = ?, Created = ?, Deleted = ?, IsMemberPay = ? where t.Id = ? 
+2019-04-13 17:34:20,916 [main] ==> Parameters: 96(Long), 62549174(String), 12(Long), 2423201904130014(String), 0000000000000001(String), 2019-04-13 22:05:00.0(Timestamp), 001104962018(String), 我不是药神(String), 1(Integer), 50.0(Double), 0.0(Double), 50.0(Double), 9(Integer), 2019-04-13 16:10:04.0(Timestamp), 2019-04-13 16:18:00.0(Timestamp), 2423190413000023(String), 2019-04-13 16:12:11.0(Timestamp), 2423190413000023(String), 6254917430283910(String), 0622853499117043(String), 0(Integer), 2019-04-13 17:34:20.826(Timestamp), 2019-04-13 16:10:02.0(Timestamp), 0(Integer), 0(Integer), 96(Long)
+2019-04-13 17:34:20,943 [main] <==    Updates: 1
+2019-04-13 17:43:02,846 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 17:43:03,168 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 17:43:03,229 [main] <==      Total: 1
+2019-04-13 17:43:03,273 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 17:43:03,277 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 17:43:03,297 [main] <==      Total: 1
+2019-04-13 17:43:03,307 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 17:43:03,311 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 17:43:05,687 [main] <==      Total: 1
+2019-04-13 17:43:05,727 [main] ==>  Preparing: select * from screenseatinfo t where t.cinemacode = ? and t.screencode=? and t.seatcode in(?) 
+2019-04-13 17:43:05,729 [main] ==> Parameters: 62549174(String), 0000000000000001(String), 6254917401#03#08(String)
+2019-04-13 17:43:06,833 [main] <==      Total: 1
+2019-04-13 17:43:07,979 [main] ==>  Preparing: insert into orders(Id, CinemaCode, UserId, SessionCode, ScreenCode, SessionTime, FilmCode, FilmName, TicketCount, TotalPrice, TotalFee, TotalSalePrice, OrderStatus, MobilePhone, LockTime, AutoUnlockDatetime, LockOrderCode, SubmitTime, SubmitOrderCode, PrintNo, VerifyCode, PrintStatus, PrintTime, RefundTime, Created, Updated, Deleted, ErrorMessage, SerialNum, IsMemberPay, PayType, Printpassword, PaySeqNo, IDCardNumber) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
+2019-04-13 17:43:08,057 [main] ==> Parameters: null, 62549174(String), 12(Long), 2423201904130014(String), 0000000000000001(String), 2019-04-13 22:05:00.0(Timestamp), 001104962018(String), 我不是药神(String), 1(Integer), 50.0(Double), 0.0(Double), 50.0(Double), 2(Integer), null, 2019-04-13 17:43:07.936(Timestamp), 2019-04-13 17:51:03.0(Timestamp), 2423190413000027(String), null, null, null, null, null, null, null, 2019-04-13 17:43:05.712(Timestamp), null, 0(Integer), null, null, 0(Integer), null, null, null, null
+2019-04-13 17:43:08,083 [main] <==    Updates: 1
+2019-04-13 17:43:08,085 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.lockordercode = ? 
+2019-04-13 17:43:08,088 [main] ==> Parameters: 62549174(String), 2423190413000027(String)
+2019-04-13 17:43:08,107 [main] <==      Total: 1
+2019-04-13 17:43:08,109 [main] ==>  Preparing: insert into orderseatdetails(Id, OrderId, SeatCode, RowNum, ColumnNum, XCoord, YCoord, Price, SalePrice, Fee, AddFee,CinemaAllowance,FilmTicketCode, TicketInfoCode, PrintFlag, SeatId, Created, Updated, Deleted) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?, ?, ?, ?, ?, ?, ?) 
+2019-04-13 17:43:08,115 [main] ==> Parameters: null, 110(Long), 6254917401#03#08(String), 3(String), 8(String), 11(Integer), 5(Integer), 50.0(Double), 50.0(Double), 0.0(Double), 0.0(Double), 0.0(Double), null, null, null, null, 2019-04-13 17:43:05.712(Timestamp), null, 0(Integer)
+2019-04-13 17:43:08,139 [main] <==    Updates: 1
+2019-04-13 17:51:30,920 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 17:51:31,250 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 17:51:31,297 [main] <==      Total: 1
+2019-04-13 17:51:31,328 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 17:51:31,332 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 17:51:31,373 [main] <==      Total: 1
+2019-04-13 17:51:31,430 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.lockordercode = ? 
+2019-04-13 17:51:31,433 [main] ==> Parameters: 62549174(String), 2423190413000027(String)
+2019-04-13 17:51:31,455 [main] <==      Total: 1
+2019-04-13 17:51:31,458 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 17:51:31,460 [main] ==> Parameters: 110(Long)
+2019-04-13 17:51:31,487 [main] <==      Total: 1
+2019-04-13 17:51:33,132 [main] ==>  Preparing: update orders t SET Id = ?, CinemaCode = ?, UserId = ?, SessionCode = ?, ScreenCode = ?, SessionTime = ?, FilmCode = ?, FilmName = ?, TicketCount = ?, TotalPrice = ?, TotalFee = ?, TotalSalePrice = ?, OrderStatus = ?, MobilePhone = ?, LockTime = ?, AutoUnlockDatetime = ?, LockOrderCode = ?, SubmitTime = ?, SubmitOrderCode = ?, PrintNo = ?, VerifyCode = ?, Created = ?, Updated = ?, Deleted = ?, IsMemberPay = ? where t.CinemaCode = ? and t.LockOrderCode = ? 
+2019-04-13 17:51:33,150 [main] ==> Parameters: 110(Long), 62549174(String), 12(Long), 2423201904130014(String), 0000000000000001(String), 2019-04-13 22:05:00.0(Timestamp), 001104962018(String), 我不是药神(String), 1(Integer), 50.0(Double), 0.0(Double), 50.0(Double), 8(Integer), 13736146034(String), 2019-04-13 17:43:08.0(Timestamp), 2019-04-13 17:51:03.0(Timestamp), 2423190413000027(String), 2019-04-13 17:51:33.028(Timestamp), 2423190413000027(String), 6254917450294061(String), 0622954409617145(String), 2019-04-13 17:43:06.0(Timestamp), 2019-04-13 17:51:31.554(Timestamp), 0(Integer), 0(Integer), 62549174(String), 2423190413000027(String)
+2019-04-13 17:51:33,190 [main] <==    Updates: 1
+2019-04-13 17:51:33,195 [main] ==>  Preparing: update orderseatdetails t SET Id = ?, OrderId = ?, SeatCode = ?, RowNum = ?, ColumnNum = ?, XCoord = ?, YCoord = ?, Price = ?, SalePrice = ?, Fee = ?, AddFee = ?, CinemaAllowance = ?, FilmTicketCode = ?, Created = ?, Updated = ?, Deleted = ? where t.id = ? 
+2019-04-13 17:51:33,207 [main] ==> Parameters: 169(Long), 110(Long), 6254917401#03#08(String), 3(String), 8(String), 11(Integer), 5(Integer), 50.0(Double), 50.0(Double), 0.0(Double), 0.0(Double), 0.0(Double), 2423500005028325(String), 2019-04-13 17:43:06.0(Timestamp), 2019-04-13 17:51:31.555(Timestamp), 0(Integer), 169(Long)
+2019-04-13 17:51:33,263 [main] <==    Updates: 1
+2019-04-13 17:54:40,933 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 17:54:41,281 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 17:54:41,329 [main] <==      Total: 1
+2019-04-13 17:54:41,344 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 17:54:41,349 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 17:54:41,381 [main] <==      Total: 1
+2019-04-13 17:54:41,441 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.printno = ? and t.verifycode=? 
+2019-04-13 17:54:41,454 [main] ==> Parameters: 62549174(String), 6254917450294061(String), 0622954409617145(String)
+2019-04-13 17:54:41,480 [main] <==      Total: 1
+2019-04-13 17:54:41,483 [main] ==>  Preparing: select * from orderseatdetails t where t.orderid = ? 
+2019-04-13 17:54:41,485 [main] ==> Parameters: 110(Long)
+2019-04-13 17:54:41,500 [main] <==      Total: 1
+2019-04-13 17:54:42,774 [main] ==>  Preparing: update orders t SET Id = ?, CinemaCode = ?, UserId = ?, SessionCode = ?, ScreenCode = ?, SessionTime = ?, FilmCode = ?, FilmName = ?, TicketCount = ?, TotalPrice = ?, TotalFee = ?, TotalSalePrice = ?, OrderStatus = ?, MobilePhone = ?, LockTime = ?, AutoUnlockDatetime = ?, LockOrderCode = ?, SubmitTime = ?, SubmitOrderCode = ?, PrintNo = ?, VerifyCode = ?, PrintStatus = ?, PrintTime = ?, Created = ?, Updated = ?, Deleted = ?, IsMemberPay = ? where t.Id = ? 
+2019-04-13 17:54:42,789 [main] ==> Parameters: 110(Long), 62549174(String), 12(Long), 2423201904130014(String), 0000000000000001(String), 2019-04-13 22:05:00.0(Timestamp), 001104962018(String), 我不是药神(String), 1(Integer), 50.0(Double), 0.0(Double), 50.0(Double), 8(Integer), 13736146034(String), 2019-04-13 17:43:08.0(Timestamp), 2019-04-13 17:51:03.0(Timestamp), 2423190413000027(String), 2019-04-13 17:51:33.0(Timestamp), 2423190413000027(String), 6254917450294061(String), 0622954409617145(String), 1(Integer), 2019-04-13 17:54:42.703(Timestamp), 2019-04-13 17:43:06.0(Timestamp), 2019-04-13 17:51:32.0(Timestamp), 0(Integer), 0(Integer), 110(Long)
+2019-04-13 17:54:42,821 [main] <==    Updates: 1
+2019-04-13 18:02:49,760 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 18:02:50,083 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 18:02:50,128 [main] <==      Total: 1
+2019-04-13 18:02:50,157 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 18:02:50,164 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 18:02:50,191 [main] <==      Total: 1
+2019-04-13 18:02:50,202 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 18:02:50,207 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 18:02:52,510 [main] <==      Total: 1
+2019-04-13 18:03:47,076 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 18:03:47,403 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 18:03:47,475 [main] <==      Total: 1
+2019-04-13 18:03:47,510 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 18:03:47,514 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 18:03:47,555 [main] <==      Total: 1
+2019-04-13 18:03:47,569 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 18:03:47,572 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 18:03:49,942 [main] <==      Total: 1
+2019-04-13 18:03:49,977 [main] ==>  Preparing: select * from screenseatinfo t where t.cinemacode = ? and t.screencode=? and t.seatcode in(?) 
+2019-04-13 18:03:49,980 [main] ==> Parameters: 62549174(String), 0000000000000001(String), 6254917401#03#09,6254917401#03#10(String)
+2019-04-13 18:03:51,193 [main] <==      Total: 0
+2019-04-13 20:02:34,307 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 20:02:34,843 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 20:02:34,900 [main] <==      Total: 1
+2019-04-13 20:02:34,932 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 20:02:34,938 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 20:02:34,973 [main] <==      Total: 1
+2019-04-13 20:02:34,986 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 20:02:34,991 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 20:02:37,296 [main] <==      Total: 1
+2019-04-13 20:02:37,337 [main] ==>  Preparing: select * from screenseatinfo t where t.cinemacode = ? and t.screencode=? and t.seatcode in(?) 
+2019-04-13 20:02:37,343 [main] ==> Parameters: 62549174(String), 0000000000000001(String), 6254917401#03#09,6254917401#03#10(String)
+2019-04-13 20:02:38,405 [main] <==      Total: 0
+2019-04-13 20:27:42,898 [main] ==>  Preparing: select * from userinfo t where t.username = ? and t.password = ? 
+2019-04-13 20:27:43,259 [main] ==> Parameters: MiniProgram(String), 6BF477EBCC446F54E6512AFC0E976C41(String)
+2019-04-13 20:27:43,316 [main] <==      Total: 1
+2019-04-13 20:27:43,348 [main] ==>  Preparing: select * from usercinemaview t where t.userid = ? and t.cinemacode=? 
+2019-04-13 20:27:43,352 [main] ==> Parameters: 12(Long), 62549174(String)
+2019-04-13 20:27:43,366 [main] <==      Total: 1
+2019-04-13 20:27:43,375 [main] ==>  Preparing: select * from sessioninfo t where t.userid=? and t.ccode = ? and t.scode=? 
+2019-04-13 20:27:43,380 [main] ==> Parameters: 12(Long), 62549174(String), 2423201904130014(String)
+2019-04-13 20:27:45,668 [main] <==      Total: 1
+2019-04-13 20:27:45,704 [main] ==>  Preparing: select * from screenseatinfo t where t.cinemacode = ? and t.screencode=? and t.seatcode=? 
+2019-04-13 20:27:45,706 [main] ==> Parameters: 62549174(String), 0000000000000001(String), 6254917401#03#09(String)
+2019-04-13 20:27:46,809 [main] <==      Total: 1
+2019-04-13 20:27:46,823 [main] ==>  Preparing: select * from screenseatinfo t where t.cinemacode = ? and t.screencode=? and t.seatcode=? 
+2019-04-13 20:27:46,825 [main] ==> Parameters: 62549174(String), 0000000000000001(String), 6254917401#03#10(String)
+2019-04-13 20:27:47,922 [main] <==      Total: 1
+2019-04-13 20:27:49,152 [main] ==>  Preparing: insert into orders(Id, CinemaCode, UserId, SessionCode, ScreenCode, SessionTime, FilmCode, FilmName, TicketCount, TotalPrice, TotalFee, TotalSalePrice, OrderStatus, MobilePhone, LockTime, AutoUnlockDatetime, LockOrderCode, SubmitTime, SubmitOrderCode, PrintNo, VerifyCode, PrintStatus, PrintTime, RefundTime, Created, Updated, Deleted, ErrorMessage, SerialNum, IsMemberPay, PayType, Printpassword, PaySeqNo, IDCardNumber) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
+2019-04-13 20:27:49,226 [main] ==> Parameters: null, 62549174(String), 12(Long), 2423201904130014(String), 0000000000000001(String), 2019-04-13 22:05:00.0(Timestamp), 001104962018(String), 我不是药神(String), 2(Integer), 100.0(Double), 0.0(Double), 100.0(Double), 2(Integer), null, 2019-04-13 20:27:49.089(Timestamp), 2019-04-13 20:35:45.0(Timestamp), 2423190413000028(String), null, null, null, null, null, null, null, 2019-04-13 20:27:45.694(Timestamp), null, 0(Integer), null, null, 0(Integer), null, null, null, null
+2019-04-13 20:27:49,273 [main] <==    Updates: 1
+2019-04-13 20:27:49,281 [main] ==>  Preparing: select * from orders t where t.cinemacode=? and t.lockordercode = ? 
+2019-04-13 20:27:49,283 [main] ==> Parameters: 62549174(String), 2423190413000028(String)
+2019-04-13 20:27:49,304 [main] <==      Total: 1
+2019-04-13 20:27:49,305 [main] ==>  Preparing: insert into orderseatdetails(Id, OrderId, SeatCode, RowNum, ColumnNum, XCoord, YCoord, Price, SalePrice, Fee, AddFee,CinemaAllowance,FilmTicketCode, TicketInfoCode, PrintFlag, SeatId, Created, Updated, Deleted) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?, ?, ?, ?, ?, ?, ?) 
+2019-04-13 20:27:49,310 [main] ==> Parameters: null, 113(Long), 6254917401#03#09(String), 3(String), 9(String), 12(Integer), 5(Integer), 50.0(Double), 50.0(Double), 0.0(Double), 0.0(Double), 0.0(Double), null, null, null, null, 2019-04-13 20:27:45.695(Timestamp), null, 0(Integer)
+2019-04-13 20:27:49,331 [main] <==    Updates: 1
+2019-04-13 20:27:49,333 [main] ==>  Preparing: insert into orderseatdetails(Id, OrderId, SeatCode, RowNum, ColumnNum, XCoord, YCoord, Price, SalePrice, Fee, AddFee,CinemaAllowance,FilmTicketCode, TicketInfoCode, PrintFlag, SeatId, Created, Updated, Deleted) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?, ?, ?, ?, ?, ?, ?) 
+2019-04-13 20:27:49,336 [main] ==> Parameters: null, 113(Long), 6254917401#03#10(String), 3(String), 10(String), 13(Integer), 5(Integer), 50.0(Double), 50.0(Double), 0.0(Double), 0.0(Double), 0.0(Double), null, null, null, null, 2019-04-13 20:27:45.695(Timestamp), null, 0(Integer)
+2019-04-13 20:27:49,355 [main] <==    Updates: 1
