@@ -84,7 +84,7 @@ public class NetSaleSvcCore {
 	public static NetSaleSvcCore getInstance() {
 		if (_instance != null) {
 			return _instance;
-		} else { 
+		} else {
 			_instance = new NetSaleSvcCore();
 		}
 		return _instance;
