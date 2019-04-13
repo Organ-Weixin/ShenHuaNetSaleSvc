@@ -33,6 +33,8 @@ public interface OrdersDao {
 
 	int update(Orders orders);
 	
+	int updateByPrintNo(Orders orders);
+	
 	int updateByLockOrderCode(Orders orders);
 
 	@Options(useGeneratedKeys = true, keyProperty = "id")

@@ -27,11 +27,11 @@
 		<result property="ColumnNum" column="ColumnNum"/>
 		<result property="Seat" column="Seat"/>
 		<result property="SalePrice" column="SalePrice"/>
-		<result property="CinemaAllowance" column="CinemaAllowance"/>
+		<result property="PreferentialPrice" column="PreferentialPrice"/>
 		<result property="TotalSale" column="TotalSale"/>
 		<result property="FilmTicketCode" column="FilmTicketCode"/>
 		<result property="Created" column="Created"/>
-		<result property="AddFee" column="AddFee"/>
+		<result property="AddedPrice" column="AddedPrice"/>
 		<result property="Fee" column="Fee"/>
 		<result property="Price" column="Price"/>
 		<result property="Start" column="Start"/>
@@ -113,8 +113,8 @@
 		t.submitOrderCode,os.rownum,os.columnnum,os.filmTicketCode,
 		concat(if(left(os.rownum,1)='0',mid(os.rownum,2),os.rownum),'排',if(left(os.columnnum,1)='0',mid(os.columnnum,2),os.columnnum),'座') as seat,
 		os.price,os.salePrice,t.paytype,
-		os.price+coalesce(os.addFee,0)+os.fee-coalesce(os.cinemaAllowance,0) as totalSale,os.cinemaAllowance,os.created,t.printno,
-		t.mobilePhone,os.addFee,os.fee,t.orderStatus 
+		os.price+coalesce(os.addedprice,0)+os.fee-coalesce(os.preferentialPrice,0) as totalSale,os.preferentialPrice,os.created,t.printno,
+		t.mobilePhone,os.addedprice,os.fee,t.orderStatus 
 		from orders t left join cinema c on t.cinemacode = c.code   
 		left join user_cinema u on t.cinemacode = u.cinemacode 
 		left join userinfo us on u.userid = us.id 
@@ -130,7 +130,7 @@
 		select o.id,o.filmname from orders o
 	</select>
 	
-	<update id="update">
+	<update id="updateByPrintNo">
 		update orders t
 		<set>
 			<if test="Id != null">
@@ -237,7 +237,6 @@
 			</if>
 
 		</set>
-
 		where t.CinemaCode = #{CinemaCode}
 		and t.PrintNo = #{PrintNo}
 		and t.VerifyCode = #{VerifyCode}
@@ -353,5 +352,114 @@
 
 		where t.CinemaCode = #{CinemaCode}
 		and t.LockOrderCode = #{LockOrderCode}
+	</update>
+	
+	<update id="update">
+		update orders t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="CinemaCode != null">
+				CinemaCode = #{CinemaCode}, 
+			</if>
+			<if test="UserId != null">
+				UserId = #{UserId}, 
+			</if>
+			<if test="SessionCode != null">
+				SessionCode = #{SessionCode}, 
+			</if>
+			<if test="ScreenCode != null">
+				ScreenCode = #{ScreenCode}, 
+			</if>
+			<if test="SessionTime != null">
+				SessionTime = #{SessionTime}, 
+			</if>
+			<if test="FilmCode != null">
+				FilmCode = #{FilmCode}, 
+			</if>
+			<if test="FilmName != null">
+				FilmName = #{FilmName}, 
+			</if>
+			<if test="TicketCount != null">
+				TicketCount = #{TicketCount}, 
+			</if>
+			<if test="TotalPrice != null">
+				TotalPrice = #{TotalPrice}, 
+			</if>
+			<if test="TotalFee != null">
+				TotalFee = #{TotalFee}, 
+			</if>
+			<if test="TotalSalePrice != null">
+				TotalSalePrice = #{TotalSalePrice}, 
+			</if>
+			<if test="OrderStatus != null">
+				OrderStatus = #{OrderStatus}, 
+			</if>
+			<if test="MobilePhone != null">
+				MobilePhone = #{MobilePhone}, 
+			</if>
+			<if test="LockTime != null">
+				LockTime = #{LockTime}, 
+			</if>
+			<if test="AutoUnlockDatetime != null">
+				AutoUnlockDatetime = #{AutoUnlockDatetime}, 
+			</if>
+			<if test="LockOrderCode != null">
+				LockOrderCode = #{LockOrderCode}, 
+			</if>
+			<if test="SubmitTime != null">
+				SubmitTime = #{SubmitTime}, 
+			</if>
+			<if test="SubmitOrderCode != null">
+				SubmitOrderCode = #{SubmitOrderCode}, 
+			</if>
+			<if test="PrintNo != null">
+				PrintNo = #{PrintNo}, 
+			</if>
+			<if test="VerifyCode != null">
+				VerifyCode = #{VerifyCode}, 
+			</if>
+			<if test="PrintStatus != null">
+				PrintStatus = #{PrintStatus}, 
+			</if>
+			<if test="PrintTime != null">
+				PrintTime = #{PrintTime}, 
+			</if>
+			<if test="RefundTime != null">
+				RefundTime = #{RefundTime}, 
+			</if>
+			<if test="Created != null">
+				Created = #{Created}, 
+			</if>
+			<if test="Updated != null">
+				Updated = #{Updated}, 
+			</if>
+			<if test="Deleted != null">
+				Deleted = #{Deleted}, 
+			</if>
+			<if test="ErrorMessage != null">
+				ErrorMessage = #{ErrorMessage}, 
+			</if>
+			<if test="SerialNum != null">
+				SerialNum = #{SerialNum}, 
+			</if>
+			<if test="IsMemberPay != null">
+				IsMemberPay = #{IsMemberPay}, 
+			</if>
+			<if test="PayType != null">
+				PayType = #{PayType}, 
+			</if>
+			<if test="Printpassword != null">
+				Printpassword = #{Printpassword}, 
+			</if>
+			<if test="PaySeqNo != null">
+				PaySeqNo = #{PaySeqNo}, 
+			</if>
+			<if test="IDCardNumber != null">
+				IDCardNumber = #{IDCardNumber}, 
+			</if>
+		</set>
+		where t.Id = #{Id}
 	</update>
 </mapper>

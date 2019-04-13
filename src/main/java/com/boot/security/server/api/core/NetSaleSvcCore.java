@@ -477,10 +477,7 @@ public class NetSaleSvcCore {
 			return lockSeatReply;
 		}
 		// 验证锁座参数
-		Gson gson = new Gson();
 		LockSeatQueryXml QueryXmlObj=JaxbXmlUtil.convertToJavaBean(QueryXml, LockSeatQueryXml.class);
-		log.info("===================================");
-		log.info("QueryXmlObj:"+QueryXmlObj.getCinemaCode());
 		if (QueryXmlObj.getOrder() == null || QueryXmlObj.getOrder().getSeat() == null) {
 			lockSeatReply.SetXmlDeserializeFailReply(QueryXml);
 			return lockSeatReply;
@@ -559,7 +556,7 @@ public class NetSaleSvcCore {
 	}
 	// endregion
 
-	// region 解锁座位
+	// region 解锁座位（完成）
 	public ReleaseSeatReply ReleaseSeat(String Username, String Password, String QueryXml)
 			throws JsonSyntaxException, Exception {
 		ReleaseSeatReply releaseSeatReply = new ReleaseSeatReply();
@@ -575,30 +572,27 @@ public class NetSaleSvcCore {
 			return releaseSeatReply;
 		}
 		// 验证锁座参数
-		Gson gson = new Gson();
-		ReleaseSeatQueryXml QueryXmlObj = gson.fromJson(XmlToJsonUtil.xmltoJson(QueryXml, "ReleaseSeatQueryXml"),
-				ReleaseSeatQueryXml.class);
-
-		if (QueryXmlObj.Order == null || QueryXmlObj.Order.Seat == null) {
+		ReleaseSeatQueryXml QueryXmlObj=JaxbXmlUtil.convertToJavaBean(QueryXml, ReleaseSeatQueryXml.class);
+		if (QueryXmlObj.getOrder() == null || QueryXmlObj.getOrder().getSeat() == null) {
 			releaseSeatReply.SetXmlDeserializeFailReply(QueryXml);
 			return releaseSeatReply;
 		}
 		// 验证影院是否存在且可访问
 		Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),
-				QueryXmlObj.CinemaCode);
+				QueryXmlObj.getCinemaCode());
 		if (userCinema == null) {
 			releaseSeatReply.SetCinemaInvalidReply();
 			return releaseSeatReply;
 		}
 		// 验证座位数量
-		if (QueryXmlObj.Order.Count != QueryXmlObj.Order.Seat.size()) {
+		if (QueryXmlObj.getOrder().getCount() != QueryXmlObj.getOrder().getSeat().size()) {
 			releaseSeatReply.SetSeatCountInvalidReply();
 			return releaseSeatReply;
 		}
 		// 验证订单是否存在
 		OrderView order = null;
 		if (!QueryXmlObj.getOrder().getOrderCode().isEmpty()) {
-			order = _orderService.getOrderWidthLockOrderCode(QueryXmlObj.CinemaCode, QueryXmlObj.Order.OrderCode);
+			order = _orderService.getOrderWidthLockOrderCode(QueryXmlObj.getCinemaCode(), QueryXmlObj.getOrder().getOrderCode());
 		}
 		if (order == null || (order.getOrderBaseInfo().getOrderStatus() != OrderStatusEnum.Locked.getStatusCode()
 				&& order.getOrderBaseInfo().getOrderStatus() != OrderStatusEnum.SubmitFail.getStatusCode()
@@ -636,9 +630,8 @@ public class NetSaleSvcCore {
 			reply.GetErrorFromCTMSReply(CTMSReply);
 		}
 		// 只更新订单信息，不更新订单座位信息
+		order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
 		_orderService.UpdateOrderBaseInfo(order.getOrderBaseInfo());
-
-		
 		return reply;
 	}
 	// endregion
@@ -659,29 +652,26 @@ public class NetSaleSvcCore {
 			return submitOrderReply;
 		}
 		// 验证锁座参数
-		Gson gson = new Gson();
-		SubmitOrderQueryXml QueryXmlObj = gson.fromJson(XmlToJsonUtil.xmltoJson(QueryXml, "SubmitOrderQueryXml"),
-				SubmitOrderQueryXml.class);
-
-		if (QueryXmlObj.Order == null || QueryXmlObj.Order.Seat == null) {
+		SubmitOrderQueryXml QueryXmlObj=JaxbXmlUtil.convertToJavaBean(QueryXml, SubmitOrderQueryXml.class);
+		if (QueryXmlObj.getOrder() == null || QueryXmlObj.getOrder().getSeat() == null) {
 			submitOrderReply.SetXmlDeserializeFailReply(QueryXml);
 			return submitOrderReply;
 		}
 		// 验证是否传递手机号
-		if (QueryXmlObj.Order.MobilePhone.isEmpty()) {
+		if (QueryXmlObj.getOrder().getMobilePhone().isEmpty()) {
 			submitOrderReply.SetNecessaryParamMissReply("MobilePhone");
 		}
 		// 验证影院是否存在且可访问
 		Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),
-				QueryXmlObj.CinemaCode);
+				QueryXmlObj.getCinemaCode());
 		if (userCinema == null) {
 			submitOrderReply.SetCinemaInvalidReply();
 			return submitOrderReply;
 		}
 		// 验证订单是否存在
 		OrderView order = null;
-		if (!QueryXmlObj.Order.OrderCode.isEmpty()) {
-			order = _orderService.getOrderWidthLockOrderCode(QueryXmlObj.CinemaCode, QueryXmlObj.Order.OrderCode);
+		if (!QueryXmlObj.getOrder().getOrderCode().isEmpty()) {
+			order = _orderService.getOrderWidthLockOrderCode(QueryXmlObj.getCinemaCode(), QueryXmlObj.getOrder().getOrderCode());
 		}
 		if (order == null || (order.getOrderBaseInfo().getOrderStatus() != OrderStatusEnum.Locked.getStatusCode()
 				&& order.getOrderBaseInfo().getOrderStatus() != OrderStatusEnum.SubmitFail.getStatusCode()
@@ -690,8 +680,8 @@ public class NetSaleSvcCore {
 			return submitOrderReply;
 		}
 		// 验证座位数量
-		if (QueryXmlObj.Order.Count != QueryXmlObj.Order.Seat.size()
-				|| QueryXmlObj.Order.Count != order.getOrderBaseInfo().getTicketCount()) {
+		if (QueryXmlObj.getOrder().getCount() != QueryXmlObj.getOrder().getSeat().size()
+				|| QueryXmlObj.getOrder().getCount() != order.getOrderBaseInfo().getTicketCount()) {
 			submitOrderReply.SetSeatCountInvalidReply();
 			return submitOrderReply;
 		}
