@@ -60,7 +60,9 @@ public class ModelMapper {
         film.setName(entity.getFilmName());
         film.setVersion(entity.getVersion());
         film.setDuration(entity.getDuration());
-        film.setPublishDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(entity.getPublishDate()));
+        if(entity.getPublishDate()!=null){
+        	film.setPublishDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(entity.getPublishDate()));
+        }
         film.setPublisher(entity.getPublisher());
         film.setProducer(entity.getProducer());
         film.setDirector(entity.getDirector());
