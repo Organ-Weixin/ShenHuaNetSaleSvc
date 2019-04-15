@@ -1,56 +1,89 @@
 package com.boot.security.server.api.ctms.reply;
 
+
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
-import com.boot.security.server.api.ctms.reply.CxQueryCinemaInfoResult.ResBean.CinemaBean.ScreensBean.ScreenVOBean;
+import org.json.JSONObject;
+
+import com.boot.security.server.api.ctms.reply.MtxGetCinemaPlanResult.ResBean.CinemaPlansBean.CinemaPlanBean;
+import com.boot.security.server.api.ctms.reply.MtxGetHallAllSeatResult.HallAllSeatBean;
 import com.boot.security.server.api.ctms.reply.MtxGetHallResult.ResBean.HallsBean.HallBean;
-import com.boot.security.server.model.Cinema;
+
+import com.boot.security.server.api.ctms.reply.MtxGetPlanSiteStateResult.ResBean.PlanSiteStatesBean.PlanSiteStateBean;
+
+import com.boot.security.server.model.Filminfo;
+import com.boot.security.server.model.LoveFlagEnum;
+import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
+
 import com.boot.security.server.model.Screeninfo;
+import com.boot.security.server.model.Screenseatinfo;
+import com.boot.security.server.model.SessionSeat;
 import com.boot.security.server.model.SessionSeatStatusEnum;
+import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
+
 import com.boot.security.server.service.impl.CinemaServiceImpl;
+import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
+import com.boot.security.server.service.impl.SessioninfoServiceImpl;
+import com.boot.security.server.utils.SpringUtil;
+import com.google.gson.Gson;
 
 import cn.cmts.main.webservice.WebService;
 
 public class MtxInterface implements ICTMSInterface {
-	private WebService mtxService;
-	private CinemaServiceImpl _cinemaService;
-	private ScreeninfoServiceImpl _screeninfoService;
-	private ScreenseatinfoServiceImpl _screenseatinfoService;
 	
-	public MtxInterface() {
+	 private WebService mtxService;
+	 CinemaServiceImpl _cinemaService=SpringUtil.getBean(CinemaServiceImpl.class);
+	 ScreeninfoServiceImpl _screeninfoService=SpringUtil.getBean(ScreeninfoServiceImpl.class);
+	 ScreenseatinfoServiceImpl _screenseatinfoService=SpringUtil.getBean(ScreenseatinfoServiceImpl.class);
+	 SessioninfoServiceImpl  _sessioninfoService=SpringUtil.getBean(SessioninfoServiceImpl.class);
+	 FilminfoServiceImpl _filminfoService=SpringUtil.getBean(FilminfoServiceImpl.class);
+/*	public MtxInterface() {
 		mtxService = new WebService();
 		_cinemaService = new CinemaServiceImpl();
 		_screeninfoService = new ScreeninfoServiceImpl();
 		_screenseatinfoService = new ScreenseatinfoServiceImpl();
-	}
-
-	// 查询影厅信息
+		_sessioninfoService=new SessioninfoServiceImpl();
+		_filminfoService=new FilminfoServiceImpl();
+	}*/
+	 
+	// 查询影厅基本信息 
 	public CTMSQueryCinemaReply QueryCinema(Usercinemaview userCinema) {
 		CTMSQueryCinemaReply reply = new CTMSQueryCinemaReply();
 		MtxGetHallResult mtxReply = mtxService.GetHall(userCinema);
-		if (mtxReply.getGetHallResult().getResultCode() == "0") {
+		System.out.println("开始执行操作-------------------"+ new Gson().toJson(mtxReply));
+	
+		if ("0".equals(mtxReply.getGetHallResult().getResultCode())) {
 			// 更新影厅信息
-			// List<Screeninfo> oldScreens= _screeninfoService.getByCinemaCode(userCinema.getCinemaCode());
-			List<Screeninfo> newScreens = null;
+			System.out.println("执行更新操作-----");
+			List<Screeninfo> newScreens=new ArrayList<Screeninfo>();
 			List<HallBean> hallBeans = mtxReply.getGetHallResult().getHalls().getHall();
 			for (HallBean hallBean : hallBeans) {
 				Screeninfo screen = new Screeninfo();// 创建实例
 				MtxModelMapper.MapToEntity(hallBean, screen);
 				screen.setCCode(userCinema.getCinemaCode());
 				newScreens.add(screen);
+				System.out.println("--------更新影厅--------------");
 			}
 			// 先删除旧影影厅
 			_screeninfoService.deleteByCinemaCode(userCinema.getCinemaCode());
+			System.out.println("删除-----------");
 			// 插入影厅信息
 			for (Screeninfo screen : newScreens) {
 				_screeninfoService.save(screen);
+				System.out.println("插入影厅信息-------------");
 			}
+			System.out.println("成功--------------------");
 			reply.Status = StatusEnum.Success;
 		} else {
 			reply.Status = StatusEnum.Failure;
@@ -58,78 +91,396 @@ public class MtxInterface implements ICTMSInterface {
 		reply.ErrorCode = mtxReply.getGetHallResult().getResultCode();
 		return reply;
 	}
-
+	//查询影厅座位信息
+		public CTMSQuerySeatReply QuerySeat(Usercinemaview userCinema, Screeninfo screen) throws Exception {
+			CTMSQuerySeatReply reply=new CTMSQuerySeatReply();
+			MtxGetHallAllSeatResult mtxReply=mtxService.GetHallAllSeat(userCinema, screen);
+			
+			System.out.println("开始执行操作-------------------"+ new Gson().toJson(mtxReply));
+			if("0".equals(mtxReply.getResultCode())){
+				//更新影厅座位信息
+				if(_screenseatinfoService.getByCinemaCodeAndScreenCode(userCinema.getCinemaCode(), screen.getSCode()) != null){
+					System.out.println("开始更新影厅座位操作----------");
+					List<Screenseatinfo> newScreens=new ArrayList<Screenseatinfo>();
+					List<HallAllSeatBean> hallAllSeatBeans=mtxReply.getHallSeats();
+				
+					for(HallAllSeatBean hallAllSeatBean : hallAllSeatBeans){
+						Screenseatinfo screenseat=new Screenseatinfo();//创建实例
+						MtxModelMapper.MapToEntity(hallAllSeatBean, screenseat);
+						screenseat.setCinemaCode(userCinema.getCinemaCode());
+						screenseat.setScreenCode(screen.getSCode());
+						screenseat.setLoveFlag(LoveFlagEnum.Normal.getFlagCode());
+						screenseat.setStatus(SessionSeatStatusEnum.Available.getStatusCode());
+						newScreens.add(screenseat);
+						System.out.println("更新影厅座位成功------------");
+					}
+					//先删除旧影厅座位
+					_screenseatinfoService.deleteByScreenCode(userCinema.getCinemaCode(), screen.getSCode());
+					System.out.println("---删除影厅座位---------------");
+							//插入座位信息
+							/*for(Screenseatinfo screenSeat : newScreens){
+								_screenseatinfoService.save(screenSeat);
+								System.out.println("插入影厅座位成功----------");
+							}*/
+					for (Screenseatinfo screenseat : newScreens) {
+						_screenseatinfoService.save(screenseat);
+						System.out.println("插入影厅信息-------------");
+					}
+				}
+				reply.Status=StatusEnum.Success;
+				System.out.println("操作影厅成功----------------------");
+			}
+			else{
+				reply.Status=StatusEnum.Failure;
+			}
+			reply.ErrorCode=mtxReply.getResultCode();
+			return reply;
+		}
+	//查询放映计划信息////排期
 	@Override
-	public CTMSQuerySeatReply QuerySeat(Usercinemaview userCinema, Screeninfo screen) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public CTMSQuerySessionReply QuerySession(Usercinemaview userCinema, Date StartDate, Date EndDate)throws Exception {
+		CTMSQuerySessionReply reply=new CTMSQuerySessionReply();
+    
 
+	/*	Date newDate=new Date();
+		String s=new SimpleDateFormat("yyyy-MM-dd").format(newDate);
+		s+=" 01:00:00";
+		new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(s);
+		String t=new SimpleDateFormat("yyyy-MM-dd").format(newDate);
+		t+=" 06:00:00";
+		new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(t);*/
+
+	
+/*		if((new Date()> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(s))
+			|| new Date() <new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(t)
+				){
+			reply.Status = StatusEnum.Success;
+            reply.ErrorCode = "0";
+		}
+		else{*/
+		MtxGetCinemaPlanResult mtxReply=mtxService.GetCinemaPlan(userCinema, StartDate, EndDate);
+		System.out.println("开始执行查询排期操作-------------------"+ new Gson().toJson(mtxReply));
+		if("0".equals(mtxReply.getGetCinemaPlanResult().getResultCode())){
+			//更新排期信息
+			List<Sessioninfo> newSessions=new ArrayList<Sessioninfo>();
+			List<CinemaPlanBean> cinemaPlanBeans=mtxReply.getGetCinemaPlanResult().getCinemaPlans().getCinemaPlan();
+			System.out.println("开始更新排期操作----------");
+			/*if(("1".equals(SessionSeatStatusEnum.Available.getStatusCode())||"2".equals(SessionSeatStatusEnum.Available.getStatusCode()))
+					&& ("0".equals(StatusEnum.Success.getStatusCode()) || "1".equals(StatusEnum.Success.getStatusCode()) ))
+			{*/
+			for(CinemaPlanBean cinemaPlanBean:cinemaPlanBeans){
+				Sessioninfo session=new Sessioninfo();//创建实例
+				MtxModelMapper.MapToEntity(cinemaPlanBean, session);
+				
+				session.setCCode(userCinema.getCinemaCode());
+				session.setSCode(userCinema.getCinemaCode());
+				session.setUserID(userCinema.getUserId());
+				//测试用
+			session.setUserID((long) 6);
+				session.setSettlePrice(.00);
+				session.setTicketFee((double) 0);
+				session.setPlaythroughFlag("No");
+				session.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm")
+						.parse(cinemaPlanBean.getFeatureDate() + " " + cinemaPlanBean.getFeatureTime()));
+				
+System.out.println("获取时间1"+new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(cinemaPlanBean.getFeatureDate() + " " + cinemaPlanBean.getFeatureTime()));
+System.out.println("获取时间2"+cinemaPlanBean.getFeatureDate() + " " + cinemaPlanBean.getFeatureTime());		
+session.setUpdateTime(new Date());
+				session.setDimensional("3D");
+				session.setSequence(1);
+				session.setSettlePrice((double) 0);
+				session.setTicketFee((double) 0);
+				session.setAddFee((double) 10);
+				session.setCinemaAllowance((double) 0);
+				newSessions.add(session);
+				
+				System.out.println("更新排期成功------------");
+			}
+			//先删除旧排期信息
+			_sessioninfoService.deleteByCinemaCodeAndDate(userCinema.getUserId(), userCinema.getCinemaCode(),StartDate,EndDate);
+			System.out.println("删除旧排期------------");
+			//插入排期信息
+			for(Sessioninfo sessionInfo : newSessions){
+				_sessioninfoService.save(sessionInfo);
+				System.out.println("插入新排期成功------------");
+			}
+			//}
+			System.out.println("开始锁定座位测试3-------------------"+ new Gson().toJson(mtxReply));
+			reply.Status=StatusEnum.Success;
+			System.out.println("更新排期操作成功------------");
+			
+		}else{
+			reply.Status=StatusEnum.Failure;
+		}
+		
+		reply.ErrorCode=mtxReply.getGetCinemaPlanResult().getResultCode();
+	//	}
+		
+		return reply;
+	}
+	//查询影片信息
 	@Override
 	public CTMSQueryFilmReply QueryFilm(Usercinemaview userCinema, Date StartDate, Date EndDate) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSQueryFilmReply reply = new CTMSQueryFilmReply();
+		// 从排期中获取影片接口
+		QuerySession(userCinema, StartDate, EndDate);// 调用查询排期列表
+		System.out.println("调用排期-------------");
+		// 根据影片名称分组，去除影片重复数据
+		List<Sessioninfo> sessions = _sessioninfoService.getByCCodeGroupByFilm(userCinema.getUserId(),
+				userCinema.getCinemaCode(), StartDate, EndDate);
+		List<Filminfo> films = new ArrayList<Filminfo>();
+		System.out.println("去除重复影片-------");
+		for (Sessioninfo sessioninfo : sessions) {
+			String filmName = sessioninfo.getFilmName();
+			List<Filminfo> filmlist = _filminfoService.getFilmByFilmName(filmName);
+			if (filmlist == null || filmlist.size() == 0) {
+				Filminfo film = new Filminfo();
+				film.setFilmCode(sessioninfo.getFilmCode());
+				film.setFilmName(sessioninfo.getFilmName());
+				film.setDuration(sessioninfo.getDuration().toString());
+				_filminfoService.save(film);
+				films.add(film);
+				System.out.println("保存添加=====================");
+			} else if (filmlist.size() > 1) {
+				for (Filminfo ffilminfo : filmlist) {
+					if(ffilminfo.getPublishDate() !=null || ffilminfo.getPublisher() !=null ||ffilminfo.getProducer() !=null ||
+							ffilminfo.getDirector() !=null ||ffilminfo.getCast() !=null ||ffilminfo.getIntroduction() !=null){
+						films.add(ffilminfo);
+						System.out.println("优先选择信息比较全的--------");
+						break;
+					} else {
+						films.add(ffilminfo);
+						System.out.println("优-------");
+						break;
+					}
+				}
+			} else {
+				films.add(filmlist.get(0));
+			}
+		}
+		reply.setFilms(films);
+		reply.Status = StatusEnum.Success;
+		System.out.println("查询影片成功-----------------");
+		return reply;
 	}
-
+	//查询放映计划座位状态
 	@Override
-	public CTMSQuerySessionReply QuerySession(Usercinemaview userCinema, Date StartDate, Date EndDate)
-			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public CTMSQuerySessionSeatReply QuerySessionSeat(Usercinemaview userCinema, String SessionCode,SessionSeatStatusEnum Status) throws Exception {
+		CTMSQuerySessionSeatReply reply=new CTMSQuerySessionSeatReply();
+		MtxGetPlanSiteStateResult mtxReply=mtxService.GetPlanSiteState(userCinema, SessionCode, Status);
+	//	QuerySession(userCinema, null, null);// 调用查询排期列表
+		System.out.println("开始执行查询排期座位操作-------------------"+ new Gson().toJson(mtxReply));
+	
+			if ("0".equals(mtxReply.getGetPlanSiteStateResult().getResultCode()))
+			{
+				System.out.println("开始更新查询放映计划座位状态操作----------");
+				List<SessionSeat> newSessionSeat=new ArrayList<SessionSeat>();
+				List<PlanSiteStateBean> planSiteStateBeans=mtxReply.getGetPlanSiteStateResult().getPlanSiteStates().getPlanSiteState();
+				for(PlanSiteStateBean planSiteStateBean:planSiteStateBeans){
+					SessionSeat sessionseats=new SessionSeat();
+					sessionseats.setSeatCode(planSiteStateBean.getSeatNo());
+					sessionseats.setRowNum(planSiteStateBean.getSeatRow());
+					sessionseats.setColumnNum(planSiteStateBean.getSeatCol());
+					sessionseats.setStatus(SessionSeatStatusEnum.Available);
+					newSessionSeat.add(sessionseats);
+					System.out.println("循环更新----------");
+					if(Status!=SessionSeatStatusEnum.Available){
+						sessionseats.equals(SessionSeatStatusEnum.valueOf(planSiteStateBean.getSeatState()));
+					}
+				}
+				reply.setSessionSeats(newSessionSeat);
+				reply.Status=StatusEnum.Success;
+				System.out.println("查询放映计划座位状态成功-----------------");
+			}else{
+				reply.Status=StatusEnum.Failure;
+			}
+		reply.ErrorCode=mtxReply.getGetPlanSiteStateResult().getResultCode();
+		return reply;
 	}
-
-	@Override
-	public CTMSQuerySessionSeatReply QuerySessionSeat(Usercinemaview userCinema, String SessionCode,
-			SessionSeatStatusEnum Status) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	//锁定座位
 	@Override
 	public CTMSLockSeatReply LockSeat(Usercinemaview userCinema, OrderView order) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSLockSeatReply reply=new CTMSLockSeatReply();
+		MtxLiveRealCheckSeatStateResult mtxReply=mtxService.LiveRealCheckSeatState(userCinema,order);
+		System.out.println("开始锁定座位操作-------------------"+ new Gson().toJson(mtxReply));
+		if("0".equals(mtxReply.getRealCheckSeatStateResult().getResultCode())){
+			System.out.println("开始锁定座位----------");
+			Date newDate=new Date();
+		order.getOrderBaseInfo().setLockOrderCode(mtxReply.getRealCheckSeatStateResult().getOrderNo());
+		order.getOrderBaseInfo().setAutoUnlockDatetime(new Date(newDate.getTime()+10*60*1000));//满天星没有自动解锁时间返回，此处默认锁定10分钟
+		order.getOrderBaseInfo().setLockTime(new Date());
+	order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Locked.getStatusCode());
+		reply.Status=StatusEnum.Success;
+		System.out.println("锁定座位成功-----------------");
+		}else{
+			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.LockFail.getStatusCode());
+			order.getOrderBaseInfo().setErrorMessage(mtxReply.getRealCheckSeatStateResult().getResultCode());
+			reply.Status=StatusEnum.Failure;
+			System.out.println("锁定座位失败-----------------");
+		}
+		System.out.println("返回错误编码--------------------");
+		reply.ErrorCode=mtxReply.getRealCheckSeatStateResult().getResultCode();
+		return reply;
 	}
-
+	
+	//解锁座位
 	@Override
 	public CTMSReleaseSeatReply ReleaseSeat(Usercinemaview userCinema, OrderView order) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSReleaseSeatReply reply=new CTMSReleaseSeatReply();
+		MtxUnLockOrderCenCinResult mtxUnLockReply=mtxService.UnLockOrderCenCin(userCinema, order);
+		System.out.println("开始锁定座位操作-------------------"+ new Gson().toJson(mtxUnLockReply));
+		if("0".equals(mtxUnLockReply.getUnLockOrderCenCinResult().getResultCode())){
+			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Released.getStatusCode());
+			reply.Status=StatusEnum.Success;
+			System.out.println("解锁成功--------------------");
+		}else{
+			order.getOrderBaseInfo().setErrorMessage(mtxUnLockReply.getUnLockOrderCenCinResult().getResultCode());
+			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.ReleaseFail.getStatusCode());
+			System.out.println("解锁失败-------------------");
+			reply.Status=StatusEnum.Failure;
+		}
+		System.out.println("返回错误编码--------------------");
+		reply.ErrorCode=mtxUnLockReply.getUnLockOrderCenCinResult().getResultCode();
+		return reply;
 	}
-
+	
+	//提交订单
 	@Override
 	public CTMSSubmitOrderReply SubmitOrder(Usercinemaview userCinema, OrderView order) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSSubmitOrderReply reply=new CTMSSubmitOrderReply();
+		MtxSellTicketResult mtxReply=mtxService.SellTicket(userCinema, order);
+		if("0".equals(mtxReply.getSellTicketResult().getResultCode())){
+			Date newDate=new Date();
+			order.getOrderBaseInfo().setSubmitOrderCode(mtxReply.getSellTicketResult().getOrderNo());
+			order.getOrderBaseInfo().setPrintNo(mtxReply.getSellTicketResult().getOrderNo());
+			order.getOrderBaseInfo().setVerifyCode(mtxReply.getSellTicketResult().getValidCode());
+			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Submited.getStatusCode());
+			order.getOrderBaseInfo().setSubmitTime(newDate);
+			reply.Status=StatusEnum.Success;
+		}else{
+			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.SubmitFail.getStatusCode());
+			order.getOrderBaseInfo().setErrorMessage(mtxReply.getSellTicketResult().getResultCode());
+			reply.Status=StatusEnum.Failure;
+		}
+		reply.ErrorCode=mtxReply.getSellTicketResult().getResultCode();
+		return reply;
 	}
-
+	//查询出票状态
 	@Override
 	public CTMSQueryPrintReply QueryPrint(Usercinemaview userCinema, OrderView order) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSQueryPrintReply reply=new CTMSQueryPrintReply();
+		MtxGetOrderStatusResult mtxReply=mtxService.GetOrderStatus(userCinema, order);
+		if("0".equals(mtxReply.getGetOrderStatusResult().getResultCode())){
+			
+			if("1".equals(order.getOrderBaseInfo().getPrintStatus())){
+				if(mtxReply.getGetOrderStatusResult().getOrderStatus()=="8"){
+				order.getOrderBaseInfo().setPrintTime(new Date());
+		
+				}
+			}
+			reply.Status=StatusEnum.Success;
+		}else{
+			reply.Status=StatusEnum.Failure;
+		}
+		reply.ErrorCode=mtxReply.getGetOrderStatusResult().getResultCode();
+		return reply;
 	}
-
+	//退票
 	@Override
 	public CTMSRefundTicketReply RefundTicket(Usercinemaview userCinema, OrderView order) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSRefundTicketReply reply=new CTMSRefundTicketReply();
+		MtxBackTicketResult mtxBackTicketReply=mtxService.BackTicket(userCinema, order);
+		if("0".equals(mtxBackTicketReply.getBackTicketResult().getResultCode())){
+			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Refund.getStatusCode());
+			order.getOrderBaseInfo().setRefundTime(new Date());
+			reply.Status=StatusEnum.Success;
+		}else{
+			reply.Status=StatusEnum.Failure;
+		}
+		reply.ErrorCode=mtxBackTicketReply.getBackTicketResult().getResultCode();
+		return reply;
 	}
-
+	//查询订单信息
 	@Override
 	public CTMSQueryOrderReply QueryOrder(Usercinemaview userCinema, OrderView order) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSQueryOrderReply reply=new CTMSQueryOrderReply();
+		MtxGetOrderStatusResult mtxReply=mtxService.GetOrderStatus(userCinema, order);
+		if("0".equals(mtxReply.getGetOrderStatusResult().getResultCode()) 
+	&& ("7".equals(mtxReply.getGetOrderStatusResult().getOrderStatus()) ||
+	"8".equals(mtxReply.getGetOrderStatusResult().getOrderStatus())|| "9".equals(mtxReply.getGetOrderStatusResult().getOrderStatus()))){
+			if("7".equals(mtxReply.getGetOrderStatusResult().getOrderStatus())){
+				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Refund.getStatusCode());
+				order.getOrderBaseInfo().setRefundTime(new Date());
+			}else{ //不管是8：已打票还是9：地面售票成功都代表影院已成功确认订单
+				order.getOrderBaseInfo().setPrintStatus(OrderStatusEnum.Complete.getStatusCode());
+				if( "8".equals(mtxReply.getGetOrderStatusResult().getOrderStatus())){
+					order.getOrderBaseInfo().setPrintTime(new Date());   //无法获知取票时间，默认当前时间
+				}
+			}
+			QueryTicket(userCinema,order);  //调一下获取影票信息接口以便获取影票编码等信息
+			reply.Status=StatusEnum.Success;
+			reply.ErrorCode=mtxReply.getGetOrderStatusResult().getResultCode();
+		}else{
+			reply.Status=StatusEnum.Failure;
+			reply.ErrorCode="-1";
+			reply.ErrorMessage="影院出票还未成功";
+		}
+		reply.ErrorCode=mtxReply.getGetOrderStatusResult().getResultCode();
+		return reply;
 	}
-
+	//查询影票信息
 	@Override
 	public CTMSQueryTicketReply QueryTicket(Usercinemaview userCinema, OrderView order) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		CTMSQueryTicketReply reply=new CTMSQueryTicketReply();
+		MtxAppPrintTicketResult mtxReply=mtxService.AppPrintTicket(userCinema, order);
+		if("0".equals(mtxReply.getAppPrintTicketResult().getResultCode())){
+			if("1".equals(order.getOrderBaseInfo().getPrintStatus())){
+				
+				order.getOrderBaseInfo().setPrintTime(new Date());
+			}
+			if(mtxReply.getAppPrintTicketResult().getSeatInfos()!=null && mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo()!=null
+		&& mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo().size()>0){
+				
+			for(int i=0;i<mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo().size();i++){
+				if(order.getOrderSeatDetails().get(i).getColumnNum().equals(mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo().get(i).getSeatCol())
+				&&order.getOrderSeatDetails().get(i).getRowNum().equals(mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo().get(i).getSeatRow()))
+				{
+					if(mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo()!=null){
+order.getOrderSeatDetails().get(i).setTicketInfoCode(mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo().get(i).getTicketNo());
 
+order.getOrderSeatDetails().get(i).setFilmTicketCode(mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo().get(i).getTicketNo2());
+			order.getOrderSeatDetails().get(i).getPrintFlag().valueOf(mtxReply.getAppPrintTicketResult().getPrintType());
+			///mtxReply.getAppPrintTicketResult().getPrintType();
+					}
+					
+				}
+			}
+		
+				
+			}
+			reply.Status=StatusEnum.Success;
+		}else{
+			reply.Status=StatusEnum.Failure;
+		}
+		reply.ErrorCode=mtxReply.getAppPrintTicketResult().getResultCode();
+		return reply;
+	}
+	//确认出票
 	@Override
 	public CTMSFetchTicketReply FetchTicket(Usercinemaview userCinema, OrderView order) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSFetchTicketReply reply=new CTMSFetchTicketReply();
+		MtxAppPrintTicketResult mtxReply=mtxService.AppPrintTicket(userCinema, order);
+		if("0".equals(mtxReply.getAppPrintTicketResult().getResultCode())){
+			order.getOrderBaseInfo().getPrintStatus().equals(1);
+				
+				order.getOrderBaseInfo().setPrintTime(new Date());
+			
+			reply.Status=StatusEnum.Success;		
+	}else{
+		reply.Status=StatusEnum.Failure;
+	}
+		reply.ErrorCode=mtxReply.getAppPrintTicketResult().getResultCode();
+		reply.ErrorMessage=mtxReply.getAppPrintTicketResult().getResultDesc();
+		return reply;
 	}
 }
