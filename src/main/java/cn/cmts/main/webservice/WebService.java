@@ -202,16 +202,7 @@ seatinfo.setSeatInfo(seatInfo1);
 					userCinema.getDefaultPassword());
 		//	param.setVerifyInfo(pVerifyInfo);
 			System.out.println("开始锁定座位测试3-------------------"+ new Gson().toJson(param));
-			/*System.out.println("AppCode=========="+userCinema.getDefaultUserName());
-			System.out.println("CinemaId=========="+userCinema.getCinemaCode());
-			System.out.println("PFeatureAppNo=========="+orderView.getOrderBaseInfo().getSessionCode());
-			System.out.println("SerialNum=========="+String.valueOf(orderId.getTime()) + x);
-			System.out.println("座位数=========="+orderView.getOrderBaseInfo().getTicketCount());
-			System.out.println("PayType=========="+orderView.getOrderBaseInfo().getPayType());
-			System.out.println("RecvpMobilePhone=========="+"15700002025");
-			System.out.println("TokenID=========="+TokenId);
-			System.out.println("Token=========="+Token);
-			System.out.println("验证密钥=========="+userCinema.getDefaultPassword());*/
+		
 /*String pVerifyInfo=GenerateVerifyInfo(userCinema.getDefaultUserName(),userCinema.getCinemaCode(),
 		orderView.getOrderBaseInfo().getSessionCode(),orderView.getOrderBaseInfo().getSerialNum(),
 		orderView.getOrderBaseInfo().getTicketCount().toString(),orderView.getOrderBaseInfo().getPayType(),
