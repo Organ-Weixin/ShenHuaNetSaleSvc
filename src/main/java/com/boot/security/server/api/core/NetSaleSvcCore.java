@@ -546,6 +546,7 @@ public class NetSaleSvcCore {
 				replyseat.setSeatCode(seat.getSeatCode());
 				replySeats.add(replyseat);
 			}
+			reply.Order.Seat=replySeats;
 			reply.SetSuccessReply();
 		} else {
 			reply.GetErrorFromCTMSReply(CTMSReply);
