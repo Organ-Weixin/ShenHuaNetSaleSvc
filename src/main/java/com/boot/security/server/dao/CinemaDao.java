@@ -32,8 +32,6 @@ public interface CinemaDao {
     @Insert("insert into cinema(MId, Code, Name, Address, ScreenCount, IsDel, ManualAdd, IsOpen, CinemaId) values(#{MId}, #{Code}, #{Name}, #{Address}, #{ScreenCount}, #{IsDel}, #{ManualAdd}, #{IsOpen}, #{CinemaId})")
     int save(Cinema cinema);
   
-    
- 	@Update("update  cinema set Code=#{Code},Name=#{Name},Address=#{Address},IsOpen=#{IsOpen},MId=#{MId} where Id=#{Id}")
     int update(Cinema cinema);
    
     int count(@Param("params") Map<String, Object> params);

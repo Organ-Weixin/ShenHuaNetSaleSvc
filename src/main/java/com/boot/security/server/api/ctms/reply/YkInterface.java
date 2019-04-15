@@ -699,9 +699,11 @@ public class YkInterface implements ICTMSInterface {
 							
 							if("Y".equals(ticketList.get(i).getPrintStatus())){	//打票状态：Y 已打票 N 未打票
 								order.getOrderSeatDetails().get(i).setPrintFlag(1);
+								order.getOrderBaseInfo().setPrintStatus(1);
 								order.getOrderBaseInfo().setPrintTime(new Date());	//粤科没有返回打印时间
 							} else {
 								order.getOrderSeatDetails().get(i).setPrintFlag(0);
+								order.getOrderBaseInfo().setPrintStatus(0);
 							}
 							//退票状态：Y 已退票
 							if("Y".equals(ticketList.get(i).getRefundStatus())){

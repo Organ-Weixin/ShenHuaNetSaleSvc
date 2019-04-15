@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.boot.security.server.dao.SessioninfoDao">
@@ -9,10 +10,12 @@
 		<result property="FilmName" column="FilmName"/>
 		<result property="Duration" column="Duration"/>
 		<result property="Language" column="Language"/>
-		<association property="FileInfo" javaType="FileInfo">
+		<result property="FilmCode" column="FilmCode"/>
+		<association property="Filminfo" javaType="Filminfo">
 			<result property="Id" column="Id"/>
 			<result property="FilmCode" column="FilmCode"/>
 			<result property="FilmName" column="FilmName"/>
+			<result property="FilmType" column="FilmType"/>
 		</association>
 	</resultMap>
 	<sql id="where">
@@ -30,7 +33,23 @@
 				and s.StartTime >= #{params.StartTime}
 			</if>
 			<if test="params.EndTime !=null and params.EndTime != ''">
-				and #{params.EndTime} >= s.EndTime  
+				and #{params.EndTime} >= s.StartTime  
+			</if>
+		</where>
+	</sql>
+	<sql id="deleteWhere">
+		<where>
+			<if test="params.CCode != null and params.CCode != ''">
+			    CCode = #{params.CCode} 
+			</if>
+			<if test="params.UserId != null and params.UserId != ''">
+				and UserId = #{params.UserId} 
+			</if>
+			<if test="params.StartTime !=null and params.StartTime != ''">
+				and StartTime >= #{params.StartTime}
+			</if>
+			<if test="params.EndTime !=null and params.EndTime != ''">
+				and #{params.EndTime} >= StartTime  
 			</if>
 		</where>
 	</sql>
@@ -42,14 +61,11 @@
 	</select>
 
 	<select id="getFilms" resultMap="Films">
-		select f.id,s.* from filminfo f left join sessioninfo s 
-		on f.FilmCode = s.FilmCode
+		select s.* from sessioninfo s
 		<include refid="where" />
-		group by f.FilmCode
-		${params.orderBy}
-		limit #{offset}, #{limit}
+		group by s.FilmCode
 	</select>
-
+	
 	<select id="countSession" resultType="int">
 		select count(1) 
 		from sessioninfo s 
@@ -59,7 +75,7 @@
 		left join priceplan p on p.CinemaCode=s.CCode and p.UserID=u.Id and (p.Code=s.FilmCode or p.Code=s.SCode)  
 		<include refid="where" />
 	</select>
-
+	
 	<select id="list" resultMap="BaseResultMap">
 		select s.SCode,s.Id,s.CCode,s.ScreenCode,c.Name,u.Company,s.FilmCode,s.FilmName,sc.SName,s.StartTime,s.Duration,s.Language,s.StandardPrice,s.LowestPrice,p.Price  
 		from sessioninfo s 
@@ -71,6 +87,12 @@
 		${params.orderBy}
 		limit #{offset}, #{limit}
 	</select>
+	
+	<delete id="deleteByCinemaCode">
+		delete from sessioninfo 
+		<include refid="deleteWhere"/>
+	</delete>
+	
 	<resultMap id="BaseResultMap" type="com.boot.security.server.model.Sessioninfo">
 		<id  property="Id" column="Id"/>
 		<result property="CCode" column="CCode" />
@@ -101,11 +123,11 @@
 		</association>
 		
 	</resultMap>
-	
+
 	<update id="updatePriceplan" parameterType="com.boot.security.server.model.Priceplan" >
 		update pricePlan p set Price = #{Price}
 		where CinemaCode=#{CinemaCode} and Code=#{Code} and UserID=#{UserID}
-		
+	
 	</update>
 	
 	<update id="update">

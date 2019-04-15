@@ -25,6 +25,9 @@ public interface ScreenseatinfoDao {
 	////
 	@Select("select * from screenseatinfo t where t.cinemacode = #{cinemacode} and t.screencode=#{screencode} and t.seatcode in(#{seatcodes})")
     List<Screenseatinfo> getBySeatCodes(@Param("cinemacode")String cinemacode,@Param("screencode")String screencode,@Param("seatcodes")String seatcodes);
+	//根据座位编码获取座位
+	@Select("select * from screenseatinfo t where t.cinemacode = #{cinemacode} and t.screencode=#{screencode} and t.seatcode=#{seatcode}")
+    Screenseatinfo getBySeatCode(@Param("cinemacode")String cinemacode,@Param("screencode")String screencode,@Param("seatcode")String seatcode);
 	
 	//查询情侣座
 	@Select("select * from screenseatinfo t where t.CinemaCode = #{cinemacode} and t.ScreenCode = #{screencode} and t.LoveFlag ='Y'")

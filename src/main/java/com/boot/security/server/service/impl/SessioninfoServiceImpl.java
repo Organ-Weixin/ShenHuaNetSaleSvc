@@ -69,7 +69,7 @@ public class SessioninfoServiceImpl implements SessioninfoService{
 		// TODO Auto-generated method stub
 		return sessioninfoDao.delete(id);
 	}
-	
+
 	@Override
 	public int deleteByCinemaCode(Map<String, Object> params) {
 		return sessioninfoDao.deleteByCinemaCode(params);
@@ -82,4 +82,6 @@ public class SessioninfoServiceImpl implements SessioninfoService{
 	}
 
 
+	
+	
 }

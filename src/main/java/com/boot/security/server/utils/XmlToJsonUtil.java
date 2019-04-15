@@ -88,7 +88,10 @@ public class XmlToJsonUtil {
 			iterateNodes(e,object,apiResultName);
 		}
 		if ((apiResultName + "_" + nodeName).equals("SubmitOrderResult_SeatInfo")
+				|| (apiResultName + "_" + nodeName).equals("SubmitOrderResult_SaleMerInfo")
 				|| (apiResultName + "_" + nodeName).equals("QueryCinemaListResult_Cinema")
+				|| (apiResultName + "_" + nodeName).equals("RealCheckSeatStateResult_SeatInfo")
+				|| (apiResultName + "_" + nodeName).equals("GetCinemaSessionResult_Film")
 				|| (apiResultName + "_" + nodeName).equals("QueryTicketInfoResult_Ticket")
 				|| (apiResultName + "_" + nodeName).equals("ApplyFetchTicketResult_Ticket")
 				|| (apiResultName + "_" + nodeName).equals("LockSeatQueryXml_Seat")
@@ -107,7 +110,7 @@ public class XmlToJsonUtil {
 
 
 	public static void main(String[] args) throws Exception{
-			String xml = "<QueryCinemaListResult xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n" +
+			/*String xml = "<QueryCinemaListResult xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n" +
 					"   <ResultCode>0</ResultCode>\n" +
 					"   <Message>成功</Message>\n" +
 					"   <Cinemas>\n" +
@@ -120,12 +123,32 @@ public class XmlToJsonUtil {
 					"         <PriceType>0</PriceType>\n" +
 					"      </Cinema>\n" +
 					"   </Cinemas>\n" +
-					"</QueryCinemaListResult>";
-		String jsonObject = xmltoJson(xml,"QueryCinemaListResult");
+					"</QueryCinemaListResult>";*/
+		String xml = "<RealCheckSeatStateResult xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n"+
+		"	<ResultCode>0</ResultCode>\n"+
+		"	<OrderNo>1554955139495kgstehd</OrderNo>\n"+
+		"	<SeatInfos>\n"+
+		"		<SeatInfo>\n"+
+		"			<SeatNo>115156</SeatNo>\n"+
+		"			<TicketPrice>60.0</TicketPrice>\n"+
+		"			<SeatRow>2</SeatRow>\n"+
+		"			<SeatCol>1</SeatCol>\n"+
+		"			<AutoUnlockDatetime>1554956340</AutoUnlockDatetime>\n"+
+		"		</SeatInfo>\n"+
+		"		<SeatInfo>\n"+
+		"			<SeatNo>115152</SeatNo>\n"+
+		"			<TicketPrice>60.0</TicketPrice>\n"+
+		"			<SeatRow>1</SeatRow>\n"+
+		"			<SeatCol>12</SeatCol>\n"+
+		"			<AutoUnlockDatetime>1554959683</AutoUnlockDatetime>\n"+
+		"		</SeatInfo>\n"+
+		"	</SeatInfos>\n"+
+		"	</RealCheckSeatStateResult\n>";
+		String jsonObject = xmltoJson(xml,"RealCheckSeatStateResult");
 		System.out.println(jsonObject);
 	}
 
-
+	
 
 }
 

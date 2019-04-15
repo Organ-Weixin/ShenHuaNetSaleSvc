@@ -200,10 +200,10 @@ function init(){
 						return price['price'];
 					}
 				},	
-				{"data" : "addedPrice", "defaultContent" : "","orderable":false,
+				{"data" : "addFee", "defaultContent" : "","orderable":false,
 					"render":function(data, type, row){
-						var addedPrice = row['orderseatdetails'];
-						return addedPrice['addedPrice'];
+						var addFee = row['orderseatdetails'];
+						return addFee['addFee'];
 					}
 				},
 				{"data" : "fee", "defaultContent" : "","orderable":false,
@@ -212,10 +212,10 @@ function init(){
 						return fee['fee'];
 					}
 				},
-				 {"data" : "preferentialPrice", "defaultContent" : "","orderable":false,
+				 {"data" : "cinemaAllowance", "defaultContent" : "","orderable":false,
 					"render":function(data, type, row){
-						var preferentialPrice = row['orderseatdetails'];
-						return preferentialPrice['preferentialPrice'];
+						var cinemaAllowance = row['orderseatdetails'];
+						return cinemaAllowance['cinemaAllowance'];
 					}
 				}, 
 				{"data" : "totalSale", "defaultContent" : "","orderable":false,

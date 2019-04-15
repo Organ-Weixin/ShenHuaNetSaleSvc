@@ -51,7 +51,7 @@
 		limit #{offset}, #{limit}
 	</select>
 
-<!-- 	<update id="update">
+ 	<update id="update">
 		update cinema t
 		<set>
 			<if test="Id != null">
@@ -87,7 +87,6 @@
 
 		</set>
 
-		where t.id = #{id}
+		where t.Code = #{Code}
 	</update>
- -->
 </mapper>

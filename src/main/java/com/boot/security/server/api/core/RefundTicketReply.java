@@ -18,7 +18,7 @@ public class RefundTicketReply extends BaseReply {
 		public String OrderCode;
 		public String PrintNo;
 		public String VerifyCode;
-		public YesOrNoEnum Status;
+		public String Status;
 		public String RefundTime;
 		public String getOrderCode() {
 			return OrderCode;
@@ -38,10 +38,10 @@ public class RefundTicketReply extends BaseReply {
 		public void setVerifyCode(String verifyCode) {
 			VerifyCode = verifyCode;
 		}
-		public YesOrNoEnum getStatus() {
+		public String getStatus() {
 			return Status;
 		}
-		public void setStatus(YesOrNoEnum status) {
+		public void setStatus(String status) {
 			Status = status;
 		}
 		public String getRefundTime() {
