@@ -22,6 +22,8 @@ public interface ScreeninfoDao {
     @Select("select * from screeninfo t where t.ccode = #{cinemacode} and t.scode=#{screencode}")
     Screeninfo getByScreenCode(@Param("cinemacode")String cinemacode,@Param("screencode")String screencode);
     
+    @Select("select * from screeninfo t where t.ccode = #{cinemacode} and t.screenid=#{screenid}")
+    Screeninfo getByScreenId(@Param("cinemacode")String cinemacode,@Param("screenid")String screenid);
     //查询影票
     /*@Select("select * from screeninfo t where t.ccode = #{CinemaCode} and t.scode = #{ScreenCode}")
     Screeninfo getByCinemaCodeAndScreenCode(String CinemaCode,String ScreenCode);*/

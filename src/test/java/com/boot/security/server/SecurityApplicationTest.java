@@ -22,6 +22,11 @@ import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.boot.security.server.api.core.LockSeatQueryXml;
 import com.boot.security.server.api.core.LockSeatQueryXml.LockSeatQueryXmlOrder;
 import com.boot.security.server.api.core.NetSaleSvcCore;
+import com.boot.security.server.api.core.ReleaseSeatQueryXml;
+import com.boot.security.server.api.core.ReleaseSeatQueryXml.ReleaseSeatQueryXmlOrder;
+import com.boot.security.server.api.core.SubmitOrderQueryXml;
+import com.boot.security.server.api.core.SubmitOrderQueryXml.SubmitOrderQueryXmlOrder;
+import com.boot.security.server.api.core.SubmitOrderQueryXml.SubmitOrderQueryXmlOrder.SubmitOrderQueryXmlSeat;
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaAllSessionResult;
 import com.boot.security.server.api.ctms.reply.Dy1905Interface;
 import com.boot.security.server.model.OrderView;
@@ -120,7 +125,8 @@ public class SecurityApplicationTest {
 		userCinema.setDefaultPassword("66a16ca61f729e0c846983f8c0f4fd53");
 		userCinema.setUserId(12l);
 		userCinema.setUrl("http://netsale.1905.com/Api");
-		userCinema.setCinemaCode("33097601");
+		userCinema.setCinemaCode("33096401");
+		//userCinema.setCinemaId("199");
 		userCinema.setCinemaId("194");
 		di.QuerySession(userCinema, new Date(), null);
 	}
@@ -142,23 +148,23 @@ public class SecurityApplicationTest {
 		userCinema.setCinemaCode("33096401");
 		userCinema.setCinemaId("199");
 		Orders od = new Orders();
-		od.setSessionCode("3088273");
+		od.setSessionCode("3109574");
 		List<Orderseatdetails> osList = new ArrayList<Orderseatdetails>();
 		Orderseatdetails os = new Orderseatdetails();
 		Orderseatdetails os1 = new Orderseatdetails();
 		Orderseatdetails os2 = new Orderseatdetails();
-		os.setSeatCode("118167");
+		os.setSeatCode("118052");
 		os.setSalePrice(50.00);
 		os.setFee(10.00);
-		os1.setSeatCode("118168");
+		os1.setSeatCode("118050");
 		os1.setSalePrice(50.00);
 		os1.setFee(10.00);
-		os2.setSeatCode("118169");
+		os2.setSeatCode("118051");
 		os2.setSalePrice(50.00);
 		os2.setFee(10.00);
 		osList.add(os);
-		osList.add(os1);
-		osList.add(os2);
+		//osList.add(os1);
+		//osList.add(os2);
 		order.setOrderSeatDetails(osList);
 		order.setOrderBaseInfo(od);
 		di.LockSeat(userCinema, order);
@@ -189,19 +195,19 @@ public class SecurityApplicationTest {
 		userCinema.setCinemaCode("33097601");
 		userCinema.setCinemaId("194");
 		Orders od = new Orders();
-		od.setSessionCode("3075138");
+		od.setSessionCode("3109574");
 		List<Orderseatdetails> osList = new ArrayList<Orderseatdetails>();
-		od.setLockOrderCode("1554965861291maisxuq");
+		od.setLockOrderCode("1555291410560twbqwnt");
 		Orderseatdetails os = new Orderseatdetails();
 		Orderseatdetails os1 = new Orderseatdetails();
 		Orderseatdetails os2 = new Orderseatdetails();
-		os.setSeatCode("115155");
+		os.setSeatCode("118049");
 		os.setSalePrice(50.00);
 		os.setFee(10.00);
-		os1.setSeatCode("115156");
+		os1.setSeatCode("118050");
 		os1.setSalePrice(50.00);
 		os1.setFee(10.00);
-		os2.setSeatCode("115157");
+		os2.setSeatCode("118051");
 		os2.setSalePrice(50.00);
 		os2.setFee(10.00);
 		osList.add(os);
@@ -210,7 +216,7 @@ public class SecurityApplicationTest {
 		order.setOrderSeatDetails(osList);
 		order.setOrderBaseInfo(od);
 		di.SubmitOrder(userCinema, order);
-		//订单编码1554965861291maisxuq-----打印编码1904111457421404-----验证码0000000000421404
+		//订单编码1555291410560twbqwnt-----打印编码1904150923305834-----验证码0000000000305834
 	}
 	@Test
 	public void RefundTicketTest() throws Exception{
@@ -221,9 +227,9 @@ public class SecurityApplicationTest {
 		userCinema.setDefaultPassword("66a16ca61f729e0c846983f8c0f4fd53");
 		userCinema.setUrl("http://netsale.1905.com/Api");
 		Orders od = new Orders();
-		od.setLockOrderCode("1554965861291maisxuq");
-		od.setPrintNo("1904111457421404");
-		od.setVerifyCode("0000000000421404");
+		od.setLockOrderCode("1555309208124sjulhsc");
+		od.setPrintNo("1904151420072408");
+		od.setVerifyCode("0000000000072408");
 		order.setOrderBaseInfo(od);
 		di.RefundTicket(userCinema, order);
 	}
@@ -261,12 +267,28 @@ public class SecurityApplicationTest {
 		di.QueryPrint(userCinema, order);
 	}
 	@Test
-	public void QueryCinemaListTest(){
+	public void FetchTicketTest() throws Exception{
+		Dy1905Interface di = new Dy1905Interface();
+		Usercinemaview userCinema = new Usercinemaview();
+		userCinema.setDefaultUserName("1000000035");
+		userCinema.setDefaultPassword("66a16ca61f729e0c846983f8c0f4fd53");
+		userCinema.setUrl("http://netsale.1905.com/Api");
+		OrderView order = new OrderView();
+		Orders orderBaseInfo = new Orders();
+		orderBaseInfo.setSubmitOrderCode("1555297230333kxrrbvt");
+		order.setOrderBaseInfo(orderBaseInfo);
+		di.FetchTicket(userCinema, order);
+	}
+	
+	
+	////////////////////////////////////////中间件/////////////////////////////////////////////
+	@Test
+	public void QueryCinemaListTestMid(){
 		NetSaleSvcCore ns = new NetSaleSvcCore();
 		ns.QueryCinemaList("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41");
 	}
 	@Test
-	public void QueryCinemaTest(){
+	public void QueryCinemaTestMid(){
 		NetSaleSvcCore ns = new NetSaleSvcCore();
 		ns.QueryCinema("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33096401");
 	}
@@ -276,55 +298,142 @@ public class SecurityApplicationTest {
 		ns.QuerySeat("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33096401", "0000000000000001");
 	}
 	@Test
-	public void QueryFilmTest() throws ParseException{
+	public void QueryFilmTestMid() throws ParseException{
 		NetSaleSvcCore ns = new NetSaleSvcCore();
 		ns.QueryFilm("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33096401","2019-04-12 00：00：00", "2019-04-20 00:00:00");
 	}
 	@Test
 	public void QuerySessionTestMid() throws ParseException{
 		NetSaleSvcCore ns = new NetSaleSvcCore();
-		ns.QuerySession("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33096401", "2019-04-12 00：00：00",  "2019-04-20 00:00:00");
+		ns.QuerySession("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33096401", "2019-01-01 00:00:00",  "2019-06-20 00:00:00");
 	}
 	@Test
-	public void QuerySessionSeatTest(){
+	public void QuerySessionSeatTestMid(){
 		NetSaleSvcCore ns = new NetSaleSvcCore();
-		ns.QuerySessionSeat("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33096401", "3097406", "Available");
+		ns.QuerySessionSeat("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33096401", "3109574", "Sold");
 	}
 	@Test
-	public void LockSeatTest() throws Exception{
+	public void LockSeatTestMid() throws Exception{
 		NetSaleSvcCore ns = new NetSaleSvcCore();
 		LockSeatQueryXml.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat seatxml1 = new LockSeatQueryXml.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat();
-		seatxml1.setSeatCode("");
+		seatxml1.setSeatCode("118052");
 		seatxml1.setPrice(50.00);
 		seatxml1.setFee(10.00);
-		seatxml1.setAddFee(null);
-		seatxml1.setCinemaAllowance(null);
+		seatxml1.setAddFee(0.00);
+		seatxml1.setCinemaAllowance(0.00);
 		LockSeatQueryXml.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat seatxml2 = new LockSeatQueryXml.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat();
-		seatxml2.setSeatCode("118049");
+		seatxml2.setSeatCode("118053");
 		seatxml2.setPrice(50.00);
 		seatxml2.setFee(10.00);
-		seatxml2.setAddFee(null);
-		seatxml2.setCinemaAllowance(null);
+		seatxml2.setAddFee(0.00);
+		seatxml2.setCinemaAllowance(0.00);
 		LockSeatQueryXml.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat seatxml3 = new LockSeatQueryXml.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat();
-		seatxml3.setSeatCode("118050");
+		seatxml3.setSeatCode("118057");
 		seatxml3.setPrice(50.00);
 		seatxml3.setFee(10.00);
-		seatxml3.setAddFee(null);
-		seatxml3.setCinemaAllowance(null);
+		seatxml3.setAddFee(0.00);
+		seatxml3.setCinemaAllowance(0.00);
 		List<LockSeatQueryXml.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat>  seat = new ArrayList();
 		seat.add(seatxml1);
 		seat.add(seatxml2);
-		seat.add(seatxml3);
+		//seat.add(seatxml3);
 		//1068
 		LockSeatQueryXmlOrder order = new LockSeatQueryXmlOrder();
-		order.setPayType("118051");
-		order.setSessionCode("3097406");
-		order.setCount(3);
+		order.setPayType("0");
+		//order.setSessionCode("3097406");
+		order.setSessionCode("3109574");
+		order.setCount(seat.size());
 		order.setSeat(seat);
 		LockSeatQueryXml xml = new LockSeatQueryXml();
 		xml.setCinemaCode("33096401");
 		xml.setOrder(order);
 		String QueryXml = JaxbXmlUtil.convertToXml(xml);
 		ns.LockSeat("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", QueryXml);
+	}
+	@Test
+	public void ReleaseSeatTestMid() throws Exception{
+		NetSaleSvcCore ns = new NetSaleSvcCore();
+		ReleaseSeatQueryXml.ReleaseSeatQueryXmlOrder.ReleaseSeatQueryXmlSeat seatxml1 = new ReleaseSeatQueryXml.ReleaseSeatQueryXmlOrder.ReleaseSeatQueryXmlSeat();
+		seatxml1.setSeatCode("118050");
+		ReleaseSeatQueryXml.ReleaseSeatQueryXmlOrder.ReleaseSeatQueryXmlSeat seatxml2 = new ReleaseSeatQueryXml.ReleaseSeatQueryXmlOrder.ReleaseSeatQueryXmlSeat();
+		seatxml2.setSeatCode("118051");
+		ReleaseSeatQueryXml.ReleaseSeatQueryXmlOrder.ReleaseSeatQueryXmlSeat seatxml3 = new ReleaseSeatQueryXml.ReleaseSeatQueryXmlOrder.ReleaseSeatQueryXmlSeat();
+		seatxml3.setSeatCode("118052");
+		List<ReleaseSeatQueryXml.ReleaseSeatQueryXmlOrder.ReleaseSeatQueryXmlSeat>  seat = new ArrayList();
+		seat.add(seatxml1);
+		seat.add(seatxml2);
+		seat.add(seatxml3);
+		//1068
+		//1555156791756iplhcyp
+		ReleaseSeatQueryXmlOrder order = new ReleaseSeatQueryXmlOrder();
+		order.setSessionCode("3097406");
+		order.setOrderCode("1555296940461ajdobyg");
+		order.setCount(seat.size());
+		order.setSeat(seat);
+		ReleaseSeatQueryXml xml = new ReleaseSeatQueryXml();
+		xml.setCinemaCode("33096401");
+		xml.setOrder(order);
+		String QueryXml = JaxbXmlUtil.convertToXml(xml);
+		ns.ReleaseSeat("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", QueryXml);
+	}
+	@Test
+	public void SubmitOrderTestMid() throws Exception{
+		NetSaleSvcCore ns = new NetSaleSvcCore();
+		SubmitOrderQueryXmlSeat seatxml = new SubmitOrderQueryXmlSeat();
+		seatxml.setSeatCode("118052");
+		seatxml.setPrice(50.00);
+		seatxml.setRealPrice(50.00);
+		seatxml.setFee(10.00);
+		SubmitOrderQueryXmlSeat seatxml2 = new SubmitOrderQueryXmlSeat();
+		seatxml2.setSeatCode("118053");
+		seatxml2.setPrice(50.00);
+		seatxml2.setRealPrice(50.00);
+		seatxml2.setFee(10.00);
+		SubmitOrderQueryXmlSeat seatxml3 = new SubmitOrderQueryXmlSeat();
+		seatxml3.setSeatCode("118057");
+		seatxml3.setPrice(50.00);
+		seatxml3.setRealPrice(50.00);
+		seatxml3.setFee(10.00);
+		List<SubmitOrderQueryXmlSeat> seat = new ArrayList();
+		seat.add(seatxml);
+		seat.add(seatxml2);
+		//seat.add(seatxml3);
+		SubmitOrderQueryXmlOrder order = new SubmitOrderQueryXmlOrder();
+		order.setSeat(seat);
+		order.setOrderCode("1555310884690qfzmvdj");
+		order.setSessionCode("3109574");
+		order.setCount(seat.size());
+		order.setMobilePhone("15268553143");
+		SubmitOrderQueryXml xml = new SubmitOrderQueryXml();
+		xml.setOrder(order);
+		xml.setCinemaCode("33096401");
+		String QueryXml = JaxbXmlUtil.convertToXml(xml);
+		ns.SubmitOrder("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", QueryXml);
+		//订单编码1555297230333kxrrbvt-----打印编码1904151100307664-----验证码0000000000307664
+	}
+	@Test
+	public void RefundTicketTestMid(){
+		NetSaleSvcCore ns = new NetSaleSvcCore();
+		ns.RefundTicket("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33096401", "1904151448046444", "0000000000046444");
+	}
+	@Test
+	public void QueryPrintTestMid(){
+		NetSaleSvcCore ns = new NetSaleSvcCore();
+		ns.QueryPrint("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33096401", "1904150942490518", "0000000000490518");
+	}
+	@Test
+	public void QueryOrderTestMid(){
+		NetSaleSvcCore ns = new NetSaleSvcCore();
+		ns.QueryOrder("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33096401", "1555297230333kxrrbvt");
+	}
+	@Test
+	public void QueryTicketTestMid(){
+		NetSaleSvcCore ns = new NetSaleSvcCore();
+		ns.QueryTicket("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33096401", "1904151448046444", "0000000000046444");
+	}
+	@Test
+	public void FetchTicketTestMid(){
+		NetSaleSvcCore ns = new NetSaleSvcCore();
+		ns.FetchTicket("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33096401", "1904151100307664", "0000000000307664");
 	}
 }

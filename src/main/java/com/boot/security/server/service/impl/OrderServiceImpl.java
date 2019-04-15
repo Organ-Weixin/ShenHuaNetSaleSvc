@@ -91,7 +91,7 @@ public class OrderServiceImpl implements OrderService{
 
 	@Override
 	public int UpdateOrderBaseInfo(Orders orderbase) {
-		return ordersDao.update(orderbase);
+		return ordersDao.updateByLockOrderCode(orderbase);
 	}
 
 	@Override

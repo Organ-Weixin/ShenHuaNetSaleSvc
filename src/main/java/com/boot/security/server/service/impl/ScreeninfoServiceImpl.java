@@ -72,4 +72,10 @@ public class ScreeninfoServiceImpl  implements ScreeninfoService{
 	public Screeninfo getByScreenCode(String cinemacode, String screencode) {
 		return screeninfoDao.getByScreenCode(cinemacode, screencode);
 	}
+
+	@Override
+	public Screeninfo getByScreenId(String cinemacode, String screenid) {
+		// TODO Auto-generated method stub
+		return screeninfoDao.getByScreenId(cinemacode, screenid);
+	}
 }

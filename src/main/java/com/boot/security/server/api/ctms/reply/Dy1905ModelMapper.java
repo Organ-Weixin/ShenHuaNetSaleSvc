@@ -38,7 +38,7 @@ public class Dy1905ModelMapper {
     	//TicketFee票面价	IsAvalible是否可用	PlaythroughFlag连场标志		Dimensional纬度		Sequence顺序		UserID
     	entity.setCCode(model.getCinemaNo());
     	entity.setSCode(model.getSessionNo());
-    	entity.setScreenCode(model.getScreenNo());
+    	//entity.setScreenCode(model.getScreenNo());
     	String dt1 = new SimpleDateFormat("yyyy-MM-dd").format(model.getSessionDate());;
         String dt2 = new SimpleDateFormat("HH:mm").format(model.getStartTime());
         String dt = dt1 +" "+dt2;

@@ -27,6 +27,8 @@ public class YkModelMapper {
         entity.setLowestPrice(Double.parseDouble(model.getLowestPrice()));
         entity.setSettlePrice(Double.parseDouble(model.getSettlePrice()==null?"0":model.getSettlePrice()));
         entity.setTicketFee(Double.parseDouble(model.getTicketFee()));
+        entity.setAddFee(1.0);	//增值服务费,接口没返回，默认0
+        entity.setCinemaAllowance(1.0);	//影院补贴,接口没返回，默认0
         entity.setIsAvalible(1);
         entity.setPlaythroughFlag(model.getThroughStatus());
         entity.setSequence(1);

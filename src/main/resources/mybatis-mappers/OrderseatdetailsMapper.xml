@@ -105,6 +105,12 @@
 			<if test="Fee != null">
 				Fee = #{Fee}, 
 			</if>
+			<if test="AddFee != null">
+				AddFee = #{AddFee}, 
+			</if>
+			<if test="CinemaAllowance != null">
+				CinemaAllowance = #{CinemaAllowance}, 
+			</if>
 			<if test="FilmTicketCode != null">
 				FilmTicketCode = #{FilmTicketCode}, 
 			</if>

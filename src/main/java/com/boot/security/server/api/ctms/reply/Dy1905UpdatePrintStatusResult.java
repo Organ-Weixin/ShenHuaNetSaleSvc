@@ -1,14 +1,14 @@
 package com.boot.security.server.api.ctms.reply;
 
 public class Dy1905UpdatePrintStatusResult {
-	private ResBean UpdatePrintStatus;
-
-	public ResBean getUpdatePrintStatus() {
-		return UpdatePrintStatus;
+	private ResBean UpdatePrintStatusResult;
+	
+	public ResBean getUpdatePrintStatusResult() {
+		return UpdatePrintStatusResult;
 	}
 
-	public void setUpdatePrintStatus(ResBean updatePrintStatus) {
-		UpdatePrintStatus = updatePrintStatus;
+	public void setUpdatePrintStatusResult(ResBean updatePrintStatusResult) {
+		UpdatePrintStatusResult = updatePrintStatusResult;
 	}
 	public static class ResBean{
 		private String ResultCode;
