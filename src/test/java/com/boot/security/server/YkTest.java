@@ -33,41 +33,24 @@ public class YkTest {
 		
 		String Username = "MiniProgram";
 		String Password = "6BF477EBCC446F54E6512AFC0E976C41";
-		String CinemaCode = "99999959";
-		String SessionCode = "4531904146V20JXJ";
+		String CinemaCode = "18888888";
+		String SessionCode = "888190416BP6024J";
 		
-		System.out.println(new Gson().toJson(ns.QueryCinemaList(Username,Password)));	//影院列表
-		System.out.println(new Gson().toJson(ns.QueryCinema(Username, Password, CinemaCode)));	//影院基础信息
+//		System.out.println(new Gson().toJson(ns.QueryCinemaList(Username,Password)));	//影院列表
+//		System.out.println(new Gson().toJson(ns.QueryCinema(Username, Password, CinemaCode)));	//影院基础信息
 //		System.out.println(new Gson().toJson(ns.QuerySeat(Username, Password, CinemaCode, "0000000000000005"))); //查询影厅座位信息
-//		System.out.println(new Gson().toJson(ns.QuerySession(Username, Password, CinemaCode, "2019-04-14","2019-04-15")));//查排期
-//		System.out.println(new Gson().toJson(ns.QueryFilm(Username, Password, CinemaCode, "2019-04-14",	"2019-04-15"))); //查询影片信息		
-//		System.out.println(new Gson().toJson(ns.QuerySessionSeat(Username, Password, CinemaCode, SessionCode, "Available")));//查询放映计划座位售出状态
+//		System.out.println(new Gson().toJson(ns.QuerySession(Username, Password, CinemaCode, "2019-04-16","2019-04-17")));//查排期
+//		System.out.println(new Gson().toJson(ns.QueryFilm(Username, Password, CinemaCode, "2019-04-16",	"2019-04-17"))); //查询影片信息		
+//		System.out.println(new Gson().toJson(ns.QuerySessionSeat(Username, Password, CinemaCode, SessionCode, "Sold")));//查询放映计划座位售出状态
 		
-		
-		/*LockSeatQueryXmlSeat seat1 = new LockSeatQueryXmlSeat();
-		seat1.setSeatCode("0000000000000001-9-01");
-		
-		List<LockSeatQueryXmlSeat> Seats = new ArrayList<LockSeatQueryXmlSeat>();
-		Seats.add(seat1);
-		
-		LockSeatQueryXmlOrder order = new LockSeatQueryXmlOrder();
-		order.setSessionCode("002190410BRXFP24");
-		order.setSeat(Seats);
-		
-		
-		LockSeatQueryXml xml=new LockSeatQueryXml();
-		xml.setCinemaCode("33010301");
-		xml.setOrder(order);
-		String QueryXml=xml.toString();*/
-//		String QueryXml = "{\"LockSeat\":{\"CinemaCode\": \"33010301\",\"Order\": {\"SessionCode\":\"002190410BRXFP24\",Seat\":[{\"SeatCode\":\"0000000000000001-9-01\"}]}}}";
 		LockSeatQueryXmlSeat seat1 = new LockSeatQueryXmlSeat();
-		seat1.setSeatCode("0000000000000001-1-01");
+		seat1.setSeatCode("0000000000000001-1-1");
 		seat1.setPrice(50.0);
 		seat1.setAddFee(0.0);
 		seat1.setCinemaAllowance(0.0);
 		seat1.setFee(5.0);
 		LockSeatQueryXmlSeat seat2 = new LockSeatQueryXmlSeat();
-		seat2.setSeatCode("0000000000000001-1-02");
+		seat2.setSeatCode("0000000000000001-1-2");
 		seat2.setPrice(50.0);
 		seat2.setAddFee(0.0);
 		seat2.setCinemaAllowance(0.0);
@@ -75,16 +58,16 @@ public class YkTest {
 		
 		List<LockSeatQueryXmlSeat> Seats = new ArrayList<LockSeatQueryXmlSeat>();
 		Seats.add(seat1);
-//		Seats.add(seat2);
+		Seats.add(seat2);
 		
 		LockSeatQueryXmlOrder order = new LockSeatQueryXmlOrder();
-		order.setSessionCode("4531904146V20JXJ");
+		order.setSessionCode("888190416BP6024J");
 		order.setPayType("0");
-		order.setCount(1);
+		order.setCount(2);
 		order.setSeat(Seats);
 		
 		LockSeatQueryXml xml = new LockSeatQueryXml();
-		xml.setCinemaCode("33010501");
+		xml.setCinemaCode("18888888");
 		xml.setOrder(order);
 		
 		String QueryXml = JaxbXmlUtil.convertToXml(xml);
@@ -93,35 +76,43 @@ public class YkTest {
 		
 		
 		SubmitOrderQueryXmlSeat subSeat1 = new SubmitOrderQueryXmlSeat();
-		subSeat1.setSeatCode("0000000000000001-1-01");
+		subSeat1.setSeatCode("0000000000000001-1-1");
 		subSeat1.setAddFee(0.0);
 		subSeat1.setCinemaAllowance(0.0);
 		subSeat1.setFee(5.0);
 		subSeat1.setPrice(40.0);
 		subSeat1.setRealPrice(46.0);
+		SubmitOrderQueryXmlSeat subSeat2 = new SubmitOrderQueryXmlSeat();
+		subSeat2.setSeatCode("0000000000000001-1-2");
+		subSeat2.setAddFee(0.0);
+		subSeat2.setCinemaAllowance(0.0);
+		subSeat2.setFee(5.0);
+		subSeat2.setPrice(40.0);
+		subSeat2.setRealPrice(46.0);
 		
 		List<SubmitOrderQueryXmlSeat> Seat = new ArrayList<SubmitOrderQueryXmlSeat>();
 		Seat.add(subSeat1);
+		Seat.add(subSeat2);
 		
 		SubmitOrderQueryXmlOrder order1 = new SubmitOrderQueryXmlOrder();
-		order1.setCount(1);
+		order1.setCount(2);
 		order1.setMobilePhone("13959557890");
-		order1.setOrderCode("20190413XXX453000005694700");
-		order1.setSessionCode("4531904146V20JXJ");
+		order1.setOrderCode("20190415XXX888000000142100");
+		order1.setSessionCode("888190416BP6024J");
 		order1.setSeat(Seat);
 		
 		SubmitOrderQueryXml submitXml = new SubmitOrderQueryXml();
-		submitXml.setCinemaCode("33010501");
+		submitXml.setCinemaCode("18888888");
 		submitXml.setOrder(order1);
 		
 		String subQueryXml = JaxbXmlUtil.convertToXml(submitXml);
 //		System.out.println(new Gson().toJson(ns.SubmitOrder(Username,Password, subQueryXml)));	//提交订单
 		
-//		System.out.println(new Gson().toJson(ns.QueryPrint(Username, Password, CinemaCode, "2019041411582231","410335")));	//查询出票状态
-//		System.out.println(new Gson().toJson(ns.QueryOrder(Username, Password, CinemaCode, "20190413XXX453000005694700")));	//查订单
-//		System.out.println(new Gson().toJson(ns.QueryTicket(Username, Password, CinemaCode, "2019041411582231","410335"))); //查询影票
-//		System.out.println(new Gson().toJson(ns.FetchTicket(Username, Password, CinemaCode, "2019041411582231","410335"))); //确认出票
-//		System.out.println(new Gson().toJson(ns.RefundTicket(Username, Password, CinemaCode, "2019041411582231","410335")));//退票
+//		System.out.println(new Gson().toJson(ns.QueryPrint(Username, Password, CinemaCode, "2019041681129039","573027")));	//查询出票状态
+		System.out.println(new Gson().toJson(ns.QueryOrder(Username, Password, CinemaCode, "20190415XXX888000000142100")));	//查订单
+//		System.out.println(new Gson().toJson(ns.QueryTicket(Username, Password, CinemaCode, "2019041681129039","573027"))); //查询影票
+//		System.out.println(new Gson().toJson(ns.FetchTicket(Username, Password, CinemaCode, "2019041681129039","573027"))); //确认出票
+		System.out.println(new Gson().toJson(ns.RefundTicket(Username, Password, CinemaCode, "2019041699719038","169932")));//退票
 	}
 	
 	@Test
@@ -130,28 +121,26 @@ public class YkTest {
 		
 		String Username = "MiniProgram";
 		String Password = "6BF477EBCC446F54E6512AFC0E976C41";
-		String CinemaCode = "33010501";
+		
+		ReleaseSeatQueryXmlSeat seat1 = new ReleaseSeatQueryXmlSeat();
+		seat1.setSeatCode("0000000000000001-1-3");
 		
 		ReleaseSeatQueryXmlSeat seat2 = new ReleaseSeatQueryXmlSeat();
-		seat2.setSeatCode("0000000000000001-1-02");
-		/*seat2.setPrice(50.0);
-		seat2.setAddFee(0.0);
-		seat2.setCinemaAllowance(0.0);
-		seat2.setFee(5.0);*/
+		seat2.setSeatCode("0000000000000001-1-4");
+		
 		
 		List<ReleaseSeatQueryXmlSeat> Seats = new ArrayList<ReleaseSeatQueryXmlSeat>();
-//		Seats.add(seat1);
+		Seats.add(seat1);
 		Seats.add(seat2);
 		
 		ReleaseSeatQueryXmlOrder order = new ReleaseSeatQueryXmlOrder();
-		order.setOrderCode("20190413XXX453000005193300");
-		order.setSessionCode("4531904146V20JXJ");
-//		order.setPayType("0");
-		order.setCount(1);
+		order.setOrderCode("20190415XXX888000000111900");
+		order.setSessionCode("888190416BP6024J");
+		order.setCount(2);
 		order.setSeat(Seats);
 		
 		ReleaseSeatQueryXml releaseXml = new ReleaseSeatQueryXml();
-		releaseXml.setCinemaCode("33010501");
+		releaseXml.setCinemaCode("18888888");
 		releaseXml.setOrder(order);
 		
 		String QueryXml = JaxbXmlUtil.convertToXml(releaseXml);
