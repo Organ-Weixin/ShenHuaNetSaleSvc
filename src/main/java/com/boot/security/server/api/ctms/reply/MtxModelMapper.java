@@ -17,6 +17,7 @@ public class MtxModelMapper {
      {
          entity.setSCode(model.getHallNo());
          entity.setSName(model.getHallName());
+         entity.setType(model.getHallType());
          entity.setUpdateTime(new Date());
          return entity;
      }
@@ -36,6 +37,7 @@ public class MtxModelMapper {
 	 public static Sessioninfo MapToEntity(MtxGetCinemaPlanResult.ResBean.CinemaPlansBean.CinemaPlanBean model,Sessioninfo entity) throws ParseException
 	 {
 		 entity.setCCode(model.getPlaceNo());
+		 entity.setSCode(model.getFeatureAppNo()); //排期号
 		 entity.setScreenCode(model.getHallNo());
 		 entity.setFeatureNo(model.getFeatureNo());
 		 entity.setFilmCode(model.getFilmNo());
@@ -43,8 +45,22 @@ public class MtxModelMapper {
 		 entity.setLanguage(model.getCopyLanguage());
 		 entity.setLowestPrice(model.getProtectPrice());
 		 entity.setStandardPrice(model.getStandPric());
+		 entity.setSettlePrice(Double.valueOf(model.getAppPric()));
+		 entity.setTicketFee((double) 0);
+		 entity.setPlaythroughFlag("No");
+		 
+		 Date startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(model.getFeatureDate() + " " + model.getFeatureTime());
+		 Date endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(model.getFeatureDate() + " " + model.getTotalTime());
+		 entity.setStartTime(startTime);
+		 entity.setDuration((int)(endTime.getTime()-startTime.getTime())/1000/60);
+//		 System.out.println("获取时间1"+startTime);
+//		 System.out.println("时长："+(endTime.getTime()-startTime.getTime())/1000/60);		
+		 entity.setDimensional("3D");
+		 entity.setSequence(1);
+		 entity.setAddFee(0.0);
+		 entity.setCinemaAllowance(0.0);
 		 entity.setUpdateTime(new Date());
-		return entity;
+		 return entity;
 	 }
 
 	 

@@ -7,7 +7,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 
@@ -171,50 +174,33 @@ public class MtxInterface implements ICTMSInterface {
 			for(CinemaPlanBean cinemaPlanBean:cinemaPlanBeans){
 				Sessioninfo session=new Sessioninfo();//创建实例
 				MtxModelMapper.MapToEntity(cinemaPlanBean, session);
-				
-				session.setCCode(userCinema.getCinemaCode());
-				session.setSCode(userCinema.getCinemaCode());
 				session.setUserID(userCinema.getUserId());
-				//测试用
-			session.setUserID((long) 6);
-				session.setSettlePrice(.00);
-				session.setTicketFee((double) 0);
-				session.setPlaythroughFlag("No");
-				session.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm")
-						.parse(cinemaPlanBean.getFeatureDate() + " " + cinemaPlanBean.getFeatureTime()));
-				
-System.out.println("获取时间1"+new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(cinemaPlanBean.getFeatureDate() + " " + cinemaPlanBean.getFeatureTime()));
-System.out.println("获取时间2"+cinemaPlanBean.getFeatureDate() + " " + cinemaPlanBean.getFeatureTime());		
-session.setUpdateTime(new Date());
-				session.setDimensional("3D");
-				session.setSequence(1);
-				session.setSettlePrice((double) 0);
-				session.setTicketFee((double) 0);
-				session.setAddFee((double) 10);
-				session.setCinemaAllowance((double) 0);
 				newSessions.add(session);
-				
 				System.out.println("更新排期成功------------");
 			}
 			//先删除旧排期信息
-			_sessioninfoService.deleteByCinemaCodeAndDate(userCinema.getUserId(), userCinema.getCinemaCode(),StartDate,EndDate);
+			Map<String, Object> params=new HashMap<String, Object>();
+			params.put("CCode", userCinema.getCinemaCode());
+			params.put("UserId", userCinema.getUserId());
+			params.put("StartTime", new SimpleDateFormat("yyyy-MM-dd").format(StartDate));
+			_sessioninfoService.deleteByCinemaCode(params);
+//			_sessioninfoService.deleteByCinemaCodeAndDate(userCinema.getUserId(), userCinema.getCinemaCode(),StartDate,EndDate);
 			System.out.println("删除旧排期------------");
 			//插入排期信息
+			int num=0;
 			for(Sessioninfo sessionInfo : newSessions){
 				_sessioninfoService.save(sessionInfo);
-				System.out.println("插入新排期成功------------");
+				num++;
 			}
 			//}
-			System.out.println("开始锁定座位测试3-------------------"+ new Gson().toJson(mtxReply));
+			System.out.println("开始锁定座位测试3-------------------"+ num);
 			reply.Status=StatusEnum.Success;
-			System.out.println("更新排期操作成功------------");
 			
 		}else{
 			reply.Status=StatusEnum.Failure;
 		}
 		
 		reply.ErrorCode=mtxReply.getGetCinemaPlanResult().getResultCode();
-	//	}
 		
 		return reply;
 	}
@@ -281,14 +267,28 @@ session.setUpdateTime(new Date());
 					sessionseats.setSeatCode(planSiteStateBean.getSeatNo());
 					sessionseats.setRowNum(planSiteStateBean.getSeatRow());
 					sessionseats.setColumnNum(planSiteStateBean.getSeatCol());
-					sessionseats.setStatus(SessionSeatStatusEnum.Available);
-					newSessionSeat.add(sessionseats);
-					System.out.println("循环更新----------");
-					if(Status!=SessionSeatStatusEnum.Available){
-						sessionseats.equals(SessionSeatStatusEnum.valueOf(planSiteStateBean.getSeatState()));
+					String seatStatus = planSiteStateBean.getSeatState();
+					if("-1".equals(seatStatus)){	//不可售
+						sessionseats.setStatus(SessionSeatStatusEnum.Unavailable);
+					} else if("1".equals(seatStatus)){	//已售
+						sessionseats.setStatus(SessionSeatStatusEnum.Sold);
+					} else if("3".equals(seatStatus)){	//预定
+						sessionseats.setStatus(SessionSeatStatusEnum.Booked);
+					} else if("7".equals(seatStatus)){	//已锁定
+						sessionseats.setStatus(SessionSeatStatusEnum.Locked);
+					}else {	//未售
+						sessionseats.setStatus(SessionSeatStatusEnum.Available);
 					}
+					newSessionSeat.add(sessionseats);
+					
 				}
-				reply.setSessionSeats(newSessionSeat);
+				List<SessionSeat>  newseatlist=  newSessionSeat;
+				if(Status!=SessionSeatStatusEnum.All){
+					newseatlist = newseatlist.stream().filter((SessionSeat ss)->Status.equals(ss.getStatus())).collect(Collectors.toList());
+					
+				}
+				
+				reply.setSessionSeats(newseatlist);
 				reply.Status=StatusEnum.Success;
 				System.out.println("查询放映计划座位状态成功-----------------");
 			}else{
@@ -306,11 +306,11 @@ session.setUpdateTime(new Date());
 		if("0".equals(mtxReply.getRealCheckSeatStateResult().getResultCode())){
 			System.out.println("开始锁定座位----------");
 			Date newDate=new Date();
-		order.getOrderBaseInfo().setLockOrderCode(mtxReply.getRealCheckSeatStateResult().getOrderNo());
-		order.getOrderBaseInfo().setAutoUnlockDatetime(new Date(newDate.getTime()+10*60*1000));//满天星没有自动解锁时间返回，此处默认锁定10分钟
-		order.getOrderBaseInfo().setLockTime(new Date());
-	order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Locked.getStatusCode());
-		reply.Status=StatusEnum.Success;
+			order.getOrderBaseInfo().setLockOrderCode(mtxReply.getRealCheckSeatStateResult().getOrderNo());
+			order.getOrderBaseInfo().setAutoUnlockDatetime(new Date(newDate.getTime()+10*60*1000));//满天星没有自动解锁时间返回，此处默认锁定10分钟
+			order.getOrderBaseInfo().setLockTime(new Date());
+			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Locked.getStatusCode());
+			reply.Status=StatusEnum.Success;
 		System.out.println("锁定座位成功-----------------");
 		}else{
 			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.LockFail.getStatusCode());
