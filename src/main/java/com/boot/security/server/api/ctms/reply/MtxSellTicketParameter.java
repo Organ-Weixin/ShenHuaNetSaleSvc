@@ -1,79 +1,69 @@
 package com.boot.security.server.api.ctms.reply;
 
-import java.io.Serializable;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 //设置生成的xml的根节点的名称
-@XmlRootElement(name = "MtxSellTicketParameter")
-//设置根据字段还是方法生成
-@XmlAccessorType(XmlAccessType.FIELD)
-public class MtxSellTicketParameter implements Serializable{
-	@XmlElement(name = "AppCode")
+@XmlRootElement(name = "SellTicketParameter")
+//设置xml节点顺序
+@XmlType(propOrder = { "appCode", "cinemaId", "featureAppNo","serialNum","printpassword","balance","payType","recvMobilePhone","sendType",
+		"payResult","isCmtsPay","isCmtsSendCode","payMobile","bookSign","payed","sendModeID","paySeqNo","tokenID","verifyInfo"}) 
+public class MtxSellTicketParameter {
+	
 	private String AppCode;
-	@XmlElement(name = "CinemaId")
 	private String CinemaId;
-	@XmlElement(name = "FeatureAppNo")
-	private String FeatureAppNo;
-	@XmlElement(name = "SerialNum")
+	private String FeatureAppNo;	
 	private String SerialNum;
-	@XmlElement(name = "Printpassword")
 	private String Printpassword;
-	@XmlElement(name = "Balance")
-	private int Balance;
-	@XmlElement(name = "PayType")
+	private double Balance;
 	private String PayType;
-	@XmlElement(name = "RecvMobilePhone")
 	private String RecvMobilePhone;
-	@XmlElement(name = "SendType")
 	private String SendType;
-	@XmlElement(name = "PayResult")
 	private String PayResult;
-	@XmlElement(name = "IsCmtsPay")
 	private boolean IsCmtsPay;
-	@XmlElement(name = "IsCmtsSendCode")
 	private boolean IsCmtsSendCode;
-	@XmlElement(name = "PayMobile")
 	private String PayMobile;
-	@XmlElement(name = "BookSign")
 	private String BookSign;
-	@XmlElement(name = "Payed")
-	private Double Payed;
-	@XmlElement(name = "SendModeID")
+	private double Payed;
 	private String SendModeID;
-	@XmlElement(name = "PaySeqNo")
 	private String PaySeqNo;
-	@XmlElement(name = "TokenID")
 	private String TokenID;
-	@XmlElement(name = "VerifyInfo")
 	private String VerifyInfo;
+	
+	@XmlElement(name = "AppCode")
 	public String getAppCode() {
 		return AppCode;
 	}
 	public void setAppCode(String appCode) {
 		AppCode = appCode;
 	}
+	
+	@XmlElement(name = "CinemaId")
 	public String getCinemaId() {
 		return CinemaId;
 	}
 	public void setCinemaId(String cinemaId) {
 		CinemaId = cinemaId;
 	}
+	
+	@XmlElement(name = "FeatureAppNo")
 	public String getFeatureAppNo() {
 		return FeatureAppNo;
 	}
 	public void setFeatureAppNo(String featureAppNo) {
 		FeatureAppNo = featureAppNo;
 	}
+	
+	@XmlElement(name = "SerialNum")
 	public String getSerialNum() {
 		return SerialNum;
 	}
 	public void setSerialNum(String serialNum) {
 		SerialNum = serialNum;
 	}
+	
+	@XmlElement(name = "Printpassword")
 	public String getPrintpassword() {
 		return Printpassword;
 	}
@@ -81,30 +71,39 @@ public class MtxSellTicketParameter implements Serializable{
 		Printpassword = printpassword;
 	}
 
-	public int getBalance() {
+	@XmlElement(name = "Balance")
+	public double getBalance() {
 		return Balance;
 	}
-	public void setBalance(int balance) {
+	public void setBalance(double balance) {
 		Balance = balance;
 	}
+	
+	@XmlElement(name = "PayType")
 	public String getPayType() {
 		return PayType;
 	}
 	public void setPayType(String payType) {
 		PayType = payType;
 	}
+	
+	@XmlElement(name = "RecvMobilePhone")
 	public String getRecvMobilePhone() {
 		return RecvMobilePhone;
 	}
 	public void setRecvMobilePhone(String recvMobilePhone) {
 		RecvMobilePhone = recvMobilePhone;
 	}
+	
+	@XmlElement(name = "SendType")
 	public String getSendType() {
 		return SendType;
 	}
 	public void setSendType(String sendType) {
 		SendType = sendType;
 	}
+	
+	@XmlElement(name = "PayResult")
 	public String getPayResult() {
 		return PayResult;
 	}
@@ -112,24 +111,31 @@ public class MtxSellTicketParameter implements Serializable{
 		PayResult = payResult;
 	}
 	
+	@XmlElement(name = "IsCmtsPay")
 	public boolean isIsCmtsPay() {
 		return IsCmtsPay;
 	}
 	public void setIsCmtsPay(boolean isCmtsPay) {
 		IsCmtsPay = isCmtsPay;
 	}
+	
+	@XmlElement(name = "IsCmtsSendCode")
 	public boolean isIsCmtsSendCode() {
 		return IsCmtsSendCode;
 	}
 	public void setIsCmtsSendCode(boolean isCmtsSendCode) {
 		IsCmtsSendCode = isCmtsSendCode;
 	}
+	
+	@XmlElement(name = "PayMobile")
 	public String getPayMobile() {
 		return PayMobile;
 	}
 	public void setPayMobile(String payMobile) {
 		PayMobile = payMobile;
 	}
+	
+	@XmlElement(name = "BookSign")
 	public String getBookSign() {
 		return BookSign;
 	}
@@ -137,30 +143,39 @@ public class MtxSellTicketParameter implements Serializable{
 		BookSign = bookSign;
 	}
 
-	public Double getPayed() {
+	@XmlElement(name = "Payed")
+	public double getPayed() {
 		return Payed;
 	}
-	public void setPayed(Double payed) {
+	public void setPayed(double payed) {
 		Payed = payed;
 	}
+	
+	@XmlElement(name = "SendModeID")
 	public String getSendModeID() {
 		return SendModeID;
 	}
 	public void setSendModeID(String sendModeID) {
 		SendModeID = sendModeID;
 	}
+	
+	@XmlElement(name = "PaySeqNo")
 	public String getPaySeqNo() {
 		return PaySeqNo;
 	}
 	public void setPaySeqNo(String paySeqNo) {
 		PaySeqNo = paySeqNo;
 	}
+	
+	@XmlElement(name = "TokenID")
 	public String getTokenID() {
 		return TokenID;
 	}
 	public void setTokenID(String tokenID) {
 		TokenID = tokenID;
 	}
+	
+	@XmlElement(name = "VerifyInfo")
 	public String getVerifyInfo() {
 		return VerifyInfo;
 	}

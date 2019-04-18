@@ -2,24 +2,20 @@ package com.boot.security.server.api.ctms.reply;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessOrder;
-import javax.xml.bind.annotation.XmlAccessorOrder;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 //设置生成的xml的根节点的名称
 @XmlRootElement(name = "RealCheckSeatStateParameter")
-@XmlType(propOrder = { "appCode", "cinemaId", "featureAppNo","serialNum","seatInfo","payType","recvMobilePhone","tokenID","verifyInfo"}) 
+@XmlType(propOrder = { "appCode", "cinemaId", "featureAppNo","serialNum","seatInfos","payType","recvMobilePhone","tokenID","verifyInfo"}) 
 public class MtxRealCheckSeatStateParameter {
 	
 	private String AppCode;
 	private String CinemaId;
 	private String FeatureAppNo;
 	private String SerialNum;
-//	private MtxRealCheckSeatStateXmlSeatInfos SeatInfos;
-	private List<MtxRealCheckSeatStateXmlSeatInfo> SeatInfo;
+	private MtxRealCheckSeatStateXmlSeatInfos SeatInfos;
 	private String PayType;
 	private String RecvMobilePhone;
 	private String TokenID;
@@ -58,13 +54,13 @@ public class MtxRealCheckSeatStateParameter {
 		SerialNum = serialNum;
 	}
 
-/*	@XmlElement(name = "SeatInfos")
+	@XmlElement(name = "SeatInfos")
 	public MtxRealCheckSeatStateXmlSeatInfos getSeatInfos() {
 		return SeatInfos;
 	}
 	public void setSeatInfos(MtxRealCheckSeatStateXmlSeatInfos seatInfos) {
 		SeatInfos = seatInfos;
-	}*/
+	}
 	
 	@XmlElement(name = "PayType")
 	public String getPayType() {
@@ -98,11 +94,10 @@ public class MtxRealCheckSeatStateParameter {
 		VerifyInfo = verifyInfo;
 	}
 
-//	public static class MtxRealCheckSeatStateXmlSeatInfos {
+	public static class MtxRealCheckSeatStateXmlSeatInfos {
 		
+		private List<MtxRealCheckSeatStateXmlSeatInfo> SeatInfo;
 		
-		
-		@XmlElementWrapper(name="SeatInfos")
 		@XmlElement(name = "SeatInfo")
 		public List<MtxRealCheckSeatStateXmlSeatInfo> getSeatInfo() {
 			return SeatInfo;
@@ -110,7 +105,7 @@ public class MtxRealCheckSeatStateParameter {
 		public void setSeatInfo(List<MtxRealCheckSeatStateXmlSeatInfo> seatInfo) {
 			SeatInfo = seatInfo;
 		}
-//}
+	
 		@XmlType(propOrder = { "seatNo", "ticketPrice", "handlingfee"}) 
 		public static class MtxRealCheckSeatStateXmlSeatInfo {
 		
@@ -146,5 +141,5 @@ public class MtxRealCheckSeatStateParameter {
 		
 		}
 	
-
+	}
 }
