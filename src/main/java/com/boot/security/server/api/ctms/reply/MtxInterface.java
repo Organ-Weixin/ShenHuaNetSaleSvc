@@ -7,7 +7,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 
@@ -40,6 +43,7 @@ import com.google.gson.Gson;
 
 import cn.cmts.main.webservice.WebService;
 
+
 public class MtxInterface implements ICTMSInterface {
 	
 	 private WebService mtxService;
@@ -48,14 +52,6 @@ public class MtxInterface implements ICTMSInterface {
 	 ScreenseatinfoServiceImpl _screenseatinfoService=SpringUtil.getBean(ScreenseatinfoServiceImpl.class);
 	 SessioninfoServiceImpl  _sessioninfoService=SpringUtil.getBean(SessioninfoServiceImpl.class);
 	 FilminfoServiceImpl _filminfoService=SpringUtil.getBean(FilminfoServiceImpl.class);
-/*	public MtxInterface() {
-		mtxService = new WebService();
-		_cinemaService = new CinemaServiceImpl();
-		_screeninfoService = new ScreeninfoServiceImpl();
-		_screenseatinfoService = new ScreenseatinfoServiceImpl();
-		_sessioninfoService=new SessioninfoServiceImpl();
-		_filminfoService=new FilminfoServiceImpl();
-	}*/
 	 
 	// 查询影厅基本信息 
 	public CTMSQueryCinemaReply QueryCinema(Usercinemaview userCinema) {
@@ -140,88 +136,71 @@ public class MtxInterface implements ICTMSInterface {
 	@Override
 	public CTMSQuerySessionReply QuerySession(Usercinemaview userCinema, Date StartDate, Date EndDate)throws Exception {
 		CTMSQuerySessionReply reply=new CTMSQuerySessionReply();
-    
-
-	/*	Date newDate=new Date();
-		String s=new SimpleDateFormat("yyyy-MM-dd").format(newDate);
-		s+=" 01:00:00";
-		new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(s);
-		String t=new SimpleDateFormat("yyyy-MM-dd").format(newDate);
-		t+=" 06:00:00";
-		new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(t);*/
-
-	
-/*		if((new Date()> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(s))
-			|| new Date() <new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(t)
-				){
-			reply.Status = StatusEnum.Success;
-            reply.ErrorCode = "0";
-		}
-		else{*/
 		MtxGetCinemaPlanResult mtxReply=mtxService.GetCinemaPlan(userCinema, StartDate, EndDate);
 		System.out.println("开始执行查询排期操作-------------------"+ new Gson().toJson(mtxReply));
+
+		SimpleDateFormat sf = new SimpleDateFormat("HH:mm:ss");// 设置日期格式
+		Date now = sf.parse(sf.format(new Date()));
+		Date startTime = sf.parse("01:00:00");
+		Date endTime = sf.parse("06:00:00");
+		Calendar date = Calendar.getInstance();
+		date.setTime(now);
+		Calendar begin = Calendar.getInstance();
+		begin.setTime(startTime);
+		Calendar end = Calendar.getInstance();
+		end.setTime(endTime);
+		if (date.after(begin) && date.before(end)) {
+			reply.Status = StatusEnum.Success;
+			reply.ErrorCode = "0";
+        }
+        else{
 		if("0".equals(mtxReply.getGetCinemaPlanResult().getResultCode())){
 			//更新排期信息
 			List<Sessioninfo> newSessions=new ArrayList<Sessioninfo>();
 			List<CinemaPlanBean> cinemaPlanBeans=mtxReply.getGetCinemaPlanResult().getCinemaPlans().getCinemaPlan();
 			System.out.println("开始更新排期操作----------");
-			/*if(("1".equals(SessionSeatStatusEnum.Available.getStatusCode())||"2".equals(SessionSeatStatusEnum.Available.getStatusCode()))
-					&& ("0".equals(StatusEnum.Success.getStatusCode()) || "1".equals(StatusEnum.Success.getStatusCode()) ))
-			{*/
 			for(CinemaPlanBean cinemaPlanBean:cinemaPlanBeans){
 				Sessioninfo session=new Sessioninfo();//创建实例
 				MtxModelMapper.MapToEntity(cinemaPlanBean, session);
-				
-				session.setCCode(userCinema.getCinemaCode());
-				session.setSCode(userCinema.getCinemaCode());
 				session.setUserID(userCinema.getUserId());
-				//测试用
-			session.setUserID((long) 6);
-				session.setSettlePrice(.00);
-				session.setTicketFee((double) 0);
-				session.setPlaythroughFlag("No");
-				session.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm")
-						.parse(cinemaPlanBean.getFeatureDate() + " " + cinemaPlanBean.getFeatureTime()));
-				
-System.out.println("获取时间1"+new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(cinemaPlanBean.getFeatureDate() + " " + cinemaPlanBean.getFeatureTime()));
-System.out.println("获取时间2"+cinemaPlanBean.getFeatureDate() + " " + cinemaPlanBean.getFeatureTime());		
-session.setUpdateTime(new Date());
-				session.setDimensional("3D");
-				session.setSequence(1);
-				session.setSettlePrice((double) 0);
-				session.setTicketFee((double) 0);
-				session.setAddFee((double) 10);
-				session.setCinemaAllowance((double) 0);
 				newSessions.add(session);
-				
 				System.out.println("更新排期成功------------");
 			}
 			//先删除旧排期信息
-			_sessioninfoService.deleteByCinemaCodeAndDate(userCinema.getUserId(), userCinema.getCinemaCode(),StartDate,EndDate);
+			Map<String, Object> params=new HashMap<String, Object>();
+			params.put("CCode", userCinema.getCinemaCode());
+			params.put("UserId", userCinema.getUserId());
+			params.put("StartTime", new SimpleDateFormat("yyyy-MM-dd").format(StartDate));
+			_sessioninfoService.deleteByCinemaCode(params);
 			System.out.println("删除旧排期------------");
 			//插入排期信息
+			int num=0;
 			for(Sessioninfo sessionInfo : newSessions){
 				_sessioninfoService.save(sessionInfo);
-				System.out.println("插入新排期成功------------");
+				num++;
 			}
 			//}
-			System.out.println("开始锁定座位测试3-------------------"+ new Gson().toJson(mtxReply));
+			System.out.println("更新的排期数量-------------------"+ num);
+			System.out.println("当前时间=================="+now);
+        	System.out.println("不更新排期的开始时间======="+startTime);
+           	System.out.println("不更新排期的结束时间======="+endTime);
 			reply.Status=StatusEnum.Success;
-			System.out.println("更新排期操作成功------------");
 			
 		}else{
 			reply.Status=StatusEnum.Failure;
 		}
 		
 		reply.ErrorCode=mtxReply.getGetCinemaPlanResult().getResultCode();
-	//	}
 		
+        }
+
 		return reply;
 	}
 	//查询影片信息
 	@Override
 	public CTMSQueryFilmReply QueryFilm(Usercinemaview userCinema, Date StartDate, Date EndDate) throws Exception {
 		CTMSQueryFilmReply reply = new CTMSQueryFilmReply();
+		System.out.println("开始执行查询影片信息操作-------------------"+ new Gson().toJson(reply));
 		// 从排期中获取影片接口
 		QuerySession(userCinema, StartDate, EndDate);// 调用查询排期列表
 		System.out.println("调用排期-------------");
@@ -281,14 +260,26 @@ session.setUpdateTime(new Date());
 					sessionseats.setSeatCode(planSiteStateBean.getSeatNo());
 					sessionseats.setRowNum(planSiteStateBean.getSeatRow());
 					sessionseats.setColumnNum(planSiteStateBean.getSeatCol());
-					sessionseats.setStatus(SessionSeatStatusEnum.Available);
-					newSessionSeat.add(sessionseats);
-					System.out.println("循环更新----------");
-					if(Status!=SessionSeatStatusEnum.Available){
-						sessionseats.equals(SessionSeatStatusEnum.valueOf(planSiteStateBean.getSeatState()));
+					String seatStatus = planSiteStateBean.getSeatState();
+					if("-1".equals(seatStatus)){	//不可售
+						sessionseats.setStatus(SessionSeatStatusEnum.Unavailable);
+					} else if("1".equals(seatStatus)){	//已售
+						sessionseats.setStatus(SessionSeatStatusEnum.Sold);
+					} else if("3".equals(seatStatus)){	//预定
+						sessionseats.setStatus(SessionSeatStatusEnum.Booked);
+					} else if("7".equals(seatStatus)){	//已锁定
+						sessionseats.setStatus(SessionSeatStatusEnum.Locked);
+					}else {	//未售
+						sessionseats.setStatus(SessionSeatStatusEnum.Available);
 					}
+					newSessionSeat.add(sessionseats);
+					
 				}
-				reply.setSessionSeats(newSessionSeat);
+				List<SessionSeat>  newseatlist=  newSessionSeat;
+				if(Status!=SessionSeatStatusEnum.All){
+					newseatlist = newseatlist.stream().filter((SessionSeat ss)->Status.equals(ss.getStatus())).collect(Collectors.toList());
+				}
+				reply.setSessionSeats(newseatlist);
 				reply.Status=StatusEnum.Success;
 				System.out.println("查询放映计划座位状态成功-----------------");
 			}else{
@@ -306,12 +297,12 @@ session.setUpdateTime(new Date());
 		if("0".equals(mtxReply.getRealCheckSeatStateResult().getResultCode())){
 			System.out.println("开始锁定座位----------");
 			Date newDate=new Date();
-		order.getOrderBaseInfo().setLockOrderCode(mtxReply.getRealCheckSeatStateResult().getOrderNo());
-		order.getOrderBaseInfo().setAutoUnlockDatetime(new Date(newDate.getTime()+10*60*1000));//满天星没有自动解锁时间返回，此处默认锁定10分钟
-		order.getOrderBaseInfo().setLockTime(new Date());
-	order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Locked.getStatusCode());
-		reply.Status=StatusEnum.Success;
-		System.out.println("锁定座位成功-----------------");
+			order.getOrderBaseInfo().setLockOrderCode(mtxReply.getRealCheckSeatStateResult().getOrderNo());
+			order.getOrderBaseInfo().setAutoUnlockDatetime(new Date(newDate.getTime()+10*60*1000));//满天星没有自动解锁时间返回，此处默认锁定10分钟
+			order.getOrderBaseInfo().setLockTime(new Date());
+			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Locked.getStatusCode());
+			reply.Status=StatusEnum.Success;
+			System.out.println("锁定座位成功-----------------");
 		}else{
 			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.LockFail.getStatusCode());
 			order.getOrderBaseInfo().setErrorMessage(mtxReply.getRealCheckSeatStateResult().getResultCode());
@@ -322,13 +313,12 @@ session.setUpdateTime(new Date());
 		reply.ErrorCode=mtxReply.getRealCheckSeatStateResult().getResultCode();
 		return reply;
 	}
-	
 	//解锁座位
 	@Override
 	public CTMSReleaseSeatReply ReleaseSeat(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSReleaseSeatReply reply=new CTMSReleaseSeatReply();
 		MtxUnLockOrderCenCinResult mtxUnLockReply=mtxService.UnLockOrderCenCin(userCinema, order);
-		System.out.println("开始锁定座位操作-------------------"+ new Gson().toJson(mtxUnLockReply));
+		System.out.println("开始解锁座位操作-------------------"+ new Gson().toJson(mtxUnLockReply));
 		if("0".equals(mtxUnLockReply.getUnLockOrderCenCinResult().getResultCode())){
 			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Released.getStatusCode());
 			reply.Status=StatusEnum.Success;
@@ -349,6 +339,7 @@ session.setUpdateTime(new Date());
 	public CTMSSubmitOrderReply SubmitOrder(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSSubmitOrderReply reply=new CTMSSubmitOrderReply();
 		MtxSellTicketResult mtxReply=mtxService.SellTicket(userCinema, order);
+		System.out.println("提交订单返回："+new Gson().toJson(mtxReply));
 		if("0".equals(mtxReply.getSellTicketResult().getResultCode())){
 			Date newDate=new Date();
 			order.getOrderBaseInfo().setSubmitOrderCode(mtxReply.getSellTicketResult().getOrderNo());
@@ -356,11 +347,16 @@ session.setUpdateTime(new Date());
 			order.getOrderBaseInfo().setVerifyCode(mtxReply.getSellTicketResult().getValidCode());
 			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Submited.getStatusCode());
 			order.getOrderBaseInfo().setSubmitTime(newDate);
+			QueryOrder(userCinema, order);//调用订单查询
 			reply.Status=StatusEnum.Success;
+			System.out.println("提交订单成功======================"+OrderStatusEnum.Submited.getStatusCode());
 		}else{
 			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.SubmitFail.getStatusCode());
 			order.getOrderBaseInfo().setErrorMessage(mtxReply.getSellTicketResult().getResultCode());
 			reply.Status=StatusEnum.Failure;
+			System.out.println("提交订单失败======================"+OrderStatusEnum.SubmitFail.getStatusCode());
+			System.out.println("提交订单失败======================"+mtxReply.getSellTicketResult().getResultCode());
+
 		}
 		reply.ErrorCode=mtxReply.getSellTicketResult().getResultCode();
 		return reply;
@@ -370,14 +366,15 @@ session.setUpdateTime(new Date());
 	public CTMSQueryPrintReply QueryPrint(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSQueryPrintReply reply=new CTMSQueryPrintReply();
 		MtxGetOrderStatusResult mtxReply=mtxService.GetOrderStatus(userCinema, order);
+		System.out.println("查询出票状态返回返回："+new Gson().toJson(mtxReply));
 		if("0".equals(mtxReply.getGetOrderStatusResult().getResultCode())){
-			
-			if("1".equals(order.getOrderBaseInfo().getPrintStatus())){
-				if(mtxReply.getGetOrderStatusResult().getOrderStatus()=="8"){
-				order.getOrderBaseInfo().setPrintTime(new Date());
-		
-				}
+			if("8".equals(mtxReply.getGetOrderStatusResult().getOrderStatus())){	//8已打票
+				order.getOrderBaseInfo().setPrintStatus(1);
+				order.getOrderBaseInfo().setPrintTime(new Date());	//无返回打印时间，取当前时间
+			} else {
+				order.getOrderBaseInfo().setPrintStatus(0);
 			}
+			System.out.println("查询出票状态成功=====");
 			reply.Status=StatusEnum.Success;
 		}else{
 			reply.Status=StatusEnum.Failure;
@@ -390,11 +387,14 @@ session.setUpdateTime(new Date());
 	public CTMSRefundTicketReply RefundTicket(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSRefundTicketReply reply=new CTMSRefundTicketReply();
 		MtxBackTicketResult mtxBackTicketReply=mtxService.BackTicket(userCinema, order);
+		System.out.println("退票返回："+new Gson().toJson(mtxBackTicketReply));
 		if("0".equals(mtxBackTicketReply.getBackTicketResult().getResultCode())){
 			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Refund.getStatusCode());
 			order.getOrderBaseInfo().setRefundTime(new Date());
 			reply.Status=StatusEnum.Success;
+			System.out.println("退票成功=====");
 		}else{
+			System.out.println("退票失败==============");
 			reply.Status=StatusEnum.Failure;
 		}
 		reply.ErrorCode=mtxBackTicketReply.getBackTicketResult().getResultCode();
@@ -405,25 +405,30 @@ session.setUpdateTime(new Date());
 	public CTMSQueryOrderReply QueryOrder(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSQueryOrderReply reply=new CTMSQueryOrderReply();
 		MtxGetOrderStatusResult mtxReply=mtxService.GetOrderStatus(userCinema, order);
+		System.out.println("查询订单信息返回："+new Gson().toJson(mtxReply));
 		if("0".equals(mtxReply.getGetOrderStatusResult().getResultCode()) 
 	&& ("7".equals(mtxReply.getGetOrderStatusResult().getOrderStatus()) ||
-	"8".equals(mtxReply.getGetOrderStatusResult().getOrderStatus())|| "9".equals(mtxReply.getGetOrderStatusResult().getOrderStatus()))){
+	"8".equals(mtxReply.getGetOrderStatusResult().getOrderStatus())|| "9".equals(mtxReply.getGetOrderStatusResult().getOrderStatus())))
+		{
 			if("7".equals(mtxReply.getGetOrderStatusResult().getOrderStatus())){
 				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Refund.getStatusCode());
 				order.getOrderBaseInfo().setRefundTime(new Date());
 			}else{ //不管是8：已打票还是9：地面售票成功都代表影院已成功确认订单
-				order.getOrderBaseInfo().setPrintStatus(OrderStatusEnum.Complete.getStatusCode());
+				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Complete.getStatusCode());
 				if( "8".equals(mtxReply.getGetOrderStatusResult().getOrderStatus())){
+					order.getOrderBaseInfo().setPrintStatus(1);
 					order.getOrderBaseInfo().setPrintTime(new Date());   //无法获知取票时间，默认当前时间
 				}
 			}
 			QueryTicket(userCinema,order);  //调一下获取影票信息接口以便获取影票编码等信息
 			reply.Status=StatusEnum.Success;
 			reply.ErrorCode=mtxReply.getGetOrderStatusResult().getResultCode();
+			System.out.println("查询订单信息成功======================================");
 		}else{
 			reply.Status=StatusEnum.Failure;
 			reply.ErrorCode="-1";
 			reply.ErrorMessage="影院出票还未成功";
+			System.out.println("查询订单信息失败=========================================");
 		}
 		reply.ErrorCode=mtxReply.getGetOrderStatusResult().getResultCode();
 		return reply;
@@ -432,36 +437,57 @@ session.setUpdateTime(new Date());
 	@Override
 	public CTMSQueryTicketReply QueryTicket(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSQueryTicketReply reply=new CTMSQueryTicketReply();
-		MtxAppPrintTicketResult mtxReply=mtxService.AppPrintTicket(userCinema, order);
+		MtxAppPrintTicketResult mtxReply=mtxService.AppPrintTicket(userCinema, order, "0");
+		System.out.println("查询影票信息返回："+new Gson().toJson(mtxReply));
+        SimpleDateFormat cf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置时间格式
+        Date newDate=new Date();
+        Date now=cf.parse(cf.format(new Date()));
+        Date pai=order.getOrderBaseInfo().getSessionTime();
+        Calendar date = Calendar.getInstance();
+        date.setTime(now);
+        Calendar begin = Calendar.getInstance();
+        begin.add(Calendar.HOUR_OF_DAY, 2);//24小时制 
+      //  begin.setTime(pai);
+       pai=begin.getTime();
+        if(date.before(pai)){
+        	reply.Status = StatusEnum.Success;
+			reply.ErrorCode = "0";
+			System.out.println("当前时间="+now);
+			System.out.println("开始时间往前推两个小时时间="+pai);
+        }
+        else{
 		if("0".equals(mtxReply.getAppPrintTicketResult().getResultCode())){
-			if("1".equals(order.getOrderBaseInfo().getPrintStatus())){
-				
+			if("1".equals(mtxReply.getAppPrintTicketResult().getPrintType())){	//打印类型0：未打印 1：已打印
+				order.getOrderBaseInfo().setPrintStatus(1);
 				order.getOrderBaseInfo().setPrintTime(new Date());
+			} else {
+				order.getOrderBaseInfo().setPrintStatus(0);
 			}
 			if(mtxReply.getAppPrintTicketResult().getSeatInfos()!=null && mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo()!=null
-		&& mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo().size()>0){
+					&& mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo().size()>0){
 				
-			for(int i=0;i<mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo().size();i++){
-				if(order.getOrderSeatDetails().get(i).getColumnNum().equals(mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo().get(i).getSeatCol())
-				&&order.getOrderSeatDetails().get(i).getRowNum().equals(mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo().get(i).getSeatRow()))
-				{
-					if(mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo()!=null){
-order.getOrderSeatDetails().get(i).setTicketInfoCode(mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo().get(i).getTicketNo());
-
-order.getOrderSeatDetails().get(i).setFilmTicketCode(mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo().get(i).getTicketNo2());
-			order.getOrderSeatDetails().get(i).getPrintFlag().valueOf(mtxReply.getAppPrintTicketResult().getPrintType());
-			///mtxReply.getAppPrintTicketResult().getPrintType();
+				for(int i=0;i<mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo().size();i++){
+					if(order.getOrderSeatDetails().get(i).getColumnNum().equals(mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo().get(i).getSeatCol())
+							&&order.getOrderSeatDetails().get(i).getRowNum().equals(mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo().get(i).getSeatRow())) {
+						
+							order.getOrderSeatDetails().get(i).setTicketInfoCode(mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo().get(i).getTicketNo());
+							order.getOrderSeatDetails().get(i).setFilmTicketCode(mtxReply.getAppPrintTicketResult().getSeatInfos().getSeatInfo().get(i).getTicketNo2());
+							order.getOrderSeatDetails().get(i).setPrintFlag(Integer.valueOf((mtxReply.getAppPrintTicketResult().getPrintType())));
 					}
-					
 				}
 			}
-		
-				
-			}
+			System.out.println("当前时间="+now);
+			System.out.println("开始时间往前推两个小时时间="+pai);
+			System.out.println("查询影票信息成功=====");
 			reply.Status=StatusEnum.Success;
 		}else{
+			System.out.println("查询影票信息失败=====");
 			reply.Status=StatusEnum.Failure;
 		}
+        
+        }
+        System.out.println("111111"+now);
+        System.out.println("2222"+pai);
 		reply.ErrorCode=mtxReply.getAppPrintTicketResult().getResultCode();
 		return reply;
 	}
@@ -469,16 +495,37 @@ order.getOrderSeatDetails().get(i).setFilmTicketCode(mtxReply.getAppPrintTicketR
 	@Override
 	public CTMSFetchTicketReply FetchTicket(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSFetchTicketReply reply=new CTMSFetchTicketReply();
-		MtxAppPrintTicketResult mtxReply=mtxService.AppPrintTicket(userCinema, order);
+		MtxAppPrintTicketResult mtxReply=mtxService.AppPrintTicket(userCinema, order,"1");
+		System.out.println("确认出票返回："+new Gson().toJson(mtxReply));
+		   SimpleDateFormat cf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置时间格式
+	        Date newDate=new Date();
+	        Date now=cf.parse(cf.format(new Date()));
+	        Date pai=order.getOrderBaseInfo().getSessionTime();
+	        Calendar date = Calendar.getInstance();
+	        date.setTime(now);
+	        Calendar begin = Calendar.getInstance();
+	        begin.add(Calendar.HOUR_OF_DAY, 2);//24小时制 
+	      //  begin.setTime(pai);
+	       pai=begin.getTime();
+	        if(date.before(pai)){
+	        	reply.Status = StatusEnum.Success;
+				reply.ErrorCode = "0";
+				System.out.println("确认出票当前时间="+now);
+				System.out.println("确认出票开始时间往前推两个小时时间="+pai);
+	        }
+	        else{
 		if("0".equals(mtxReply.getAppPrintTicketResult().getResultCode())){
-			order.getOrderBaseInfo().getPrintStatus().equals(1);
-				
-				order.getOrderBaseInfo().setPrintTime(new Date());
-			
+			order.getOrderBaseInfo().setPrintStatus(1);
+			order.getOrderBaseInfo().setPrintTime(new Date());
+			System.out.println("确认出票当前时间="+now);
+			System.out.println("确认出票开始时间往前推两个小时时间="+pai);
+				System.out.println("确认出票成功===：");
 			reply.Status=StatusEnum.Success;		
 	}else{
+		System.out.println("确认出票失败======：");
 		reply.Status=StatusEnum.Failure;
 	}
+	        }
 		reply.ErrorCode=mtxReply.getAppPrintTicketResult().getResultCode();
 		reply.ErrorMessage=mtxReply.getAppPrintTicketResult().getResultDesc();
 		return reply;

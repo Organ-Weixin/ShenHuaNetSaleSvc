@@ -24,6 +24,8 @@ import com.boot.security.server.api.ctms.reply.MtxGetPlanSiteStateResult;
 import com.boot.security.server.api.ctms.reply.MtxLiveRealCheckSeatStateResult;
 import com.boot.security.server.api.ctms.reply.MtxRealCheckSeatStateParameter;
 import com.boot.security.server.api.ctms.reply.MtxRealCheckSeatStateParameter.MtxRealCheckSeatStateXmlSeatInfos;
+import com.boot.security.server.api.ctms.reply.MtxRealCheckSeatStateParameter.MtxRealCheckSeatStateXmlSeatInfos.MtxRealCheckSeatStateXmlSeatInfo;
+
 import com.boot.security.server.api.ctms.reply.MtxSellTicketParameter;
 import com.boot.security.server.api.ctms.reply.MtxSellTicketResult;
 import com.boot.security.server.api.ctms.reply.MtxUnLockOrderCenCinResult;
@@ -50,8 +52,6 @@ public class WebService {
 	// protected static Logger log = LoggerFactory.getLogger(WebService.class);
 	private static final String TokenId = "1829";
 	private static final String Token = "abcdef";
-//	orderView.getOrderBaseInfo().getPayType()
-//	private static final String TickenC="1";
 	/*	
 	 * 满天星接口 初始化接口链接，返回接口集
 	 * @return
@@ -154,66 +154,54 @@ public class WebService {
 	 */
 	public static MtxLiveRealCheckSeatStateResult  LiveRealCheckSeatState(Usercinemaview userCinema,OrderView orderView){
 	
-			try {
-				MtxRealCheckSeatStateParameter param=new MtxRealCheckSeatStateParameter();
-				param.setAppCode(userCinema.getDefaultUserName());
-				param.setCinemaId (userCinema.getCinemaCode());
-				///
-				param.setFeatureAppNo(orderView.getOrderBaseInfo().getSessionCode());
-				 Date date = new Date();
-			        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			        String str = format.format(date);
-			        Date orderId = null;
-			        Random rand = new Random();
-			        int x = rand.nextInt(900) + 100;
-			           orderId = format.parse(str);
-				param.setSerialNum(String.valueOf(orderId.getTime()) + x);
-//MtxRealCheckSeatStateXmlSeatInfos seatInfos= new MtxRealCheckSeatStateParameter.MtxRealCheckSeatStateXmlSeatInfos();
-List<MtxRealCheckSeatStateParameter.MtxRealCheckSeatStateXmlSeatInfos> seatInfos=new ArrayList<MtxRealCheckSeatStateParameter.MtxRealCheckSeatStateXmlSeatInfos>();
- List<MtxRealCheckSeatStateXmlSeatInfos> SeatInfos;
-MtxRealCheckSeatStateParameter.MtxRealCheckSeatStateXmlSeatInfos.MtxRealCheckSeatStateXmlSeatInfo seatInfo1=new MtxRealCheckSeatStateParameter.MtxRealCheckSeatStateXmlSeatInfos.MtxRealCheckSeatStateXmlSeatInfo();
-seatInfo1.setSeatNo("01010101");
-seatInfo1.setTicketPrice(50.0);
-seatInfo1.setHandlingfee(0.0);
-MtxRealCheckSeatStateXmlSeatInfos seatinfo=new MtxRealCheckSeatStateXmlSeatInfos();
-seatinfo.setSeatInfo(seatInfo1);
-	seatInfos.add(seatinfo);
-	param.setSeatInfos(seatInfos);
-
-	
-	
-			param.setRecvMobilePhone("15700002025");
-			param.setPayType(orderView.getOrderBaseInfo().getPayType());
-			param.setTokenID(TokenId);
-			param.setToken(Token);
+		try {
+			MtxRealCheckSeatStateParameter param=new MtxRealCheckSeatStateParameter();
+			param.setAppCode(userCinema.getDefaultUserName());
+			param.setCinemaId (userCinema.getCinemaCode());
+			param.setFeatureAppNo(orderView.getOrderBaseInfo().getSessionCode());
 			
-//			System.out.println("开始锁定座位测试2-------------------"+ new Gson().toJson(param));
+			Date date = new Date();
+		    SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		    String str = format.format(date);
+		    Random rand = new Random();
+		    int x = rand.nextInt(900) + 100;
+		    param.setSerialNum(str+x);
+		    System.out.println("锁座流水号"+str+x);
+		    orderView.getOrderBaseInfo().setSerialNum(str+x);
+			MtxRealCheckSeatStateXmlSeatInfos seatInfoList=new MtxRealCheckSeatStateXmlSeatInfos();
+			List<MtxRealCheckSeatStateXmlSeatInfo> seatinfos = new ArrayList<MtxRealCheckSeatStateXmlSeatInfo>();
+			for(Orderseatdetails orderseatdetails :orderView.getOrderSeatDetails()){
+				MtxRealCheckSeatStateXmlSeatInfo seatinfo = new MtxRealCheckSeatStateXmlSeatInfo();
+				seatinfo.setSeatNo(orderseatdetails.getSeatCode());
+				seatinfo.setTicketPrice(orderseatdetails.getPrice());
+				seatinfo.setHandlingfee(0.0);	//手续费（此处手续费不生效，默认0）
+				seatinfos.add(seatinfo);
+			}
+			seatInfoList.setSeatInfo(seatinfos);
+			param.setSeatInfos(seatInfoList);
+			param.setPayType(orderView.getOrderBaseInfo().getPayType());
+			param.setRecvMobilePhone("15700002025");
+			param.setTokenID(TokenId);
+			
 			//转小写（MD5（转小写（AppCode+ CinemaId + PFeatureAppNo+ SerialNum  + 座位数+ PayType+ RecvpMobilePhone+TokenID+Token +验证密钥）））
-			String pVerifyInfo = GenerateVerifyInfo(userCinema.getDefaultUserName(), 
+			String pVerifyInfo = GenerateVerifyInfo(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(),
 					orderView.getOrderBaseInfo().getSessionCode(),
-					String.valueOf(orderId.getTime()) + x,
-					"0",
-					//"1",
+					str + x,
+					String.valueOf(orderView.getOrderBaseInfo().getTicketCount()),
 					orderView.getOrderBaseInfo().getPayType(),
-					"15700002025", 
-					TokenId, 
-					Token, 
+					"15700002025",
+					TokenId,
+					Token,
 					userCinema.getDefaultPassword());
-		//	param.setVerifyInfo(pVerifyInfo);
-			System.out.println("开始锁定座位测试3-------------------"+ new Gson().toJson(param));
-		
-/*String pVerifyInfo=GenerateVerifyInfo(userCinema.getDefaultUserName(),userCinema.getCinemaCode(),
-		orderView.getOrderBaseInfo().getSessionCode(),orderView.getOrderBaseInfo().getSerialNum(),
-		orderView.getOrderBaseInfo().getTicketCount().toString(),orderView.getOrderBaseInfo().getPayType(),
-		"15700002025",TokenId,Token,userCinema.getDefaultPassword());*/
-//把请求参数转成xml
-	String LockSeatXml=JaxbXmlUtil.convertToXml(param);
-String result=WebService.cinemaTss(userCinema.getUrl()).liveRealCheckSeatState(LockSeatXml);
-System.out.println("开始锁定座位测试4-------------------"+ new Gson().toJson(param));
-			System.out.println(result);
+			param.setVerifyInfo(pVerifyInfo);
+			
+			//把请求参数转成xml
+			String LockSeatXml=JaxbXmlUtil.convertToXml(param);
+			String result=WebService.cinemaTss(userCinema.getUrl()).liveRealCheckSeatState(LockSeatXml);
+			System.out.println("锁座返回："+result);
 			Gson gson = new Gson();
-			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "LiveRealCheckSeatState"),
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "MtxLiveRealCheckSeatStateResult"),
 					MtxLiveRealCheckSeatStateResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -247,49 +235,52 @@ System.out.println("开始锁定座位测试4-------------------"+ new Gson().to
  AppCode+CinemaId+FeatureAppNo+SerialNum+Printpassword+Balance +PayType+RecvMobilePhone+SendType+ PayResult 
   +IsCmtsPay+IsCmtsSendCode+PayMobile+BookSign+Payed+SendModeID+PaySeqNo+ TokenID+token+验证密钥
   */
-
 	public static MtxSellTicketResult SellTicket(Usercinemaview userCinema,OrderView orderView){
 		try {
 			MtxSellTicketParameter param=new MtxSellTicketParameter();
 			param.setAppCode(userCinema.getDefaultUserName());
 			param.setCinemaId(userCinema.getCinemaCode());
 			param.setFeatureAppNo(orderView.getOrderBaseInfo().getSessionCode());
-			Date date = new Date();
-	        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssfff");
-	        String str = format.format(date);
-	        Date orderId = null;
 	        Random rand = new Random();
 	        int x = rand.nextInt(900) + 100;
-	           orderId = format.parse(str);
-		param.setSerialNum(String.valueOf(orderId.getTime()) + x);
-			//param.setSerialNum(orderView.getOrderBaseInfo().getSerialNum());
-			param.setPrintpassword(String.valueOf(orderView.getOrderBaseInfo()));
-			param.setBalance(0);//默认已全部支付
+	        param.setSerialNum(orderView.getOrderBaseInfo().getSerialNum()); //取锁座流水号
+	        orderView.getOrderBaseInfo().setPrintpassword(userCinema.getCinemaCode()+x);
+	      
+			param.setPrintpassword(orderView.getOrderBaseInfo().getPrintpassword());
+		     System.out.println("取票密码"+orderView.getOrderBaseInfo().getPrintpassword());
+			param.setBalance(0.0);//默认已全部支付
 			param.setPayType(orderView.getOrderBaseInfo().getPayType());//付费类型
 			param.setRecvMobilePhone(orderView.getOrderBaseInfo().getMobilePhone());//接收二维码手机号码
-			param.setPayType("100");//接收二唯码的方式默认短信
+			param.setSendType("100");//接收二唯码的方式默认短信
 			param.setPayResult("0");//默认已成功支付
 			param.setIsCmtsPay(false);//false表示由合作方扣费。
 			param.setIsCmtsSendCode(false);//false表示由合作方负责发送二维码。
 			param.setPayMobile(orderView.getOrderBaseInfo().getMobilePhone());//支付手机号码
 			param.setBookSign("0");//0全额支付1预定金方式
-			param.setPayed(Double.valueOf(orderView.getOrderBaseInfo().getIsMemberPay().toString()+orderView.getOrderBaseInfo().getTotalFee()));//商城已经支付的金额Payed=总票款+总手续费
+			param.setPayed(orderView.getOrderBaseInfo().getTotalPrice()+orderView.getOrderBaseInfo().getTotalFee());//商城已经支付的金额Payed=总票款+总手续费
 			param.setSendModeID("0");//满天星发送二唯码的模板编号.不知道是什么，没这个东西
-			param.setPaySeqNo(orderView.getOrderBaseInfo().getIsMemberPay()+orderView.getOrderBaseInfo().getPaySeqNo());//影院会员卡支付交易流水号
+			param.setPaySeqNo(orderView.getOrderBaseInfo().getIsMemberPay() == 1?orderView.getOrderBaseInfo().getPaySeqNo():"");//影院会员卡支付交易流水号
+			param.setTokenID(TokenId);
+			String pVerifyInfo = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
+					orderView.getOrderBaseInfo().getSessionCode(), orderView.getOrderBaseInfo().getSerialNum(),
+					orderView.getOrderBaseInfo().getPrintpassword(), "0.0", orderView.getOrderBaseInfo().getPayType(),
+					orderView.getOrderBaseInfo().getMobilePhone(), "100", "0", "false", "false",
+					orderView.getOrderBaseInfo().getMobilePhone(), "0",
+					String.valueOf(
+							orderView.getOrderBaseInfo().getTotalPrice() + orderView.getOrderBaseInfo().getTotalFee()),
+					"0", orderView.getOrderBaseInfo().getIsMemberPay() == 1 ? orderView.getOrderBaseInfo().getPaySeqNo()
+							: "",
+					TokenId, Token, 
+					userCinema.getDefaultPassword());
+			param.setVerifyInfo(pVerifyInfo);
+			System.out.println("入参"+param);
 			//把请求参数转成xml
 			String SellTicketXml=JaxbXmlUtil.convertToXml(param);
-	
-			String pVerifyInfo=GenerateVerifyInfo(userCinema.getDefaultUserName(),userCinema.getCinemaCode(),orderView.getOrderBaseInfo().getSessionCode(),
-					orderView.getOrderBaseInfo().getSerialNum(),"orderView.getOrderBaseInfo().getPrintpassword().equals(userCinema.getCinemaCode())",
-					"0",orderView.getOrderBaseInfo().getPayType(),orderView.getOrderBaseInfo().getMobilePhone(),"100","0","false","false",orderView.getOrderBaseInfo().getMobilePhone(),
-					"0",orderView.getOrderBaseInfo().getIsMemberPay().toString()+orderView.getOrderBaseInfo().getTotalFee().toString(),"0",
-					orderView.getOrderBaseInfo().getIsMemberPay()+orderView.getOrderBaseInfo().getPaySeqNo(),TokenId,Token,userCinema.getDefaultPassword());
-	String result=WebService.cinemaTss(userCinema.getUrl()).sellTicket(SellTicketXml);
-
-	System.out.println("校验成功--------------");
-	System.out.println(result);
-	Gson gson=new Gson();
-	return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "SellTicket"), MtxSellTicketResult.class);
+			
+			String result=WebService.cinemaTss(userCinema.getUrl()).sellTicket(SellTicketXml);
+			System.out.println("提交订单返回："+result);
+			Gson gson=new Gson();
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "SellTicket"), MtxSellTicketResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -302,7 +293,8 @@ System.out.println("开始锁定座位测试4-------------------"+ new Gson().to
 	public static MtxGetOrderStatusResult GetOrderStatus(Usercinemaview userCinema, OrderView orderView){
 		try {
 			String pVerifyInfo=GenerateVerifyInfo(userCinema.getDefaultUserName(),userCinema.getCinemaCode(),
-					orderView.getOrderBaseInfo().getSerialNum(),TokenId,Token,userCinema.getDefaultPassword());
+					orderView.getOrderBaseInfo().getSerialNum(),
+					TokenId,Token,userCinema.getDefaultPassword());
 			String result=WebService.cinemaTss(userCinema.getUrl()).getOrderStatus(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
 					orderView.getOrderBaseInfo().getSerialNum(), TokenId, pVerifyInfo);
 			System.out.println(result);
@@ -333,17 +325,17 @@ System.out.println("开始锁定座位测试4-------------------"+ new Gson().to
 	/*AppPrintTicket合作商打票--查询影票信息
 	 * 转小写（MD5（转小写（pAppCode + pCinemaID + pOrderNO + pValidCode+pRequestType+pTokenID+token+验证密钥）））
 	 * */
-	public static MtxAppPrintTicketResult AppPrintTicket(Usercinemaview userCinema, OrderView orderView){
+	public static MtxAppPrintTicketResult AppPrintTicket(Usercinemaview userCinema, OrderView orderView,String requestType){
 		try {
 			String pVerifyInfo=GenerateVerifyInfo(userCinema.getDefaultUserName(),userCinema.getCinemaCode(),
-		orderView.getOrderBaseInfo().getSubmitOrderCode(),orderView.getOrderBaseInfo().getVerifyCode(),
-		"0",TokenId,Token,userCinema.getDefaultPassword());
-			String result=WebService.cinemaTss(userCinema.getUrl()).appPrintTicket(userCinema.getDefaultUserName(),
-					userCinema.getCinemaCode(), orderView.getOrderBaseInfo().getSubmitOrderCode(), orderView.getOrderBaseInfo().getVerifyCode(),
-					"0", TokenId, pVerifyInfo);
+					orderView.getOrderBaseInfo().getSubmitOrderCode(),
+								orderView.getOrderBaseInfo().getVerifyCode(),requestType,TokenId,Token,userCinema.getDefaultPassword());
+			
+			String result=WebService.cinemaTss(userCinema.getUrl()).appPrintTicket(userCinema.getDefaultUserName(),userCinema.getCinemaCode(), 
+					orderView.getOrderBaseInfo().getSubmitOrderCode(), orderView.getOrderBaseInfo().getVerifyCode(),requestType, TokenId, pVerifyInfo);
 			System.out.println(result);
 			Gson gson=new Gson();
-			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "AppPrintTicket"), MtxAppPrintTicketResult.class);
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "MtxAppPrintTicketResult"), MtxAppPrintTicketResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -377,13 +369,8 @@ System.out.println("开始锁定座位测试4-------------------"+ new Gson().to
 		return null;
 	}
 	public static void main(String[] args) {
-	/*	票务测试接口地址：http://ticketnew.mvtapi.com:8702/ticketapi/services/ticketapi?wsdl 
-			票务测试影院编码：gzxxx
-			票务测试应用编码(pAppCode)：TEST
-			票务测试验证密钥：12345678
-			令牌id默认为1829
-			令牌值 默认为abcdef */
-		Usercinemaview userCinema = new Usercinemaview();
+
+	//	Usercinemaview userCinema = new Usercinemaview();
 //		userCinema.setDefaultUserName("TEST");
 //		userCinema.setDefaultPassword("12345678");
 //		userCinema.setUrl("http://ticketnew.mvtapi.com:8702/ticketapi/services/ticketapi?wsdl");
@@ -424,7 +411,7 @@ System.out.println("开始锁定座位测试4-------------------"+ new Gson().to
 		
 	/*		MtxGetPlanSiteStateResult result2=GetPlanSiteState(userCinema, SessionCode, Status);*/
 	
-		OrderView order=new OrderView();
+/*		OrderView order=new OrderView();
 		userCinema.setDefaultUserName("TEST");
 		userCinema.setDefaultPassword("12345678");
 		userCinema.setUrl("http://ticketnew.mvtapi.com:8702/ticketapi/services/ticketapi?wsdl");
@@ -440,9 +427,28 @@ System.out.println("开始锁定座位测试4-------------------"+ new Gson().to
 		orderdList.add(or);
 		order.setOrderSeatDetails(orderdList);
 		order.setOrderBaseInfo(orders);
-		MtxLiveRealCheckSeatStateResult result=LiveRealCheckSeatState(userCinema,order);
-
-	
+		MtxLiveRealCheckSeatStateResult result=LiveRealCheckSeatState(userCinema,order);*/
+		OrderView order=new OrderView();
+		Usercinemaview userCinema = new Usercinemaview();
+		userCinema.setDefaultUserName("TEST");
+		userCinema.setDefaultPassword("12345678");
+		userCinema.setUrl("http://ticketnew.mvtapi.com:8702/ticketapi/services/ticketapi?wsdl");
+		userCinema.setCinemaCode("gzxxx");
+		userCinema.setCinemaId("gzxxx");
+		Orders orders=new Orders();
+		orders.setSessionCode("5137013290");
+		orders.setTicketCount(1);
+		orders.setPayType("0");
+		orders.setSerialNum("20190417143543153629");
+		List<Orderseatdetails> orderdList=new ArrayList<Orderseatdetails>();
+		orders.setLockOrderCode("953908299");
+		Orderseatdetails or=new Orderseatdetails();
+		or.setSeatCode("04010214");
+		or.setPrice(110.0);
+		orderdList.add(or);
+		order.setOrderSeatDetails(orderdList);
+		order.setOrderBaseInfo(orders);
+	MtxGetOrderStatusResult result=GetOrderStatus(userCinema, order);
 	}
 
 	
