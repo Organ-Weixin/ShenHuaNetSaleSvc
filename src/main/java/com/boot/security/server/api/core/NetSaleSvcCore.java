@@ -12,6 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.boot.security.server.api.core.LockSeatReply.LockSeatReplyOrder.LockSeatReplySeat;
+import com.boot.security.server.api.core.LoginCardReply.LoginCardReplyCard;
+import com.boot.security.server.api.core.QueryCardLevelReply.QueryCardLevelReplyLevels;
+import com.boot.security.server.api.core.QueryCardLevelReply.QueryCardLevelReplyLevels.QueryCardLevelReplyLevel;
+import com.boot.security.server.api.core.QueryCardReply.QueryCardReplyCard;
+import com.boot.security.server.api.core.QueryCardTradeRecordReply.QueryCardTradeRecordReplyTradeRecord.QueryCardTradeRecordReplyRecord;
 import com.boot.security.server.api.core.QueryCinemaListReply.QueryCinemaListReplyCinemas.QueryCinemaListReplyCinema;
 import com.boot.security.server.api.core.QueryCinemaReply.QueryCinemaReplyCinema.QueryCinemaReplyScreen;
 import com.boot.security.server.api.core.QueryFilmReply.QueryFilmReplyFilms.QueryFilmReplyFilm;
@@ -26,10 +31,19 @@ import com.boot.security.server.api.core.QueryTicketReply.QueryTicketReplyTicket
 import com.boot.security.server.api.core.QueryTicketReply.QueryTicketReplyTickets.QueryTicketReplyTicket;
 import com.boot.security.server.api.core.ReleaseSeatReply.ReleaseSeatReplyOrder.ReleaseSeatReplySeat;
 import com.boot.security.server.api.core.SubmitOrderReply.SubmitOrderReplyOrder.SubmitOrderReplySeat;
+import com.boot.security.server.api.ctms.reply.CTMSCardChargeReply;
+import com.boot.security.server.api.ctms.reply.CTMSCardPayBackReply;
+import com.boot.security.server.api.ctms.reply.CTMSCardPayReply;
+import com.boot.security.server.api.ctms.reply.CTMSCardRegisterReply;
 import com.boot.security.server.api.ctms.reply.CTMSFetchTicketReply;
 import com.boot.security.server.api.ctms.reply.CTMSInterfaceFactory;
 import com.boot.security.server.api.ctms.reply.CTMSLockSeatReply;
+import com.boot.security.server.api.ctms.reply.CTMSLoginCardReply;
+import com.boot.security.server.api.ctms.reply.CTMSQueryCardLevelReply;
+import com.boot.security.server.api.ctms.reply.CTMSQueryCardReply;
+import com.boot.security.server.api.ctms.reply.CTMSQueryCardTradeRecordReply;
 import com.boot.security.server.api.ctms.reply.CTMSQueryCinemaReply;
+import com.boot.security.server.api.ctms.reply.CTMSQueryDiscountReply;
 import com.boot.security.server.api.ctms.reply.CTMSQueryFilmReply;
 import com.boot.security.server.api.ctms.reply.CTMSQueryOrderReply;
 import com.boot.security.server.api.ctms.reply.CTMSQueryPrintReply;
@@ -42,8 +56,12 @@ import com.boot.security.server.api.ctms.reply.CTMSReleaseSeatReply;
 import com.boot.security.server.api.ctms.reply.CTMSSubmitOrderReply;
 import com.boot.security.server.api.ctms.reply.CxInterface;
 import com.boot.security.server.api.ctms.reply.ICTMSInterface;
+import com.boot.security.server.model.CardChargeTypeEnum;
+import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Filminfo;
+import com.boot.security.server.model.Membercard;
+import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orderseatdetails;
@@ -56,6 +74,8 @@ import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.model.YesOrNoEnum;
+import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
+import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
@@ -76,6 +96,8 @@ public class NetSaleSvcCore {
 	 ScreenseatinfoServiceImpl _seatInfoService = SpringUtil.getBean(ScreenseatinfoServiceImpl.class);
 	 SessioninfoServiceImpl _sessionInfoService = SpringUtil.getBean(SessioninfoServiceImpl.class);
 	 OrderServiceImpl _orderService = SpringUtil.getBean(OrderServiceImpl.class);
+	 MemberCardServiceImpl _membercardService=SpringUtil.getBean(MemberCardServiceImpl.class);
+	 MemberCardLevelServiceImpl _memberCardLevelService=SpringUtil.getBean(MemberCardLevelServiceImpl.class);
 	 
 	 protected static Logger log = LoggerFactory.getLogger(CxInterface.class);
 
@@ -1107,6 +1129,580 @@ public class NetSaleSvcCore {
         //更新订单信息
         order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
         _orderService.UpdateOrderBaseInfo(order.getOrderBaseInfo());
+        return reply;
+    }
+	//endregion
+	
+	//region 登录会员卡
+	public LoginCardReply LoginCard(String Username, String Password, String CinemaCode, String CardNo, String CardPassword)
+    {
+        LoginCardReply loginCardReply = new LoginCardReply();
+        if (!ReplyExtension.RequestInfoGuard(loginCardReply,Username, Password, CinemaCode, CardNo, CardPassword))
+        {
+            return loginCardReply;
+        }
+        //获取用户信息
+        Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+        if (UserInfo == null)
+        {
+            loginCardReply.SetUserCredentialInvalidReply();
+            return loginCardReply;
+        }
+        //验证影院是否存在且可访问
+        Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),CinemaCode);
+        if (userCinema == null)
+        {
+            loginCardReply.SetCinemaInvalidReply();
+            return loginCardReply;
+        }
+        return LoginCard(loginCardReply, userCinema, CardNo, CardPassword);
+    }
+	private LoginCardReply LoginCard(LoginCardReply reply, Usercinemaview userCinema, String CardNo, String CardPassword)
+    {
+        _CTMSInterface = CTMSInterfaceFactory.Create(userCinema);
+        CTMSLoginCardReply CTMSReply=null;
+        try {
+			CTMSReply = _CTMSInterface.LoginCard(userCinema, CardNo, CardPassword);
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+        if (CTMSReply.Status == StatusEnum.Success)
+        {
+            Membercard membercard = _membercardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
+
+            reply.CinemaCode = userCinema.getCinemaCode();
+            reply.Card = reply.new LoginCardReplyCard();
+            if (membercard != null)
+            {
+                reply.Card.CardNo = membercard.getCardNo();
+                reply.Card.CardPassword = membercard.getCardPassword();
+                reply.Card.MobilePhone = membercard.getMobilePhone();
+                reply.Card.LevelCode = membercard.getLevelCode();
+                reply.Card.LevelName = membercard.getLevelName();
+            }
+            reply.SetSuccessReply();
+        }
+        else
+        {
+            reply.GetErrorFromCTMSReply(CTMSReply);
+        }
+        return reply;
+    }
+	//endregion
+	
+	//region 查询会员卡
+	public QueryCardReply QueryCard(String Username, String Password, String CinemaCode, String CardNo, String CardPassword)
+    {
+        QueryCardReply queryCardReply = new QueryCardReply();
+        if (!ReplyExtension.RequestInfoGuard(queryCardReply,Username, Password, CinemaCode, CardNo, CardPassword))
+        {
+            return queryCardReply;
+        }
+        //获取用户信息
+        Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+        if (UserInfo == null)
+        {
+            queryCardReply.SetUserCredentialInvalidReply();
+            return queryCardReply;
+        }
+        //验证影院是否存在且可访问
+        Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(), CinemaCode);
+        if (userCinema == null)
+        {
+            queryCardReply.SetCinemaInvalidReply();
+            return queryCardReply;
+        }
+        return QueryCard(queryCardReply, userCinema, CardNo, CardPassword);
+    }
+	private QueryCardReply QueryCard(QueryCardReply reply, Usercinemaview userCinema, String CardNo, String CardPassword)
+    {
+        _CTMSInterface = CTMSInterfaceFactory.Create(userCinema);
+        CTMSQueryCardReply CTMSReply=null;
+        try {
+			CTMSReply = _CTMSInterface.QueryCard(userCinema, CardNo, CardPassword);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        if (CTMSReply.Status == StatusEnum.Success)
+        {
+            Membercard membercard = _membercardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
+
+            reply.CinemaCode = userCinema.getCinemaCode();
+            reply.Card = reply.new QueryCardReplyCard();
+            if (membercard != null)
+            {
+                reply.Card.CardNo = membercard.getCardNo();
+                reply.Card.CardPassword = membercard.getCardPassword();
+                reply.Card.MobilePhone = membercard.getMobilePhone();
+                reply.Card.LevelCode = membercard.getLevelCode();
+                reply.Card.LevelName = membercard.getLevelName();
+                reply.Card.Score = String.valueOf(membercard.getScore());
+                reply.Card.Balance = new DecimalFormat("#0.00").format(membercard.getBalance());
+                reply.Card.UserName = membercard.getUserName();
+                reply.Card.Sex = membercard.getSex();
+                reply.Card.CreditNum = membercard.getCreditNum();
+                reply.Card.Birthday = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(membercard.getBirthday());
+            }
+            reply.SetSuccessReply();
+        }
+        else
+        {
+            reply.GetErrorFromCTMSReply(CTMSReply);
+        }
+        return reply;
+    }
+	//endregion
+	
+	//region 得到会员卡折扣
+	public QueryDiscountReply QueryDiscount(String Username, String Password,String CinemaCode, String TicketCount, String CardNo,
+			String CardPassword, String LevelCode, String SessionCode, String SessionTime, String FilmCode,
+			String ScreenType, String ListingPrice, String LowestPrice)
+    {
+        QueryDiscountReply queryDiscountReply = new QueryDiscountReply();
+        if (!ReplyExtension.RequestInfoGuard(queryDiscountReply,Username,Password,CinemaCode,TicketCount,CardNo,CardPassword,LevelCode,SessionCode,SessionTime,FilmCode,
+ScreenType,ListingPrice,LowestPrice))
+        {
+            return queryDiscountReply;
+        }
+        //获取用户信息
+        Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+        if (UserInfo == null)
+        {
+            queryDiscountReply.SetUserCredentialInvalidReply();
+            return queryDiscountReply;
+        }
+        //验证影院是否存在且可访问
+        Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),CinemaCode);
+        if (userCinema == null)
+        {
+            queryDiscountReply.SetCinemaInvalidReply();
+            return queryDiscountReply;
+        }
+        //验证会员卡是否存在
+        Membercard memberCard = _membercardService.getByCardNo(CinemaCode,CardNo);
+        if (memberCard == null)
+        {
+            queryDiscountReply.SetMemberCardInvalidReply();
+            return queryDiscountReply;
+        }
+        //验证排期是否存在
+        Sessioninfo sessionInfo = _sessionInfoService.getByCinemaCodeAndSessionCodeAndUserId(CinemaCode, SessionCode, UserInfo.getId());
+        if (sessionInfo == null)
+        {
+            queryDiscountReply.SetSessionInvalidReply();
+            return queryDiscountReply;
+        }
+        return QueryDiscount(queryDiscountReply,userCinema,TicketCount,CardNo,CardPassword,LevelCode,SessionCode,SessionTime,FilmCode,ScreenType,ListingPrice,LowestPrice);
+    }
+	private QueryDiscountReply QueryDiscount(QueryDiscountReply reply, Usercinemaview userCinema,String TicketCount, String CardNo,
+			String CardPassword, String LevelCode, String SessionCode, String SessionTime, String FilmCode,
+			String ScreenType, String ListingPrice, String LowestPrice)
+    {
+        _CTMSInterface = CTMSInterfaceFactory.Create(userCinema);
+        CTMSQueryDiscountReply CTMSReply=null;
+        try {
+			CTMSReply = _CTMSInterface.QueryDiscount(userCinema,TicketCount,CardNo,CardPassword,LevelCode,SessionCode,SessionTime,FilmCode,ScreenType,ListingPrice,LowestPrice);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        if (CTMSReply.Status == StatusEnum.Success)
+        {
+            reply.CinemaCode = userCinema.getCinemaCode();
+            reply.Card = reply.new QueryDiscountReplyCard();
+            reply.Card.DiscountType = String.valueOf(CTMSReply.getDiscountType());
+            reply.Card.Price = CTMSReply.getPrice();
+            reply.Card.CinemaPayAmount = CTMSReply.getCinemaPayAmount();
+            reply.SetSuccessReply();
+        }
+        else
+        {
+            reply.GetErrorFromCTMSReply(CTMSReply);
+        }
+        return reply;
+    }
+	//endregion
+	
+	//region 会员卡支付
+	public CardPayReply CardPay(String Username, String Password,String CinemaCode, String CardNo, String CardPassword, String PayAmount, String SessionCode, String FilmCode, String TicketNum)
+    {
+        CardPayReply cardPayReply = new CardPayReply();
+        if (!ReplyExtension.RequestInfoGuard(cardPayReply,Username, Password,CinemaCode,CardNo,CardPassword,PayAmount,SessionCode,FilmCode,TicketNum))
+        {
+            return cardPayReply;
+        }
+        //获取用户信息
+        Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+        if (UserInfo == null)
+        {
+            cardPayReply.SetUserCredentialInvalidReply();
+            return cardPayReply;
+        }
+        
+        //验证影院是否存在且可访问
+        Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),CinemaCode);
+        if (userCinema == null)
+        {
+            cardPayReply.SetCinemaInvalidReply();
+            return cardPayReply;
+        }
+        //验证会员卡是否已存在
+        Membercard memberCard = _membercardService.getByCardNo(CinemaCode,CardNo);
+        if (memberCard == null)
+        {
+            cardPayReply.SetMemberCardInvalidReply();
+            return cardPayReply;
+        }
+        //验证排期是否存在
+        Sessioninfo session = _sessionInfoService.getByCinemaCodeAndSessionCodeAndUserId(CinemaCode, SessionCode,userCinema.getId());
+        if (session == null)
+        {
+            cardPayReply.SetSessionInvalidReply();
+            return cardPayReply;
+        }
+        return CardPay(cardPayReply, userCinema, CardNo,CardPassword,PayAmount,SessionCode,FilmCode,TicketNum);
+    }
+	private CardPayReply CardPay(CardPayReply reply, Usercinemaview userCinema, String CardNo, String CardPassword, String PayAmount, String SessionCode, String FilmCode, String TicketNum)
+    {
+        _CTMSInterface = CTMSInterfaceFactory.Create(userCinema);
+        CTMSCardPayReply CTMSReply=null;
+        try {
+			CTMSReply = _CTMSInterface.CardPay(userCinema, CardNo,CardPassword,Float.parseFloat(PayAmount),SessionCode,FilmCode,TicketNum);
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        if (CTMSReply.Status == StatusEnum.Success)
+        {
+            reply.TradeNo = CTMSReply.getTradeNo();
+            reply.DeductAmount = CTMSReply.getDeductAmount();
+            reply.SetSuccessReply();
+        }
+        else
+        {
+            reply.GetErrorFromCTMSReply(CTMSReply);
+        }
+        return reply;
+    }
+	//endregion
+	
+	//region 会员卡支付撤销
+	public CardPayBackReply CardPayBack(String Username, String Password, String CinemaCode, String CardNo, String CardPassword, String TradeNo, String PayBackAmount)
+    {
+        CardPayBackReply cardPayBackReply = new CardPayBackReply();
+        if (!ReplyExtension.RequestInfoGuard(cardPayBackReply,Username, Password, CinemaCode, CardNo, CardPassword, TradeNo, PayBackAmount))
+        {
+            return cardPayBackReply;
+        }
+        //获取用户信息
+        Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+        if (UserInfo == null)
+        {
+            cardPayBackReply.SetUserCredentialInvalidReply();
+            return cardPayBackReply;
+        }
+        //验证影院是否存在且可访问
+        Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),CinemaCode);
+        if (userCinema == null)
+        {
+            cardPayBackReply.SetCinemaInvalidReply();
+            return cardPayBackReply;
+        }
+        //验证会员卡是否已存在
+        Membercard memberCard = _membercardService.getByCardNo(CinemaCode, CardNo);
+        if (memberCard == null)
+        {
+            cardPayBackReply.SetMemberCardInvalidReply();
+            return cardPayBackReply;
+        }
+        return CardPayBack(cardPayBackReply, userCinema, CardNo, CardPassword, TradeNo, PayBackAmount);
+    }
+	private CardPayBackReply CardPayBack(CardPayBackReply reply, Usercinemaview userCinema, String CardNo, String CardPassword, String TradeNo, String PayBackAmount)
+    {
+        _CTMSInterface = CTMSInterfaceFactory.Create(userCinema);
+        CTMSCardPayBackReply CTMSReply=null;
+        try {
+			CTMSReply = _CTMSInterface.CardPayBack(userCinema, CardNo, CardPassword, TradeNo,Float.parseFloat(PayBackAmount));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        if (CTMSReply.Status == StatusEnum.Success)
+        {
+            reply.TradeNo = CTMSReply.getTradeNo();
+            reply.SetSuccessReply();
+        }
+        else
+        {
+            reply.GetErrorFromCTMSReply(CTMSReply);
+        }
+        return reply;
+    }
+	//endregion
+	
+	//region 查询会员卡交易记录
+	public QueryCardTradeRecordReply QueryCardTradeRecord(String Username, String Password, String CinemaCode, String CardNo, String CardPassword, String StartDate, String EndDate, String PageSize, String PageNum) throws ParseException
+    {
+        QueryCardTradeRecordReply queryCardTradeRecordReply = new QueryCardTradeRecordReply();
+        if (!ReplyExtension.RequestInfoGuard(queryCardTradeRecordReply,Username, Password, CinemaCode, CardNo, CardPassword, StartDate, EndDate, PageSize, PageNum))
+        {
+            return queryCardTradeRecordReply;
+        }
+        //获取用户信息
+        Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+        if (UserInfo == null)
+        {
+            queryCardTradeRecordReply.SetUserCredentialInvalidReply();
+            return queryCardTradeRecordReply;
+        }
+        //验证影院是否存在且可访问
+        Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),CinemaCode);
+        if (userCinema == null)
+        {
+            queryCardTradeRecordReply.SetCinemaInvalidReply();
+            return queryCardTradeRecordReply;
+        }
+        //验证会员卡是否已存在
+        Membercard memberCard = _membercardService.getByCardNo(CinemaCode, CardNo);
+        if (memberCard == null)
+        {
+            queryCardTradeRecordReply.SetMemberCardInvalidReply();
+            return queryCardTradeRecordReply;
+        }
+        //验证日期是否正确
+        Date Start = new SimpleDateFormat("yyyy-MM-dd").parse(StartDate);
+		Date End = new SimpleDateFormat("yyyy-MM-dd").parse(EndDate);
+        if (Start == null)
+        {
+            queryCardTradeRecordReply.SetStartDateInvalidReply();
+            return queryCardTradeRecordReply;
+        }
+        if (End==null)
+        {
+            queryCardTradeRecordReply.SetEndDateInvalidReply();
+            return queryCardTradeRecordReply;
+        }
+        if (Start.getTime() > End.getTime())
+        {
+            queryCardTradeRecordReply.SetDateInvalidReply();
+            return queryCardTradeRecordReply;
+        }
+        return QueryCardTradeRecord(queryCardTradeRecordReply, userCinema, CardNo, CardPassword, Start, End, PageSize, PageNum);
+    }
+	private QueryCardTradeRecordReply QueryCardTradeRecord(QueryCardTradeRecordReply reply, Usercinemaview userCinema, String CardNo, String CardPassword, Date StartDate, Date EndDate, String PageSize, String PageNum)
+    {
+        _CTMSInterface = CTMSInterfaceFactory.Create(userCinema);
+        CTMSQueryCardTradeRecordReply CTMSReply=null;
+        try {
+			CTMSReply = _CTMSInterface.QueryCardTradeRecord(userCinema, CardNo, CardPassword,new SimpleDateFormat("yyyy-MM-dd").format(StartDate), new SimpleDateFormat("yyyy-MM-dd").format(EndDate), PageSize, PageNum);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        if (CTMSReply.Status == StatusEnum.Success)
+        {
+            reply.TradeRecord = reply.new QueryCardTradeRecordReplyTradeRecord();
+            reply.TradeRecord.CinemaCode = userCinema.getCinemaCode();
+            reply.TradeRecord.CardNo = CardNo;
+            List<QueryCardTradeRecordReplyRecord> records=new ArrayList<QueryCardTradeRecordReplyRecord>();
+            for(CardTradeRecord traderecord:CTMSReply.getCardTradeRecords()){
+            	QueryCardTradeRecordReplyRecord record=reply.TradeRecord.new QueryCardTradeRecordReplyRecord();
+            	record.setTradeNo(traderecord.getTradeNo());
+            	record.setTradeType(traderecord.getTradeType());
+            	record.setTradeTime(traderecord.getTradeTime());
+            	record.setTradePrice(traderecord.getTradePrice());
+            	record.setCinemaName(traderecord.getCinemaName());
+            	records.add(record);
+            }
+            reply.TradeRecord.Record = records;
+            reply.SetSuccessReply();
+        }
+        else
+        {
+            reply.GetErrorFromCTMSReply(CTMSReply);
+        }
+        return reply;
+    }
+	//endregion
+	
+	//region 会员卡充值
+	public CardChargeReply CardCharge(String Username, String Password, String CinemaCode, String CardNo, String CardPassword, String ChargeType, String ChargeAmount)
+    {
+        CardChargeReply cardChargeReply = new CardChargeReply();
+        if (!ReplyExtension.RequestInfoGuard(cardChargeReply,Username, Password, CinemaCode, CardNo, CardPassword, ChargeType, ChargeAmount))
+        {
+            return cardChargeReply;
+        }
+        //获取用户信息
+        Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+        if (UserInfo == null)
+        {
+            cardChargeReply.SetUserCredentialInvalidReply();
+            return cardChargeReply;
+        }
+        //验证影院是否存在且可访问
+        Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),CinemaCode);
+        if (userCinema == null)
+        {
+            cardChargeReply.SetCinemaInvalidReply();
+            return cardChargeReply;
+        }
+        //验证会员卡是否已存在
+        Membercard memberCard = _membercardService.getByCardNo(CinemaCode, CardNo);
+        if (memberCard == null)
+        {
+            cardChargeReply.SetMemberCardInvalidReply();
+            return cardChargeReply;
+        }
+        //验证充值类型
+        CardChargeTypeEnum chargeType= CardChargeTypeEnum.valueOf(ChargeType);
+        if (chargeType.getTypeCode() == CardChargeTypeEnum.Illegal.getTypeCode())
+        {
+            cardChargeReply.SetCardChargeTypeInvalidReply();
+            return cardChargeReply;
+        }
+        return CardCharge(cardChargeReply, userCinema, CardNo, CardPassword, chargeType, Float.parseFloat(ChargeAmount));
+    }
+	private CardChargeReply CardCharge(CardChargeReply reply, Usercinemaview userCinema, String CardNo, String CardPassword, CardChargeTypeEnum ChargeType, float ChargeAmount)
+    {
+        _CTMSInterface = CTMSInterfaceFactory.Create(userCinema);
+        CTMSCardChargeReply CTMSReply=null;
+        try {
+			CTMSReply = _CTMSInterface.CardCharge(userCinema, CardNo, CardPassword, ChargeType, ChargeAmount);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        if (CTMSReply.Status == StatusEnum.Success)
+        {
+            reply.SetSuccessReply();
+        }
+        else
+        {
+            reply.GetErrorFromCTMSReply(CTMSReply);
+        }
+        return reply;
+    }
+	//endregion
+	
+	//region 会员卡等级
+	public QueryCardLevelReply QueryCardLevel(String Username, String Password, String CinemaCode)
+    {
+        QueryCardLevelReply queryCardLevelReply = new QueryCardLevelReply();
+        if (!ReplyExtension.RequestInfoGuard(queryCardLevelReply,Username, Password, CinemaCode))
+        {
+            return queryCardLevelReply;
+        }
+        //获取用户信息
+        Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+        if (UserInfo == null)
+        {
+            queryCardLevelReply.SetUserCredentialInvalidReply();
+            return queryCardLevelReply;
+        }
+        //验证影院是否存在且可访问
+        Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),CinemaCode);
+        if (userCinema == null)
+        {
+            queryCardLevelReply.SetCinemaInvalidReply();
+            return queryCardLevelReply;
+        }
+        return QueryCardLevel(queryCardLevelReply, userCinema);
+    }
+	private QueryCardLevelReply QueryCardLevel(QueryCardLevelReply reply, Usercinemaview userCinema)
+    {
+        _CTMSInterface = CTMSInterfaceFactory.Create(userCinema);
+        CTMSQueryCardLevelReply CTMSReply=null;
+        try {
+			CTMSReply = _CTMSInterface.QueryCardLevel(userCinema);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        if (CTMSReply.Status == StatusEnum.Success)
+        {
+            List<Membercardlevel> cardLevels = _memberCardLevelService.getByCinemaCode(userCinema.getCinemaCode());
+
+            reply.CinemaCode = userCinema.getCinemaCode();
+            reply.Levels = reply.new QueryCardLevelReplyLevels();
+            if (cardLevels != null && cardLevels.size() > 0)
+            {
+            	List<QueryCardLevelReplyLevel> levels=new ArrayList<QueryCardLevelReplyLevel>();
+            	for(Membercardlevel cardlevel:cardLevels){
+            		QueryCardLevelReplyLevel level=reply.Levels.new QueryCardLevelReplyLevel();
+            		level.setLevelCode(cardlevel.getLevelCode());
+            		level.setLevelName(cardlevel.getLevelName());
+            		levels.add(level);
+            	}
+                reply.Levels.Level = levels;
+            }
+            reply.SetSuccessReply();
+        }
+        else
+        {
+            reply.GetErrorFromCTMSReply(CTMSReply);
+        }
+        return reply;
+    }
+	//endregion
+	
+	//region 会员卡注册
+	public CardRegisterReply CardRegister(String Username, String Password, String CinemaCode, String CardPassword, String LevelCode, String InitialAmount, String CardUserName, String MobilePhone, String IDNumber, String Sex)
+    {
+        CardRegisterReply cardRegisterReply = new CardRegisterReply();
+        if (!ReplyExtension.RequestInfoGuard(cardRegisterReply,Username, Password, CinemaCode, CardPassword, LevelCode, InitialAmount, CardUserName, MobilePhone, IDNumber, Sex))
+        {
+            return cardRegisterReply;
+        }
+        //获取用户信息
+        Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+        if (UserInfo == null)
+        {
+            cardRegisterReply.SetUserCredentialInvalidReply();
+            return cardRegisterReply;
+        }
+        //验证影院是否存在且可访问
+        Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),CinemaCode);
+        if (userCinema == null)
+        {
+            cardRegisterReply.SetCinemaInvalidReply();
+            return cardRegisterReply;
+        }
+        //验证会员卡等级是否存在
+        Membercard cardlevel = _membercardService.getByCardNo(CinemaCode, LevelCode);
+        if (cardlevel == null)
+        {
+            cardRegisterReply.SetCardLevelInvalidReply();
+            return cardRegisterReply;
+        }
+        return CardRegister(cardRegisterReply, userCinema, CardPassword, LevelCode, InitialAmount, CardUserName, MobilePhone, IDNumber, Sex);
+    }
+	private CardRegisterReply CardRegister(CardRegisterReply reply, Usercinemaview userCinema, String CardPassword, String LevelCode, String InitialAmount, String CardUserName, String MobilePhone, String IDNumber, String Sex)
+    {
+        _CTMSInterface = CTMSInterfaceFactory.Create(userCinema);
+        CTMSCardRegisterReply CTMSReply=null;
+        try {
+			CTMSReply = _CTMSInterface.CardRegister(userCinema, CardPassword, LevelCode, InitialAmount, CardUserName, MobilePhone, IDNumber, Sex);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        if (CTMSReply.Status == StatusEnum.Success)
+        {
+            reply.CardNo = CTMSReply.getCardNo();
+            reply.Balance = CTMSReply.getBalance();
+            reply.ExpireDate = CTMSReply.getExpireDate();
+            reply.CreateTime = CTMSReply.getCreateTime();
+            reply.SetSuccessReply();
+        }
+        else
+        {
+            reply.GetErrorFromCTMSReply(CTMSReply);
+        }
         return reply;
     }
 	//endregion

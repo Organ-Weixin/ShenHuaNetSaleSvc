@@ -17,6 +17,9 @@ public interface MembercardDao {
 
     @Select("select * from membercard t where t.id = #{id}")
     Membercard getById(Long id);
+    
+    @Select("select * from membercard t where t.cinemacode = #{cinemacode} and t.cardno=#{cardno}")
+    Membercard getByCardNo(String cinemacode,String cardno);
 
     @Delete("delete from membercard where id = #{id}")
     int delete(Long id);
