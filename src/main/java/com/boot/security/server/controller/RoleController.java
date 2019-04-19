@@ -20,7 +20,6 @@ import com.boot.security.server.dao.RoleDao;
 import com.boot.security.server.dao.UserDao;
 import com.boot.security.server.dto.RoleDto;
 import com.boot.security.server.model.Role;
-import com.boot.security.server.model.SysRoleUser;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
@@ -103,12 +102,6 @@ public class RoleController {
 	@PreAuthorize("hasAuthority('sys:role:del')")
 	public void delete(@PathVariable Long id) {
 		roleService.deleteRole(id);
-	}
-	@GetMapping("/getByUserId{userId}")
-	//@ApiOperation(value = "根据用户id获取拥有的角色")
-	@PreAuthorize("hasAnyAuthority('sys:user:query','sys:role:query')")
-	public SysRoleUser getByUserId(String userId){
-		return roleDao.getByUserId(userId);
 	}
 	
 	@GetMapping("/getRole{roleId}")

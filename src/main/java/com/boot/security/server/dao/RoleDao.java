@@ -12,7 +12,6 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.boot.security.server.model.Role;
-import com.boot.security.server.model.SysRoleUser;
 
 @Mapper
 public interface RoleDao {
@@ -31,9 +30,6 @@ public interface RoleDao {
 	
 	@Select("select * from sys_role")
 	List<Role> getAllRole();
-	
-	@Select("select * from sys_role_user where userId = #{userId}")
-	SysRoleUser getByUserId(String userId);
 
 	@Select("select * from sys_role t where t.id = #{id}")
 	Role getById(Long id);

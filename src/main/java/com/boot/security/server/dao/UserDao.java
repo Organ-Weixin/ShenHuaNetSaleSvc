@@ -11,9 +11,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
-import com.boot.security.server.model.Role;
 import com.boot.security.server.model.SysUser;
-import com.boot.security.server.model.Userview;
 
 @Mapper
 public interface UserDao {
@@ -33,7 +31,7 @@ public interface UserDao {
 
 	Integer count(@Param("params") Map<String, Object> params);
 
-	List<Userview> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset,
+	List<SysUser> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset,
 			@Param("limit") Integer limit);
 
 	@Delete("delete from sys_role_user where userId = #{userId}")
