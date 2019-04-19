@@ -1,6 +1,7 @@
 package com.boot.security.server.api.ctms.reply;
 
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -138,21 +139,20 @@ public class MtxInterface implements ICTMSInterface {
 		CTMSQuerySessionReply reply=new CTMSQuerySessionReply();
 		MtxGetCinemaPlanResult mtxReply=mtxService.GetCinemaPlan(userCinema, StartDate, EndDate);
 		System.out.println("开始执行查询排期操作-------------------"+ new Gson().toJson(mtxReply));
-
-		SimpleDateFormat sf = new SimpleDateFormat("HH:mm:ss");// 设置日期格式
-		Date now = sf.parse(sf.format(new Date()));
-		Date startTime = sf.parse("01:00:00");
-		Date endTime = sf.parse("06:00:00");
-		Calendar date = Calendar.getInstance();
-		date.setTime(now);
-		Calendar begin = Calendar.getInstance();
-		begin.setTime(startTime);
-		Calendar end = Calendar.getInstance();
-		end.setTime(endTime);
-		if (date.after(begin) && date.before(end)) {
+		Date newDate = new Date();
+		String s = new SimpleDateFormat("yyyy-MM-dd").format(newDate);
+		s += " 01:00:00";
+		Date d1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(s);
+		System.out.println("d1=" + d1);
+		String t = new SimpleDateFormat("yyyy-MM-dd").format(newDate);
+		t += " 06:00:00";
+		Date d2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(t);
+		System.out.println("d2=" + d2);
+		System.out.println(newDate);
+		if (newDate.getTime() > d1.getTime() && newDate.getTime() < d2.getTime()) {
 			reply.Status = StatusEnum.Success;
-			reply.ErrorCode = "0";
-        }
+            reply.ErrorCode = "0";
+		}
         else{
 		if("0".equals(mtxReply.getGetCinemaPlanResult().getResultCode())){
 			//更新排期信息
@@ -174,33 +174,29 @@ public class MtxInterface implements ICTMSInterface {
 			_sessioninfoService.deleteByCinemaCode(params);
 			System.out.println("删除旧排期------------");
 			//插入排期信息
-			int num=0;
-			for(Sessioninfo sessionInfo : newSessions){
-				_sessioninfoService.save(sessionInfo);
-				num++;
+				int num = 0;
+				for (Sessioninfo sessionInfo : newSessions) {
+					_sessioninfoService.save(sessionInfo);
+					num++;
+				}
+				reply.Status = StatusEnum.Success;
+System.out.println("更新排期成功-------------+++++++++++++=");
+		} else {
+				reply.Status = StatusEnum.Failure;
+				System.out.println("更新排期失败-------------+++++++++++++=");
 			}
-			//}
-			System.out.println("更新的排期数量-------------------"+ num);
-			System.out.println("当前时间=================="+now);
-        	System.out.println("不更新排期的开始时间======="+startTime);
-           	System.out.println("不更新排期的结束时间======="+endTime);
-			reply.Status=StatusEnum.Success;
-			
-		}else{
-			reply.Status=StatusEnum.Failure;
-		}
-		
-		reply.ErrorCode=mtxReply.getGetCinemaPlanResult().getResultCode();
-		
-        }
 
+			reply.ErrorCode = mtxReply.getGetCinemaPlanResult().getResultCode();
+
+		}
+		System.out.println("不更新==========");
 		return reply;
 	}
 	//查询影片信息
 	@Override
 	public CTMSQueryFilmReply QueryFilm(Usercinemaview userCinema, Date StartDate, Date EndDate) throws Exception {
 		CTMSQueryFilmReply reply = new CTMSQueryFilmReply();
-		System.out.println("开始执行查询影片信息操作-------------------"+ new Gson().toJson(reply));
+		System.out.println("开始执行查询影片信息操作-------------------" + new Gson().toJson(reply));
 		// 从排期中获取影片接口
 		QuerySession(userCinema, StartDate, EndDate);// 调用查询排期列表
 		System.out.println("调用排期-------------");
@@ -222,8 +218,9 @@ public class MtxInterface implements ICTMSInterface {
 				System.out.println("保存添加=====================");
 			} else if (filmlist.size() > 1) {
 				for (Filminfo ffilminfo : filmlist) {
-					if(ffilminfo.getPublishDate() !=null || ffilminfo.getPublisher() !=null ||ffilminfo.getProducer() !=null ||
-							ffilminfo.getDirector() !=null ||ffilminfo.getCast() !=null ||ffilminfo.getIntroduction() !=null){
+					if (ffilminfo.getPublishDate() != null || ffilminfo.getPublisher() != null
+							|| ffilminfo.getProducer() != null || ffilminfo.getDirector() != null
+							|| ffilminfo.getCast() != null || ffilminfo.getIntroduction() != null) {
 						films.add(ffilminfo);
 						System.out.println("优先选择信息比较全的--------");
 						break;
@@ -439,22 +436,14 @@ public class MtxInterface implements ICTMSInterface {
 		CTMSQueryTicketReply reply=new CTMSQueryTicketReply();
 		MtxAppPrintTicketResult mtxReply=mtxService.AppPrintTicket(userCinema, order, "0");
 		System.out.println("查询影票信息返回："+new Gson().toJson(mtxReply));
-        SimpleDateFormat cf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置时间格式
-        Date newDate=new Date();
-        Date now=cf.parse(cf.format(new Date()));
-        Date pai=order.getOrderBaseInfo().getSessionTime();
-        Calendar date = Calendar.getInstance();
-        date.setTime(now);
-        Calendar begin = Calendar.getInstance();
-        begin.add(Calendar.HOUR_OF_DAY, 2);//24小时制 
-      //  begin.setTime(pai);
-       pai=begin.getTime();
-        if(date.before(pai)){
-        	reply.Status = StatusEnum.Success;
-			reply.ErrorCode = "0";
-			System.out.println("当前时间="+now);
-			System.out.println("开始时间往前推两个小时时间="+pai);
-        }
+		Date newDate=new Date();
+		String st = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderBaseInfo().getSessionTime());
+		Date dd=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(st);
+		if(newDate.getTime() > (dd.getTime()+1000*60*60*2)){
+			 reply.Status = StatusEnum.Success;
+             reply.ErrorCode = "0";
+			System.out.println("2222222222222");
+		}
         else{
 		if("0".equals(mtxReply.getAppPrintTicketResult().getResultCode())){
 			if("1".equals(mtxReply.getAppPrintTicketResult().getPrintType())){	//打印类型0：未打印 1：已打印
@@ -476,8 +465,8 @@ public class MtxInterface implements ICTMSInterface {
 					}
 				}
 			}
-			System.out.println("当前时间="+now);
-			System.out.println("开始时间往前推两个小时时间="+pai);
+			System.out.println("当前时间="+newDate);
+			System.out.println("开始时间往前推两个小时时间="+dd);
 			System.out.println("查询影票信息成功=====");
 			reply.Status=StatusEnum.Success;
 		}else{
@@ -486,8 +475,7 @@ public class MtxInterface implements ICTMSInterface {
 		}
         
         }
-        System.out.println("111111"+now);
-        System.out.println("2222"+pai);
+        System.out.println("111111111");
 		reply.ErrorCode=mtxReply.getAppPrintTicketResult().getResultCode();
 		return reply;
 	}
@@ -497,28 +485,20 @@ public class MtxInterface implements ICTMSInterface {
 		CTMSFetchTicketReply reply=new CTMSFetchTicketReply();
 		MtxAppPrintTicketResult mtxReply=mtxService.AppPrintTicket(userCinema, order,"1");
 		System.out.println("确认出票返回："+new Gson().toJson(mtxReply));
-		   SimpleDateFormat cf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置时间格式
-	        Date newDate=new Date();
-	        Date now=cf.parse(cf.format(new Date()));
-	        Date pai=order.getOrderBaseInfo().getSessionTime();
-	        Calendar date = Calendar.getInstance();
-	        date.setTime(now);
-	        Calendar begin = Calendar.getInstance();
-	        begin.add(Calendar.HOUR_OF_DAY, 2);//24小时制 
-	      //  begin.setTime(pai);
-	       pai=begin.getTime();
-	        if(date.before(pai)){
-	        	reply.Status = StatusEnum.Success;
-				reply.ErrorCode = "0";
-				System.out.println("确认出票当前时间="+now);
-				System.out.println("确认出票开始时间往前推两个小时时间="+pai);
-	        }
+		Date newDate=new Date();
+		String st = new SimpleDateFormat().format(order.getOrderBaseInfo().getSessionTime());
+		Date dd=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(st);
+		if(newDate.getTime() > (dd.getTime()+1000*60*60*2)){
+			 reply.Status = StatusEnum.Success;
+             reply.ErrorCode = "0";
+			System.out.println("2222222222222");
+		}
 	        else{
 		if("0".equals(mtxReply.getAppPrintTicketResult().getResultCode())){
 			order.getOrderBaseInfo().setPrintStatus(1);
 			order.getOrderBaseInfo().setPrintTime(new Date());
-			System.out.println("确认出票当前时间="+now);
-			System.out.println("确认出票开始时间往前推两个小时时间="+pai);
+			System.out.println("确认出票当前时间="+newDate);
+			System.out.println("确认出票开始时间往前推两个小时时间="+dd);
 				System.out.println("确认出票成功===：");
 			reply.Status=StatusEnum.Success;		
 	}else{
@@ -526,8 +506,37 @@ public class MtxInterface implements ICTMSInterface {
 		reply.Status=StatusEnum.Failure;
 	}
 	        }
+		 System.out.println("111111111");
 		reply.ErrorCode=mtxReply.getAppPrintTicketResult().getResultCode();
 		reply.ErrorMessage=mtxReply.getAppPrintTicketResult().getResultDesc();
 		return reply;
+	}
+	public static void main(String[] args) {
+		try {
+			Date newDate = new Date();
+
+			String s = new SimpleDateFormat("yyyy-MM-dd").format(newDate);
+			s += " 01:00:00";
+			Date d1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(s);
+			System.out.println("d1=" + d1);
+
+			String t = new SimpleDateFormat("yyyy-MM-dd").format(newDate);
+			t += " 06:00:00";
+			Date d2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(t);
+			System.out.println("d2=" + d2);
+			System.out.println(newDate);
+
+			if (newDate.getTime() > d1.getTime() && newDate.getTime() < d2.getTime()) {
+
+			}
+			
+			Date dd=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2019-04-18 19:05:00");
+			if(newDate.getTime() > (dd.getTime()+1000*60*60*2)){
+				System.out.println(2222);
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
