@@ -11,6 +11,8 @@
     <div>
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <header style="height: 100%">
+                	<input type="text" id="id" hidden>
+                	<input type="text" id="roleId" hidden>
                     <div align="left">
 	                    <table style="width: 100%">
 	                   		<tr>
@@ -19,8 +21,8 @@
 										<div class="form-group">
 											用户名：
 											<input id="username" type="text" class="form-control" placeholder="用户名">
-											昵称：
-											<input id="nickname" type="text" class="form-control" placeholder="昵称">
+											真实姓名：
+											<input id="realName" type="text" class="form-control" placeholder="真实姓名">
 											状态：
 											<select class="form-control input-sm" id="status">
 											</select>
@@ -45,11 +47,15 @@
                                 <tr>
                                 </tr>                       
                                 <tr>
-                                    <th>username</th>
-                                    <th>昵称</th>
-                                    <th>手机号</th>
-                                    <th>邮箱</th>
-									<th>状态</th>     
+                                    <th>#</th>
+									<th>用户名</th>
+									<th>影院编码</th>
+									<th>影院名称</th>
+									<th>真实姓名</th>
+									<th>角色</th>
+									<th>创建时间</th>
+									<th>修改时间</th>
+									<th>状态</th>
 									<th>操作</th>
                                 </tr>
                             </thead>
@@ -74,6 +80,21 @@
 layui.use([ 'layer' ], function() {
 	var layer = layui.layer;
 });
+
+initUserId();
+
+function initUserId(){
+	$.ajax({
+		type : 'get',
+		url : '/users/current',
+		async : false,
+		success : function(data) {
+			$("#id").val(data.id);
+			$("#roleId").val(data.roleId);
+		}
+	});
+}
+
 var userStatus = showDictSelect("status", "userStatus", true);
 
 var pers = checkPermission();
@@ -92,8 +113,10 @@ function init(){
         		"url" : "/users",
         		"type":"get",
         		"data":function(d){
+        			d.Id = $("#id").val();
+        			d.roleId = $("#roleId").val();
     				d.username = $('#username').val();
-    				d.nickname = $('#nickname').val();
+    				d.realName = $('#realName').val();
     				d.status = $('#status').val();
         		},
     			"error":function(xhr, textStatus, errorThrown){
@@ -119,10 +142,18 @@ function init(){
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
             "columns": [
+            	{"data" : null, "defaultContent" : "","orderable":false,
+					"render" : function(data, type, full, meta){
+						return meta.row + 1 + meta.settings._iDisplayStart;
+						}
+				}, 
                 { "data": "username", "defaultContent": ""},
-                { "data": "nickname", "defaultContent": ""},
-                { "data": "phone", "defaultContent": ""},
-                { "data": "email", "defaultContent": ""},
+                { "data": "cinemaCode", "defaultContent": ""},
+                { "data": "cinemaName", "defaultContent": ""},
+                { "data": "realName", "defaultContent": ""},
+                { "data": "roleName", "defaultContent": ""},
+                { "data": "createTime", "defaultContent": ""},
+                { "data": "updateTime", "defaultContent": ""},
                 { 
                 	"data": "status", 
                 	"defaultContent": "",

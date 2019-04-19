@@ -111,27 +111,44 @@ public class PermissionController {
 		}
 	}
 
-	@GetMapping
+	@GetMapping("{roleId}")
 	@ApiOperation(value = "菜单列表")
 	@PreAuthorize("hasAuthority('sys:menu:query')")
-	public List<Permission> permissionsList() {
-		List<Permission> permissionsAll = permissionDao.listAll();
+	public List<Permission> permissionsList(Long roleId) {
+		if(roleId!=1){
+			List<Permission> permissionsAll = permissionDao.listAll();
+			List<Permission> list = Lists.newArrayList();
+			setPermissionsList(0L, permissionsAll, list);
 
-		List<Permission> list = Lists.newArrayList();
-		setPermissionsList(0L, permissionsAll, list);
+			return list;
+		}else{
+			List<Permission> permissionsAll = permissionDao.listByRoleId(roleId);
+			List<Permission> list = Lists.newArrayList();
+			setPermissionsList(0L, permissionsAll, list);
 
-		return list;
+			return list;
+		}
+		
 	}
-
-	@GetMapping("/all")
+	
+	@GetMapping("/all{roleId}")
 	@ApiOperation(value = "所有菜单")
 	@PreAuthorize("hasAuthority('sys:menu:query')")
-	public JSONArray permissionsAll() {
-		List<Permission> permissionsAll = permissionDao.listAll();
-		JSONArray array = new JSONArray();
-		setPermissionsTree(0L, permissionsAll, array);
+	public JSONArray permissionsAll(Long roleId) {
+		if(roleId!=1){
+			List<Permission> permissionsAll = permissionDao.listByRoleId(roleId);
+			JSONArray array = new JSONArray();
+			setPermissionsTree(0L, permissionsAll, array);
 
-		return array;
+			return array;
+		}else{
+			List<Permission> permissionsAll = permissionDao.listAll();
+			JSONArray array = new JSONArray();
+			setPermissionsTree(0L, permissionsAll, array);
+
+			return array;
+		}
+		
 	}
 
 	@GetMapping("/parents")
@@ -165,6 +182,21 @@ public class PermissionController {
 			}
 		}
 	}
+	/*private void setPermissionsTree(Long pId, List<Permission> permissionsAll, JSONArray array) {
+		for (Permission per : permissionsAll) {
+			if (per.getParentId().equals(pId)) {
+				String string = JSONObject.toJSONString(per);
+				JSONObject parent = (JSONObject) JSONObject.parse(string);
+				array.add(parent);
+
+				if (permissionsAll.stream().filter(p -> p.getParentId().equals(per.getId())).findAny() != null) {
+					JSONArray child = new JSONArray();
+					parent.put("child", child);
+					setPermissionsTree(per.getId(), permissionsAll, child);
+				}
+			}
+		}
+	}*/
 
 	@GetMapping(params = "roleId")
 	@ApiOperation(value = "根据角色id获取权限")

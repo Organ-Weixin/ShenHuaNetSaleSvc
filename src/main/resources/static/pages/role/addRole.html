@@ -10,7 +10,7 @@
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 	<form class="form-horizontal" onsubmit="return false" id="form">
 		<fieldset>
-			<input type="hidden" id="id" name="id">
+			<input  id="id" name="id" hidden>
 			<div class="form-group">
 				<label class="col-md-2 control-label">角色</label>
 				<div class="col-md-10">
@@ -26,13 +26,26 @@
 					<textarea class="form-control" placeholder="描述" name="description"  id="description"></textarea>
 				</div>
 			</div>
+			
+			<div class="form-group">
+				<label class="col-md-2 control-label">角色类型</label>
+				<div class="col-md-10">
+					<input type="text" id="type" hidden>
+					<input type="radio" value="2" name="type">影院管理员
+					<input type="radio" value="3" name="type">其他人员
+				</div>
+			</div>
+			<div class="form-group">
+					<input type="text" name="createUserId"  id="createUserId" hidden>
+			</div>
+			
 			<div class="form-group">
 				<label class="col-md-2 control-label">权限</label>
 				<div class="col-md-10">
 					<ul id="treeDemo" class="ztree"></ul>
 				</div>
 			</div>
-
+		
 			<div class="form-actions">
 				<div class="row" align="center">
 					<div class="col-md-12">
@@ -56,11 +69,28 @@
 	<script type="text/javascript" src="../../js/libs/jquery.ztree.all-3.5.min.js"></script>
 	<script type="text/javascript" src="../../js/my/ztree-menu.js"></script>
 	<script type="text/javascript">
+	window.onload=function(){
+		$(":radio[name='type'][value='" +$("#type").val()+ "']").prop("checked", "checked");
+		$.fn.zTree.init($("#treeDemo"), getSettting(), getMenuTree($("#createUserId").val()));
+	}
+	
 	layui.use('layer', function(){
 	    var layer = layui.layer;
 	});
 	
-		$.fn.zTree.init($("#treeDemo"), getSettting(), getMenuTree());
+		initRole();
+		
+		function initRole(){
+			$.ajax({
+				type : 'get',
+				url : '/users/current',
+				async : false,
+				success : function(data) {
+					$("#createUserId").val(data.roleId);
+				}
+			});
+		}
+		
 		initData();
 	
 		function initData(){
@@ -74,6 +104,7 @@
 						$("#id").val(data.id);
 						$("#name").val(data.name);
 						$("#description").val(data.description);
+						$("#type").val(data.type);
 					}
 				});
 				
@@ -106,7 +137,6 @@
 				}
 			});
 		}
-		
 	</script>
 </body>
 </html>

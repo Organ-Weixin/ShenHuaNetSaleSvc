@@ -20,7 +20,7 @@ public interface PermissionDao {
 	@Select("select * from sys_permission t where t.type = 1 order by t.sort")
 	List<Permission> listParents();
 
-	@Select("select distinct p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId inner join sys_role_user ru on ru.roleId = rp.roleId where ru.userId = #{userId} order by p.sort")
+	@Select("select distinct p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId inner join sys_user ru on ru.roleId = rp.roleId where ru.id = #{userId} order by p.sort")
 	List<Permission> listByUserId(Long userId);
 
 	@Select("select p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId where rp.roleId = #{roleId} order by p.sort")

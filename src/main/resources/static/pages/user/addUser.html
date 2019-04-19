@@ -9,6 +9,7 @@
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 	<form class="form-horizontal" onsubmit="return false" id="form">
 		<fieldset>
+		<input type = "text" id="id" hidden>
 			<div class="form-group">
 				<label class="col-md-2 control-label">用户名</label>
 				<div class="col-md-10">
@@ -21,54 +22,42 @@
 			<div class="form-group">
 				<label class="col-md-2 control-label">密码</label>
 				<div class="col-md-10">
-					<input class="form-control" placeholder="密码" type="text" value="88888888" name="password"
+					<input class="form-control" placeholder="密码" type="text" name="password"
 						data-bv-notempty="true"
 						data-bv-notempty-message="密码 不能为空">
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-md-2 control-label">昵称</label>
+				<label class="col-md-2 control-label">影院编码</label>
 				<div class="col-md-10">
-					<input class="form-control" placeholder="昵称" type="text" name="nickname">
+					<input class="form-control" placeholder="影院名称" type="text" name="cinemaCode">
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-md-2 control-label">手机号</label>
+				<label class="col-md-2 control-label">影院名称</label>
 				<div class="col-md-10">
-					<input class="form-control" placeholder="手机号" type="text" maxlength="11" name="phone">
+					<input class="form-control" placeholder="影院名称" type="text" name="cinemaName">
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-md-2 control-label">电话</label>
+				<label class="col-md-2 control-label">真实姓名</label>
 				<div class="col-md-10">
-					<input class="form-control" placeholder="电话" type="text" maxlength="20" name="telephone">
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-md-2 control-label">邮箱</label>
-				<div class="col-md-10">
-					<input class="form-control" placeholder="邮箱" type="text" maxlength="50" name="email">
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-md-2 control-label">生日</label>
-				<div class="col-xs-2">
-				  <input type="text" class="form-control" placeholder="生日" id="birthday" name='birthday'>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-md-2 control-label">性别</label>
-				<div class="col-md-10" style="width: 100px">
-					<select class="form-control input-sm" name="sex" id="sex">
-					</select>
+					<input class="form-control" placeholder="真实姓名" type="text" name="realName">
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-md-2 control-label">角色</label>
-				<div class="checkbox" id="roles">
+				<!-- <div class="checkbox" id="roles">
+				</div> -->
+				<div id="role">
+					<input type="text" name="roleId" id="roleId" hidden>
+					<input type="text" name="roleName" id="roleName" hidden>
 				</div>
 			</div>
-
+			<div class="form-group">
+				<input type="text" name="createUserId" id="createUserId" hidden>
+			</div>
+			
 			<div class="form-actions">
 				<div class="row" align="center">
 					<div class="col-md-12">
@@ -91,6 +80,29 @@
 	<script type="text/javascript" src="../../layui/layui.js"></script>
 	<script type="text/javascript" src="../../js/dict.js"></script>
 	<script type="text/javascript">
+	window.onload=function(){
+		//选择角色
+		getRole();
+		function getRole(){
+			$.ajax({
+				url:'/roles/getRole',
+				data:{"roleId":$("#id").val()},
+				dataType:'json',
+				type:'get',
+				success:function(data){
+					for(var i =0;i <data.length;i++){
+						var role = "<input type='radio' class='role' name='radio' title='"+data[i].name+"' value='"+data[i].id+"' style='margin-left:30px;margin-right:5px' >"+data[i].name+"";
+						$("#role").append(role);
+					}
+				}
+			});
+		}
+		$("#role").on('click','.role',function(){
+			$("#roleId").val($(this).val());
+			$("#roleName").val($(this).attr('title'));
+		});
+	}
+	
 		layui.use(['layer','laydate'], function(){
 		    var layer = layui.layer;
 		    var laydate = layui.laydate;
@@ -98,12 +110,25 @@
 	           elem: '#birthday'
 	        });
 		});
-
-		showDictSelect("sex", "sex");
-		initRoles();
 	
-		$('#form').bootstrapValidator();
+		showDictSelect("sex", "sex");
 		
+		initRoles();
+		
+		initData();
+		function initData(){
+			$.ajax({
+				type : 'get',
+				url : '/users/current',
+				async : false,
+				success : function(data) {
+					$("#id").val(data.roleId);
+					$("#createUserId").val(data.id);
+				}
+			});
+		} 
+		
+		$('#form').bootstrapValidator();
 		function add() {
 			var bootstrapValidator = $("#form").data('bootstrapValidator');
 			bootstrapValidator.validate();
@@ -112,7 +137,6 @@
 		    }
 		    
 		    var formdata = $("#form").serializeObject();
-		    formdata.roleIds = getCheckedRoleIds();
 
 			$.ajax({
 				type : 'post',
@@ -126,7 +150,6 @@
 				}
 			});
 		}
-		
 	</script>
 </body>
 </html>

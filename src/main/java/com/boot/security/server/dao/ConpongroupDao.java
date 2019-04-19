@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.boot.security.server.model.Conpongroup;
-import com.boot.security.server.model.Systemusers;
+import com.boot.security.server.model.SysUser;
 
 @Mapper
 public interface ConpongroupDao {
@@ -19,8 +19,8 @@ public interface ConpongroupDao {
     @Select("select * from conpongroup t where t.id = #{id}")
     Conpongroup getById(Long id);
     
-    @Select("select cinemaname from systemusers where roleid = 6")
-    List<Systemusers> getCinemaName();
+    @Select("select cinemaname from sys_user where roleid = 4")
+    List<SysUser> getCinemaName();
     
     @Delete("delete from conpongroup where id = #{id}")
     int delete(Long id);

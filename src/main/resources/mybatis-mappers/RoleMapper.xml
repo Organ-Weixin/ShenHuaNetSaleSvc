@@ -6,20 +6,29 @@
 	<sql id="where">
 		<where>
 			<if test="params.name != null and params.name != ''">
-				and t.name like concat('%', #{params.name}, '%')
+				and ss.name like concat('%', #{params.name}, '%')
 			</if>
 		</where>
 	</sql>
-
-	<select id="count" resultType="int">
-		select count(1) from sys_role t
-		<include refid="where" />
+	<sql id="getUserId">
+		<where>
+			<if test="params.Id !=null and params.Id != ''">
+				and id = #{params.Id}
+			</if>
+		</where>
+	</sql>
+	
+	 <select id="count" resultType="int">
+		select count(1) from sys_role ss,
+		(select id from sys_role <include refid="getUserId" /> ) s
+		where ss.createUserId = s.id or ss.id = s.id
 	</select>
 
 	<select id="list" resultType="Role">
-		select * from sys_role t
-		<include refid="where" />
-		${params.orderBy}
+		select ss.* from sys_role ss,
+		(select id from sys_role <include refid="getUserId" />) s
+		where (ss.createUserId = s.id or ss.id = s.id)
+		order by ss.id asc
         <if test="offset != null and offset >= 0 and limit != null and limit >= 0">
             limit #{offset}, #{limit}
         </if>

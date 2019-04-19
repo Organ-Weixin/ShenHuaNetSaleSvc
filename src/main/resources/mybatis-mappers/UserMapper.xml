@@ -4,28 +4,79 @@
 <mapper namespace="com.boot.security.server.dao.UserDao">
 
 	<sql id="where">
-		<where>
-			<if test="params.username != null and params.username != ''">
-				and t.username like concat('%', #{params.username}, '%')
+			<if test="params.id != null and params.id != ''">
+				and id = #{params.id} 
 			</if>
-			<if test="params.nickname != null and params.nickname != ''">
-				and t.nickname like concat('%', #{params.nickname}, '%')
+			<if test="params.username != null and params.username != ''">
+				and username = #{params.username} 
+			</if>
+			<if test="params.password != null and params.password != ''">
+				and password = #{params.password} 
+			</if>
+			<if test="params.cinemaCode != null and params.cinemaCode != ''">
+				and cinemaCode = #{params.cinemaCode} 
+			</if>
+			<if test="params.cinemaName != null and params.cinemaName != ''">
+				and cinemaName = #{params.cinemaName} 
+			</if>
+			<if test="params.realName != null and params.realName != ''">
+				and realName = #{params.realName} 
+			</if>
+			<if test="params.createUserId != null and params.createUserId != ''">
+				and creaetUserId = #{params.createUserId} 
+			</if>
+			<if test="params.createTime != null and params.createTime != ''">
+				and createTime = #{params.createTime} 
+			</if>
+			<if test="params.updateUserId != null and params.updateUserId != ''">
+				and updateUserId = #{params.updateUserId} 
+			</if>
+			<if test="params.updateTime != null and params.updateTime != ''">
+				and updateTime = #{params.updateTime} 
 			</if>
 			<if test="params.status != null and params.status != ''">
-				and t.status = #{params.status}
+				and status = #{params.status} 
+			</if>
+	</sql>
+	<sql id="sqlwhere">
+		<where>
+			<if test="params.username != null and params.username != ''">
+				and username = #{params.username} 
+			</if>
+			<if test="params.realName != null and params.realName != ''">
+				and realName = #{params.realName} 
+			</if>
+			<if test="params.status != null and params.status != ''">
+				and status = #{params.status} 
 			</if>
 		</where>
 	</sql>
-
+	
+	<sql id="getUserId">
+		<where>
+			<if test="params.Id !=null and params.Id != ''">
+				and id = #{params.Id}
+			</if>
+		</where>
+	</sql>
+	
 	<select id="count" resultType="int">
-		select count(1) from sys_user t
-		<include refid="where" />
+		select count(1) from userview ss
+		<if test="params.roleId !=1 ">
+		,(select id from userview <include refid="getUserId" />) s
+		where ss.createUserId = s.id or ss.id = s.id
+		</if>
 	</select>
 
 	<select id="list" resultType="SysUser">
-		select * from sys_user t
-		<include refid="where" />
-		${params.orderBy}
+		select ss.* from sys_user ss
+		<if test="params.roleId !='1' ">
+		,(select id from sys_user <include refid="getUserId" />) s
+		where ss.createUserId = s.id or ss.id = s.id
+		<include refid="where"/>
+		</if>
+		<include refid="sqlwhere"/>
+		order by ss.roleId asc
         limit #{offset}, #{limit}
 	</select>
 
@@ -40,34 +91,38 @@
 		update sys_user t
 		<set>
 			<if test="username != null">
-				username = #{username},
+				username = #{username}, 
 			</if>
-			<if test="nickname != null">
-				nickname = #{nickname},
+			<if test="password != null">
+				password = #{password}, 
 			</if>
-			<if test="headImgUrl != null">
-				headImgUrl = #{headImgUrl},
+			<if test="cinemaCode != null">
+				cinemaCode = #{cinemaCode}, 
 			</if>
-			<if test="phone != null">
-				phone = #{phone},
+			<if test="cinemaName != null">
+				cinemaName = #{cinemaName}, 
 			</if>
-			<if test="telephone != null">
-				telephone = #{telephone},
+			<if test="realName != null">
+				realName = #{realName}, 
 			</if>
-			<if test="email != null">
-				email = #{email},
+			<if test="createUserId != null">
+				createUserId = #{createUserId}, 
 			</if>
-			<if test="birthday != null">
-				birthday = #{birthday},
+			<if test="createTime != null">
+				createTime = #{createTime}, 
 			</if>
-			<if test="sex != null">
-				sex = #{sex},
+			<if test="updateUserId != null">
+				updateUserId = #{updateUserId}, 
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime}, 
 			</if>
 			<if test="status != null">
-				status = #{status},
+				status = #{status}, 
 			</if>
-			updateTime = #{updateTime}
+
 		</set>
+
 		where t.id = #{id}
 	</update>
 </mapper>

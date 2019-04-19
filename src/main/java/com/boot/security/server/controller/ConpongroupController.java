@@ -21,7 +21,7 @@ import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.dao.ConpongroupDao;
 import com.boot.security.server.model.Conpongroup;
-import com.boot.security.server.model.Systemusers;
+import com.boot.security.server.model.SysUser;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -47,8 +47,8 @@ public class ConpongroupController {
     }
     
     @RequestMapping("/getCinemaName")
-    public List<Systemusers> getCinemaName(){
-    	List<Systemusers> list = conpongroupService.getCinemaName();
+    public List<SysUser> getCinemaName(){
+    	List<SysUser> list = conpongroupService.getCinemaName();
     	return list;
     }
     

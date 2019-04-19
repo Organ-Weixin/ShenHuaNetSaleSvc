@@ -6,12 +6,12 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 
 import com.boot.security.server.model.Conpongroup;
-import com.boot.security.server.model.Systemusers;
+import com.boot.security.server.model.SysUser;
 
 public interface ConpongroupService {
 	Conpongroup getById(Long id);
 	
-	List<Systemusers> getCinemaName();
+	List<SysUser> getCinemaName();
 	
 	int delete(Long id);
 

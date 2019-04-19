@@ -1,6 +1,8 @@
 package com.boot.security.server.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,12 +12,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.security.server.annotation.LogAnnotation;
 import com.boot.security.server.dao.RoleDao;
+import com.boot.security.server.dao.UserDao;
 import com.boot.security.server.dto.RoleDto;
 import com.boot.security.server.model.Role;
+import com.boot.security.server.model.SysRoleUser;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
@@ -98,5 +103,21 @@ public class RoleController {
 	@PreAuthorize("hasAuthority('sys:role:del')")
 	public void delete(@PathVariable Long id) {
 		roleService.deleteRole(id);
+	}
+	@GetMapping("/getByUserId{userId}")
+	//@ApiOperation(value = "根据用户id获取拥有的角色")
+	@PreAuthorize("hasAnyAuthority('sys:user:query','sys:role:query')")
+	public SysRoleUser getByUserId(String userId){
+		return roleDao.getByUserId(userId);
+	}
+	
+	@GetMapping("/getRole{roleId}")
+	@PreAuthorize("hasAnyAuthority('sys:user:query','sys:role:query')")
+	public List<Role> getRole(Long roleId){
+		if(roleId!=1){
+			return roleDao.getRoleById(roleId);
+		}else{
+			return roleDao.getAllRole();
+		}
 	}
 }

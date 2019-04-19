@@ -1,4 +1,4 @@
-function getMenuTree() {
+function getMenuTree(roleId) {
 	var root = {
 		id : 0,
 		name : "root",
@@ -8,6 +8,7 @@ function getMenuTree() {
 	$.ajax({
 		type : 'get',
 		url : '/permissions/all',
+		data : {"roleId":roleId},
 		contentType : "application/json; charset=utf-8",
 		async : false,
 		success : function(data) {

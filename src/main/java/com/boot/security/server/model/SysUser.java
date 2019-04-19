@@ -7,17 +7,17 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class SysUser extends BaseEntity<Long> {
 
 	private static final long serialVersionUID = -6525908145032868837L;
-
+	
 	private String username;
 	private String password;
-	private String nickname;
+	private String cinemaCode;
+	private String cinemaName;
+	private Long roleId;
+	private String roleName;
 	private String headImgUrl;
-	private String phone;
-	private String telephone;
-	private String email;
-	@JsonFormat(pattern = "yyyy-MM-dd")
-	private Date birthday;
-	private Integer sex;
+	private String realName;
+	private Long createUserId;
+	private Long updateUserId;
 	private Integer status;
 	private String intro;
 
@@ -37,12 +37,36 @@ public class SysUser extends BaseEntity<Long> {
 		this.password = password;
 	}
 
-	public String getNickname() {
-		return nickname;
+	public String getCinemaCode() {
+		return cinemaCode;
 	}
 
-	public void setNickname(String nickname) {
-		this.nickname = nickname;
+	public void setCinemaCode(String cinemaCode) {
+		this.cinemaCode = cinemaCode;
+	}
+
+	public String getCinemaName() {
+		return cinemaName;
+	}
+
+	public void setCinemaName(String cinemaName) {
+		this.cinemaName = cinemaName;
+	}
+	
+	public Long getRoleId() {
+		return roleId;
+	}
+
+	public void setRoleId(Long roleId) {
+		this.roleId = roleId;
+	}
+
+	public String getRoleName() {
+		return roleName;
+	}
+
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
 	}
 
 	public String getHeadImgUrl() {
@@ -53,46 +77,29 @@ public class SysUser extends BaseEntity<Long> {
 		this.headImgUrl = headImgUrl;
 	}
 
-	public String getPhone() {
-		return phone;
+	public String getRealName() {
+		return realName;
 	}
 
-	public void setPhone(String phone) {
-		this.phone = phone;
+	public void setRealName(String realName) {
+		this.realName = realName;
+	}
+	
+	public Long getCreateUserId() {
+		return createUserId;
 	}
 
-	public String getTelephone() {
-		return telephone;
+	public void setCreateUserId(Long createUserId) {
+		this.createUserId = createUserId;
 	}
 
-	public void setTelephone(String telephone) {
-		this.telephone = telephone;
+	public Long getUpdateUserId() {
+		return updateUserId;
 	}
 
-	public String getEmail() {
-		return email;
+	public void setUpdateUserId(Long updateUserId) {
+		this.updateUserId = updateUserId;
 	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public Date getBirthday() {
-		return birthday;
-	}
-
-	public void setBirthday(Date birthday) {
-		this.birthday = birthday;
-	}
-
-	public Integer getSex() {
-		return sex;
-	}
-
-	public void setSex(Integer sex) {
-		this.sex = sex;
-	}
-
 	public Integer getStatus() {
 		return status;
 	}

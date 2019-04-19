@@ -11,6 +11,8 @@
     <div>
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <header style="height: 100%">
+                <input type="text" id="id" hidden>
+                <input type="text" id="roleId" hidden>
                     <div align="left">
 	                    <table style="width: 100%">
 	                   		<tr>
@@ -40,6 +42,7 @@
                                 <tr>
                                 </tr>                       
                                 <tr>
+                                	<th>id</th>
                                     <th style="width: 20%">角色</th>
 									<th>描述</th>
 									<th style="width: 20%">修改时间</th>
@@ -63,7 +66,41 @@
 <script type="text/javascript" src="../../layui/layui.js"></script>
 <script type="text/javascript" src="../../js/my/permission.js"></script>
 <script type="text/javascript">
-var pers = checkPermission();
+window.onload=function(){
+	/* getRoleId($("#id").val());
+	
+	function getRoleId(userId){
+		$.ajax({
+			url:'/roles/getByUserId?userId='+userId,
+			dataType:'json',
+			type:'get',
+			success:function(data){
+				alert(data.roleId);
+				$("#roleId").val(data.roleId);
+			}
+		});
+	} */
+	
+}
+
+
+initRoleId();
+
+function initRoleId(){
+	$.ajax({
+		type : 'get',
+		url : '/users/current',
+		async : false,
+		success : function(data) {
+			console.log(data);
+			$("#id").val(data.id);
+			$("#roleId").val(data.roleId);
+		}
+	});
+}
+
+
+ var pers = checkPermission();
 
 var example;
 function init(){
@@ -79,6 +116,7 @@ function init(){
         		"url" : "/roles",
         		"type":"get",
         		"data":function(d){
+        			d.Id = $("#roleId").val();
     				d.name = $('#name').val();
         		},
     			"error":function(xhr, textStatus, errorThrown){
@@ -104,6 +142,7 @@ function init(){
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
             "columns": [
+            	{ "data": "id", "defaultContent": ""},
                 { "data": "name", "defaultContent": ""},
                 { "data": "description", "defaultContent": ""},
                 { "data": "updateTime", "defaultContent": ""},
@@ -116,7 +155,13 @@ function init(){
                 		var href = "addRole.html?id=" + id;
                         var edit = buttonEdit(href, "sys:role:add", pers);
                 		var del = buttonDel(id, "sys:role:del", pers);
-                        return edit + del;
+                		if(id==1){
+                			return null;
+                		}else if(id==4){
+                        	return edit;
+                		}else{
+                			return edit + del;
+                		}
                   	}
                 },
             ],
@@ -149,5 +194,5 @@ $("#searchBt").click(function(){
 	example.ajax.reload();
 });
 
-init();
+init(); 
 </script>

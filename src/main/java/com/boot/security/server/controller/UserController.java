@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boot.security.server.annotation.LogAnnotation;
 import com.boot.security.server.dao.UserDao;
 import com.boot.security.server.dto.UserDto;
+import com.boot.security.server.model.Role;
 import com.boot.security.server.model.SysUser;
+import com.boot.security.server.model.Userview;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
@@ -104,8 +106,8 @@ public class UserController {
 		}, new ListHandler() {
 
 			@Override
-			public List<SysUser> list(PageTableRequest request) {
-				List<SysUser> list = userDao.list(request.getParams(), request.getOffset(), request.getLimit());
+			public List<Userview> list(PageTableRequest request) {
+				List<Userview> list = userDao.list(request.getParams(), request.getOffset(), request.getLimit());
 				return list;
 			}
 		}).handle(request);
@@ -123,5 +125,4 @@ public class UserController {
 	public SysUser user(@PathVariable Long id) {
 		return userDao.getById(id);
 	}
-
 }

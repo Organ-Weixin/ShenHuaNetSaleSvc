@@ -8,14 +8,14 @@ import org.springframework.stereotype.Service;
 
 import com.boot.security.server.dao.ConpongroupDao;
 import com.boot.security.server.model.Conpongroup;
-import com.boot.security.server.model.Systemusers;
+import com.boot.security.server.model.SysUser;
 import com.boot.security.server.service.ConpongroupService;
 @Service
 public class ConpongroupServiceImpl implements ConpongroupService{
 	@Autowired
 	ConpongroupDao ConpongroupD;
 	@Override
-	public List<Systemusers> getCinemaName() {
+	public List<SysUser> getCinemaName() {
 		// TODO Auto-generated method stub
 		return ConpongroupD.getCinemaName();
 	}

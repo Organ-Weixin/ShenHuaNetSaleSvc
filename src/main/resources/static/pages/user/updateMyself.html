@@ -19,7 +19,7 @@
             <div class="form-group">
                 <label class="col-md-2 control-label">昵称</label>
                 <div class="col-md-10">
-                    <input class="form-control" placeholder="昵称" type="text" name="nickname" id="nickname"
+                    <input class="form-control" placeholder="昵称" type="text" name="realName" id="realName"
 						data-bv-notempty="true"
 						data-bv-notempty-message="昵称 不能为空">
                 </div>
@@ -88,7 +88,7 @@
 			success : function(data) {
 				$("#id").val(data.id);
 				$("#username").val(data.username);
-				$("#nickname").val(data.nickname);
+				$("#realName").val(data.realName);
 				$("#phone").val(data.phone);
 				$("#telephone").val(data.telephone);
 				$("#email").val(data.email);
