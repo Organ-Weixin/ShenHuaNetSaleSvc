@@ -96,6 +96,8 @@ public class XmlToJsonUtil {
 				|| (apiResultName + "_" + nodeName).equals("ApplyFetchTicketResult_Ticket")
 				|| (apiResultName + "_" + nodeName).equals("LockSeatQueryXml_Seat")
 				|| (apiResultName + "_" + nodeName).equals("SubmitOrderQueryXml_Seat")
+				|| (apiResultName + "_" + nodeName).equals("MtxLiveRealCheckSeatStateResult_SeatInfo")
+				|| (apiResultName + "_" + nodeName).equals("MtxAppPrintTicketResult_SeatInfo")
 					) 
 			{
 				JSONArray qq = new JSONArray();

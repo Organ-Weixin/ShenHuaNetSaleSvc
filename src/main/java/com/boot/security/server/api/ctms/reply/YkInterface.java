@@ -24,6 +24,7 @@ import com.boot.security.server.api.ctms.reply.YkGetSchedulesResult.dataBean.Sch
 import com.boot.security.server.api.ctms.reply.YkGetSeatsResult.DataBean.CinemaBean.SeatPlan;
 import com.boot.security.server.api.ctms.reply.YkGetSeatsResult.DataBean.CinemaBean.SeatPlan.Sections;
 import com.boot.security.server.api.ctms.reply.YkGetSeatsResult.DataBean.CinemaBean.SeatPlan.Sections.Seats;
+import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.OrderStatusEnum;
@@ -892,5 +893,69 @@ public class YkInterface implements ICTMSInterface {
 		//System.out.println(result.getGetCinemaResult().getCinemas().getCinema().get(0).getCinemaName());
 		
 		
+	}
+
+	@Override
+	public CTMSLoginCardReply LoginCard(Usercinemaview userCinema, String CardNo, String CardPassword)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CTMSQueryCardReply QueryCard(Usercinemaview userCinema, String CardNo, String CardPassword)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CTMSQueryDiscountReply QueryDiscount(Usercinemaview userCinema, String TicketCount, String CardNo,
+			String CardPassword, String LevelCode, String SessionCode, String SessionTime, String FilmCode,
+			String ScreenType, String ListingPrice, String LowestPrice) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CTMSCardPayReply CardPay(Usercinemaview userCinema, String CardNo, String CardPassword, float PayAmount,
+			String SessionCode, String FilmCode, String TicketNum) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CTMSCardPayBackReply CardPayBack(Usercinemaview userCinema, String CardNo, String CardPassword,
+			String TradeNo, float PayBackAmount) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CTMSQueryCardTradeRecordReply QueryCardTradeRecord(Usercinemaview userCinema, String CardNo,
+			String CardPassword, String StartDate, String EndDate, String PageSize, String PageNum) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CTMSCardChargeReply CardCharge(Usercinemaview userCinema, String CardNo, String CardPassword,
+			CardChargeTypeEnum ChargeType, float ChargeAmount) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CTMSQueryCardLevelReply QueryCardLevel(Usercinemaview userCinema) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CTMSCardRegisterReply CardRegister(Usercinemaview userCinema, String CardPassword, String LevelCode,
+			String InitialAmount, String CardUserName, String MobilePhone, String IDNumber, String Sex)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

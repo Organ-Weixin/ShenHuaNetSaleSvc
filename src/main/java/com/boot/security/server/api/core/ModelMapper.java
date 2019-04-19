@@ -86,8 +86,8 @@ public class ModelMapper {
         film.setCode(entity.getFilmCode());
         film.setName(entity.getFilmName());
         film.setDimensional(entity.getDimensional());
-        film.setDuration(entity.getDuration().toString());
-        film.setSequence(entity.getSequence().toString());
+        film.setDuration(String.valueOf(entity.getDuration()));
+        film.setSequence(String.valueOf(entity.getSequence()));
         film.setLanguage(entity.getLanguage());
         session.Films.Film.add(film);
 

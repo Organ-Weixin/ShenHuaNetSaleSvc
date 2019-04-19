@@ -4,7 +4,7 @@ import com.boot.security.server.api.ctms.reply.CTMSBaseReply;
 import com.boot.security.server.model.ErrorCodeEnum;
 import com.boot.security.server.model.StatusEnum;
 
-public class BaseReply {
+public class BaseReply { 
 	public static String ID_QueryCinemaListReply = "ID_QueryCinemaListReply";
 	public static String ID_QueryCinemaReply = "ID_QueryCinemaReply";
 	public static String ID_QuerySeatReply="ID_QuerySeatReply";
@@ -19,6 +19,15 @@ public class BaseReply {
 	public static String ID_QueryOrderReply="ID_QueryOrderReply";
 	public static String ID_QueryTicketReply="ID_QueryTicketReply";
 	public static String ID_FetchTicketReply="ID_FetchTicketReply";
+	public static String ID_LoginCardReply="ID_LoginCardReply";
+	public static String ID_QueryCardReply="ID_QueryCardReply";
+	public static String ID_QueryDiscountReply="ID_QueryDiscountReply";
+	public static String ID_CardPayReply="ID_CardPayReply";
+	public static String ID_CardPayBackReply="ID_CardPayBackReply";
+	public static String ID_QueryCardTradeRecordReply="ID_QueryCardTradeRecordReply";
+	public static String ID_CardChargeReply="ID_CardChargeReply";
+	public static String ID_QueryCardLevelReply="ID_QueryCardLevelReply";
+	public static String ID_CardRegisterReply="ID_CardRegisterReply";
 	public BaseReply()
     {
         Status = StatusEnum.Failure.getStatusCode();
