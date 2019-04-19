@@ -1,7 +1,7 @@
 package com.boot.security.server.api.core;
 
 import java.util.Date;
-import java.util.List;
+import java.util.List; 
 
 public class QueryCardTradeRecordReply extends BaseReply {
 	public QueryCardTradeRecordReply()

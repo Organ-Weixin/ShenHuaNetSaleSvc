@@ -13,7 +13,7 @@ import org.apache.ibatis.annotations.Select;
 import com.boot.security.server.model.Membercard;
 
 @Mapper
-public interface MembercardDao {
+public interface MembercardDao { 
 
     @Select("select * from membercard t where t.id = #{id}")
     Membercard getById(Long id);

@@ -1,6 +1,6 @@
 package com.boot.security.server.api.ctms.reply;
 
-public class CxQueryMemberInfoResult {
+public class CxQueryMemberInfoResult { 
     private ResBean QueryMemberInfoResult;
 
     public ResBean getQueryMemberInfoResult() {

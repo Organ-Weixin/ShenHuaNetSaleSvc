@@ -1,7 +1,7 @@
 package com.boot.security.server.api.core;
 
 public class LoginCardReply extends BaseReply {
-	public LoginCardReply()
+	public LoginCardReply() 
     {
         Id = ID_LoginCardReply;
     }

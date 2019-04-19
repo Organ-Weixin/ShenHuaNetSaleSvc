@@ -1,7 +1,7 @@
 package com.boot.security.server.api.core;
 
 public class QueryDiscountReply extends BaseReply {
-	public QueryDiscountReply()
+	public QueryDiscountReply() 
     {
         Id = ID_QueryDiscountReply;
     }

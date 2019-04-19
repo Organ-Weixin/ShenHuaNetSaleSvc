@@ -1,6 +1,6 @@
 package com.boot.security.server.api.core;
 
-import java.util.List;
+import java.util.List; 
 
 public class QueryCardLevelReply extends BaseReply {
 	public QueryCardLevelReply()

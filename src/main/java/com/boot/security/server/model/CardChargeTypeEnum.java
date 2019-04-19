@@ -1,6 +1,6 @@
 package com.boot.security.server.model;
 
-public enum CardChargeTypeEnum {
+public enum CardChargeTypeEnum { 
 	Cash("现金",0),
 	UnionCardPay("银联刷卡支付",1),
 	UnionOnlinePay("银联线上支付",2),

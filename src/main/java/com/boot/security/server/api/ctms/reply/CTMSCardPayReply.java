@@ -1,6 +1,6 @@
 package com.boot.security.server.api.ctms.reply;
 
-public class CTMSCardPayReply extends CTMSBaseReply {
+public class CTMSCardPayReply extends CTMSBaseReply { 
 	private String TradeNo;
 	private Float DeductAmount;
 	public String getTradeNo() {

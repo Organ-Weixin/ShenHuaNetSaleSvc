@@ -1,6 +1,6 @@
 package com.boot.security.server.api.core;
 
-public class ReplyExtension {
+public class ReplyExtension { 
 
 	// region QueryCinemaListReply
 	public static boolean RequestInfoGuard(QueryCinemaListReply reply, String Username, String Password) {
@@ -607,7 +607,7 @@ public class ReplyExtension {
 	}
 	// endregion
 	
-	//region
+	//region QueryCardLevelReply
 	public static boolean RequestInfoGuard(QueryCardLevelReply reply, String Username, String Password,
             String CinemaCode)
         {
@@ -630,7 +630,7 @@ public class ReplyExtension {
         }
 	//endregion
 	
-	//region 
+	//region CardRegisterReply
 	public static boolean RequestInfoGuard(CardRegisterReply reply, String Username, String Password, String CinemaCode, String CardPassword, String LevelCode, String InitialAmount, String CardUserName, String MobilePhone, String IDNumber, String Sex)
     {
         if (Username.isEmpty())

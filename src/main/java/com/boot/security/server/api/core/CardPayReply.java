@@ -1,6 +1,6 @@
 package com.boot.security.server.api.core;
 
-public class CardPayReply extends BaseReply {
+public class CardPayReply extends BaseReply { 
 	public CardPayReply()
     {
         Id = ID_CardPayReply;

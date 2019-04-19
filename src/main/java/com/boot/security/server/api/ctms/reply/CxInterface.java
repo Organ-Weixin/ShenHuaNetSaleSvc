@@ -56,7 +56,7 @@ import com.boot.security.server.model.SessionSeatStatusEnum;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.StatusEnum;
 
-public class CxInterface implements ICTMSInterface {
+public class CxInterface implements ICTMSInterface { 
 	private WebService cxService;
 	CinemaServiceImpl _cinemaService = SpringUtil.getBean(CinemaServiceImpl.class);
 	ScreeninfoServiceImpl _screeninfoService = SpringUtil.getBean(ScreeninfoServiceImpl.class);

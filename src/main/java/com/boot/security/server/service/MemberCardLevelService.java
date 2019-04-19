@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.boot.security.server.model.Membercardlevel;
 
-public interface MemberCardLevelService {
+public interface MemberCardLevelService { 
 	int Save(Membercardlevel membercardlevel);
 	int deleteByCinemaCode(String cinemacode);
 	List<Membercardlevel> getByCinemaCode(String cinemacode);

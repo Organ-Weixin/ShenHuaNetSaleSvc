@@ -2,7 +2,7 @@ package com.boot.security.server.model;
 
 import java.util.Date;
 
-public class Membercard extends BaseEntity<Long> {
+public class Membercard extends BaseEntity<Long> { 
 
 	private Long Id;
 	private String CinemaCode;

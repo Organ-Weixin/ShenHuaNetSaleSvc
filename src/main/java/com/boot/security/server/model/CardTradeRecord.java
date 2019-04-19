@@ -1,6 +1,6 @@
 package com.boot.security.server.model;
 
-import java.util.Date;
+import java.util.Date; 
 
 public class CardTradeRecord {
 	private String TradeNo;

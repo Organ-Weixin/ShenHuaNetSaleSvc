@@ -52,9 +52,7 @@ public class MtxModelMapper {
 		 Date startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(model.getFeatureDate() + " " + model.getFeatureTime());
 		 Date endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(model.getFeatureDate() + " " + model.getTotalTime());
 		 entity.setStartTime(startTime);
-		 entity.setDuration((int)(endTime.getTime()-startTime.getTime())/1000/60);
-//		 System.out.println("获取时间1"+startTime);
-//		 System.out.println("时长："+(endTime.getTime()-startTime.getTime())/1000/60);		
+		 entity.setDuration((int)(endTime.getTime()-startTime.getTime())/1000/60);	
 		 entity.setDimensional("3D");
 		 entity.setSequence(1);
 		 entity.setAddFee(0.0);

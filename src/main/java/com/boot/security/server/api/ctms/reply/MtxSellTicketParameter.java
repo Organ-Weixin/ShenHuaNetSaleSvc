@@ -1,22 +1,23 @@
 package com.boot.security.server.api.ctms.reply;
 
+import java.io.Serializable;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
 //设置生成的xml的根节点的名称
-@XmlRootElement(name = "SellTicketParameter")
-//设置xml节点顺序
-@XmlType(propOrder = { "appCode", "cinemaId", "featureAppNo","serialNum","printpassword","balance","payType","recvMobilePhone","sendType",
-		"payResult","isCmtsPay","isCmtsSendCode","payMobile","bookSign","payed","sendModeID","paySeqNo","tokenID","verifyInfo"}) 
-public class MtxSellTicketParameter {
-	
+@XmlRootElement(name = "MtxSellTicketParameter")
+//设置根据字段还是方法生成
+@XmlAccessorType(XmlAccessType.FIELD)
+public class MtxSellTicketParameter implements Serializable{
 	private String AppCode;
 	private String CinemaId;
-	private String FeatureAppNo;	
+	private String FeatureAppNo;
 	private String SerialNum;
 	private String Printpassword;
-	private double Balance;
+	private Double Balance;
 	private String PayType;
 	private String RecvMobilePhone;
 	private String SendType;
@@ -25,12 +26,11 @@ public class MtxSellTicketParameter {
 	private boolean IsCmtsSendCode;
 	private String PayMobile;
 	private String BookSign;
-	private double Payed;
+	private Double Payed;
 	private String SendModeID;
 	private String PaySeqNo;
 	private String TokenID;
 	private String VerifyInfo;
-	
 	@XmlElement(name = "AppCode")
 	public String getAppCode() {
 		return AppCode;
@@ -38,7 +38,6 @@ public class MtxSellTicketParameter {
 	public void setAppCode(String appCode) {
 		AppCode = appCode;
 	}
-	
 	@XmlElement(name = "CinemaId")
 	public String getCinemaId() {
 		return CinemaId;
@@ -46,7 +45,6 @@ public class MtxSellTicketParameter {
 	public void setCinemaId(String cinemaId) {
 		CinemaId = cinemaId;
 	}
-	
 	@XmlElement(name = "FeatureAppNo")
 	public String getFeatureAppNo() {
 		return FeatureAppNo;
@@ -54,7 +52,6 @@ public class MtxSellTicketParameter {
 	public void setFeatureAppNo(String featureAppNo) {
 		FeatureAppNo = featureAppNo;
 	}
-	
 	@XmlElement(name = "SerialNum")
 	public String getSerialNum() {
 		return SerialNum;
@@ -62,7 +59,6 @@ public class MtxSellTicketParameter {
 	public void setSerialNum(String serialNum) {
 		SerialNum = serialNum;
 	}
-	
 	@XmlElement(name = "Printpassword")
 	public String getPrintpassword() {
 		return Printpassword;
@@ -70,23 +66,21 @@ public class MtxSellTicketParameter {
 	public void setPrintpassword(String printpassword) {
 		Printpassword = printpassword;
 	}
-
 	@XmlElement(name = "Balance")
-	public double getBalance() {
+	public Double getBalance() {
 		return Balance;
 	}
-	public void setBalance(double balance) {
+	public void setBalance(Double balance) {
 		Balance = balance;
 	}
-	
 	@XmlElement(name = "PayType")
 	public String getPayType() {
 		return PayType;
 	}
+
 	public void setPayType(String payType) {
 		PayType = payType;
 	}
-	
 	@XmlElement(name = "RecvMobilePhone")
 	public String getRecvMobilePhone() {
 		return RecvMobilePhone;
@@ -94,7 +88,6 @@ public class MtxSellTicketParameter {
 	public void setRecvMobilePhone(String recvMobilePhone) {
 		RecvMobilePhone = recvMobilePhone;
 	}
-	
 	@XmlElement(name = "SendType")
 	public String getSendType() {
 		return SendType;
@@ -102,7 +95,6 @@ public class MtxSellTicketParameter {
 	public void setSendType(String sendType) {
 		SendType = sendType;
 	}
-	
 	@XmlElement(name = "PayResult")
 	public String getPayResult() {
 		return PayResult;
@@ -110,7 +102,6 @@ public class MtxSellTicketParameter {
 	public void setPayResult(String payResult) {
 		PayResult = payResult;
 	}
-	
 	@XmlElement(name = "IsCmtsPay")
 	public boolean isIsCmtsPay() {
 		return IsCmtsPay;
@@ -118,7 +109,6 @@ public class MtxSellTicketParameter {
 	public void setIsCmtsPay(boolean isCmtsPay) {
 		IsCmtsPay = isCmtsPay;
 	}
-	
 	@XmlElement(name = "IsCmtsSendCode")
 	public boolean isIsCmtsSendCode() {
 		return IsCmtsSendCode;
@@ -126,7 +116,6 @@ public class MtxSellTicketParameter {
 	public void setIsCmtsSendCode(boolean isCmtsSendCode) {
 		IsCmtsSendCode = isCmtsSendCode;
 	}
-	
 	@XmlElement(name = "PayMobile")
 	public String getPayMobile() {
 		return PayMobile;
@@ -134,7 +123,6 @@ public class MtxSellTicketParameter {
 	public void setPayMobile(String payMobile) {
 		PayMobile = payMobile;
 	}
-	
 	@XmlElement(name = "BookSign")
 	public String getBookSign() {
 		return BookSign;
@@ -142,15 +130,13 @@ public class MtxSellTicketParameter {
 	public void setBookSign(String bookSign) {
 		BookSign = bookSign;
 	}
-
 	@XmlElement(name = "Payed")
-	public double getPayed() {
+	public Double getPayed() {
 		return Payed;
 	}
-	public void setPayed(double payed) {
+	public void setPayed(Double payed) {
 		Payed = payed;
 	}
-	
 	@XmlElement(name = "SendModeID")
 	public String getSendModeID() {
 		return SendModeID;
@@ -158,7 +144,6 @@ public class MtxSellTicketParameter {
 	public void setSendModeID(String sendModeID) {
 		SendModeID = sendModeID;
 	}
-	
 	@XmlElement(name = "PaySeqNo")
 	public String getPaySeqNo() {
 		return PaySeqNo;
@@ -166,7 +151,6 @@ public class MtxSellTicketParameter {
 	public void setPaySeqNo(String paySeqNo) {
 		PaySeqNo = paySeqNo;
 	}
-	
 	@XmlElement(name = "TokenID")
 	public String getTokenID() {
 		return TokenID;
@@ -174,7 +158,6 @@ public class MtxSellTicketParameter {
 	public void setTokenID(String tokenID) {
 		TokenID = tokenID;
 	}
-	
 	@XmlElement(name = "VerifyInfo")
 	public String getVerifyInfo() {
 		return VerifyInfo;

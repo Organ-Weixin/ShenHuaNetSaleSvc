@@ -1,6 +1,6 @@
 package com.boot.security.server.api.ctms.reply;
 
-public class CxPhoneNumRegResult {
+public class CxPhoneNumRegResult { 
     private ResBean PhoneNumRegResult;
 
     public ResBean getPhoneNumRegResult() {

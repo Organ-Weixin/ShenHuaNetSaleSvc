@@ -2,7 +2,7 @@ package com.boot.security.server.api.core;
 
 import java.util.Date;
 
-public class CardRegisterReply extends BaseReply {
+public class CardRegisterReply extends BaseReply { 
 	public CardRegisterReply()
     {
         Id = ID_CardRegisterReply;

@@ -1,7 +1,7 @@
 package com.boot.security.server.api.ctms.reply;
 
 public class CTMSQueryDiscountReply extends CTMSBaseReply {
-	private String CinemaCode;
+	private String CinemaCode; 
 	private int DiscountType;
 	private Float Price;
 	private Float CinemaPayAmount;

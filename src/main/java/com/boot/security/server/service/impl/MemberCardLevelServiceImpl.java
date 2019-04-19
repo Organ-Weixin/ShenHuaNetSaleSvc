@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import com.boot.security.server.dao.MembercardlevelDao;
 import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.service.MemberCardLevelService;
-
+ 
 @Service
 public class MemberCardLevelServiceImpl implements MemberCardLevelService {
 

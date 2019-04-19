@@ -1,6 +1,6 @@
 package com.boot.security.server.api.ctms.reply;
 
-import java.util.List;
+import java.util.List; 
 
 public class CxQueryDiscountFacts {
 	private String cardLevelCode;

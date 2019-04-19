@@ -8,7 +8,7 @@ import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.SessionSeatStatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 
-public interface ICTMSInterface {
+public interface ICTMSInterface { 
     /// 查询影院基本信息
     CTMSQueryCinemaReply QueryCinema(Usercinemaview userCinema) throws Exception;
     //查询影厅座位信息

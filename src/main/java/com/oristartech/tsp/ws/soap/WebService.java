@@ -72,7 +72,7 @@ import java.util.stream.Collectors;
 /**
  * @version 1.0 辰星接口
  */
-public class WebService {
+public class WebService { 
 	protected static Logger log = LoggerFactory.getLogger(WebService.class);
 
 	// region 初始化接口链接，返回接口集

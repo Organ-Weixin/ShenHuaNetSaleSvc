@@ -13,7 +13,7 @@ import org.apache.ibatis.annotations.Select;
 import com.boot.security.server.model.Membercardlevel;
 
 @Mapper
-public interface MembercardlevelDao {
+public interface MembercardlevelDao { 
 
     @Select("select * from membercardlevel t where t.id = #{id}")
     Membercardlevel getById(Long id);

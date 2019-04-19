@@ -88,7 +88,7 @@ import com.boot.security.server.utils.XmlToJsonUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-public class NetSaleSvcCore {
+public class NetSaleSvcCore { 
 	 private ICTMSInterface _CTMSInterface;
 	 UserInfoServiceImpl _userInfoService = SpringUtil.getBean(UserInfoServiceImpl.class);
 	 ScreeninfoServiceImpl _screenInfoService = SpringUtil.getBean(ScreeninfoServiceImpl.class);

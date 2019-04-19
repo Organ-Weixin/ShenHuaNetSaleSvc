@@ -1,6 +1,6 @@
 package com.boot.security.server.api.ctms.reply;
 
-public class CxVerifyMemberLoginResult {
+public class CxVerifyMemberLoginResult { 
     private ResBean VerifyMemberLoginResult;
 
     public ResBean getVerifyMemberLoginResult() {

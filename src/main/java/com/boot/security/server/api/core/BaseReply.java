@@ -4,7 +4,7 @@ import com.boot.security.server.api.ctms.reply.CTMSBaseReply;
 import com.boot.security.server.model.ErrorCodeEnum;
 import com.boot.security.server.model.StatusEnum;
 
-public class BaseReply {
+public class BaseReply { 
 	public static String ID_QueryCinemaListReply = "ID_QueryCinemaListReply";
 	public static String ID_QueryCinemaReply = "ID_QueryCinemaReply";
 	public static String ID_QuerySeatReply="ID_QuerySeatReply";

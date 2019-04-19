@@ -2,7 +2,7 @@ package com.boot.security.server.model;
 
 
 
-public class Membercardlevel extends BaseEntity<Long> {
+public class Membercardlevel extends BaseEntity<Long> { 
 
 	private Long Id;
 	private String CinemaCode;

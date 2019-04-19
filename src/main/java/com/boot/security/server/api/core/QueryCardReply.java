@@ -1,7 +1,7 @@
 package com.boot.security.server.api.core;
 
 public class QueryCardReply extends BaseReply {
-	public QueryCardReply()
+	public QueryCardReply() 
     {
         Id = ID_QueryCardReply;
     }

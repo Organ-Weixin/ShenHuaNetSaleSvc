@@ -4,6 +4,6 @@ public class CardChargeReply extends BaseReply {
 	public CardChargeReply()
     {
         Id = ID_CardChargeReply;
-    }
+    } 
 
 }

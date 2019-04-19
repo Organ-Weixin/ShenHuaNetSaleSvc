@@ -1,6 +1,6 @@
 package com.boot.security.server.api.ctms.reply;
 
-public class CxMemberConsumeResult {
+public class CxMemberConsumeResult { 
     private ResBean MemberConsumeResult;
 
     public ResBean getMemberConsumeResult() {

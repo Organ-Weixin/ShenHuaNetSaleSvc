@@ -11,7 +11,7 @@ import com.boot.security.server.service.MemberCardService;
 public class MemberCardServiceImpl implements MemberCardService {
 
 	@Autowired
-	private MembercardDao membercardDao;
+	private MembercardDao membercardDao; 
 	
 	@Override
 	public Membercard getByCardNo(String cinemacode, String cardno) {
