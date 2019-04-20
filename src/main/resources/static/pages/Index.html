@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>自身首页</title>
+
+<link rel="stylesheet" href="../layui/css/layui.css" media="all" />
+<!--数据表格左侧css样式-->
+<link rel="stylesheet" href="../css/global.css" media="all" />
+<!--数据分析-本页面css样式-->
+<link rel="stylesheet" href="../css/Index.css" media="all">
+</head>
+
+
+<body>
+	<div class="admin-main">
+		<blockquote class="layui-elem-quote">
+			<fieldset class="layui-elem-field">
+				<legend class="jy">
+					<strong>经营数据(昨天数据)</strong>
+					<a href="#" class="jy-more">更多>></a>
+				</legend>
+				<div class="layui-field-box">
+					<ul class="jy-1" >
+						<li class="jy1">
+							<strong>
+							<p>票房(元)</p>
+							</strong>
+							<p class="jy-val">
+								15920
+							</p>
+							<p>
+								<a id="" href="">-300比前一天 </a>
+							</p>
+						</li>
+						<li class="jy2" >
+							<strong>
+							<p>卖品(元)</p>
+							</strong>	
+							<p class="jy-val">
+								3540
+							</p>
+							<p>
+								<a id="" href="">-300比前一天 </a>
+							</p>
+						</li>
+						<li class="jy3" >
+							<strong>
+							<p>会员充值(元)</p>
+							</strong>
+							<p class="jy-val">
+								1500
+							</p>
+							<p>
+								<a id="" href="">+200比前一天 </a>
+							</p>
+						</li>
+						<li class="jy4" >
+							<strong>
+							<p>人次</p>
+							</strong>
+							<p class="jy-val">
+								420
+							</p>
+							<p>
+								<a id="" href="">-10比前一天 </a>
+							</p>
+						</li>
+					</ul>
+				</div>
+			</fieldset>
+		</blockquote>
+		<blockquote class="layui-elem-quote">
+			<fieldset class="layui-elem-field"  >
+				<legend ></legend>
+				<div class="layui-field-box"></div>
+				<ul class="yy-1" >
+					<li class="yy1" >
+		<!-- 	<p>营业数据</p> -->
+		  <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+						<div class="yyzhe">
+			<!-- 折线图 -->
+							<div id="container">	
+							</div>	
+						</div>	
+					</li>
+					<li class="yy2">
+					<!-- <p>客户数据</p> -->
+						  <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+					<div class="userzhe">
+					<!-- 环形图 -->
+					<div id="container1">		
+					</div>	
+					</div>
+					</li>
+			</ul>
+			</fieldset>
+		</blockquote>
+		<blockquote class="layui-elem-quote">
+			<fieldset class="layui-elem-field">
+				<legend></legend>
+				<div class="layui-field-box"></div>
+				<ul class="hui-1" >
+					<li class="hui1" >
+							<div class="hui-1-title">
+								<div class="hui-1-title-font">会员数据(昨天数据)</div>
+								<a href="#" class="jy-more">更多>></a>
+							</div>
+							<div class="hui-1-content">
+								<div class="hui-1-card">
+									<img>	
+								</div>
+								<ul class="hui-1-data">
+									<li class="hui-1-people">
+										<div class="hui-1-data-left">
+											<div class="hui-1-data-num">1560</div>
+											<div>会员总数（人）</div>
+										</div>
+										<div class="hui-1-data-right">
+											<div class="hui-1-data-num">+15</div>
+											<div>新增数</div>
+										</div>
+									</li>
+									<li class="hui-1-ticket">
+										<div class="hui-1-hui-1-data-left">
+											<div class="hui-1-data-num">18%</div>
+											<div>会员票占比</div>
+										</div>
+										<div class="hui-1-data-right">
+											<div class="hui-1-data-num">6.9%</div>
+											<div>转化率</div>
+										</div>
+									</li>
+									<li class="hui-1-up">
+										<div class="hui-1-data-left">
+											<div class="hui-1-data-num">2400</div>
+											<div>会员充值（元）</div>
+										</div>
+										<div class="hui-1-data-right">
+											<div class="hui-1-data-num">200</div>
+											<div>活动赠送（元）</div>
+										</div>
+									</li>
+								</ul>
+							</div>
+					</li>
+					<li class="hui2" >
+						<div class="hui-1-title">
+								<div class="hui-1-title-font">本年度活动累积经费(元)</div>
+								<a href="#" class="jy-more">详情>></a>
+						</div>
+						<div class="hui-1-funding">
+							<div class="funding-ticket">
+								<div class="funding-ticket-font">票务</div>
+								<div class="funding-num">3500</div>
+							</div>
+							<div class="funding-adv">
+								<div class="funding-adv-font">广告</div>
+								<div class="funding-num">2000</div>
+							</div>
+						</div>
+						<div class="hui-1-add">
+							本月新增+1000
+						</div>
+					</li>
+				</ul>
+			</fieldset>
+		</blockquote>
+		<!--  -->
+		<blockquote class="layui-elem-quote">
+			<fieldset class="layui-elem-field">
+				<legend></legend>
+				<div class="layui-field-box">
+				<ul class="yuser" >
+					<li class="yuser1">
+						<div class="yuser-title">
+							<span>影院新增会员数</span>
+							<span>上周排名</span>
+						</div>
+						<ul class="yuser-rank">
+							<li>
+								<span class="yuser-ranking">1</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">80人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">2</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">56人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">3</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">42人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">4</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">38人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">5</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">36人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">6</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">30人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">7</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">38人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">8</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">38人</span>
+							</li>
+							<li>
+								<span class="last-ranking">12</span>
+								<span class="last-name">新天地影城</span>
+								<span class="last-num">20人</span>
+							</li>
+						</ul>
+					</li>
+					<li class="yuser2">
+						<div class="yuser-title">
+							<span>影院用户数</span>
+							<span>上周排名</span>
+						</div>
+						<ul class="yuser-rank">
+							<li>
+								<span class="yuser-ranking">1</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">80人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">2</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">56人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">3</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">42人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">4</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">38人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">5</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">36人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">6</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">30人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">7</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">38人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">8</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">38人</span>
+							</li>
+							<li>
+								<span class="last-ranking">12</span>
+								<span class="last-name">新天地影城</span>
+								<span class="last-num">20人</span>
+							</li>
+						</ul>
+					</li>
+					<li class="yuser3">
+						<div class="yuser-title">
+							<span>影院新注册用户数</span>
+							<span>上周排名</span>
+						</div>
+						<ul class="yuser-rank">
+							<li>
+								<span class="yuser-ranking">1</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">80人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">2</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">56人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">3</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">42人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">4</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">38人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">5</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">36人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">6</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">30人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">7</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">38人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">8</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">38人</span>
+							</li>
+							<li>
+								<span class="last-ranking">12</span>
+								<span class="last-name">新天地影城</span>
+								<span class="last-num">20人</span>
+							</li>
+						</ul>
+					</li>
+					<li class="yuser4">
+						<div class="yuser-title">
+							<span>影院订单总数</span>
+							<span>上周排名</span>
+						</div>
+						<ul class="yuser-rank">
+							<li>
+								<span class="yuser-ranking">1</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">80人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">2</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">56人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">3</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">42人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">4</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">38人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">5</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">36人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">6</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">30人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">7</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">38人</span>
+							</li>
+							<li>
+								<span class="yuser-ranking">8</span>
+								<span class="yuser-name">新天地影城</span>
+								<span class="yuser-num">38人</span>
+							</li>
+							<li>
+								<span class="last-ranking">12</span>
+								<span class="last-name">新天地影城</span>
+								<span class="last-num">20人</span>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				</div>
+			</fieldset>
+		</blockquote>
+	</div>
+ <!-- 引入 echarts.js -->
+<script type="text/javascript" src="../js/Echarts/echarts.js"></script>
+<script type="text/javascript" src="../js/Echarts/echarts.common.min.js"></script>	
+  <script type="text/javascript">
+  // 基于准备好的dom，初始化echarts实例---折线图
+var dom = document.getElementById("container");
+// 此折线图采用'light'主题风格
+var myChart = echarts.init(dom,'light');
+var app = {};
+option = null;
+app.title = '折柱混合';
+
+//指定图表的配置项和数据
+option = {    
+		title: {
+			 text: '营业数据趋势'
+},
+/* series: [{
+    type: 'line',
+    // 此系列自己的调色盘。
+    color: ['#0090FE']
+}, {
+    type: 'line',
+    // 此系列自己的调色盘。
+    color: [ '#FDD158']
+  
+}], */
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross',
+            crossStyle: {
+                color: '#999'
+            }
+        }
+    },
+    //数据刷新、截图
+      toolbox: {
+        feature: {
+            dataView: {show: true, readOnly: true},
+            magicType: {show: true, type: ['line', 'bar']},
+            restore: {show: true},
+            saveAsImage: {show: true}
+        }
+    },  
+    legend: {
+        data:['卖品','票房','时间']
+    },
+    xAxis: [
+        {
+            type: 'category',
+            data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+            axisPointer: {
+                type: 'shadow'
+            }
+        }
+    ],
+    yAxis: [
+        {
+            type: 'value',
+            name: '卖品',
+            min: 0,
+            max: 252,
+            interval: 50,
+            axisLabel: {
+                formatter: '{value} 份'
+            }
+        },
+        {
+            type: 'value',
+            name: '票房',
+            min: 0,
+            max: 300,
+            interval: 50,
+            axisLabel: {
+                formatter: '{value} 元'
+            }
+        }
+    ],
+    //dataZoom 组件是对 数轴（axis） 进行『数据窗口缩放』『数据窗口平移』操作。
+/*       dataZoom: [
+        {   // 这个dataZoom组件，默认控制x轴。
+            type: 'slider', // 这个 dataZoom 组件是 slider 型 dataZoom 组件
+            start: 10,      // 左边在 10% 的位置。
+            end: 60         // 右边在 60% 的位置。
+        }
+    ],  */
+    series: [
+        {
+            name:'卖品',
+            type:'line',
+            lineStyle: {
+                normal: {
+                    width: 1,
+                    color:'#0090FE'
+                }
+            },
+            itemStyle:{
+                normal:{
+                  color:'#0090FE',
+                  }},
+           /*  itemStyle: {
+                color: ['#FDD158','#0090FE']
+            },  */
+            data:[20, 80, 110, 120, 125, 140, 125, 120, 110, 90, 80, 70]
+        },
+        {
+            name:'票房',
+            type:'line',
+            lineStyle: {
+                normal: {
+                    width: 1,
+                    color:'#FDD158'
+                }
+            },
+            itemStyle:{
+                normal:{
+                  color:'#FDD158',
+                  }},
+            data:[32.0, 100.9, 120.2, 150.6, 200.7, 220, 210, 190, 180, 150, 120, 90]
+        },
+       {
+           name:'时间',
+            type:'bar',
+            lineStyle: {
+                normal: {
+                    width: 1,
+                    color:'#EEEEEE'
+                }
+            },
+            itemStyle:{
+                normal:{
+                  color:'#EEEEEE',
+                  }}
+            /*    yAxisIndex: 1, 
+            data:[50.0, 60.2, 70.3, 100, 120.3, 130.2, 140.3, 123.4, 110.0, 100.5, 90.0, 60.2] */
+        }   
+    ]
+};
+;
+/////////////////////////
+// 使用刚指定的配置项和数据显示图表--折线图
+if (option && typeof option === "object") {
+    myChart.setOption(option, true);
+}
+
+//////////////////折线图结束
+
+
+///环形图开始
+  // 基于准备好的dom，初始化echarts实例---环形图
+ var dom = document.getElementById("container1");
+// 此环形图采用'light'主题风格
+var myChart1 = echarts.init(dom,'light');
+//函数开始定义一个 colors 对象，这里保存的都是颜色值
+var colors=['#F4736E','#9CE8F6','#BFE485','#FDD158'];
+
+var app = {};
+option = null;  
+app.title = '嵌套环形图';
+
+option = {
+    tooltip: {
+        trigger: 'item',
+        formatter: "{a} <br/>{b}: {c} ({d}%)"
+    },
+    legend: {
+        orient: 'vertical',
+        x: 'right',
+        data:['会员','非会员','卡券优惠','其他']
+    },
+    series: [
+        {
+            name:'客户数据',
+            type:'pie',
+            selectedMode: 'single',
+            radius: [0, '30%'],
+            //color：function(){ return colors[i++]} 这个函数的作用就是随机获取颜色值
+            itemStyle : {
+                normal : {
+                	color:function(){
+                		return colors[i++]; 
+                		},
+                    label : {
+                        show : false
+                    },
+                    labelLine : {
+                       show : false
+                    }
+                    ,
+                    label: {
+                        normal: {
+                            position: 'inner'
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    }
+                }
+            
+            },
+
+       
+    
+        },
+        {
+            name:'客户数据',
+            type:'pie',
+            radius: ['15%', '45%'],
+            label: {
+                normal: {
+                    formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
+                    backgroundColor: '#eee',
+                    borderColor: '#aaa',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                   
+                    rich: {
+                        a: {
+                            color: '#999',
+                            lineHeight: 12,
+                            align: 'center'
+                        },
+                 
+                        hr: {
+                            borderColor: '#aaa',
+                            width: '100%',
+                            borderWidth: 0.5,
+                            height: 12
+                        },
+                        b: {
+                            fontSize: 15,
+                            lineHeight: 13
+                        },
+                        per: {
+                            color: '#eee',
+                            backgroundColor: '#334455',
+                            padding: [2, 4],
+                            borderRadius: 2
+                        }
+                    }
+                }
+            },
+            data:[
+            	
+                {value:250, name:'会员'},
+                {value:400, name:'非会员'},
+                {value:250, name:'卡券优惠'},
+                {value:100, name:'其他'}
+            ]
+        }
+    ]
+};
+//////////////////////////////
+// 使用刚指定的配置项和数据显示图表--环形图
+
+if (option && typeof option === "object") {
+    myChart1.setOption(option, true);
+}
+//////////////////////// ajax
+// 异步加载数据
+$.get('data.json').done(function (data) {
+    // 填入数据
+    myChart.setOption({
+        xAxis: {
+            data: data.categories
+        },
+        series: [{
+            // 根据名字对应到相应的系列
+            name: '卖品',
+            data: data.data
+        },
+        {
+        	  // 根据名字对应到相应的系列
+            name: '票房',
+            data: data.data
+        }
+        ]
+    });
+});
+//////////////////////
+
+       </script>	
+</body>
+
+</html>
