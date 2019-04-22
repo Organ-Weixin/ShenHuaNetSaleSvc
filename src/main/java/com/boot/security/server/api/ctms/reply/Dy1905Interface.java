@@ -753,7 +753,7 @@ public class Dy1905Interface implements ICTMSInterface {
 		
 		
 		/*
-		 *  登陆会员卡
+		 *  登陆会员卡（完成）
 		 * */
 		@Override
 		public CTMSLoginCardReply LoginCard(Usercinemaview userCinema, String CardNo, String CardPassword)
@@ -763,12 +763,11 @@ public class Dy1905Interface implements ICTMSInterface {
 			reply.Status = queryCardReply.Status;
 			reply.ErrorCode = queryCardReply.ErrorCode;
 			reply.ErrorMessage = queryCardReply.ErrorMessage;
-			System.out.println("接口接收"+new Gson().toJson(reply));
 			return reply;
 		}
 		
 		/*
-		 *  查询会员卡
+		 *  查询会员卡（完成）
 		 * */
 		@Override
 		public CTMSQueryCardReply QueryCard(Usercinemaview userCinema, String CardNo, String CardPassword)
@@ -782,7 +781,6 @@ public class Dy1905Interface implements ICTMSInterface {
 			param.put("pCardPwd", CardPassword);
 			param.put("pVerifyInfo", pVerifyInfo);
 			String MemberInfoResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/MemberInfo",param,"UTF-8");
-			System.out.println(MemberInfoResult);
 			Gson gson = new Gson();
 			Dy1905MemberInfoResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(MemberInfoResult,"MemberInfoResult"), Dy1905MemberInfoResult.class);
 			com.boot.security.server.api.ctms.reply.Dy1905MemberInfoResult.ResBean.CardInfoBean cardInfo = Dy1905Reply.getMemberInfoResult().getCardInfo();
@@ -812,11 +810,10 @@ public class Dy1905Interface implements ICTMSInterface {
 			}
 			reply.ErrorCode = Dy1905Reply.getMemberInfoResult().getResultCode();
 			reply.ErrorMessage = Dy1905Reply.getMemberInfoResult().getResultMsg();
-			System.out.println("接口接收"+new Gson().toJson(reply));
 			return reply;
 		}
 		/*
-		 * 查询会员卡折扣
+		 * 查询会员卡折扣（完成）
 		 * */
 		@Override
 		public CTMSQueryDiscountReply QueryDiscount(Usercinemaview userCinema, String TicketCount, String CardNo,
@@ -831,7 +828,6 @@ public class Dy1905Interface implements ICTMSInterface {
 			param.put("pCardPwd", CardPassword);
 			param.put("pVerifyInfo", pVerifyInfo);
 			String MemberPriceResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/MemberPrice",param,"UTF-8");
-			System.out.println(MemberPriceResult);
 			Gson gson = new Gson();
 			Dy1905MemberPriceResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(MemberPriceResult,"MemberPriceResult"), Dy1905MemberPriceResult.class);
 			if(Dy1905Reply.getMemberPriceResult().getResultCode().equals("0")){
@@ -844,12 +840,11 @@ public class Dy1905Interface implements ICTMSInterface {
 			}
 			reply.ErrorCode = Dy1905Reply.getMemberPriceResult().getResultCode();
 			reply.ErrorMessage = Dy1905Reply.getMemberPriceResult().getResultMsg();
-			System.out.println("接收接收"+new Gson().toJson(reply));
 			return reply;
 		}
 		
 		/*
-		 * 会员卡支付
+		 * 会员卡支付（完成）
 		 * */
 		@Override
 		public CTMSCardPayReply CardPay(Usercinemaview userCinema, String CardNo, String CardPassword, float PayAmount,
@@ -873,7 +868,6 @@ public class Dy1905Interface implements ICTMSInterface {
 			param.put("pOrderID", OrderID);
 			param.put("pVerifyInfo", pVerifyInfo);
 			String MemberCardDeductResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/MemberCardDeduct",param,"UTF-8");
-			System.out.println(MemberCardDeductResult);
 			Gson gson = new Gson();
 			Dy1905MemberCardDeductResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(MemberCardDeductResult,"CardsListResult"), Dy1905MemberCardDeductResult.class);
 			if(Dy1905Reply.getMemberCardDeductResult().getResultCode().equals("0")){
@@ -885,7 +879,6 @@ public class Dy1905Interface implements ICTMSInterface {
 			}
 			reply.ErrorCode = Dy1905Reply.getMemberCardDeductResult().getResultCode();
 			reply.ErrorMessage = Dy1905Reply.getMemberCardDeductResult().getResultMsg();
-			System.out.println("返回接收"+new Gson().toJson(reply));
 			return reply;
 		}
 		
@@ -909,7 +902,7 @@ public class Dy1905Interface implements ICTMSInterface {
 			return null;
 		}
 		/*
-		 * 会员卡充值
+		 * 会员卡充值（完成）
 		 * */
 		@Override
 		public CTMSCardChargeReply CardCharge(Usercinemaview userCinema, String CardNo, String CardPassword,
@@ -932,7 +925,6 @@ public class Dy1905Interface implements ICTMSInterface {
 			param.put("pBalance", String.valueOf(ChargeAmount));
 			param.put("pVerifyInfo", pVerifyInfo);
 			String RechargeMemberCardResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/RechargeMemberCard",param,"UTF-8");
-			System.out.println(RechargeMemberCardResult);
 			Gson gson = new Gson();
 			Dy1905RechargeMemberCardResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(RechargeMemberCardResult,"RechargeMemberCardResult"), Dy1905RechargeMemberCardResult.class);
 			if(Dy1905Reply.getRechargeMemberCardResult().getResultCode().equals("0")){
@@ -942,12 +934,11 @@ public class Dy1905Interface implements ICTMSInterface {
 			}
 			reply.ErrorCode = Dy1905Reply.getRechargeMemberCardResult().getResultCode();
 			reply.ErrorMessage = Dy1905Reply.getRechargeMemberCardResult().getResultMsg();
-			System.out.println("接口接收"+new Gson().toJson(reply));
 			return reply;
 		}
 		
 		/*
-		 * 查询会员卡等级
+		 * 查询会员卡等级（完成）
 		 * */
 		@Override
 		public CTMSQueryCardLevelReply QueryCardLevel(Usercinemaview userCinema) throws Exception {
@@ -958,11 +949,9 @@ public class Dy1905Interface implements ICTMSInterface {
 			param.put("pCinemaID", userCinema.getCinemaId());
 			param.put("pVerifyInfo", pVerifyInfo);
 			String MemberTypeListResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/MemberTypeList",param,"UTF-8");
-			System.out.println(MemberTypeListResult);
 			Gson gson = new Gson();
 			Dy1905MemberTypeListResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(MemberTypeListResult,"MemberTypeListResult"), Dy1905MemberTypeListResult.class);
 			List<LevelBean> Dy1905Level = Dy1905Reply.getMemberTypeListResult().getTypes().getType().get(0).getLevels().getLevel();
-			System.out.println("接收到的等级数量"+Dy1905Level.size());
 			List<Membercardlevel> newmembercardlevelList = new ArrayList();
 			if(Dy1905Reply.getMemberTypeListResult().getResultCode().equals("0")){
 				for(LevelBean Level :Dy1905Level){
@@ -983,11 +972,10 @@ public class Dy1905Interface implements ICTMSInterface {
 			}
 			reply.ErrorCode = Dy1905Reply.getMemberTypeListResult().getResultCode();
 			reply.ErrorMessage = Dy1905Reply.getMemberTypeListResult().getResultMsg();
-			System.out.println("接口接收"+new Gson().toJson(reply));
 			return reply;
 		}
 		/*
-		 * 会员卡注册
+		 * 会员卡注册（完成）
 		 * */
 		@Override
 		public CTMSCardRegisterReply CardRegister(Usercinemaview userCinema, String CardPassword, String LevelCode,
@@ -1018,7 +1006,6 @@ public class Dy1905Interface implements ICTMSInterface {
 			param.put("pGender", Sex);
 			param.put("pVerifyInfo", pVerifyInfo);
 			String MakeMemberCardResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/MakeMemberCard",param,"UTF-8");
-			System.out.println(MakeMemberCardResult);
 			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss")
 					.registerTypeAdapter(Integer.class, new IntegerDefaultAdapter())
 					.registerTypeAdapter(Double.class, new DoubleDefaultAdapter()).create();
@@ -1051,7 +1038,6 @@ public class Dy1905Interface implements ICTMSInterface {
 			}
 			reply.ErrorCode = Dy1905Reply.getMakeMemberCardResult().getResultCode();
 			reply.ErrorMessage = Dy1905Reply.getMakeMemberCardResult().getResultMsg();
-			System.out.println("接口接收"+new Gson().toJson(reply));
 			return reply;
 		}
 }

@@ -44,26 +44,17 @@ import com.boot.security.server.utils.JaxbXmlUtil;
 public class SecurityApplicationTest {
 	@Test
 	public void test() throws Exception{
+		
+	}
+	@Test
+	public void QueryCinemaAndScreenTest() throws Exception{
 		Dy1905Interface di = new Dy1905Interface();
 		Usercinemaview userCinema = new Usercinemaview();
 		userCinema.setDefaultUserName("1000000035");
 		userCinema.setDefaultPassword("66a16ca61f729e0c846983f8c0f4fd53");
 		userCinema.setUrl("http://netsale.1905.com/Api");
-		userCinema.setCinemaId("194");
-		di.QuerySession(userCinema, null, null);
-	}
-	@Test
-	public void QueryCinemaAndScreenTest() throws ParseException{
-		Date date = new Date();
-		String s = new SimpleDateFormat("yyyy-MM-dd").format(date);
-		s+= " 01:00:00";
-		System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(s));
-		/*Dy1905Interface di = new Dy1905Interface();
-		Usercinemaview userCinema = new Usercinemaview();
-		userCinema.setDefaultUserName("1000000035");
-		userCinema.setDefaultPassword("66a16ca61f729e0c846983f8c0f4fd53");
-		userCinema.setCinemaCode("33096401");
-		di.QueryCinema(userCinema);*/
+		userCinema.setCinemaCode("33097601");
+		di.QueryCinema(userCinema);
 	}
 	@Test
 	public void QuerySeatTest() throws Exception{
@@ -129,13 +120,6 @@ public class SecurityApplicationTest {
 		//userCinema.setCinemaId("199");
 		userCinema.setCinemaId("194");
 		di.QuerySession(userCinema, new Date(), null);
-	}
-	@Test
-	public void tests() throws ParseException{
-		long time1 = 1554963946;  
-		String result1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(time1 * 1000));  
-		Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(result1);  
-		System.out.println("10位数的时间戳（秒）--->Date:" + date);
 	}
 	@Test
 	public void LockSeat() throws Exception{
@@ -268,6 +252,7 @@ public class SecurityApplicationTest {
 	}
 	@Test
 	public void FetchTicketTest() throws Exception{
+
 		Dy1905Interface di = new Dy1905Interface();
 		Usercinemaview userCinema = new Usercinemaview();
 		userCinema.setDefaultUserName("1000000035");
@@ -279,6 +264,74 @@ public class SecurityApplicationTest {
 		order.setOrderBaseInfo(orderBaseInfo);
 		di.FetchTicket(userCinema, order);
 	}
+	@Test
+	public void CardRegisterTest() throws Exception{
+		Dy1905Interface di = new Dy1905Interface();
+		Usercinemaview userCinema = new Usercinemaview();
+		userCinema.setDefaultUserName("1000000035");
+		userCinema.setDefaultPassword("66a16ca61f729e0c846983f8c0f4fd53");
+		userCinema.setUrl("http://netsale.1905.com/Api");
+		userCinema.setCinemaId("194");
+		userCinema.setCinemaCode("33097601");
+		di.CardRegister(userCinema, "mimanicai", "4", "100", "刘钰栋", "15268553143", "41061119971208453X", "1");
+	}
+	@Test
+	public void LoginCardTest() throws Exception{
+		Dy1905Interface di = new Dy1905Interface();
+		Usercinemaview userCinema = new Usercinemaview();
+		userCinema.setDefaultUserName("1000000035");
+		userCinema.setDefaultPassword("66a16ca61f729e0c846983f8c0f4fd53");
+		userCinema.setUrl("http://netsale.1905.com/Api");
+		userCinema.setCinemaId("194");
+		userCinema.setCinemaCode("33097601");
+		//e042074543 mimanicai
+		di.LoginCard(userCinema, "e042062039", "mima123");
+	}
+	@Test
+	public void QueryDiscountTest() throws Exception{
+		Dy1905Interface di = new Dy1905Interface();
+		Usercinemaview userCinema = new Usercinemaview();
+		userCinema.setDefaultUserName("1000000035");
+		userCinema.setDefaultPassword("66a16ca61f729e0c846983f8c0f4fd53");
+		userCinema.setUrl("http://netsale.1905.com/Api");
+		userCinema.setCinemaId("194");
+		userCinema.setCinemaCode("33097601");
+		di.QueryDiscount(userCinema, null, "e042062039", "mima123", null, "3093944", null, null, null, null, null);
+	}
+	@Test
+	public void CardPayTest() throws Exception{
+		Dy1905Interface di = new Dy1905Interface();
+		Usercinemaview userCinema = new Usercinemaview();
+		userCinema.setDefaultUserName("1000000035");
+		userCinema.setDefaultPassword("66a16ca61f729e0c846983f8c0f4fd53");
+		userCinema.setUrl("http://netsale.1905.com/Api");
+		userCinema.setCinemaId("194");
+		userCinema.setCinemaCode("33097601");
+		di.CardPay(userCinema, "e042062039", "mima123", 50f, null, null, null);
+	}
+	@Test
+	public void CardChargeTest() throws Exception{
+		Dy1905Interface di = new Dy1905Interface();
+		Usercinemaview userCinema = new Usercinemaview();
+		userCinema.setDefaultUserName("1000000035");
+		userCinema.setDefaultPassword("66a16ca61f729e0c846983f8c0f4fd53");
+		userCinema.setUrl("http://netsale.1905.com/Api");
+		userCinema.setCinemaId("194");
+		userCinema.setCinemaCode("33097601");
+		di.CardCharge(userCinema, "e042062039", "mima123", null, 100.00f);
+	}
+	@Test
+	public void MemberTypeListTest() throws Exception{
+		Dy1905Interface di = new Dy1905Interface();
+		Usercinemaview userCinema = new Usercinemaview();
+		userCinema.setDefaultUserName("1000000035");
+		userCinema.setDefaultPassword("66a16ca61f729e0c846983f8c0f4fd53");
+		userCinema.setUrl("http://netsale.1905.com/Api");
+		userCinema.setCinemaId("194");
+		userCinema.setCinemaCode("33097601");
+		di.QueryCardLevel(userCinema);
+	}
+	
 	
 	
 	////////////////////////////////////////中间件/////////////////////////////////////////////
@@ -435,5 +488,40 @@ public class SecurityApplicationTest {
 	public void FetchTicketTestMid(){
 		NetSaleSvcCore ns = new NetSaleSvcCore();
 		ns.FetchTicket("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33096401", "1904151100307664", "0000000000307664");
+	}
+	@Test
+	public void CardRegisterTestMid(){
+		NetSaleSvcCore ns = new NetSaleSvcCore();
+		ns.CardRegister("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33097601", "mima123", "4", "120", "刘钰栋", "15268553143", "41061119971208453X", "1");
+	}
+	@Test
+	public void LoginCardTestMid(){
+		NetSaleSvcCore ns = new NetSaleSvcCore();
+		ns.LoginCard("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33097601", "e042282308", "mima123");
+	}
+	@Test
+	public void QueryCardTestMid(){
+		NetSaleSvcCore ns = new NetSaleSvcCore();
+		ns.QueryCard("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33097601", "e042282308", "mima123");
+	}
+	@Test
+	public void QueryDiscountTestMid(){
+		NetSaleSvcCore ns = new NetSaleSvcCore();
+		ns.QueryDiscount("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33097601", "1", "e042282308", "mima123", "4", "3093945", "2019-04-24 09:30:00", "2490", "3d", "45.00", "20.00");
+	}
+	@Test
+	public void CardPayTestMid(){
+		NetSaleSvcCore ns = new NetSaleSvcCore();
+		ns.CardPay("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33097601", "e042282308", "mima123", "30", "3093945", "2490", "1");
+	}
+	@Test
+	public void CardChargeTestMid(){
+		NetSaleSvcCore ns = new NetSaleSvcCore();
+		ns.CardCharge("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33097601", "e042282308", "mima123", "AliPay", "100");
+	}
+	@Test
+	public void QueryCardLevelTest(){
+		NetSaleSvcCore ns = new NetSaleSvcCore();
+		ns.QueryCardLevel("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33097601");
 	}
 }

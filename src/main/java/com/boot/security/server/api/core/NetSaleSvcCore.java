@@ -409,7 +409,6 @@ public class NetSaleSvcCore {
 		} else {
 			reply.GetErrorFromCTMSReply(CTMSReply);
 		}
-		System.out.println(new Gson().toJson(reply));
 		return reply;
 	}
 	// endregion
@@ -1188,7 +1187,6 @@ public class NetSaleSvcCore {
         {
             reply.GetErrorFromCTMSReply(CTMSReply);
         }
-        System.out.println("中间件返回"+new Gson().toJson(reply));
         return reply;
     }
 	//endregion
@@ -1257,7 +1255,6 @@ public class NetSaleSvcCore {
         {
             reply.GetErrorFromCTMSReply(CTMSReply);
         }
-        System.out.println("中间件返回"+new Gson().toJson(reply));
         return reply;
     }
 	//endregion
@@ -1328,7 +1325,6 @@ ScreenType,ListingPrice,LowestPrice))
         {
             reply.GetErrorFromCTMSReply(CTMSReply);
         }
-        System.out.println("中间件返回"+new Gson().toJson(reply));
         return reply;
     }
 	//endregion
@@ -1395,7 +1391,6 @@ ScreenType,ListingPrice,LowestPrice))
         {
             reply.GetErrorFromCTMSReply(CTMSReply);
         }
-        System.out.println("中间件返回"+new Gson().toJson(reply));
         return reply;
     }
 	//endregion
@@ -1595,7 +1590,6 @@ ScreenType,ListingPrice,LowestPrice))
         {
             reply.GetErrorFromCTMSReply(CTMSReply);
         }
-        System.out.println("中间件返回"+new Gson().toJson(reply));
         return reply;
     }
 	//endregion
@@ -1657,7 +1651,6 @@ ScreenType,ListingPrice,LowestPrice))
         {
             reply.GetErrorFromCTMSReply(CTMSReply);
         }
-        System.out.println("中间件返回"+new Gson().toJson(reply));
         return reply;
     }
 	//endregion
@@ -1716,7 +1709,6 @@ ScreenType,ListingPrice,LowestPrice))
         {
             reply.GetErrorFromCTMSReply(CTMSReply);
         }
-        System.out.println("中间件返回"+new Gson().toJson(reply));
         return reply;
     }
 	//endregion
