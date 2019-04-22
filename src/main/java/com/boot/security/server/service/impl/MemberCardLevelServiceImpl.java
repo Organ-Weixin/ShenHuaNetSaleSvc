@@ -33,4 +33,10 @@ public class MemberCardLevelServiceImpl implements MemberCardLevelService {
 		return membercardlevelDao.getByCinemaCode(cinemacode);
 	}
 
+	@Override
+	public Membercardlevel getByCinemaCodeAndLevelCode(String cinemacode, String levelcode) {
+		// TODO Auto-generated method stub
+		return membercardlevelDao.getByCinemaCodeAndLevelCode(cinemacode, levelcode);
+	}
+
 }

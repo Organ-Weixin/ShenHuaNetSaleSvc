@@ -409,6 +409,7 @@ public class NetSaleSvcCore {
 		} else {
 			reply.GetErrorFromCTMSReply(CTMSReply);
 		}
+		System.out.println(new Gson().toJson(reply));
 		return reply;
 	}
 	// endregion
@@ -1187,6 +1188,7 @@ public class NetSaleSvcCore {
         {
             reply.GetErrorFromCTMSReply(CTMSReply);
         }
+        System.out.println("中间件返回"+new Gson().toJson(reply));
         return reply;
     }
 	//endregion
@@ -1237,12 +1239,17 @@ public class NetSaleSvcCore {
                 reply.Card.MobilePhone = membercard.getMobilePhone();
                 reply.Card.LevelCode = membercard.getLevelCode();
                 reply.Card.LevelName = membercard.getLevelName();
+                if(membercard.getScore()==null||membercard.getScore().equals("0")){
+                	membercard.setScore(0);
+                }
                 reply.Card.Score = String.valueOf(membercard.getScore());
                 reply.Card.Balance = new DecimalFormat("#0.00").format(membercard.getBalance());
                 reply.Card.UserName = membercard.getUserName();
                 reply.Card.Sex = membercard.getSex();
                 reply.Card.CreditNum = membercard.getCreditNum();
-                reply.Card.Birthday = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(membercard.getBirthday());
+                if(membercard.getBirthday()!=null){
+                	reply.Card.Birthday = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(membercard.getBirthday());
+                }
             }
             reply.SetSuccessReply();
         }
@@ -1250,6 +1257,7 @@ public class NetSaleSvcCore {
         {
             reply.GetErrorFromCTMSReply(CTMSReply);
         }
+        System.out.println("中间件返回"+new Gson().toJson(reply));
         return reply;
     }
 	//endregion
@@ -1320,6 +1328,7 @@ ScreenType,ListingPrice,LowestPrice))
         {
             reply.GetErrorFromCTMSReply(CTMSReply);
         }
+        System.out.println("中间件返回"+new Gson().toJson(reply));
         return reply;
     }
 	//endregion
@@ -1355,7 +1364,7 @@ ScreenType,ListingPrice,LowestPrice))
             return cardPayReply;
         }
         //验证排期是否存在
-        Sessioninfo session = _sessionInfoService.getByCinemaCodeAndSessionCodeAndUserId(CinemaCode, SessionCode,userCinema.getId());
+        Sessioninfo session = _sessionInfoService.getByCinemaCodeAndSessionCodeAndUserId(CinemaCode, SessionCode,userCinema.getUserId());
         if (session == null)
         {
             cardPayReply.SetSessionInvalidReply();
@@ -1386,6 +1395,7 @@ ScreenType,ListingPrice,LowestPrice))
         {
             reply.GetErrorFromCTMSReply(CTMSReply);
         }
+        System.out.println("中间件返回"+new Gson().toJson(reply));
         return reply;
     }
 	//endregion
@@ -1585,6 +1595,7 @@ ScreenType,ListingPrice,LowestPrice))
         {
             reply.GetErrorFromCTMSReply(CTMSReply);
         }
+        System.out.println("中间件返回"+new Gson().toJson(reply));
         return reply;
     }
 	//endregion
@@ -1646,6 +1657,7 @@ ScreenType,ListingPrice,LowestPrice))
         {
             reply.GetErrorFromCTMSReply(CTMSReply);
         }
+        System.out.println("中间件返回"+new Gson().toJson(reply));
         return reply;
     }
 	//endregion
@@ -1673,7 +1685,8 @@ ScreenType,ListingPrice,LowestPrice))
             return cardRegisterReply;
         }
         //验证会员卡等级是否存在
-        Membercard cardlevel = _membercardService.getByCardNo(CinemaCode, LevelCode);
+        //Membercard cardlevel = _membercardService.getByCardNo(CinemaCode, LevelCode);
+        Membercardlevel cardlevel =  _memberCardLevelService.getByCinemaCodeAndLevelCode(CinemaCode, LevelCode);
         if (cardlevel == null)
         {
             cardRegisterReply.SetCardLevelInvalidReply();
@@ -1703,6 +1716,7 @@ ScreenType,ListingPrice,LowestPrice))
         {
             reply.GetErrorFromCTMSReply(CTMSReply);
         }
+        System.out.println("中间件返回"+new Gson().toJson(reply));
         return reply;
     }
 	//endregion

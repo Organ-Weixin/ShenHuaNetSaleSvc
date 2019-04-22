@@ -19,7 +19,7 @@ public interface MembercardDao {
     Membercard getById(Long id);
     
     @Select("select * from membercard t where t.cinemacode = #{cinemacode} and t.cardno=#{cardno}")
-    Membercard getByCardNo(String cinemacode,String cardno);
+    Membercard getByCardNo(@Param("cinemacode")String cinemacode,@Param("cardno")String cardno);
 
     @Delete("delete from membercard where id = #{id}")
     int delete(Long id);

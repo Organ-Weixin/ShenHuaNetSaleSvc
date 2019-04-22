@@ -1,8 +1,6 @@
 package com.boot.security.server.api.ctms.reply;
 
 import java.lang.management.LockInfo;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,10 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
 
-import com.boot.security.server.api.core.ModelMapper;
-import com.boot.security.server.api.ctms.reply.CxQueryPlanInfoByDatePeriodResult.ResBean.CinemaPlansBean.CinemaPlanBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaAllSessionResult.ResBean.SessionsBean.SessionBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaResult.ResBean.CinemasBean.CinemaBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetFeatureFilmResult.ResBean.FilmsBean.FilmBean;
@@ -24,13 +19,16 @@ import com.boot.security.server.api.ctms.reply.Dy1905GetScreenResult.ResBean.Scr
 import com.boot.security.server.api.ctms.reply.Dy1905GetScreenSeatResult.ResBean.ScreenSeatsBean.ScreenSeatBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetSessionSeatResult.ResBean.SessionSeatsBean.SessionSeatBean;
 import com.boot.security.server.api.ctms.reply.Dy1905LockSeatCustomResult.ResBean.SeatInfosBean.SeatInfoBean;
+import com.boot.security.server.api.ctms.reply.Dy1905MakeMemberCardResult.ResBean.CardInfoBean;
+import com.boot.security.server.api.ctms.reply.Dy1905MemberTypeListResult.ResBean.TypesBean.TypeBean.LevelsBean.LevelBean;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.LoveFlagEnum;
+import com.boot.security.server.model.Membercard;
+import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
-import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
@@ -39,9 +37,10 @@ import com.boot.security.server.model.SessionSeatStatusEnum;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
-import com.boot.security.server.model.YesOrNoEnum;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
+import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
+import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
@@ -51,7 +50,6 @@ import com.boot.security.server.utils.SpringUtil;
 import com.boot.security.server.utils.XmlToJsonUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.internal.bind.TimeTypeAdapter;
 import com.oristartech.tsp.ws.soap.DoubleDefaultAdapter;
 import com.oristartech.tsp.ws.soap.IntegerDefaultAdapter;
 public class Dy1905Interface implements ICTMSInterface {
@@ -61,6 +59,8 @@ public class Dy1905Interface implements ICTMSInterface {
 	ScreenseatinfoServiceImpl screenseatinfoService = SpringUtil.getBean(ScreenseatinfoServiceImpl.class);
 	SessioninfoServiceImpl sessioninfoService = SpringUtil.getBean(SessioninfoServiceImpl.class);
 	FilminfoServiceImpl filminfoService = SpringUtil.getBean(FilminfoServiceImpl.class);
+	MemberCardServiceImpl memberCardService = SpringUtil.getBean(MemberCardServiceImpl.class);
+	MemberCardLevelServiceImpl memberCardLevelService = SpringUtil.getBean(MemberCardLevelServiceImpl.class);
 	/*
 	 * 查询影院信息（完成）
 	 * */
@@ -207,9 +207,9 @@ public class Dy1905Interface implements ICTMSInterface {
 				//获取排期中的影片信息
 				for(Sessioninfo sessioninfo : sessionInfoList){
 					Filminfo film = filminfoService.getByFilmCode(sessioninfo.getFilmCode());
-					List<FilmBean> dy1905Films = Dy1905Reply.getGetFeatureFilmResult().getFilms().getFilm().stream()
+					/*List<FilmBean> dy1905Films = Dy1905Reply.getGetFeatureFilmResult().getFilms().getFilm().stream()
 											.filter((FilmBean filmbean)->filmbean.getFilmNo().equals(sessioninfo.getFilmCode()))
-											.collect(Collectors.toList());
+											.collect(Collectors.toList());*/
 					if(film==null){
 						film = new Filminfo();
 						film.setFilmCode(sessioninfo.getFilmCode());
@@ -746,37 +746,161 @@ public class Dy1905Interface implements ICTMSInterface {
 				return false;
 			}
 	    }
+		
+		/*
+		 * 会员卡接口
+		 * */
+		
+		
+		/*
+		 *  登陆会员卡
+		 * */
 		@Override
 		public CTMSLoginCardReply LoginCard(Usercinemaview userCinema, String CardNo, String CardPassword)
 				throws Exception {
-			// TODO Auto-generated method stub
-			return null;
+			CTMSLoginCardReply reply = new CTMSLoginCardReply();
+			CTMSQueryCardReply queryCardReply = QueryCard(userCinema, CardNo, CardPassword);
+			reply.Status = queryCardReply.Status;
+			reply.ErrorCode = queryCardReply.ErrorCode;
+			reply.ErrorMessage = queryCardReply.ErrorMessage;
+			System.out.println("接口接收"+new Gson().toJson(reply));
+			return reply;
 		}
+		
+		/*
+		 *  查询会员卡
+		 * */
 		@Override
 		public CTMSQueryCardReply QueryCard(Usercinemaview userCinema, String CardNo, String CardPassword)
 				throws Exception {
-			// TODO Auto-generated method stub
-			return null;
+			CTMSQueryCardReply reply = new CTMSQueryCardReply();
+			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() + CardNo + CardPassword + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
+			Map<String,String> param = new LinkedHashMap<String,String>();
+			param.put("pAppCode", userCinema.getDefaultUserName());
+			param.put("pCinemaID", userCinema.getCinemaId());
+			param.put("pCardNo", CardNo);
+			param.put("pCardPwd", CardPassword);
+			param.put("pVerifyInfo", pVerifyInfo);
+			String MemberInfoResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/MemberInfo",param,"UTF-8");
+			System.out.println(MemberInfoResult);
+			Gson gson = new Gson();
+			Dy1905MemberInfoResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(MemberInfoResult,"MemberInfoResult"), Dy1905MemberInfoResult.class);
+			com.boot.security.server.api.ctms.reply.Dy1905MemberInfoResult.ResBean.CardInfoBean cardInfo = Dy1905Reply.getMemberInfoResult().getCardInfo();
+			if(Dy1905Reply.getMemberInfoResult().getResultCode().equals("0")){
+				Membercard membercard = memberCardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
+				Membercard membercardM = new Membercard();
+				membercardM.setCinemaCode(userCinema.getCinemaCode());
+				membercardM.setCardPassword(CardPassword);
+				membercardM.setMobilePhone(cardInfo.getMobile());
+				membercardM.setLevelCode(cardInfo.getCardLevelNo());
+				membercardM.setLevelName(cardInfo.getCardLevel());
+				membercardM.setUserName(cardInfo.getUsername());
+				membercardM.setCardNo(cardInfo.getCardNo());
+				membercardM.setBalance(cardInfo.getBalance());
+				Date ExpireDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Long.valueOf(cardInfo.getExpireDate()) * 1000)));  
+				membercardM.setExpireDate(ExpireDate);
+				membercardM.setStatus(0);
+				if(membercard==null){
+					memberCardService.Save(membercardM);
+				}else{
+					membercardM.setId(membercard.getId());
+					memberCardService.Update(membercardM);
+				}
+				reply.Status = StatusEnum.Success;
+			}else{
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = Dy1905Reply.getMemberInfoResult().getResultCode();
+			reply.ErrorMessage = Dy1905Reply.getMemberInfoResult().getResultMsg();
+			System.out.println("接口接收"+new Gson().toJson(reply));
+			return reply;
 		}
+		/*
+		 * 查询会员卡折扣
+		 * */
 		@Override
 		public CTMSQueryDiscountReply QueryDiscount(Usercinemaview userCinema, String TicketCount, String CardNo,
 				String CardPassword, String LevelCode, String SessionCode, String SessionTime, String FilmCode,
 				String ScreenType, String ListingPrice, String LowestPrice) throws Exception {
-			// TODO Auto-generated method stub
-			return null;
+			CTMSQueryDiscountReply reply = new CTMSQueryDiscountReply();
+			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + SessionCode + CardNo + CardPassword + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
+			Map<String,String> param = new LinkedHashMap<String,String>();
+			param.put("pAppCode", userCinema.getDefaultUserName());
+			param.put("pSessionID", SessionCode);
+			param.put("pCardNo", CardNo);
+			param.put("pCardPwd", CardPassword);
+			param.put("pVerifyInfo", pVerifyInfo);
+			String MemberPriceResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/MemberPrice",param,"UTF-8");
+			System.out.println(MemberPriceResult);
+			Gson gson = new Gson();
+			Dy1905MemberPriceResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(MemberPriceResult,"MemberPriceResult"), Dy1905MemberPriceResult.class);
+			if(Dy1905Reply.getMemberPriceResult().getResultCode().equals("0")){
+				reply.setCinemaCode(userCinema.getCinemaCode());
+				reply.setDiscountType(1);
+				reply.setPrice(Float.valueOf(Dy1905Reply.getMemberPriceResult().getSessionInfo().getMemberPrice()));
+				reply.Status = StatusEnum.Success;
+			}else{
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = Dy1905Reply.getMemberPriceResult().getResultCode();
+			reply.ErrorMessage = Dy1905Reply.getMemberPriceResult().getResultMsg();
+			System.out.println("接收接收"+new Gson().toJson(reply));
+			return reply;
 		}
+		
+		/*
+		 * 会员卡支付
+		 * */
 		@Override
 		public CTMSCardPayReply CardPay(Usercinemaview userCinema, String CardNo, String CardPassword, float PayAmount,
 				String SessionCode, String FilmCode, String TicketNum) throws Exception {
-			// TODO Auto-generated method stub
-			return null;
+			CTMSCardPayReply reply = new CTMSCardPayReply();
+			String OrderID = String.valueOf(new Date().getTime());
+			for (int i = 0; i < 5; i++) {
+	            // 得到随机字母
+	            char c = (char) ((Math.random() * 26) + 97);
+	            // 拼接成字符串
+	            OrderID += (c + "");
+	        }
+			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() + CardNo + CardPassword 
+					+ PayAmount + OrderID + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
+			Map<String,String> param = new LinkedHashMap<String,String>();
+			param.put("pAppCode", userCinema.getDefaultUserName());
+			param.put("pCinemaID", userCinema.getCinemaId());
+			param.put("pCardNo", CardNo);
+			param.put("pCardPwd", CardPassword);
+			param.put("pBalance", String.valueOf(PayAmount));
+			param.put("pOrderID", OrderID);
+			param.put("pVerifyInfo", pVerifyInfo);
+			String MemberCardDeductResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/MemberCardDeduct",param,"UTF-8");
+			System.out.println(MemberCardDeductResult);
+			Gson gson = new Gson();
+			Dy1905MemberCardDeductResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(MemberCardDeductResult,"CardsListResult"), Dy1905MemberCardDeductResult.class);
+			if(Dy1905Reply.getMemberCardDeductResult().getResultCode().equals("0")){
+				reply.setTradeNo(OrderID);
+				reply.setDeductAmount(Float.valueOf(Dy1905Reply.getMemberCardDeductResult().getCardInfo().getBalance()));
+				reply.Status = StatusEnum.Success;
+			}else{
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = Dy1905Reply.getMemberCardDeductResult().getResultCode();
+			reply.ErrorMessage = Dy1905Reply.getMemberCardDeductResult().getResultMsg();
+			System.out.println("返回接收"+new Gson().toJson(reply));
+			return reply;
 		}
+		
+		/*
+		 * 会员卡支付撤销（无）
+		 * */
 		@Override
 		public CTMSCardPayBackReply CardPayBack(Usercinemaview userCinema, String CardNo, String CardPassword,
 				String TradeNo, float PayBackAmount) throws Exception {
 			// TODO Auto-generated method stub
 			return null;
 		}
+		/*
+		 * 会员卡消费记录（无）
+		 * */
 		@Override
 		public CTMSQueryCardTradeRecordReply QueryCardTradeRecord(Usercinemaview userCinema, String CardNo,
 				String CardPassword, String StartDate, String EndDate, String PageSize, String PageNum)
@@ -784,22 +908,150 @@ public class Dy1905Interface implements ICTMSInterface {
 			// TODO Auto-generated method stub
 			return null;
 		}
+		/*
+		 * 会员卡充值
+		 * */
 		@Override
 		public CTMSCardChargeReply CardCharge(Usercinemaview userCinema, String CardNo, String CardPassword,
 				CardChargeTypeEnum ChargeType, float ChargeAmount) throws Exception {
-			// TODO Auto-generated method stub
-			return null;
+			CTMSCardChargeReply reply = new CTMSCardChargeReply();
+			//充值订单号（网售商生成，不得重复，防止重复提交多次充值）
+			String OrderID = String.valueOf(new Date().getTime());
+			for (int i = 0; i < 5; i++) {
+	            // 得到随机字母
+	            char c = (char) ((Math.random() * 26) + 97);
+	            // 拼接成字符串
+	            OrderID += (c + "");
+	        }
+			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() + CardNo + OrderID + ChargeAmount + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
+			Map<String,String> param = new LinkedHashMap<String,String>();
+			param.put("pAppCode", userCinema.getDefaultUserName());
+			param.put("pCinemaID", userCinema.getCinemaId());
+			param.put("pCardNo", CardNo);
+			param.put("pOrderID", OrderID);
+			param.put("pBalance", String.valueOf(ChargeAmount));
+			param.put("pVerifyInfo", pVerifyInfo);
+			String RechargeMemberCardResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/RechargeMemberCard",param,"UTF-8");
+			System.out.println(RechargeMemberCardResult);
+			Gson gson = new Gson();
+			Dy1905RechargeMemberCardResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(RechargeMemberCardResult,"RechargeMemberCardResult"), Dy1905RechargeMemberCardResult.class);
+			if(Dy1905Reply.getRechargeMemberCardResult().getResultCode().equals("0")){
+				reply.Status = StatusEnum.Success;
+			}else{
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = Dy1905Reply.getRechargeMemberCardResult().getResultCode();
+			reply.ErrorMessage = Dy1905Reply.getRechargeMemberCardResult().getResultMsg();
+			System.out.println("接口接收"+new Gson().toJson(reply));
+			return reply;
 		}
+		
+		/*
+		 * 查询会员卡等级
+		 * */
 		@Override
 		public CTMSQueryCardLevelReply QueryCardLevel(Usercinemaview userCinema) throws Exception {
-			// TODO Auto-generated method stub
-			return null;
+			CTMSQueryCardLevelReply reply = new CTMSQueryCardLevelReply();
+			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
+			Map<String,String> param = new LinkedHashMap<String,String>();
+			param.put("pAppCode", userCinema.getDefaultUserName());
+			param.put("pCinemaID", userCinema.getCinemaId());
+			param.put("pVerifyInfo", pVerifyInfo);
+			String MemberTypeListResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/MemberTypeList",param,"UTF-8");
+			System.out.println(MemberTypeListResult);
+			Gson gson = new Gson();
+			Dy1905MemberTypeListResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(MemberTypeListResult,"MemberTypeListResult"), Dy1905MemberTypeListResult.class);
+			List<LevelBean> Dy1905Level = Dy1905Reply.getMemberTypeListResult().getTypes().getType().get(0).getLevels().getLevel();
+			System.out.println("接收到的等级数量"+Dy1905Level.size());
+			List<Membercardlevel> newmembercardlevelList = new ArrayList();
+			if(Dy1905Reply.getMemberTypeListResult().getResultCode().equals("0")){
+				for(LevelBean Level :Dy1905Level){
+					Membercardlevel membercardlevel = new Membercardlevel();
+					membercardlevel.setCinemaCode(userCinema.getCinemaCode());
+					Dy1905ModelMapper.MaptoEntity(Level, membercardlevel);
+					newmembercardlevelList.add(membercardlevel);
+				}
+				//删除会员卡等级信息
+				memberCardLevelService.deleteByCinemaCode(userCinema.getCinemaCode());
+				//循环插入会员卡等级信息
+				for(Membercardlevel newmembercardlevel :newmembercardlevelList){
+					memberCardLevelService.Save(newmembercardlevel);
+				}
+				reply.Status = StatusEnum.Success;
+			}else{
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = Dy1905Reply.getMemberTypeListResult().getResultCode();
+			reply.ErrorMessage = Dy1905Reply.getMemberTypeListResult().getResultMsg();
+			System.out.println("接口接收"+new Gson().toJson(reply));
+			return reply;
 		}
+		/*
+		 * 会员卡注册
+		 * */
 		@Override
 		public CTMSCardRegisterReply CardRegister(Usercinemaview userCinema, String CardPassword, String LevelCode,
 				String InitialAmount, String CardUserName, String MobilePhone, String IDNumber, String Sex)
 				throws Exception {
-			// TODO Auto-generated method stub
-			return null;
+			CTMSCardRegisterReply reply = new CTMSCardRegisterReply();
+			String OrderID = String.valueOf(new Date().getTime());
+			for (int i = 0; i < 5; i++) {
+	            // 得到随机字母
+	            char c = (char) ((Math.random() * 26) + 97);
+	            // 拼接成字符串
+	            OrderID += (c + "");
+	        }
+			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + OrderID + userCinema.getCinemaId()
+			+ CardUserName + CardPassword + MobilePhone + LevelCode + IDNumber + InitialAmount + Sex 
+			+ userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
+			Map<String,String> param = new LinkedHashMap<String,String>();
+			param.put("pAppCode", userCinema.getDefaultUserName());
+			///开卡订单ID(新增参数，用于开卡订单查询接口)
+			param.put("pOrderID",OrderID);
+			param.put("pCinemaID", userCinema.getCinemaId());
+			param.put("pCardUser", CardUserName);
+			param.put("pCardPwd", CardPassword);
+			param.put("pMobile", MobilePhone);
+			param.put("pCardLevelID", LevelCode);
+			param.put("pIdentityCard", IDNumber);
+			param.put("pBalance", InitialAmount);
+			param.put("pGender", Sex);
+			param.put("pVerifyInfo", pVerifyInfo);
+			String MakeMemberCardResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/MakeMemberCard",param,"UTF-8");
+			System.out.println(MakeMemberCardResult);
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss")
+					.registerTypeAdapter(Integer.class, new IntegerDefaultAdapter())
+					.registerTypeAdapter(Double.class, new DoubleDefaultAdapter()).create();
+			Dy1905MakeMemberCardResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(MakeMemberCardResult,"MakeMemberCardResult"), Dy1905MakeMemberCardResult.class);
+			QueryCardLevel(userCinema);
+			Membercardlevel membercardlevel = memberCardLevelService.getByCinemaCodeAndLevelCode(userCinema.getCinemaCode(), LevelCode);
+			CardInfoBean cardInfo = Dy1905Reply.getMakeMemberCardResult().getCardInfo();
+			if(Dy1905Reply.getMakeMemberCardResult().getResultCode().equals("0")){
+				Membercard membercard = new Membercard();
+				membercard.setCinemaCode(userCinema.getCinemaCode());
+				membercard.setCardPassword(CardPassword);
+				membercard.setMobilePhone(MobilePhone);
+				membercard.setLevelCode(LevelCode);
+				membercard.setLevelName(membercardlevel.getLevelName());
+				membercard.setUserName(CardUserName);
+				membercard.setSex(Sex);
+				membercard.setCreditNum(IDNumber);
+				membercard.setStatus(0);
+				Dy1905ModelMapper.MaptoEntity(cardInfo, membercard);
+				memberCardService.Save(membercard);
+				reply.setCardNo(cardInfo.getCardNo());
+				reply.setBalance(Float.valueOf(String.valueOf(cardInfo.getBalance())));
+				Date ExpireDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Long.valueOf(cardInfo.getExpireDate()) * 1000)));
+				reply.setExpireDate(ExpireDate);
+				Date CreateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Long.valueOf(cardInfo.getCreateTime()) * 1000)));  
+				reply.setCreateTime(CreateTime);
+				reply.Status = StatusEnum.Success;
+			}else{
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = Dy1905Reply.getMakeMemberCardResult().getResultCode();
+			reply.ErrorMessage = Dy1905Reply.getMakeMemberCardResult().getResultMsg();
+			System.out.println("接口接收"+new Gson().toJson(reply));
+			return reply;
 		}
 }

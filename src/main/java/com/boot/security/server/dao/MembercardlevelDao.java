@@ -20,6 +20,9 @@ public interface MembercardlevelDao {
     
     @Select("select * from membercardlevel t where t.cinemacode = #{cinemacode}")
     List<Membercardlevel> getByCinemaCode(String cinemacode);
+    
+    @Select("select * from  membercardlevel t where t.cinemacode = #{cinemacode} and t.levelcode = #{levelcode}")
+    Membercardlevel getByCinemaCodeAndLevelCode(@Param("cinemacode") String cinemacode,@Param("levelcode") String levelcode);
 
     @Delete("delete from membercardlevel where id = #{id}")
     int delete(Long id);
@@ -30,7 +33,7 @@ public interface MembercardlevelDao {
     int update(Membercardlevel membercardlevel);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into membercardlevel(Id, CinemaCode, LevelCode, LevelName) values(#{Id}, #{CinemaCode}, #{LevelCode}, #{LevelName})")
+    @Insert("insert into membercardlevel(CinemaCode, LevelCode, LevelName) values(#{CinemaCode}, #{LevelCode}, #{LevelName})")
     int save(Membercardlevel membercardlevel);
     
     int count(@Param("params") Map<String, Object> params);

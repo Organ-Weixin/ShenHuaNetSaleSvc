@@ -1,9 +1,13 @@
 package com.boot.security.server.api.ctms.reply;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.boot.security.server.api.ctms.reply.CxQueryDiscountActivityResult.ResBean.RuleBean.resultsBean.resultBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaAllSessionResult.ResBean.SessionsBean.SessionBean.FilmsBean.FilmBean;
+import com.boot.security.server.model.Membercard;
+import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
 import com.boot.security.server.model.Sessioninfo;
@@ -62,5 +66,37 @@ public class Dy1905ModelMapper {
     	entity.setIsAvalible(Integer.valueOf(model.getStatus()));
     	entity.setPlaythroughFlag(model.getConsecutive());
     	return entity;
+    }
+    
+    //会员卡信息转entity
+    public static Membercard MaptoEntity(Dy1905MakeMemberCardResult.ResBean.CardInfoBean model,Membercard entity) throws ParseException{
+    	entity.setCardNo(model.getCardNo());
+    	entity.setBalance(model.getBalance());
+		Date ExpireDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Long.valueOf(model.getExpireDate()) * 1000)));  
+    	entity.setExpireDate(ExpireDate);
+		Date CreateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Long.valueOf(model.getCreateTime()) * 1000)));  
+    	entity.setCreateTime(CreateTime);
+    	return entity;
+    }
+    //会员卡等级信息转entity
+    public static Membercardlevel MaptoEntity(Dy1905MemberTypeListResult.ResBean.TypesBean.TypeBean.LevelsBean.LevelBean model,Membercardlevel entity){
+    	entity.setLevelCode(model.getLevelNo());
+    	entity.setLevelName(model.getLevelName());
+    	return entity;
+    }
+    
+    public static String timeStamp2Date(String seconds,String format) {  
+        if(seconds == null || seconds.isEmpty() || seconds.equals("null")){  
+            return "";  
+        }  
+        if(format == null || format.isEmpty()) format = "yyyy-MM-dd HH:mm:ss";  
+        SimpleDateFormat sdf = new SimpleDateFormat(format);  
+        return sdf.format(new Date(Long.valueOf(seconds+"000")));  
+    }
+    public static void main(String[] args) throws ParseException {
+    	 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+    	 System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(sdf.format(new Date(Long.valueOf("2186927999"+"000")))));
+		Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Long.valueOf(2186927999L) * 1000)));  
+		System.out.println(date);
     }
 }
