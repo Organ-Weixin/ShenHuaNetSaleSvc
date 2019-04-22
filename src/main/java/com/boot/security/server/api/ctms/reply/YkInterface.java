@@ -9,13 +9,22 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.springframework.util.Base64Utils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.boot.security.server.api.ctms.reply.YkConfirmOrderResult.DataBean.OrderBean;
 import com.boot.security.server.api.ctms.reply.YkConfirmOrderResult.DataBean.OrderBean.Tickets;
+import com.boot.security.server.api.ctms.reply.YkGetCardConsumeRecordsResult.DataBean.ConsumeRecords;
+import com.boot.security.server.api.ctms.reply.YkGetCardGradeListResult.DataBean.CardBean;
+import com.boot.security.server.api.ctms.reply.YkGetCardRechargeRecordsResult.DataBean.CardRechargeRecords;
 import com.boot.security.server.api.ctms.reply.YkGetCinemasResult.DataBean.YkCinema;
 import com.boot.security.server.api.ctms.reply.YkGetCinemasResult.DataBean.YkCinema.Halls;
 import com.boot.security.server.api.ctms.reply.YkGetScheduleSoldSeatsResult.DataBean.SoldSeats.SectionList;
@@ -24,9 +33,14 @@ import com.boot.security.server.api.ctms.reply.YkGetSchedulesResult.dataBean.Sch
 import com.boot.security.server.api.ctms.reply.YkGetSeatsResult.DataBean.CinemaBean.SeatPlan;
 import com.boot.security.server.api.ctms.reply.YkGetSeatsResult.DataBean.CinemaBean.SeatPlan.Sections;
 import com.boot.security.server.api.ctms.reply.YkGetSeatsResult.DataBean.CinemaBean.SeatPlan.Sections.Seats;
+import com.boot.security.server.api.ctms.reply.YkQueryPriceResult.DataBean.DataList;
+import com.boot.security.server.api.ctms.reply.YkQueryPriceResult.DataBean.DataList.TicketsPrice;
 import com.boot.security.server.model.CardChargeTypeEnum;
+import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
+import com.boot.security.server.model.Membercard;
+import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orders;
@@ -38,9 +52,10 @@ import com.boot.security.server.model.SessionSeatStatusEnum;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
-import com.boot.security.server.model.YesOrNoEnum;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
+import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
+import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
@@ -49,13 +64,16 @@ import com.boot.security.server.utils.MD5Util;
 import com.boot.security.server.utils.SpringUtil;
 import com.google.gson.Gson;
 
+import cn.cmts.main.webservice.WebService;
+
 public class YkInterface implements ICTMSInterface {
 	CinemaServiceImpl _cinemaService = SpringUtil.getBean(CinemaServiceImpl.class);
 	ScreeninfoServiceImpl _screeninfoService = SpringUtil.getBean(ScreeninfoServiceImpl.class);
 	SessioninfoServiceImpl _sessioninfoService = SpringUtil.getBean(SessioninfoServiceImpl.class);
 	ScreenseatinfoServiceImpl _screenseatinfoService = SpringUtil.getBean(ScreenseatinfoServiceImpl.class);
 	FilminfoServiceImpl _filminfoService = SpringUtil.getBean(FilminfoServiceImpl.class);
-
+	MemberCardServiceImpl memberCardService = SpringUtil.getBean(MemberCardServiceImpl.class);
+	MemberCardLevelServiceImpl memberCardLevelService = SpringUtil.getBean(MemberCardLevelServiceImpl.class);
 	/*
 	 * 查询影院信息
 	 */
@@ -63,7 +81,7 @@ public class YkInterface implements ICTMSInterface {
 	public CTMSQueryCinemaReply QueryCinema(Usercinemaview userCinema) throws Exception {
 		CTMSQueryCinemaReply reply = new CTMSQueryCinemaReply();
 		
-		Map<String,String> param = new LinkedHashMap();
+		Map<String,String> param = new LinkedHashMap<String,String>();
 		param.put("api", "ykse.partner.cinema.getCinemas");
 		param.put("channelCode",userCinema.getDefaultUserName());
 		param.put("timestamp",String.valueOf(System.currentTimeMillis()));
@@ -130,7 +148,7 @@ public class YkInterface implements ICTMSInterface {
 	public CTMSQuerySeatReply QuerySeat(Usercinemaview userCinema, Screeninfo screen) throws Exception {
 		CTMSQuerySeatReply reply = new CTMSQuerySeatReply();
 		
-		Map<String,String> param = new LinkedHashMap();
+		Map<String,String> param = new LinkedHashMap<String,String>();
 		param.put("api", "ykse.partner.seat.getSeats");
 		param.put("channelCode",userCinema.getDefaultUserName());
 		param.put("data", "{\"cinemaLinkId\":\""+userCinema.getCinemaId()+"\",\"hallId\":\""+screen.getSCode()+"\"}");
@@ -253,7 +271,7 @@ public class YkInterface implements ICTMSInterface {
 		calendar.add(calendar.DATE, -1);
 		end = calendar.getTime();
 
-		Map<String, String> param = new LinkedHashMap();
+		Map<String, String> param = new LinkedHashMap<String,String>();
 		param.put("api", "ykse.partner.schedule.getSchedules");
 		param.put("channelCode", userCinema.getDefaultUserName());
 		param.put("data",
@@ -341,7 +359,7 @@ public class YkInterface implements ICTMSInterface {
 			input.put("scheduleId",sessioninfo.getSessionId());
 			String data=input.toJSONString();
 			
-			Map<String,String> param = new LinkedHashMap();
+			Map<String,String> param = new LinkedHashMap<String,String>();
 			param.put("api", "ykse.partner.seat.getScheduleSoldSeats");
 			param.put("channelCode",userCinema.getDefaultUserName());
 			param.put("data", data);
@@ -406,7 +424,7 @@ public class YkInterface implements ICTMSInterface {
 		input.put("seatIdList", seatIdList);
 		String data=input.toJSONString();
 		
-		Map<String,String> param = new LinkedHashMap();
+		Map<String,String> param = new LinkedHashMap<String,String>();
 		param.put("api", "ykse.partner.seat.lockSeats");
 		param.put("channelCode",userCinema.getDefaultUserName());
 		param.put("data",data);
@@ -833,7 +851,7 @@ public class YkInterface implements ICTMSInterface {
 		
 		return reply;
 	}
-
+	
 	/*
 	 * 签名算法
 	 */
@@ -887,7 +905,105 @@ public class YkInterface implements ICTMSInterface {
 		
 		return timestamp+str;
 	}
+	/*
+	 * 敏感数据加密（如会员卡密码）
+	 * password 明文
+	 * key		密钥
+	 * return 	密文
+	 */
+	private static String MD5AESPassword(String password,String key) throws Exception{
+		final String hexDigits[] = { "0", "1", "2", "3", "4", "5","6", "7", "8", "9", "A", "B", "C", "D", "E", "F" };
+		StringBuffer strbuf = new StringBuffer();
+		Random rand = new Random();
+		for(int i=0;i<hexDigits.length;i++){
+			strbuf.append(hexDigits[rand.nextInt(hexDigits.length)]);	//随机生成 16 个字节的加密向量 iv
+		}
+		// Base64 编码 iv,截取前 22 个字节(即不要‘==’)
+		String ivBase64 = Base64Utils.encodeToString(strbuf.toString().getBytes("UTF-8")).substring(0, 22);
+		
+		//对密钥 key 使用 md5(32)进行加密，并转换成小写，然后截取前 16 位字节得到 md5key
+		byte[] keyBytes = WebService.getMD5ofStr(key).toLowerCase().substring(0, 16).getBytes("UTF-8");
+		
+		//对 明文数据 使用 md5(32)进行加密，并转换成小写得到 plaintextHash
+		String plaintextHash=WebService.getMD5ofStr(password).toLowerCase();
+		//将 明文数据 与 plaintextHash 按前后顺序合并得到 mergePlaintext
+		byte[] plainTextbytes = plainTextPadding((password + plaintextHash).getBytes("UTF-8"));
+		//获取随机向量
+//      String iv = RandomUtils.randomCharsAndDigits(16);
+        String iv = "YKSE1234YKSE1234";
+        byte[] ivbytes = iv.getBytes("UTF-8");
+		//对 mergePlaintext使用AES加密（密钥使用 md5key），然后再使用Base64编码得到 ciphertext
+		String ciphertext = Base64Utils.encodeToString(encrypt(plainTextbytes, keyBytes, ivbytes));
+		
+		return ivBase64+ciphertext;
+	}
 	
+	private static byte[] encrypt(byte[] plainText, byte[] key, byte[] initialVector) throws Exception {
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(initialVector);
+        Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");//"算法/模式/补码方式"
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);
+        plainText = cipher.doFinal(plainText);
+        return plainText;
+    }
+	
+	//补0
+	private static byte[] plainTextPadding(byte[] plainText) {
+        byte[] paddingText;
+        int padding = 16 - plainText.length % 16;
+        if (padding > 0) {
+            paddingText = new byte[plainText.length + padding];
+            System.arraycopy(plainText, 0, paddingText, 0, plainText.length);
+            for (int i = plainText.length; i < paddingText.length; i++) {
+                paddingText[i] = 0x00;
+            }
+        } else {
+            paddingText = plainText;
+        }
+        return paddingText;
+    }
+	/**
+     * AES解密
+     *
+     * @param encryptedText 密文
+     * @param key           密钥
+     * @return 明文
+	 * @throws Exception 
+     */
+    public static String decrypt(String encryptedText, String key) throws Exception {
+        try {
+            //截取前22加密向量并且用Base64解码
+            byte[] ivbytes = Base64Utils.decodeFromString(encryptedText.substring(0, 22) + "==");
+            System.out.println(ivbytes);
+            //获得加密数据
+            byte[] cipheredBytes = Base64Utils.decodeFromString(encryptedText.substring(22));
+            System.out.println(new String(cipheredBytes));
+            //对key进行md5加密并转小写，然后获取md5key的字节码
+            byte[] keyBytes = WebService.getMD5ofStr(key).toLowerCase().getBytes("UTF-8");
+            System.out.println(keyBytes);
+            //数据解密
+            String decryptStr = new String(decrypt(cipheredBytes, keyBytes, ivbytes), "UTF-8").trim();
+            String plainText = decryptStr.substring(0, decryptStr.length() - 32);
+            String md5 = decryptStr.substring(decryptStr.length() - 32);
+            //数据验证
+            if (!WebService.getMD5ofStr(plainText).toLowerCase().equals(md5.toLowerCase())) {
+                System.out.println("加密数据校验失败");
+            }
+            return plainText;
+        } catch (Exception e) {
+//        	System.out.println(e.toString());
+            throw e;
+        }
+    }
+    private static byte[] decrypt(byte[] cipherText, byte[] key, byte[] initialVector) throws Exception {
+        SecretKeySpec secretKeySpecy = new SecretKeySpec(key, "AES");
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(initialVector);
+        Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");//"算法/模式/补码方式"
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpecy, ivParameterSpec);
+        cipherText = cipher.doFinal(cipherText);
+        return cipherText;
+    }
+		 
 	public static void main(String[] args) throws Exception {
 		//Dy1905GetCinemaResult result=QueryCinemaId();
 		//System.out.println(result.getGetCinemaResult().getCinemas().getCinema().get(0).getCinemaName());
@@ -895,67 +1011,476 @@ public class YkInterface implements ICTMSInterface {
 		
 	}
 
+	/*
+	 * 会员卡登录
+	 */
 	@Override
 	public CTMSLoginCardReply LoginCard(Usercinemaview userCinema, String CardNo, String CardPassword)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSLoginCardReply reply = new CTMSLoginCardReply();
+		
+		CTMSQueryCardReply querycardReply = QueryCard(userCinema, CardNo, CardPassword); //调用查询会员卡接口
+		reply.Status = querycardReply.Status;
+		reply.ErrorCode = querycardReply.ErrorCode;
+		reply.ErrorMessage = querycardReply.ErrorMessage;
+		
+		return reply;
 	}
 
+	/*
+	 * 查询会员卡信息
+	  */
 	@Override
-	public CTMSQueryCardReply QueryCard(Usercinemaview userCinema, String CardNo, String CardPassword)
-			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public CTMSQueryCardReply QueryCard(Usercinemaview userCinema, String CardNo, String CardPassword) throws Exception {
+		CTMSQueryCardReply reply = new CTMSQueryCardReply();
+		
+		Map<String,String> param = new LinkedHashMap<String,String>();
+		param.put("api", "ykse.partner.card.getCardDetail");
+		param.put("channelCode", userCinema.getDefaultUserName());
+		param.put("data", "{\"cardNumber\":\""+CardNo+"\",\"cinemaLinkId\":\""+userCinema.getCinemaId()+"\"}");
+		param.put("timestamp", String.valueOf(System.currentTimeMillis()));
+		param.put("v", "1.0");
+		
+		String sign = createSign(userCinema.getDefaultPassword(), param);
+		String getCardDetailResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
+				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
+		System.out.println("会员卡信息返回："+getCardDetailResult);
+		Gson gson = new Gson();
+		YkGetCardDetailResult ykResult = gson.fromJson(getCardDetailResult, YkGetCardDetailResult.class);
+		
+		if("0".equals(ykResult.getRetCode())){
+			if("SUCCESS".equals(ykResult.getData().getBizCode())){
+				com.boot.security.server.api.ctms.reply.YkGetCardDetailResult.DataBean.CardBean card = ykResult.getData().getData();
+				if(card != null){
+					Membercard memercard = memberCardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
+					if(memercard != null){	//修改
+						memercard.setMobilePhone(card.getMobile());
+						memercard.setLevelCode(card.getGradeId());
+						memercard.setLevelName(card.getGradeDesc());
+						memercard.setUserName(card.getCardUserName());
+//						memercard.setSex();
+						memercard.setCreditNum(card.getIdCard()); //证件号码
+//						memercard.setStatus();
+						if(card.getBirthdate() != null){
+							memercard.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse(card.getBirthdate()));
+						}
+						if(card.getValidateDate()!=null){ //有效期
+							memercard.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").parse(card.getValidateDate()));
+						}
+						memberCardService.Update(memercard);
+						
+					} else {	//新增
+						memercard = new Membercard();
+						memercard.setCinemaCode(userCinema.getCinemaCode());
+						memercard.setCardNo(card.getCardNumber());
+						memercard.setMobilePhone(card.getMobile());
+						memercard.setLevelCode(card.getGradeId());
+						memercard.setLevelName(card.getGradeDesc());
+						memercard.setUserName(card.getCardUserName());
+//						memercard.setSex();
+						memercard.setCreditNum(card.getIdCard()); 
+						if(card.getBirthdate() != null){
+							memercard.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse(card.getBirthdate()));
+						}
+						if(card.getValidateDate()!=null){ 
+							memercard.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").parse(card.getValidateDate()));
+						}
+						memercard.setCreateTime(new Date());
+						memercard.setStatus(0);
+						memberCardService.Save(memercard);
+					}
+					reply.setGradeType(card.getGradeType());	//卡类型，充值接口使用
+				}
+				
+				reply.Status = StatusEnum.Success;
+			} else {
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = ykResult.getData().getBizCode();
+			reply.ErrorMessage=ykResult.getData().getBizMsg();
+		} else {
+			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = ykResult.getRetCode();
+			reply.ErrorMessage = ykResult.getRetMsg();
+		}
+		
+		return reply;
 	}
 
+	/*
+	 * 得到会员卡的折扣价
+	 */
 	@Override
 	public CTMSQueryDiscountReply QueryDiscount(Usercinemaview userCinema, String TicketCount, String CardNo,
 			String CardPassword, String LevelCode, String SessionCode, String SessionTime, String FilmCode,
 			String ScreenType, String ListingPrice, String LowestPrice) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSQueryDiscountReply reply = new CTMSQueryDiscountReply();
+		
+		Sessioninfo sessioninfo=_sessioninfoService.getBySessionCode(userCinema.getUserId(), userCinema.getCinemaCode(), SessionCode);
+		List<Screenseatinfo> groupscreenseats=_screenseatinfoService.getGroupByGroupCode(userCinema.getCinemaCode(), sessioninfo.getScreenCode());
+		JSONObject  input=new JSONObject();
+		input.put("cinemaLinkId", userCinema.getCinemaId());
+		input.put("cardNumber", CardNo);
+		input.put("sectionId", groupscreenseats.get(0).getGroupCode()); 
+		input.put("scheduleId", sessioninfo.getSessionId());
+		input.put("scheduleKey", sessioninfo.getSessionKey());
+		String data=input.toJSONString();
+
+		Map<String,String> param = new LinkedHashMap<String,String>();
+		param.put("api", "ykse.partner.card.queryPrice");
+		param.put("channelCode", userCinema.getDefaultUserName());
+		param.put("data", data);
+		param.put("timestamp", String.valueOf(System.currentTimeMillis()));
+		param.put("v", "1.0");
+		
+		String sign = createSign(userCinema.getDefaultPassword(), param);
+		String queryPriceResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
+				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
+		System.out.println("会员卡票价返回："+queryPriceResult);
+		Gson gson = new Gson();
+		YkQueryPriceResult ykResult = gson.fromJson(queryPriceResult, YkQueryPriceResult.class);
+		
+		if("0".equals(ykResult.getRetCode())){
+			if("SUCCESS".equals(ykResult.getData().getBizCode())){
+				List<DataList> datalist = ykResult.getData().getData();
+				if(datalist != null && datalist.size()>0){
+					for(TicketsPrice ticket:datalist.get(0).getTickets()){
+						if(ticket.getIsCardDiscount()  && "成人票".equals(ticket.getTicketType())){	//暂时取成人票的会员价
+							reply.setCinemaCode(userCinema.getCinemaCode());
+							reply.setPrice(Float.valueOf(ticket.getPrice()));
+						}
+					}
+				}
+				reply.Status = StatusEnum.Success;
+			} else {
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = ykResult.getData().getBizCode();
+			reply.ErrorMessage=ykResult.getData().getBizMsg();
+		} else {
+			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = ykResult.getRetCode();
+			reply.ErrorMessage = ykResult.getRetMsg();
+		}
+		
+		return reply;
 	}
 
+	/*
+	 * 会员卡支付(凤凰佳影此接口单独调用)
+	 * */
 	@Override
 	public CTMSCardPayReply CardPay(Usercinemaview userCinema, String CardNo, String CardPassword, float PayAmount,
 			String SessionCode, String FilmCode, String TicketNum) throws Exception {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
+	/*
+	 * 会员卡支付撤销(凤凰佳影此接口单独调用)
+	 */
 	@Override
 	public CTMSCardPayBackReply CardPayBack(Usercinemaview userCinema, String CardNo, String CardPassword,
 			String TradeNo, float PayBackAmount) throws Exception {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
+	/*
+	 * 查询会员卡交易记录
+	 * 粤科分消费记录、充值记录
+	 */
 	@Override
 	public CTMSQueryCardTradeRecordReply QueryCardTradeRecord(Usercinemaview userCinema, String CardNo,
 			String CardPassword, String StartDate, String EndDate, String PageSize, String PageNum) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSQueryCardTradeRecordReply reply = new CTMSQueryCardTradeRecordReply();
+		List<CardTradeRecord> totalRecord = new ArrayList<CardTradeRecord>();
+		
+		//1.查询会员卡余额消费记录
+		JSONObject  input=new JSONObject();
+		input.put("cinemaLinkId", userCinema.getCinemaId());
+		input.put("cardNumber", CardNo);
+		input.put("startDate", StartDate); 
+		input.put("endDate", EndDate);
+		String data=input.toJSONString();
+		
+		Map<String,String> param = new LinkedHashMap<String,String>();
+		param.put("api", "ykse.partner.card.getCardConsumeRecords");
+		param.put("channelCode", userCinema.getDefaultUserName());
+		param.put("data", data);
+		param.put("timestamp", String.valueOf(System.currentTimeMillis()));
+		param.put("v", "1.0");
+		
+		String sign = createSign(userCinema.getDefaultPassword(), param);
+		String getCardConsumeRecordsResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
+				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
+		System.out.println("会员卡消费记录返回："+getCardConsumeRecordsResult);
+		Gson gson = new Gson();
+		YkGetCardConsumeRecordsResult ykConsumeResult = gson.fromJson(getCardConsumeRecordsResult, YkGetCardConsumeRecordsResult.class);
+		if("0".equals(ykConsumeResult.getRetCode())){
+			if("SUCCESS".equals(ykConsumeResult.getData().getBizCode())){
+				for(ConsumeRecords consumeRecord:ykConsumeResult.getData().getDataList()){
+					CardTradeRecord cardTradeRecord = new CardTradeRecord();
+					cardTradeRecord.setTradeNo(consumeRecord.getBookingId());	//交易号
+					cardTradeRecord.setTradeType("消费");
+					if(consumeRecord.getConsumeDateTime() != null){
+						cardTradeRecord.setTradeTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(consumeRecord.getConsumeDateTime()));
+					}
+					cardTradeRecord.setTradePrice(Float.valueOf(consumeRecord.getConsumeAmount()));
+					cardTradeRecord.setCinemaName(userCinema.getCinemaName());
+					totalRecord.add(cardTradeRecord);
+				}
+				reply.Status = StatusEnum.Success;
+			} else {
+				reply.Status = StatusEnum.Failure;
+				reply.ErrorCode = ykConsumeResult.getData().getBizCode();
+				reply.ErrorMessage=ykConsumeResult.getData().getBizMsg();
+				return reply;
+			}
+			
+		} else {
+			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = ykConsumeResult.getRetCode();
+			reply.ErrorMessage = ykConsumeResult.getRetMsg();
+			return reply;
+		}
+		
+		//2.查询会员卡充值记录 
+		Map<String,String> param2 = new LinkedHashMap<String,String>();
+		param2.put("api", "ykse.partner.card.getCardRechargeRecords");
+		param2.put("channelCode", userCinema.getDefaultUserName());
+		param2.put("data", data);
+		param2.put("timestamp", String.valueOf(System.currentTimeMillis()));
+		param2.put("v", "1.0");
+		
+		String sign2 = createSign(userCinema.getDefaultPassword(), param2);
+		String getCardRechargeRecordsResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
+				userCinema.getDefaultPassword(), FormatParam(param2), sign2), null, "UTF-8");
+		System.out.println("会员卡充值记录返回："+getCardRechargeRecordsResult);
+		
+		YkGetCardRechargeRecordsResult ykRechargeResult = gson.fromJson(getCardRechargeRecordsResult, YkGetCardRechargeRecordsResult.class);
+		if("0".equals(ykRechargeResult.getRetCode())){
+			if("SUCCESS".equals(ykRechargeResult.getData().getBizCode())){
+				for(CardRechargeRecords cardRechargeRecord : ykRechargeResult.getData().getDataList()){
+					CardTradeRecord cardTradeRecord2 = new CardTradeRecord();
+					cardTradeRecord2.setTradeNo(cardRechargeRecord.getRechargeBookingId());	//交易号
+					cardTradeRecord2.setTradeType("充值");
+					if(cardRechargeRecord.getRechargeDateTime() != null){
+						cardTradeRecord2.setTradeTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(cardRechargeRecord.getRechargeDateTime()));
+					}
+					cardTradeRecord2.setTradePrice(Float.valueOf(cardRechargeRecord.getRechargeAmount()));
+					cardTradeRecord2.setCinemaName(userCinema.getCinemaName());
+					totalRecord.add(cardTradeRecord2);
+				}
+				reply.Status = StatusEnum.Success;
+			} else {
+				reply.Status = StatusEnum.Failure;
+				reply.ErrorCode = ykRechargeResult.getData().getBizCode();
+				reply.ErrorMessage=ykRechargeResult.getData().getBizMsg();
+				return reply;
+			}
+		} else {
+			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = ykRechargeResult.getRetCode();
+			reply.ErrorMessage = ykRechargeResult.getRetMsg();
+			return reply;
+		}
+		
+		reply.setCardTradeRecords(totalRecord);
+		return reply;
 	}
 
+	/*
+	 * 会员卡充值
+	 */
 	@Override
 	public CTMSCardChargeReply CardCharge(Usercinemaview userCinema, String CardNo, String CardPassword,
 			CardChargeTypeEnum ChargeType, float ChargeAmount) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSCardChargeReply reply = new CTMSCardChargeReply();
+		
+		CTMSQueryCardReply querycard = QueryCard(userCinema, CardNo, CardPassword); //调用查询会员卡接口
+		if(StatusEnum.Failure.equals(querycard.Status)){
+			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = querycard.ErrorCode;
+			reply.ErrorMessage = querycard.ErrorMessage;
+			return reply;
+		}
+		String gradeType = querycard.getGradeType();
+		if("V".equals(gradeType) || "T".equals(gradeType)){ //只有等级类型为储值卡和次数卡的会员卡，才能充值
+			
+			JSONObject  input=new JSONObject();
+			input.put("cinemaLinkId", userCinema.getCinemaId());
+			input.put("cardNumber", CardNo);
+			input.put("outTradeNo", new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date())); 
+			input.put("rechargeAmou", String.valueOf(ChargeAmount));
+			input.put("description ", "充值");
+			String data=input.toJSONString();
+			
+			Map<String,String> param = new LinkedHashMap<String,String>();
+			param.put("api", "ykse.partner.card.recharge");
+			param.put("channelCode", userCinema.getDefaultUserName());
+			param.put("data", data);
+			param.put("timestamp", String.valueOf(System.currentTimeMillis()));
+			param.put("v", "1.0");
+			
+			String sign = createSign(userCinema.getDefaultPassword(), param);
+			String rechargeResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
+					userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
+			System.out.println("会员卡充值返回："+rechargeResult);
+			Gson gson = new Gson();
+			YkRechargeResult ykResult = gson.fromJson(rechargeResult, YkRechargeResult.class);
+			
+			if("0".equals(ykResult.getRetCode())){
+				if("SUCCESS".equals(ykResult.getData().getBizCode())){
+					
+					reply.Status = StatusEnum.Success;
+				} else {
+					reply.Status = StatusEnum.Failure;
+				}
+				reply.ErrorCode = ykResult.getData().getBizCode();
+				reply.ErrorMessage=ykResult.getData().getBizMsg();
+			} else {
+				reply.Status = StatusEnum.Failure;
+				reply.ErrorCode = ykResult.getRetCode();
+				reply.ErrorMessage = ykResult.getRetMsg();
+			}
+		} else {
+			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = "-1";
+			reply.ErrorMessage = "等级类型不是储值卡或次数卡的会员卡，不能充值！";
+		}
+		return reply;
 	}
 
+	/*
+	 * 查询会员卡等级
+	 */
 	@Override
 	public CTMSQueryCardLevelReply QueryCardLevel(Usercinemaview userCinema) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSQueryCardLevelReply reply = new CTMSQueryCardLevelReply();
+		
+		Map<String,String> param = new LinkedHashMap<String,String>();
+		param.put("api", "ykse.partner.card.getCardGradeList");
+		param.put("channelCode", userCinema.getDefaultUserName());
+		param.put("data", "{\"cinemaLinkId\":\""+userCinema.getCinemaId()+"\"}");
+		param.put("timestamp", String.valueOf(System.currentTimeMillis()));
+		param.put("v", "1.0");
+		
+		String sign = createSign(userCinema.getDefaultPassword(), param);
+		String getCardGradeListResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
+				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
+		System.out.println("查询会员卡等级返回："+getCardGradeListResult);
+		Gson gson = new Gson();
+		YkGetCardGradeListResult ykResult = gson.fromJson(getCardGradeListResult, YkGetCardGradeListResult.class);
+		
+		if("0".equals(ykResult.getRetCode())){
+			if("SUCCESS".equals(ykResult.getData().getBizCode())){
+				List<CardBean> cardlist = ykResult.getData().getDataList().stream().filter(
+						(CardBean cc)-> userCinema.getCinemaId().equals(cc.getCinemaLinkId())).collect(Collectors.toList());
+				List<Membercardlevel> newcardlevel = new ArrayList<Membercardlevel>();
+				for(CardBean card:cardlist){
+					Membercardlevel cardlevel = new Membercardlevel();
+					cardlevel.setLevelCode(card.getGradeId());
+					cardlevel.setLevelName(card.getGradeDesc());
+					cardlevel.setCinemaCode(userCinema.getCinemaCode());
+					newcardlevel.add(cardlevel);
+				}
+				//删除旧的
+				memberCardLevelService.deleteByCinemaCode(userCinema.getCinemaCode());
+				//新增
+				for(Membercardlevel card : newcardlevel){
+					memberCardLevelService.Save(card);
+				}
+				reply.Status = StatusEnum.Success;
+			} else {
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = ykResult.getData().getBizCode();
+			reply.ErrorMessage=ykResult.getData().getBizMsg();
+		} else {
+			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = ykResult.getRetCode();
+			reply.ErrorMessage = ykResult.getRetMsg();
+		}
+		return reply;
 	}
-
+	
+	/*
+	 * 注册会员卡
+	 */
 	@Override
 	public CTMSCardRegisterReply CardRegister(Usercinemaview userCinema, String CardPassword, String LevelCode,
-			String InitialAmount, String CardUserName, String MobilePhone, String IDNumber, String Sex)
-			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+			String InitialAmount, String CardUserName, String MobilePhone, String IDNumber, String Sex)	throws Exception {
+		CTMSCardRegisterReply reply = new CTMSCardRegisterReply();
+		
+		String cardPassword = MD5AESPassword(CardPassword,userCinema.getDefaultPassword());	//使用加密的会员卡 的密码
+//		String cardPassword = MD5AESPassword("123456","21218CCA77804D2BA1922C33E0151105");
+//		String cardPassword = "WUtTRTEyMzRZS1NFMTIzNAtd8hvk/Brav7lpI9s/x4tu/6gsRGHhzIiG6Uov9JfSsZlPS27/eA0tpMdFvDF1Qb";
+		System.out.println(userCinema.getDefaultPassword());
+		System.out.println(cardPassword);
+		JSONObject  input=new JSONObject();
+		input.put("cinemaLinkId", userCinema.getCinemaId());
+		input.put("gradeId", LevelCode);
+		input.put("outTradeNo", new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date())); //该值全局唯一,长度必须大于 等于 16 位且小于等 于 32 位 
+		input.put("cardPassword", cardPassword);
+		input.put("cardCostFee", "0.00");	//工本费,不知道先默认传0
+		input.put("memberFee", "0.00");		//会费,不知道先默认传0
+		input.put("firstRechargeAmount", InitialAmount);
+		input.put("mobile", MobilePhone);
+		input.put("cardUserName", CardUserName);
+		input.put("idCard", IDNumber);
+//		input.put("address", "");
+//		input.put("birthdata", "");
+		input.put("email", "Test@test.com");	//中间件没传邮箱，先写一个固定值
+		String data=input.toJSONString();
+System.out.println(data);
+		Map<String,String> param = new LinkedHashMap<String,String>();
+		param.put("api", "ykse.partner.card.registerCard");
+		param.put("channelCode", userCinema.getDefaultUserName());
+		param.put("data", data);
+		param.put("timestamp", String.valueOf(System.currentTimeMillis()));
+		param.put("v", "1.0");
+		
+		String sign = createSign(userCinema.getDefaultPassword(), param);
+		String registerCardResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
+				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
+		System.out.println("注册会员卡返回："+registerCardResult);
+		System.out.println("url---"+createVisitUrl(userCinema.getUrl(), "/route/",
+				userCinema.getDefaultPassword(), FormatParam(param), sign));
+		Gson gson = new Gson();
+		YkRegisterCardResult ykResult = gson.fromJson(registerCardResult, YkRegisterCardResult.class);
+		
+		if("0".equals(ykResult.getRetCode())){
+			if("SUCCESS".equals(ykResult.getData().getBizCode())){
+				//插入数据库
+				Membercard membercard = new Membercard();
+				membercard.setCinemaCode(userCinema.getCinemaCode());
+				membercard.setCardNo(ykResult.getData().getData().getCardNumber());
+				membercard.setCardPassword(cardPassword);
+				membercard.setMobilePhone(MobilePhone);
+				membercard.setLevelCode(LevelCode);
+				membercard.setBalance(Double.valueOf(ykResult.getData().getData().getBalance()));
+				membercard.setUserName(CardUserName);
+				membercard.setCreateTime(new Date());
+				membercard.setStatus(0);
+				memberCardService.Save(membercard);
+				
+				reply.setCardNo(ykResult.getData().getData().getCardNumber());
+				reply.setBalance(Float.valueOf(ykResult.getData().getData().getBalance()));
+				reply.setCreateTime(new Date());
+				reply.Status = StatusEnum.Success;
+			} else {
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = ykResult.getData().getBizCode();
+			reply.ErrorMessage=ykResult.getData().getBizMsg();
+		} else {
+			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = ykResult.getRetCode();
+			reply.ErrorMessage = ykResult.getRetMsg();
+		}
+		
+		return reply;
 	}
+	
 }

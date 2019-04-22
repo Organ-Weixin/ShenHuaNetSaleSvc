@@ -72,6 +72,16 @@
 <script type="text/javascript" src="../../js/my/permission.js"></script>
 <script type="text/javascript">
 
+
+ $('tbody').on('click','tr td:nth-child(7)', function (e) {
+	   var name = $(this).text();
+	   window.location.href='userCinemaList.html';
+	} );
+$('tbody').on('mouseover','tr td:nth-child(7)', function (e) {
+	   this.style.cursor='pointer'
+
+	} );
+
 var pers = checkPermission();
 
 var example;
@@ -109,22 +119,25 @@ function init(){
 					"data" : "isDel", 
 					"defaultContent" : "",
 					"render": function (data, type, row) {
-                		var flag = row['isDel'];
-                        return flag ? "不可访问影院":"可访问影院";
+                		var flag = row['isDel']? "不可访问影院":"可访问影院";
+                		
+                      //  return flag ? "不可访问影院":"可访问影院";
+                        return '<span style="color:blue">'+flag+'</span>';
                   	}
 				},
 				{ 
-								"data": "", 
-								"defaultContent": "",
-								"orderable":false,
-						        "render": function (data, type, row) {
-                		           var id = row['id'];
-                		           var href = "updateUserinfo.html?id=" + id;
-                                   var edit = buttonEdit(href, "", pers);
-                		           var del = buttonDel(id, "", pers);
-                                   return edit + del;
-                  	            }		
-							},
+					"data": "", 
+					"defaultContent": "",
+					"orderable":false,
+			        "render": function (data, type, row) {
+             		           var id = row['id'];
+             		           var href = "updateUserinfo.html?id=" + id;
+                               var edit = buttonEdit(href, "", pers);
+             		           var del = buttonDel(id, "", pers);
+                               return edit + del; 
+                                
+               	            }		
+				},
                 
             ],
            "order": [[ 0, "asc" ]]

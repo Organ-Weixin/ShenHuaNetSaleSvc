@@ -40,7 +40,6 @@ public class TokenFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		String requestURI = request.getRequestURL().toString();
-		System.out.println("===================" + requestURI);
 		if (requestURI.equals("http://localhost:8080/test/hello")) {
 			System.out.println("不过滤");
 		}
@@ -88,11 +87,14 @@ public class TokenFilter extends OncePerRequestFilter {
 	 * @return
 	 */
 	public static String getToken(HttpServletRequest request) {
+		System.out.println("============"+request.getParameter("username"));
+		System.out.println("============"+request.getParameter("password"));
 		String token = request.getParameter(TOKEN_KEY);
 		if (StringUtils.isBlank(token)) {
 			token = request.getHeader(TOKEN_KEY);
 		}
-
+		System.out.println("------====="+request.getHeader(TOKEN_KEY));
+		System.out.println("token---------"+token);
 		return token;
 	}
 
