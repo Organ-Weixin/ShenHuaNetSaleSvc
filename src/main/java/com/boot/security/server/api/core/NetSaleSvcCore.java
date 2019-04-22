@@ -88,7 +88,7 @@ import com.boot.security.server.utils.XmlToJsonUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-public class NetSaleSvcCore {
+public class NetSaleSvcCore { 
 	 private ICTMSInterface _CTMSInterface;
 	 UserInfoServiceImpl _userInfoService = SpringUtil.getBean(UserInfoServiceImpl.class);
 	 ScreeninfoServiceImpl _screenInfoService = SpringUtil.getBean(ScreeninfoServiceImpl.class);
@@ -1237,12 +1237,17 @@ public class NetSaleSvcCore {
                 reply.Card.MobilePhone = membercard.getMobilePhone();
                 reply.Card.LevelCode = membercard.getLevelCode();
                 reply.Card.LevelName = membercard.getLevelName();
+                if(membercard.getScore()==null||membercard.getScore().equals("0")){
+                	membercard.setScore(0);
+                }
                 reply.Card.Score = String.valueOf(membercard.getScore());
                 reply.Card.Balance = new DecimalFormat("#0.00").format(membercard.getBalance());
                 reply.Card.UserName = membercard.getUserName();
                 reply.Card.Sex = membercard.getSex();
                 reply.Card.CreditNum = membercard.getCreditNum();
-                reply.Card.Birthday = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(membercard.getBirthday());
+                if(membercard.getBirthday()!=null){
+                	reply.Card.Birthday = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(membercard.getBirthday());
+                }
             }
             reply.SetSuccessReply();
         }
@@ -1355,7 +1360,7 @@ ScreenType,ListingPrice,LowestPrice))
             return cardPayReply;
         }
         //验证排期是否存在
-        Sessioninfo session = _sessionInfoService.getByCinemaCodeAndSessionCodeAndUserId(CinemaCode, SessionCode,userCinema.getId());
+        Sessioninfo session = _sessionInfoService.getByCinemaCodeAndSessionCodeAndUserId(CinemaCode, SessionCode,userCinema.getUserId());
         if (session == null)
         {
             cardPayReply.SetSessionInvalidReply();
@@ -1673,7 +1678,8 @@ ScreenType,ListingPrice,LowestPrice))
             return cardRegisterReply;
         }
         //验证会员卡等级是否存在
-        Membercard cardlevel = _membercardService.getByCardNo(CinemaCode, LevelCode);
+        //Membercard cardlevel = _membercardService.getByCardNo(CinemaCode, LevelCode);
+        Membercardlevel cardlevel =  _memberCardLevelService.getByCinemaCodeAndLevelCode(CinemaCode, LevelCode);
         if (cardlevel == null)
         {
             cardRegisterReply.SetCardLevelInvalidReply();
