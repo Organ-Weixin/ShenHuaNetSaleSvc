@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaAllSessionResult.ResBean.SessionsBean.SessionBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaResult.ResBean.CinemasBean.CinemaBean;
-import com.boot.security.server.api.ctms.reply.Dy1905GetFeatureFilmResult.ResBean.FilmsBean.FilmBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetOrderStatusResult.ResBean.SeatsBean.SeatBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetScreenResult.ResBean.ScreensBean.ScreenBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetScreenSeatResult.ResBean.ScreenSeatsBean.ScreenSeatBean;
