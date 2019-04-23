@@ -1,23 +1,23 @@
 .city{
 	width: 80px;
-	height: 40px;
+	height: 35px;
 	text-align:center; 
 	text-align-last:center;
 	font-size: 16px;
 }
 .cinema{
 	width: 250px;
-	height: 40px;
+	height: 35px;
 	margin-left: 10px;
 }
 #add{
-	width: 160px;
-	height: 40px;
+	width: 150px;
+	height: 35px;
 	background: rgb(37,161,207);
 	color: white;
 	font-size: 20px;
 	text-align: center;
-	line-height: 40px;
+	line-height: 35px;
 	position: absolute;
     right: 30px;
     top: 0;
@@ -41,7 +41,7 @@
 	transform: translate(-50%,0);
 }
 .create-title{
-	font-size: 34px;
+	font-size: 28px;
 	margin-left: 50px;
 }
 .create-content{
@@ -51,37 +51,36 @@
 }
 .create-head{
 	width: 100%;
-	height: 90px;
+	height: 80px;
 	position: relative;
 	border-bottom: 1px solid rgb(235,235,235);
 }
 .head-title{
 	color: rgb(66,138,229);
-	font-size: 20px;
+	font-size: 16px;
 	margin: 0 auto;
 	width: 140px;
-	height: 20px;
+	height: 15px;
 	padding-top: 20px;
 }
 .head-bottom{
-	font-size: 22px;
+	font-size: 18px;
 	position: absolute;
     bottom: 0;
     left: 25px;
 }
 .content-info{
-	height: 615px;
+	height: 600px;
 	width: 100%;
 	position: relative;
 	border-bottom: 1px solid rgb(235,235,235);
 }
 .content-details{
-	height: 800px;
-	width: 100%;
+	height: 780px;
 	position: relative;
 }
 .describe{
-	font-size: 22px;
+	font-size: 18px;
 	position: absolute;
     left: 25px;
     top: 50px;
@@ -89,39 +88,38 @@
 }
 .info-name,.info-time,.info-period{
 	position: relative;
-	width: 100%;
 }
 .info-name{
-	height: 140px;
+	height: 130px;
 }
 .name-inp{
 	position: absolute;
 	left: 160px;
 	top: 40px;
-	width: 365px;
-	height: 50px;
+	width: 350px;
+	height: 35px;
 	background: rgb(245,245,245);
 	margin-top: 20px;
-	font-size: 22px;
+	font-size: 18px;
 	border: 1px solid gainsboro;
 }
 .info-time{
-	height: 164px;
+	height: 160px;
 }
 .time-inp{
 	position: absolute;
 	left: 160px;
 	top: 40px;
-	height: 125px;
-	width: 560px;
-	font-size: 20px;
+	height: 110px;
+	width: 550px;
+	font-size: 16px;
 }
 .time-top{
-	height: 50px;
+	height: 45px;
 }
 .time-radio{
-	width: 25px;
-	height: 25px;
+	width: 20px;
+	height: 20px;
 	border-radius: 50%;
 	margin-top: 10px;
 	position: absolute;
@@ -134,7 +132,7 @@
 #test1{
 	position: absolute;
 	left: 140px;
-	height: 40px;
+	height: 35px;
 	width: 160px;
 }
 .time-to{
@@ -145,7 +143,7 @@
 #test2{
 	position: absolute;
 	left: 330px;
-	height: 40px;
+	height: 35px;
 	width: 160px;
 }
 .time-bottom{
@@ -155,7 +153,7 @@
 	position: absolute;
 	left: 139px;
 	width: 130px;
-	height: 40px;
+	height: 35px;
 }
 .effective-font{
 	position: absolute;
@@ -166,17 +164,17 @@
 	position: absolute;
 	left: 410px;
 	width: 130px;
-	height: 40px;
+	height: 35px;
 }
 .info-period{
-	height: 275px;
+	height: 260px;
 }
 .week{
     width: 705px;
     position: relative;
     top: 130px;
     left: 200px;
-    font-size: 20px;
+    font-size: 16px;
 }
 .week-date{
     position: absolute;
@@ -190,8 +188,8 @@
     left: 100px;
 }
 .week-radio{
-	width: 20px;
-	height: 20px;
+	width: 18px;
+	height: 18px;
 }
 .week-font{
 	position: relative;
@@ -205,7 +203,7 @@
     top: 175px;
     left: 200px;
     width: 680px;
-    font-size: 20px;
+    font-size: 16px;
 }
 .other-time{
     position: absolute;
@@ -218,38 +216,38 @@
 }
 .other-inp{
     width: 130px;
-    height: 40px;
+    height: 35px;
 }
 .other-font{
     position: absolute;
     top: 50px;
     left: 95px;
-    font-size: 18px;
+    font-size: 14px;
     color: rgb(185,171,171);
 }
  .content-details{
             position: relative;
         }
         .det-name{
-            height: 140px;
+            height: 130px;
             position: relative;
         }
         .limit{
-            font-size: 22px;
+            font-size: 18px;
             position: absolute;
             left: 25px;
             top: 50px;
             margin-top: 20px;
         }
         .limit-num{
-            font-size: 22px;
+            font-size: 18px;
             position: absolute;
             left: 370px;
             top: 50px;
             margin-top: 20px;
         }
         .limit-choose{
-            font-size: 18px;
+            font-size: 14px;
             color: rgb(185,171,171);
             position: absolute;
             top: 95px;
@@ -259,15 +257,15 @@
             position: absolute;
             left: 160px;
             top: 40px;
-            width: 200px;
-            height: 40px;
+            width: 190px;
+            height: 35px;
             background: rgb(245,245,245);
             margin-top: 20px;
-            font-size: 22px;
+            font-size: 18px;
             border: 1px solid gainsboro;
         }
         .inp-choose{
-            font-size: 18px;
+            font-size: 14px;
             color: rgb(185,171,171);
             position: absolute;
             top: 112px;
@@ -278,21 +276,21 @@
             margin-bottom: 20px;
         }
         .breaks-money{
-            font-size: 22px;
+            font-size: 18px;
             position: absolute;
             left: 25px;
             top: 20px;
         }
         .breaks-content{
-            font-size: 22px;
+            font-size: 18px;
             width: 600px;
             position: relative;
             top: 20px;
             left: 155px;
         }
         .breaks-radio{
-            width: 25px;
-            height: 25px;
+            width: 20px;
+            height: 20px;
             position: relative;
         }
         .breaks-font{
@@ -302,15 +300,14 @@
         .breaks-inp{
             position: relative;
             top: -5px;
-            width: 100px;
-            height: 40px;
-            font-size: 22px;
+            width: 90px;
+            height: 35px;
+            font-size: 18px;
         }
         .appoint-content{
             display: none;
             position: relative;
-            width: 100%;
-            height: 160px;
+            height: 150px;
             border: 1px solid #0e96d9;
             top: 5px;
         }
@@ -338,17 +335,17 @@
             width: 190px;
             height: 39px;
             margin-left: 16px;
-            font-size: 16px;
+            font-size: 12px;
             padding-left: 40px;
         }
         .movie-less{
             color: red;
-            font-size: 16px;
+            font-size: 12px;
         }
         .movie-content{
-            font-size: 14px;
+            font-size: 12px;
             width: 90%;
-            height: 65px;
+            height: 60px;
             margin: 10px auto 0 auto;
         }
         .movie-content li{
@@ -372,45 +369,45 @@
             position: relative;
         }
         .goods-add{
-            font-size: 16px;
+            font-size: 14px;
             color: #0e96d9;
             position: absolute;
-            left: 330px;
-            top: 5px;
+            left: 300px;
+            top: 8px;
         }
         .goods-shall{
             margin-left: 32px;
             margin-top: 35px;
         }
         .shall-type{
-            width: 270px;
-            height: 60px;
-            font-size: 22px;
+            width: 240px;
+            height: 40px;
+            font-size: 18px;
         }
         .notice{
             position: relative;
             width: 95%;
-            height: 120px;
+            height: 110px;
             top: 10px;
         }
         .notice-title{
-            font-size: 22px;
+            font-size: 18px;
             position: absolute;
             left: 25px;
         }
         .notice-choose{
-            font-size: 18px;
+            font-size: 14px;
             color: rgb(185,171,171);
             position: absolute;
             top: 25px;
             left: 45px;
         }
         .notice-text{
-            width: 1200px;
-            height: 100px;
+            height: 90px;
+            width: 50%;
             position: absolute;
             left: 160px;
-            font-size: 18px;
+            font-size: 14px;
             padding: 5px;
         }
         .inventory{
@@ -418,7 +415,7 @@
             height: 100px;
         }
         .inven-title{
-            font-size: 22px;
+            font-size: 18px;
             position: absolute;
             left: 25px;
             top: 50px;
@@ -427,20 +424,20 @@
             position: absolute;
             left: 160px;
             top: 40px;
-            width: 200px;
-            height: 40px;
+            width: 190px;
+            height: 35px;
             background: rgb(245,245,245);
-            font-size: 22px;
+            font-size: 18px;
             border: 1px solid gainsboro;
         }
         .inven-choose{
-            font-size: 22px;
+            font-size: 18px;
             position: absolute;
             left: 370px;
             top: 50px;
         }
         .inven-num{
-            font-size: 18px;
+            font-size: 14px;
             color: red;
             position: absolute;
             top: 85px;
@@ -451,7 +448,7 @@
             position: relative;
         }
         .apply-title{
-            font-size: 22px;
+            font-size: 18px;
             position: absolute;
             left: 25px;
             top: 30px;
@@ -462,12 +459,12 @@
             left: 160px;
         }
         .shop-radio{
-            width: 25px;
-            height: 25px;
+            width: 20px;
+            height: 20px;
             position: relative;
         }
         .apply-font{
-            font-size: 22px;
+            font-size: 18px;
             position: relative;
             top: -5px;
             left: 20px;
@@ -491,7 +488,7 @@
         }
         .shop-name span{
             margin-left: 30px;
-            font-size: 20px;
+            font-size: 16px;
         }
         #choose{
             background: rgba(245,245,245,0.5);
@@ -530,7 +527,7 @@
             height: 220px;
             margin: 0 auto;
             background: white;
-            font-size: 20px;
+            font-size: 16px;
         }
         .type-form{
             margin-top: 30px;
