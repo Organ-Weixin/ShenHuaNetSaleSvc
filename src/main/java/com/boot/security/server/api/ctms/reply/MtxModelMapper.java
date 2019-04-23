@@ -9,6 +9,8 @@ import java.util.Date;
 import com.boot.security.server.model.Screenseatinfo;
 import com.boot.security.server.model.SessionSeat;
 import com.boot.security.server.model.SessionSeatStatusEnum;
+import com.boot.security.server.model.Membercard;
+import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Sessioninfo;
 
@@ -48,7 +50,6 @@ public class MtxModelMapper {
 		 entity.setSettlePrice(Double.valueOf(model.getAppPric()));
 		 entity.setTicketFee((double) 0);
 		 entity.setPlaythroughFlag("No");
-		 
 		 Date startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(model.getFeatureDate() + " " + model.getFeatureTime());
 		 Date endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(model.getFeatureDate() + " " + model.getTotalTime());
 		 entity.setStartTime(startTime);
@@ -60,7 +61,47 @@ public class MtxModelMapper {
 		 entity.setUpdateTime(new Date());
 		 return entity;
 	 }
+	
+	 //获取影院会员卡级别接口转为entity
+	public static Membercardlevel MapToEntity(MtxGetCardTypeResult.ResBean.MemberTypesBean.MemberTypeBean model,
+			Membercardlevel entity) {
+		entity.setLevelCode(model.getMemberType());// 会员卡类型编号
+		entity.setLevelName(model.getMemberTypeName());// 会员卡类型名称
+		return entity;
+	}
 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
 	 
 	 
 }

@@ -11,18 +11,24 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.xmlunit.util.Convert;
 
-
+import com.boot.security.server.api.ctms.reply.MtxGetCardTraceRecordResult.ResBean.CardTraceRecordsBean.CardTraceRecordBean;
+import com.boot.security.server.api.ctms.reply.MtxGetCardTypeResult.ResBean.MemberTypesBean.MemberTypeBean;
 import com.boot.security.server.api.ctms.reply.MtxGetCinemaPlanResult.ResBean.CinemaPlansBean.CinemaPlanBean;
 import com.boot.security.server.api.ctms.reply.MtxGetHallAllSeatResult.HallAllSeatBean;
 import com.boot.security.server.api.ctms.reply.MtxGetHallResult.ResBean.HallsBean.HallBean;
 
 import com.boot.security.server.api.ctms.reply.MtxGetPlanSiteStateResult.ResBean.PlanSiteStatesBean.PlanSiteStateBean;
 import com.boot.security.server.model.CardChargeTypeEnum;
+import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.LoveFlagEnum;
+import com.boot.security.server.model.Membercard;
+import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
 
@@ -33,9 +39,11 @@ import com.boot.security.server.model.SessionSeatStatusEnum;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
-
+import com.boot.security.server.service.MemberCardService;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
+import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
+import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
@@ -43,6 +51,7 @@ import com.boot.security.server.utils.SpringUtil;
 import com.google.gson.Gson;
 
 import cn.cmts.main.webservice.WebService;
+import cn.cmts.pay.webservice.Webservice;
 
 
 public class MtxInterface implements ICTMSInterface {
@@ -53,7 +62,10 @@ public class MtxInterface implements ICTMSInterface {
 	 ScreenseatinfoServiceImpl _screenseatinfoService=SpringUtil.getBean(ScreenseatinfoServiceImpl.class);
 	 SessioninfoServiceImpl  _sessioninfoService=SpringUtil.getBean(SessioninfoServiceImpl.class);
 	 FilminfoServiceImpl _filminfoService=SpringUtil.getBean(FilminfoServiceImpl.class);
-	 
+	//会员卡
+	 private Webservice mtxCardService;
+	 MemberCardServiceImpl _memberCardService=SpringUtil.getBean(MemberCardServiceImpl.class);
+	 MemberCardLevelServiceImpl _memberCardLevelService=SpringUtil.getBean(MemberCardLevelServiceImpl.class);
 	// 查询影厅基本信息 
 	public CTMSQueryCinemaReply QueryCinema(Usercinemaview userCinema) {
 		CTMSQueryCinemaReply reply = new CTMSQueryCinemaReply();
@@ -89,50 +101,50 @@ public class MtxInterface implements ICTMSInterface {
 		return reply;
 	}
 	//查询影厅座位信息
-		public CTMSQuerySeatReply QuerySeat(Usercinemaview userCinema, Screeninfo screen) throws Exception {
-			CTMSQuerySeatReply reply=new CTMSQuerySeatReply();
-			MtxGetHallAllSeatResult mtxReply=mtxService.GetHallAllSeat(userCinema, screen);
-			
-			System.out.println("开始执行操作-------------------"+ new Gson().toJson(mtxReply));
-			if("0".equals(mtxReply.getResultCode())){
-				//更新影厅座位信息
-				if(_screenseatinfoService.getByCinemaCodeAndScreenCode(userCinema.getCinemaCode(), screen.getSCode()) != null){
-					System.out.println("开始更新影厅座位操作----------");
-					List<Screenseatinfo> newScreens=new ArrayList<Screenseatinfo>();
-					List<HallAllSeatBean> hallAllSeatBeans=mtxReply.getHallSeats();
-				
-					for(HallAllSeatBean hallAllSeatBean : hallAllSeatBeans){
-						Screenseatinfo screenseat=new Screenseatinfo();//创建实例
-						MtxModelMapper.MapToEntity(hallAllSeatBean, screenseat);
-						screenseat.setCinemaCode(userCinema.getCinemaCode());
-						screenseat.setScreenCode(screen.getSCode());
-						screenseat.setLoveFlag(LoveFlagEnum.Normal.getFlagCode());
-						screenseat.setStatus(SessionSeatStatusEnum.Available.getStatusCode());
-						newScreens.add(screenseat);
-						System.out.println("更新影厅座位成功------------");
-					}
-					//先删除旧影厅座位
-					_screenseatinfoService.deleteByScreenCode(userCinema.getCinemaCode(), screen.getSCode());
-					System.out.println("---删除影厅座位---------------");
-							//插入座位信息
-							/*for(Screenseatinfo screenSeat : newScreens){
-								_screenseatinfoService.save(screenSeat);
-								System.out.println("插入影厅座位成功----------");
-							}*/
-					for (Screenseatinfo screenseat : newScreens) {
-						_screenseatinfoService.save(screenseat);
-						System.out.println("插入影厅信息-------------");
-					}
+	public CTMSQuerySeatReply QuerySeat(Usercinemaview userCinema, Screeninfo screen) throws Exception {
+		CTMSQuerySeatReply reply = new CTMSQuerySeatReply();
+		MtxGetHallAllSeatResult mtxReply = mtxService.GetHallAllSeat(userCinema, screen);
+
+		System.out.println("开始执行操作-------------------" + new Gson().toJson(mtxReply));
+		if ("0".equals(mtxReply.getResultCode())) {
+			// 更新影厅座位信息
+			if (_screenseatinfoService.getByCinemaCodeAndScreenCode(userCinema.getCinemaCode(),
+					screen.getSCode()) != null) {
+				System.out.println("开始更新影厅座位操作----------");
+				List<Screenseatinfo> newScreens = new ArrayList<Screenseatinfo>();
+				List<HallAllSeatBean> hallAllSeatBeans = mtxReply.getHallSeats();
+				for (HallAllSeatBean hallAllSeatBean : hallAllSeatBeans) {
+					Screenseatinfo screenseat = new Screenseatinfo();// 创建实例
+					MtxModelMapper.MapToEntity(hallAllSeatBean, screenseat);
+					screenseat.setCinemaCode(userCinema.getCinemaCode());
+					screenseat.setScreenCode(screen.getSCode());
+					screenseat.setLoveFlag(LoveFlagEnum.Normal.getFlagCode());
+					screenseat.setStatus(SessionSeatStatusEnum.Available.getStatusCode());
+					newScreens.add(screenseat);
+					System.out.println("更新影厅座位成功------------");
 				}
-				reply.Status=StatusEnum.Success;
-				System.out.println("操作影厅成功----------------------");
+				// 先删除旧影厅座位
+				_screenseatinfoService.deleteByScreenCode(userCinema.getCinemaCode(), screen.getSCode());
+				System.out.println("---删除影厅座位---------------");
+				// 插入座位信息
+				/*
+				 * for(Screenseatinfo screenSeat : newScreens){
+				 * _screenseatinfoService.save(screenSeat);
+				 * System.out.println("插入影厅座位成功----------"); }
+				 */
+				for (Screenseatinfo screenseat : newScreens) {
+					_screenseatinfoService.save(screenseat);
+					System.out.println("插入影厅信息-------------");
+				}
 			}
-			else{
-				reply.Status=StatusEnum.Failure;
-			}
-			reply.ErrorCode=mtxReply.getResultCode();
-			return reply;
+			reply.Status = StatusEnum.Success;
+			System.out.println("操作影厅成功----------------------");
+		} else {
+			reply.Status = StatusEnum.Failure;
 		}
+		reply.ErrorCode = mtxReply.getResultCode();
+		return reply;
+	}
 	//查询放映计划信息////排期
 	@Override
 	public CTMSQuerySessionReply QuerySession(Usercinemaview userCinema, Date StartDate, Date EndDate)throws Exception {
@@ -513,7 +525,16 @@ System.out.println("更新排期成功-------------+++++++++++++=");
 	}
 	public static void main(String[] args) {
 		try {
-			Date newDate = new Date();
+			Random ran = new Random();
+			int a = ran.nextInt(99999999);
+			int b = ran.nextInt(99999999);
+			long l = a * 10000000L + b;
+			String num = String.valueOf(l);
+			String partnerId = "";// 合作商流水号(最大20位)
+			String cardNo = num;// 卡号(最大长度16位)
+			System.out.println(num);
+			
+		/*	Date newDate = new Date();
 
 			String s = new SimpleDateFormat("yyyy-MM-dd").format(newDate);
 			s += " 01:00:00";
@@ -533,64 +554,278 @@ System.out.println("更新排期成功-------------+++++++++++++=");
 			Date dd=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2019-04-18 19:05:00");
 			if(newDate.getTime() > (dd.getTime()+1000*60*60*2)){
 				System.out.println(2222);
-			}
-		} catch (ParseException e) {
+			}*/
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	@Override
-	public CTMSLoginCardReply LoginCard(Usercinemaview userCinema, String CardNo, String CardPassword)
-			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public CTMSQueryCardReply QueryCard(Usercinemaview userCinema, String CardNo, String CardPassword)
-			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public CTMSQueryDiscountReply QueryDiscount(Usercinemaview userCinema, String TicketCount, String CardNo,
-			String CardPassword, String LevelCode, String SessionCode, String SessionTime, String FilmCode,
-			String ScreenType, String ListingPrice, String LowestPrice) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public CTMSCardPayReply CardPay(Usercinemaview userCinema, String CardNo, String CardPassword, float PayAmount,
-			String SessionCode, String FilmCode, String TicketNum) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public CTMSCardPayBackReply CardPayBack(Usercinemaview userCinema, String CardNo, String CardPassword,
-			String TradeNo, float PayBackAmount) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public CTMSQueryCardTradeRecordReply QueryCardTradeRecord(Usercinemaview userCinema, String CardNo,
-			String CardPassword, String StartDate, String EndDate, String PageSize, String PageNum) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public CTMSCardChargeReply CardCharge(Usercinemaview userCinema, String CardNo, String CardPassword,
-			CardChargeTypeEnum ChargeType, float ChargeAmount) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public CTMSQueryCardLevelReply QueryCardLevel(Usercinemaview userCinema) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
+	//registerCard 带卡号的会员卡开户接口
 	@Override
 	public CTMSCardRegisterReply CardRegister(Usercinemaview userCinema, String CardPassword, String LevelCode,
 			String InitialAmount, String CardUserName, String MobilePhone, String IDNumber, String Sex)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSCardRegisterReply reply = new CTMSCardRegisterReply();
+	MtxRegisterCardResult mtxReply = mtxCardService.RegisterCard(userCinema, CardPassword, LevelCode, InitialAmount,CardUserName, MobilePhone, IDNumber, Sex);
+	System.out.println("带卡号的会员卡开户接口返回："+new Gson().toJson(mtxReply));
+	if ("0".equals(mtxReply.getRegisterMemberReturn().getResultCode())) {
+			reply.setCardNo(mtxReply.getRegisterMemberReturn().getAccountNo());
+			reply.setBalance(Float.valueOf(InitialAmount));
+			Date newDate = new Date();
+			String lifeDate = "2030-02-02";
+			reply.setExpireDate(new SimpleDateFormat("yyyy-mm-dd").parse(lifeDate));
+			reply.setCreateTime(new Date());
+			reply.Status = StatusEnum.Success;
+			System.out.println("带卡号的会员卡开户接口测试成功==================");
+		} else {
+			reply.Status = StatusEnum.Failure;
+			System.out.println("带卡号的会员卡开户接口测试失败=================");
+		}
+		reply.ErrorCode = mtxReply.getRegisterMemberReturn().getResultCode();
+		reply.ErrorMessage = mtxReply.getRegisterMemberReturn().getResultMsg();
+		return reply;
 	}
+	//loginCard会员卡登录接口
+	@Override
+	public CTMSLoginCardReply LoginCard(Usercinemaview userCinema, String CardNo, String CardPassword)
+			throws Exception {
+		CTMSLoginCardReply reply = new CTMSLoginCardReply();
+		MtxLoginCardResult mtxReply = mtxCardService.LoginCard(userCinema, CardNo, CardPassword);
+		System.out.println("会员卡登录接口返回："+new Gson().toJson(mtxReply));
+		if ("0".equals(mtxReply.getLoginCardReturn().getResultCode())) {
+			// 添加会员卡信息
+			Membercard memcard = _memberCardService.getByCardNo(userCinema.getCinemaCode(),CardNo);
+			if (null == memcard) {
+				Membercard mem = new Membercard();
+				mem.setCinemaCode(userCinema.getCinemaCode());
+				mem.setCardNo(CardNo);
+				mem.setCardPassword(CardPassword);
+				mem.setMobilePhone(mtxReply.getLoginCardReturn().getPhoneNumber());
+				mem.setLevelCode(mtxReply.getLoginCardReturn().getAccLevelCode());
+				mem.setLevelName(mtxReply.getLoginCardReturn().getAccLevelName());
+				mem.setStatus(0);
+				// 插入保存
+				_memberCardService.Save(mem);
+				System.out.println("会员卡信息插入成功===============");
+			}
+			reply.Status = StatusEnum.Success;
+			System.out.println("添加会员卡信息成功==========================");
+		} else {
+			reply.Status = StatusEnum.Failure;
+			System.out.println("添加会员卡信息失败==========================");
+		}
+		reply.ErrorCode = mtxReply.getLoginCardReturn().getResultCode();
+		reply.ErrorMessage = mtxReply.getLoginCardReturn().getResultCode();
+		return reply;
+	}
+	//queryCard 查询会员卡账户信息
+	@Override
+	public CTMSQueryCardReply QueryCard(Usercinemaview userCinema, String CardNo, String CardPassword)
+			throws Exception {
+		CTMSQueryCardReply reply = new CTMSQueryCardReply();
+		MtxQueryCardResult mtxReply =mtxCardService.QueryCard(userCinema, CardNo, CardPassword);
+		System.out.println("查询会员卡账户信息返回："+new Gson().toJson(mtxReply));
+		if ("0".equals(mtxReply.getQueryCardReturn().getResultCode())) {
+			// 修改会员卡信息
+			Membercard memcard = _memberCardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
+			if (memcard != null) {// Score string 账户积分
+				memcard.setScore(Integer.valueOf((int) Math.round(Double.valueOf(mtxReply.getQueryCardReturn().getScore()))));
+				memcard.setBalance(Double.valueOf(mtxReply.getQueryCardReturn().getAccBalance()));
+				memcard.setUserName(mtxReply.getQueryCardReturn().getConnectName());
+				memcard.setSex(mtxReply.getQueryCardReturn().getSex());
+				memcard.setCreditNum(mtxReply.getQueryCardReturn().getIdNum());
+				if (mtxReply.getQueryCardReturn().getBirthDay() != null) {
+					memcard.setBirthday(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+							.parse(mtxReply.getQueryCardReturn().getBirthDay()));
+				}
+				// 更新
+				_memberCardService.Update(memcard);
+				System.out.println("更新会员卡信息");
+			} else {
+				Membercard memcard1 = new Membercard();
+				memcard1.setCinemaCode(userCinema.getCinemaCode());
+				memcard1.setCardNo(CardNo);
+				memcard1.setCardPassword(CardPassword);
+				memcard1.setMobilePhone(mtxReply.getQueryCardReturn().getMobilePhone());
+				memcard1.setLevelCode(mtxReply.getQueryCardReturn().getAccLevelCode());
+				memcard1.setLevelName(mtxReply.getQueryCardReturn().getAccLevelName());
+
+				memcard1.setScore(Integer.valueOf((int) Math.round(Double.valueOf(mtxReply.getQueryCardReturn().getScore()))));
+				memcard1.setBalance(Double.valueOf(mtxReply.getQueryCardReturn().getAccBalance()));
+				memcard1.setUserName(mtxReply.getQueryCardReturn().getConnectName());
+				memcard1.setSex(mtxReply.getQueryCardReturn().getSex());
+				memcard1.setCreditNum(mtxReply.getQueryCardReturn().getIdNum());
+				memcard1.setStatus(0);
+				if (mtxReply.getQueryCardReturn().getBirthDay() != null) {
+					memcard1.setBirthday(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+							.parse(mtxReply.getQueryCardReturn().getBirthDay()));
+				}
+				// 添加
+				_memberCardService.Save(memcard1);
+				System.out.println("添加会员卡相关信息====================++++++++++");
+			}
+			reply.Status = StatusEnum.Success;
+			System.out.println("查询会员卡账户信息成功========================");
+		} else {
+			reply.Status = StatusEnum.Failure;
+			System.out.println("查询会员卡账户信息失败======================");
+		}
+		reply.ErrorCode = mtxReply.getQueryCardReturn().getResultCode();
+		reply.ErrorMessage = mtxReply.getQueryCardReturn().getResultMsg();
+		return reply;
+	}
+
+	///getDiscount 折扣查询
+	@Override
+	public CTMSQueryDiscountReply QueryDiscount(Usercinemaview userCinema, String TicketCount, String CardNo,
+			String CardPassword, String LevelCode, String SessionCode, String SessionTime, String FilmCode,
+			String ScreenType, String ListingPrice, String LowestPrice) throws Exception {
+		CTMSQueryDiscountReply reply = new CTMSQueryDiscountReply();
+		MtxGetDiscountResult mtxReply = mtxCardService.GetDiscount(userCinema, TicketCount, CardNo, CardPassword,
+				LevelCode, SessionCode, SessionTime, FilmCode, ScreenType, ListingPrice, LowestPrice);
+		System.out.println("折扣查询返回："+new Gson().toJson(mtxReply));
+		if ("0".equals(mtxReply.getGetDiscountReturn().getResultCode())) {
+			reply.setCinemaCode(userCinema.getCinemaCode());
+			reply.setDiscountType(Integer.valueOf(mtxReply.getGetDiscountReturn().getDiscountType()));
+			reply.setPrice(Float.valueOf(mtxReply.getGetDiscountReturn().getPrice()));
+			reply.Status = StatusEnum.Success;
+			System.out.println("折扣查询成功：=======");
+		} else {
+			reply.Status = StatusEnum.Failure;
+			System.out.println("折扣查询失败：=========");
+		}
+		reply.ErrorCode = mtxReply.getGetDiscountReturn().getResultCode();
+		reply.ErrorMessage = mtxReply.getGetDiscountReturn().getResultMsg();
+		return reply;
+	}
+//	serialCardPay会员卡支付（流水号必传）、预算接口
+	@Override
+	public CTMSCardPayReply CardPay(Usercinemaview userCinema, String CardNo, String CardPassword, float PayAmount,
+			String SessionCode, String FilmCode, String TicketNum) throws Exception {
+		CTMSCardPayReply reply = new CTMSCardPayReply();
+		MtxSerialCardPayResult mtxReply = mtxCardService.SerialCardPay(userCinema, CardNo, CardPassword, PayAmount, SessionCode, FilmCode, TicketNum);
+		System.out.println("会员卡支付（流水号必传）、预算接口返回2222222："+new Gson().toJson(mtxReply));
+		if ("0".equals(mtxReply.getResultCode())) {
+			reply.setTradeNo(mtxReply.getGroundTradeNo());
+			reply.setDeductAmount(Float.valueOf(mtxReply.getDeductMoney()));
+
+			reply.Status = StatusEnum.Success;
+			System.out.println("会员卡支付（流水号必传）、预算接口查询成功=========");
+		} else {
+			reply.Status = StatusEnum.Failure;
+			System.out.println("会员卡支付（流水号必传）、预算接口查询失败=========");
+		}
+		reply.ErrorCode = mtxReply.getResultCode();
+		reply.ErrorMessage = mtxReply.getResultMsg();
+		return reply;
+	}
+	//serialCardPayBack会员卡冲费（撤销）接口（流水号必传）
+	@Override
+	public CTMSCardPayBackReply CardPayBack(Usercinemaview userCinema, String CardNo, String CardPassword,
+			String TradeNo, float PayBackAmount) throws Exception {
+		CTMSCardPayBackReply reply=new CTMSCardPayBackReply();
+		MtxSerialCardPayBackResult mtxReply=mtxCardService.SerialCardPayBack(userCinema, CardNo, CardPassword, TradeNo, PayBackAmount);
+		System.out.println("会员卡冲费（撤销）接口（流水号必传）返回222："+new Gson().toJson(mtxReply));
+		if("0".equals(mtxReply.getResultCode())){
+			reply.setTradeNo(mtxReply.getTraceNoCenter());
+			
+			reply.Status=StatusEnum.Success;
+			System.out.println("会员卡冲费（撤销）接口（流水号必传）查询成功====");
+		}else{
+			reply.Status=StatusEnum.Failure;
+			System.out.println("会员卡冲费（撤销）接口（流水号必传）查询失败===================");
+		}
+		reply.ErrorCode=mtxReply.getResultCode();
+		reply.ErrorMessage=mtxReply.getResultMsg();
+		return reply;
+	}
+	//getCardTraceRecord查询会员卡交易记录接口
+	@Override
+	public CTMSQueryCardTradeRecordReply QueryCardTradeRecord(Usercinemaview userCinema, String CardNo,
+			String CardPassword, String StartDate, String EndDate, String PageSize, String PageNum) throws Exception {
+		CTMSQueryCardTradeRecordReply reply=new CTMSQueryCardTradeRecordReply();
+		MtxGetCardTraceRecordResult mtxReply=mtxCardService.GetCardTraceRecord(userCinema, CardNo, CardPassword, StartDate, EndDate, PageSize, PageNum);
+		System.out.println("查询会员卡交易记录接口返回："+new Gson().toJson(mtxReply));
+		if("0".equals(mtxReply.getGetCardTraceRecordReturn().getResultCode())){
+			List<CardTradeRecord> cardTR=new ArrayList<CardTradeRecord>();
+			List<CardTraceRecordBean> cardTraceRecords=mtxReply.getGetCardTraceRecordReturn().getCardTraceRecords().getCardTraceRecord();
+			reply.setCardTradeRecords(cardTR);
+			for(CardTraceRecordBean cardTraceRecord:cardTraceRecords){
+				CardTradeRecord ctr=new CardTradeRecord();
+				ctr.setTradeNo(cardTraceRecord.getTraceNo());
+				ctr.setTradeType(cardTraceRecord.getTraceTypeNo());
+				ctr.setTradeTime(new SimpleDateFormat("HH:mm:ss").parse(cardTraceRecord.getTraceTime()));
+				ctr.setTradePrice(Float.valueOf(cardTraceRecord.getPrice()));
+				ctr.setCinemaName(cardTraceRecord.getCinemaName());
+				cardTR.add(ctr);
+				
+				
+				System.out.println("查询会员卡交易记录接口更新成功++++++++++：");
+			}
+			reply.Status=StatusEnum.Success;
+			System.out.println("查询会员卡交易记录接口成功++++：");
+		}
+		else{
+			 reply.Status = StatusEnum.Failure;
+			 System.out.println("查询会员卡交易记录接口失败++++++");
+		}
+		reply.ErrorCode=mtxReply.getGetCardTraceRecordReturn().getResultCode();
+		reply.ErrorMessage=mtxReply.getGetCardTraceRecordReturn().getResultMsg();
+		return reply;
+	}
+	//serialCardRecharge会员卡充值接口（流水号必传）
+	@Override
+	public CTMSCardChargeReply CardCharge(Usercinemaview userCinema, String CardNo, String CardPassword,
+			CardChargeTypeEnum ChargeType, float ChargeAmount) throws Exception {
+		CTMSCardChargeReply reply = new CTMSCardChargeReply();
+		MtxSerialCardRechargeResult mtxReply = mtxCardService.SerialCardRecharge(userCinema, CardNo, CardPassword,
+				ChargeType, ChargeAmount);
+		System.out.println("会员卡充值接口返回："+new Gson().toJson(mtxReply));
+		if ("0".equals(mtxReply.getResultCode())) {
+			reply.Status = StatusEnum.Success;
+			System.out.println("会员卡充值接口查询成功++++++++：");
+		} else {
+			reply.Status = StatusEnum.Failure;
+			System.out.println("会员卡充值接口查询失败++++++++：");
+		}
+		reply.ErrorCode = mtxReply.getResultCode();
+		reply.ErrorMessage = mtxReply.getResultMsg();
+		return reply;
+	}
+	//getCardType获取影院会员卡级别接口
+	@Override
+	public CTMSQueryCardLevelReply QueryCardLevel(Usercinemaview userCinema) throws Exception {
+		CTMSQueryCardLevelReply reply = new CTMSQueryCardLevelReply();
+		MtxGetCardTypeResult mtxReply = mtxCardService.GetCardType(userCinema);
+		System.out.println("获取影院会员卡级别接口返回："+new Gson().toJson(mtxReply));
+		if ("0".equals(mtxReply.getGetCardTypeReturn().getResultCode())) {
+			List<Membercardlevel> membercardlevel = new ArrayList<Membercardlevel>();
+			List<MemberTypeBean> memberTypeBeans = mtxReply.getGetCardTypeReturn().getMemberTypes().getMemberType();
+			for (MemberTypeBean memberTypeBean : memberTypeBeans) {
+				Membercardlevel mem = new Membercardlevel();
+				MtxModelMapper.MapToEntity(memberTypeBean, mem);
+				mem.setLevelCode(memberTypeBean.getMemberType());
+				mem.setCinemaCode(userCinema.getCinemaCode());
+				membercardlevel.add(mem);
+				System.out.println("获取影院会员卡级别接口更新成功+++++++++++++++++");
+			}
+			// 删除旧的会员卡等级
+			_memberCardLevelService.deleteByCinemaCode(userCinema.getCinemaCode());
+			System.out.println("删除旧的会员卡等级---成功====");
+			// 插入或更新最新会员卡等级
+			for (Membercardlevel memlevel : membercardlevel) {
+				_memberCardLevelService.Save(memlevel);
+				System.out.println(" 插入或更新最新会员卡等级成功+++++++++");
+			}
+			reply.Status = StatusEnum.Success;
+			System.out.println("获取影院会员卡级别接口成功++++====----+++：");
+		} else {
+			reply.Status = StatusEnum.Failure;
+			System.out.println("获取影院会员卡级别接口失败++++====----+++：");
+		}
+		reply.ErrorCode = mtxReply.getGetCardTypeReturn().getResultCode();
+		reply.ErrorMessage = mtxReply.getGetCardTypeReturn().getResultMsg();
+		return reply;
+	}
+
 }
