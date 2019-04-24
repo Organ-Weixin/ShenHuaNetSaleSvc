@@ -71,6 +71,19 @@
                     <button class="btn-issue">发放</button>
                 </div>
             </div>
+     		<div id="choose">
+                <div class="choose-form">
+                    <div class="choose-content">
+                        <div class="choose-cancel">
+                <span class="type-cancel">
+                   ×
+                </span>
+                        </div>
+                        <div style="text-align: center">是否确认发放优惠券，确认后将不可撤回该操作</div>
+                        <button class="layui-btn layui-btn-lg layui-btn-normal type-sure">确认</button>
+                    </div>
+                </div>
+            </div>
         </div>
     	<div class="record-container">
     		<table id="demo" lay-filter="test"></table>
@@ -111,6 +124,15 @@ $(function (){
     });
     $(".inactive-info").mouseleave(function () {
         $(".clues").css("display","none")
+    });
+    $(".btn-issue").click(function(){
+    	$("#choose").css("display","block");
+    });
+    $(".type-sure").click(function(){
+    	$("#choose").css("display","none");
+    });
+    $(".type-cancel").click(function(){
+    	$("#choose").css("display","none");
     });
 });
 layui.use('table', function(){
