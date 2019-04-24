@@ -71,6 +71,12 @@ public class OrderServiceImpl implements OrderService{
 	}
 	
 	@Override
+	public Orders getOrderBaseByLockOrderCode(String lockordercode) {
+		// TODO Auto-generated method stub
+		return ordersDao.getOrderBaseByLockOrderCode(lockordercode);
+	}
+	
+	@Override
 	public int Insert(OrderView orderview) {
 		ordersDao.save(orderview.getOrderBaseInfo());
 		Orders order = ordersDao.getByLockOrderCode(orderview.getOrderBaseInfo().getCinemaCode(), orderview.getOrderBaseInfo().getLockOrderCode());

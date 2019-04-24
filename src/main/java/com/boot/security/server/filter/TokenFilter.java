@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,8 +17,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.boot.security.server.api.ctms.reply.CxInterface;
 import com.boot.security.server.dto.LoginUser;
 import com.boot.security.server.service.TokenService;
+import com.google.gson.Gson;
 
 /**
  * Token过滤器
@@ -29,6 +33,7 @@ import com.boot.security.server.service.TokenService;
 public class TokenFilter extends OncePerRequestFilter {
 
 	public static final String TOKEN_KEY = "token";
+	protected static Logger log = LoggerFactory.getLogger(TokenFilter.class);
 
 	@Autowired
 	private TokenService tokenService;
@@ -39,26 +44,39 @@ public class TokenFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		String requestURI = request.getRequestURL().toString();
-		if (requestURI.equals("http://localhost:8080/test/hello")) {
-			System.out.println("不过滤");
-		}
-		else
-		{
-		
 		String token = getToken(request);
-		if (StringUtils.isNotBlank(token)) {
-			LoginUser loginUser = tokenService.getLoginUser(token);
+		if (request.getServletPath().length()>4 && request.getServletPath().substring(0,4).equals("/Api")) {
+			LoginUser loginUser = new LoginUser();
+			loginUser.setToken("14ce830b-1a3e-403d-8872-c7825558b416");
+			loginUser.setLoginTime(1555925234175L);
+		    loginUser.setExpireTime(1855932434175L);
+		    loginUser.setUsername("admin");
+		    loginUser.setPassword("$2a$10$azKn2zt4uvOFuK.IDWzpoui6EIvkQ8MMz.sDpgDPNs3dKncylMxsu");
+		    loginUser.setStatus(1);
+		    loginUser.setId(1L);
+		    
 			if (loginUser != null) {
 				loginUser = checkLoginTime(loginUser);
-				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(loginUser,
-						null, loginUser.getAuthorities());
+				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+						loginUser, null, null);
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			}
 		}
-
-		filterChain.doFilter(request, response);
+		else
+		{
+			if (StringUtils.isNotBlank(token)) {
+				LoginUser loginUser = tokenService.getLoginUser(token);
+				System.out.println(new Gson().toJson(loginUser));
+				if (loginUser != null) {
+					loginUser = checkLoginTime(loginUser);
+					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+							loginUser, null, loginUser.getAuthorities());
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				}
+			}
 		}
+		
+		filterChain.doFilter(request, response);
 	}
 
 	/**
@@ -87,15 +105,10 @@ public class TokenFilter extends OncePerRequestFilter {
 	 * @return
 	 */
 	public static String getToken(HttpServletRequest request) {
-		System.out.println("============"+request.getParameter("username"));
-		System.out.println("============"+request.getParameter("password"));
 		String token = request.getParameter(TOKEN_KEY);
 		if (StringUtils.isBlank(token)) {
 			token = request.getHeader(TOKEN_KEY);
 		}
-		System.out.println("------====="+request.getHeader(TOKEN_KEY));
-		System.out.println("token---------"+token);
 		return token;
 	}
-
 }

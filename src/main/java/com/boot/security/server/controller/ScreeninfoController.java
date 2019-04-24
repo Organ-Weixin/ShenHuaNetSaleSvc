@@ -42,7 +42,7 @@ public class ScreeninfoController {
     public Screeninfo get(@PathVariable Long id) {
         return screeninfoDao.getById(id);
     }
-
+    
     @PutMapping
     @ApiOperation(value = "修改")
     public Screeninfo update(@RequestBody Screeninfo screeninfo) {

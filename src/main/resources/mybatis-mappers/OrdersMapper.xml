@@ -347,6 +347,12 @@
 			<if test="IDCardNumber != null">
 				IDCardNumber = #{IDCardNumber}, 
 			</if>
+			<if test="MarketingCode != null">
+				MarketingCode = #{MarketingCode}, 
+			</if>
+			<if test="OpenID != null">
+				OpenID = #{OpenID}, 
+			</if>
 
 		</set>
 

@@ -95,11 +95,11 @@ public class JaxbXmlUtil {
     	queryxml.setCinemaCode("62549174");
     	LockSeatQueryXmlOrder order=new LockSeatQueryXmlOrder();
     	order.setPayType("0");
-    	order.setSessionCode("2423201904130016");
+    	order.setSessionCode("2423201904240012");
     	order.setCount(1);
     	List<LockSeatQueryXmlSeat> seats=new ArrayList<LockSeatQueryXmlSeat>();
     	LockSeatQueryXmlSeat seat=new LockSeatQueryXmlSeat();
-    	seat.setSeatCode("6254917404#01#01");
+    	seat.setSeatCode("6254917406#03#01");
     	seat.setPrice(45D);
     	seat.setFee(0D);
     	seats.add(seat);

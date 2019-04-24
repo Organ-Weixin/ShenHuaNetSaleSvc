@@ -15,6 +15,8 @@ import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Userinfo;
 public interface OrderService {
     Orders getById(Long id);
+    
+    Orders getOrderBaseByLockOrderCode(String lockordercode);
 
     Orders getByPrintNo(String cinemacode,String printno,String verifycode);
     

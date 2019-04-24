@@ -51,7 +51,7 @@ public class SecurityHandlerConfig {
 			public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 					Authentication authentication) throws IOException, ServletException {
 				LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-
+                System.out.print("loginUser:"+loginUser);
 				Token token = tokenService.saveToken(loginUser);
 				ResponseUtil.responseJson(response, HttpStatus.OK.value(), token);
 			}

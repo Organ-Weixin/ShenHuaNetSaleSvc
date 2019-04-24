@@ -41,6 +41,7 @@ public class Orders  extends BaseEntity<Long>{
 	private String PaySeqNo;
 	private String IDCardNumber;
 	private String MarketingCode;
+	private String OpenID;
 	
 	
 	public Orderseatdetails getOrderseatdetails() {
@@ -272,5 +273,12 @@ public class Orders  extends BaseEntity<Long>{
 	public void setMarketingCode(String marketingCode) {
 		MarketingCode = marketingCode;
 	}
+	public String getOpenID() {
+		return OpenID;
+	}
+	public void setOpenID(String openID) {
+		OpenID = openID;
+	}
+	
 
 }

@@ -59,7 +59,6 @@ public class UserinfoController {
     @ApiOperation(value = "根据id获取")
     public Userinfo getUserInfo(@PathVariable Long id) {
 		Userinfo userinfo=userinfoDao.getById(id);
-		
         return userinfo;
     }
 	
@@ -70,7 +69,7 @@ public class UserinfoController {
         
         return userinfo;
     }
-	
+    
 	@PostMapping
     @ApiOperation(value = "新增")
     public Userinfo addUserInfo(@RequestBody Userinfo userinfo) {

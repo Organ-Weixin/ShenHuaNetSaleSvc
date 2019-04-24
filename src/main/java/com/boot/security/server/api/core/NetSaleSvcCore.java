@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import com.boot.security.server.api.core.LockSeatReply.LockSeatReplyOrder.LockSeatReplySeat;
 import com.boot.security.server.api.core.LoginCardReply.LoginCardReplyCard;
@@ -99,7 +100,11 @@ public class NetSaleSvcCore {
 	 MemberCardServiceImpl _membercardService=SpringUtil.getBean(MemberCardServiceImpl.class);
 	 MemberCardLevelServiceImpl _memberCardLevelService=SpringUtil.getBean(MemberCardLevelServiceImpl.class);
 	 
-	 protected static Logger log = LoggerFactory.getLogger(CxInterface.class);
+	 protected static Logger log = LoggerFactory.getLogger(NetSaleSvcCore.class);
+	 
+	 public NetSaleSvcCore(){
+		 
+	 }
 
 	private static volatile NetSaleSvcCore _instance;
 

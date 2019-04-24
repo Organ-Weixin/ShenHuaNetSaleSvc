@@ -19,6 +19,9 @@ public interface OrdersDao {
     @Select("select * from orders t where t.id = #{id}")
 	Orders getById(Long id);
 
+    @Select("select * from orders t where t.lockordercode = #{lockordercode}")
+	Orders getOrderBaseByLockOrderCode(@Param("lockordercode") String lockordercode);
+    
 	@Select("select * from orders t where t.cinemacode=#{cinemacode} and t.lockordercode = #{lockordercode}")
 	Orders getByLockOrderCode(@Param("cinemacode") String cinemacode, @Param("lockordercode") String lockordercode);
 
