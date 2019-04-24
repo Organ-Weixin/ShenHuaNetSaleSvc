@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"> 
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
+	<link rel="stylesheet" href="../../layui/css/layui.css" media="all" />
+    <link rel="stylesheet" type="text/css" media="screen" href="../../css/conponDistribution.css"/>
+</head>
+<body>
+<div id="issue">
+    <div id="content">
+        <div class="issue-title">优惠券发放</div>
+        <div class="issue-type">
+            <div class="issue active">发放优惠券</div>
+            <div class="record">发放记录</div>
+        </div>
+        <div class="issue-container">
+            <div class="container-top">
+                <div class="top-title">选择优惠券：</div>
+                    <div class="top-wrapper">
+                        <div class="top-content">
+                            <div class="issue-setting">
+                                <select name="choose" class="issue-choose">
+                                    <option value="">选择优惠券</option>
+                                </select>
+                                <span>，赠送张数</span>
+                                <input type="text" class="issue-num" placeholder="输入数量">
+                                <span class="issue-del">删除</span>
+                            </div>
+                        </div>
+                    </div>
+                <div class="top-add"><div class="sign">+</div><span class="add-font">添加优惠券</span></div>
+            </div>
+            <div class="container-mid">
+                <div class="customers">
+                    <div class="customers-title">选择顾客群体：</div>
+                    <form class="customers-choose">
+                        <input type="checkbox" name="user" class="all-user">&nbsp;&nbsp;所有顾客<br><br>
+                        <input type="checkbox" name="user" class="vip-user">&nbsp;&nbsp;会员
+                        <div class="reg-container">
+                            <div class="reg-add">+</div><span class="reg-user">注册用户</span><br>
+                            <div class="active-user"><input type="checkbox" name="user">&nbsp;活跃用户</div>
+                            <div class="inactive-user"><input type="checkbox" name="user">&nbsp;非活跃用户</div>
+                            <div class="inactive-info">?</div>
+                            <div class="clues">
+                                <div class="triangle"></div>
+                                <div class="triangle-container">会员卡过期用户以及三个月内无消费用户</div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="specify">
+                    <span class="specify-title">指定用户：</span>
+                    <input type="text" placeholder="输入用户手机号/会员卡号" class="specify-btn">
+                    <div>
+                        <input type="text" class="specify-btn">
+                        <span>删除</span>
+                    </div>
+                </div>
+            </div>
+            <div class="container-btm">
+            	<div class="btm-btn">
+                    <button class="btn-cancel">取消</button>
+                    <button class="btn-issue">发放</button>
+                </div>
+            </div>
+        </div>
+    	<div class="record-container">
+    		<table id="demo" lay-filter="test"></table>
+    	</div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/jq.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript" src="../../js/my/permission.js"></script>
+<script type="text/javascript">
+$(function (){
+    $(".issue").click(function(){
+        $(this).addClass("active").siblings().removeClass("active");
+        $(".issue-container").css("display","block");
+        $(".record-container").css("display","none");
+    });
+    $(".record").click(function(){
+        $(this).addClass("active").siblings().removeClass("active");
+        $(".issue-container").css("display","none");
+        $(".record-container").css("display","block");
+    });
+    $(".top-add").click(function () {
+        $(".top-content :first").clone(true).appendTo(".top-content");
+    });
+    $(".issue-del").click(function () {
+        if ($(".issue-setting").length > 1){
+            $(this).parent(".issue-setting").remove();
+        } else {
+            $(".issue-del").removeAttr('onclick');
+        }
+    });
+    $(".inactive-info").mouseenter(function () {
+        $(".clues").css("display","block")
+    });
+    $(".inactive-info").mouseleave(function () {
+        $(".clues").css("display","none")
+    });
+});
+layui.use('table', function(){
+	  var table = layui.table;
+	  
+	  //第一个实例
+	  table.render({
+	    elem: '#demo',
+	    height: 312,
+	    url: '', //数据接口
+	    page: true, //开启分页
+	    cols: [[ //表头
+	      {field: 'id', title: '#', width:100, fixed: 'left'},
+	      {field: 'username', title: '发放时间', width:245},
+	      {field: 'sex', title: '发放券类', width:260},
+	      {field: 'city', title: '顾客群体', width:170},
+	      {field: 'sign', title: '适用影城', width: 260},
+	      {field: 'experience', title: '状态', width: 140},
+	      {field: 'score', title: '操作账号', width: 200},
+	      {field: 'classify', title: '操作', width: 150},
+	    ]]
+	  });  
+	});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+</html>

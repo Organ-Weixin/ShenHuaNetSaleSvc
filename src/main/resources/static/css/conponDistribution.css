@@ -1,0 +1,258 @@
+html{
+    background: rgb(245,245,245);
+}
+#issue{
+            width: 100%;
+            height: 100%;
+        }
+        #content{
+            width: 90%;
+            height: 100%;
+            margin: 0 auto;
+            position: relative;
+            top: 20px;
+        }
+        .issue-title{
+            font-size: 32px;
+            position: relative;
+            width: 100%;
+            height: 50px;
+            border-bottom: 1px solid #cccccc;
+        }
+        .issue-type{
+            width: 100%;
+            height: 70px;
+            border-bottom: 1px solid #cccccc;
+            position: relative;
+        }
+        .issue,.record{
+            position: absolute;
+            width: 180px;
+            height: 45px;
+            border: 1px solid #cccccc;
+            border-bottom: none;
+            text-align: center;
+            line-height: 45px;
+            font-size: 22px;
+            bottom: 0;
+            cursor: pointer;
+        }
+        .record{
+            left: 180px;
+        }
+        .active{
+            background: rgb(37,161,207);
+            color: white;
+        }
+        .issue-container{
+            position: relative;
+            width: 100%;
+            height: 750px;
+            border: 1px solid #cccccc;
+            background: white;
+            font-size: 18px;
+        }
+        .container-top{
+            width: 100%;
+            height: 250px;
+            border-bottom: 1px solid #cccccc;
+            position: relative;
+        }
+        .top-title{
+            position: absolute;
+            left: 70px;
+            top: 55px;
+        }
+        .top-wrapper{
+            position: relative;
+            height: 120px;
+            width: 660px;
+            left: 200px;
+            top: 50px;
+            overflow: hidden;
+        }
+        .top-content{
+            height: 120px;
+            width: 700px;
+            overflow-y: scroll;
+        }
+        .issue-setting{
+            margin-bottom: 10px;
+        }
+        .issue-choose{
+            height: 30px;
+            width: 300px;
+            background: rgb(245,245,245);
+        }
+        .issue-num{
+            height: 30px;
+            width: 100px;
+            background: rgb(245,245,245);
+            border: none;
+        }
+        .issue-del{
+            cursor: pointer;
+        }
+        .top-add{
+            position: relative;
+            width: 120px;
+            height: 25px;
+            cursor: pointer;
+            top: 70px;
+            left: 200px;
+        }
+        .sign{
+            width: 15px;
+            height: 15px;
+            background: rgb(37,161,207);
+            border-radius: 50%;
+            color: white;
+            text-align: center;
+            line-height: 15px;
+            font-size: 10px;
+            position: absolute;
+            top: 5px;
+        }
+        .add-font{
+            position: absolute;
+            left: 20px;
+        }
+        .container-mid{
+            height: 400px;
+            width: 100%;
+            border-bottom: 1px solid #cccccc;
+            position: relative;
+        }
+        .clues{
+            width: 150px;
+            height: 40px;
+            position: relative;
+            left: 170px;
+            top: -10px;
+            display: none;
+        }
+        .triangle {
+            width: 0;
+            height: 0;
+            border-top: 5px solid transparent;
+            border-right: 10px solid rgb(131,131,131);
+            border-bottom: 5px solid transparent;
+            position: absolute;
+        }
+        .triangle-container{
+            width: 125px;
+            height: 35px;
+            background: rgb(131,131,131);
+            border-radius: 5px;
+            position: absolute;
+            left: 10px;
+            bottom: 10px;
+            font-size: 12px;
+        }
+        .customers{
+            position: relative;
+        }
+        .customers-title{
+            position: absolute;
+            left: 55px;
+            top: 70px;
+        }
+        .customers-choose{
+            width: 550px;
+            height: 180px;
+            position: absolute;
+            left: 200px;
+            top: 70px;
+        }
+        .reg-container{
+            height: 110px;
+            position: relative;
+            top: 20px;
+        }
+        .reg-add{
+            position: absolute;
+            top: 5px;
+            font-size: 10px;
+            line-height: 10px;
+            text-align: center;
+            width: 12px;
+            height: 12px;
+            border: 1px solid #cccccc;
+            cursor: pointer;
+            background: #cccccc;
+        }
+        .reg-user{
+            position: absolute;
+            left: 25px;
+        }
+        .active-user,.inactive-user{
+            position: relative;
+            left: 25px;
+            top: 20px;
+        }
+        .inactive-user{
+            margin-top: 20px;
+        }
+        .inactive-info{
+            position: relative;
+            top: 3px;
+            left: 150px;
+            line-height: 10px;
+            font-size: 10px;
+            text-align: center;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid #cccccc;
+            cursor: pointer;
+            background: rgb(131,131,131);
+            color: white;
+        }
+        .specify{
+            position: absolute;
+            left: 85px;
+            bottom: 25px;
+        }
+        .specify-btn{
+            width: 250px;
+            height: 30px;
+        }
+        .specify div{
+            margin-top: 5px;
+            margin-left: 95px;
+        }
+        .specify div span {
+            cursor: pointer;
+        }
+        .container-btm{
+            width: 100%;
+            height: 100px;
+            position: relative;
+        }
+        .btm-btn{
+            width: 320px;
+            height: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .btm-btn button{
+            width: 100px;
+            height: 40px;
+            background: #1E9FFF;
+            font-size: 16px;
+            color: white;
+            border: 1px solid transparent;
+            outline: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .record-container{
+        	display: none;
+        	width: 100%;
+        	height: 650px;
+        }
+        
+        
+        
