@@ -88,7 +88,7 @@ function init(){
                 "url": "/js/plugin/datatables/Chinese.lang"
             },
         	"ajax": {
-        		"url" : "/sessioninfos",
+        		"url" : "/sessioninfoviews",
         		"type":"get",
         		"data":function(d){
     				d.Company = $("#channel").val();
@@ -104,50 +104,27 @@ function init(){
 						return meta.row + 1 + meta.settings._iDisplayStart;
 						}
 				},
-				{	
-					"data": "cinema",
-                    "sDefaultContent": "",
-                    "orderable":false,
-                    "render": function (data,type,row,meta) {
-                        var cinema=row['cinema'];
-                    	return cinema['name'];
-                    }
-				},
-				{	
-					"data": "userinfo",
-                    "sDefaultContent": "",
-                    "render": function (data,type,row,meta) {
-                        var userinfo=row['userinfo'];
-                    	return userinfo['company'];
-                    }
-				},
+				{"data" : "name","defaultContent": ""},
+				{"data" : "company","defaultContent": ""},
 				{"data" : "filmName", "defaultContent" : ""},
-				{	
-					"data": "screeninfo",
-                    "sDefaultContent": "",
-                    "orderable":false,
-                    "render": function (data,type,row,meta) {
-                        var screeninfo=row['screeninfo'];
-                    	return screeninfo['sname'];
-                    }
-				},
+				{"data" : "sname","defaultContent": ""},
 				{"data" : "startTime", "defaultContent" : ""},
 				{"data" : "duration", "defaultContent" : ""},
 				{"data" : "language", "defaultContent" : ""},
 				{"data" : "standardPrice", "defaultContent" : ""},
 				{"data" : "lowestPrice", "defaultContent" : ""},
-				{	
-					"data": "priceplan",
-                    "sDefaultContent": 0,
-                    "orderable":false,
-                    "render": function (data,type,row,meta) {
-                        var priceplan=row['priceplan'];
-                    	return priceplan['price'];
-                    }
+				{
+					"data" : "price", 
+					"defaultContent" : "0",
+					"render": function (data, type, row) {
+                		var price = row['price'];
+                      
+                        return price;
+                  	}
 				},
 				{ 
-					"data": "sessioninfo", 
-					"sDefaultContent": "价格设置",
+					"data": "", 
+					"sDefaultContent": "",
 					"orderable":false,
 			        "render": function (data, type, row) {
              		           var id=row['id'];		

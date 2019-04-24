@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.SessioninfoviewDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and Id = #{params.Id} 
+			</if>
+			<if test="params.SCode != null and params.SCode != ''">
+				and SCode = #{params.SCode} 
+			</if>
+			<if test="params.CCode != null and params.CCode != ''">
+				and CCode = #{params.CCode} 
+			</if>
+			<if test="params.ScreenCode != null and params.ScreenCode != ''">
+				and ScreenCode = #{params.ScreenCode} 
+			</if>
+			<if test="params.Name != null and params.Name != ''">
+				and Name = #{params.Name} 
+			</if>
+			<if test="params.Company != null and params.Company != ''">
+				and Company = #{params.Company} 
+			</if>
+			<if test="params.FilmCode != null and params.FilmCode != ''">
+				and FilmCode = #{params.FilmCode} 
+			</if>
+			<if test="params.FilmName != null and params.FilmName != ''">
+				and FilmName = #{params.FilmName} 
+			</if>
+			<if test="params.SName != null and params.SName != ''">
+				and SName = #{params.SName} 
+			</if>
+			<if test="params.StartTime != null and params.StartTime != ''">
+				and StartTime = #{params.StartTime} 
+			</if>
+			<if test="params.Duration != null and params.Duration != ''">
+				and Duration = #{params.Duration} 
+			</if>
+			<if test="params.Language != null and params.Language != ''">
+				and Language = #{params.Language} 
+			</if>
+			<if test="params.StandardPrice != null and params.StandardPrice != ''">
+				and StandardPrice = #{params.StandardPrice} 
+			</if>
+			<if test="params.LowestPrice != null and params.LowestPrice != ''">
+				and LowestPrice = #{params.LowestPrice} 
+			</if>
+			<if test="params.Price != null and params.Price != ''">
+				and Price = #{params.Price} 
+			</if>
+		
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from sessioninfoview t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Sessioninfoview">
+		select * from sessioninfoview t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="update">
+		update sessioninfoview t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="SCode != null">
+				SCode = #{SCode}, 
+			</if>
+			<if test="CCode != null">
+				CCode = #{CCode}, 
+			</if>
+			<if test="ScreenCode != null">
+				ScreenCode = #{ScreenCode}, 
+			</if>
+			<if test="Name != null">
+				Name = #{Name}, 
+			</if>
+			<if test="Company != null">
+				Company = #{Company}, 
+			</if>
+			<if test="FilmCode != null">
+				FilmCode = #{FilmCode}, 
+			</if>
+			<if test="FilmName != null">
+				FilmName = #{FilmName}, 
+			</if>
+			<if test="SName != null">
+				SName = #{SName}, 
+			</if>
+			<if test="StartTime != null">
+				StartTime = #{StartTime}, 
+			</if>
+			<if test="Duration != null">
+				Duration = #{Duration}, 
+			</if>
+			<if test="Language != null">
+				Language = #{Language}, 
+			</if>
+			<if test="StandardPrice != null">
+				StandardPrice = #{StandardPrice}, 
+			</if>
+			<if test="LowestPrice != null">
+				LowestPrice = #{LowestPrice}, 
+			</if>
+			<if test="Price != null">
+				Price = #{Price}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+	
+
+</mapper>

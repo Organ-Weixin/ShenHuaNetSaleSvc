@@ -37,4 +37,8 @@ public interface CinemaDao {
     int count(@Param("params") Map<String, Object> params);
 
     List<Cinema> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    
+    //获取未删除的影院
+    @Select("select * from cinema t where t.IsDel= 0")
+    List<Cinema> getCinemas();
 }

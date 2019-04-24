@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<h1>基础信息</h1>
+			<input type="hidden" id="UserId" name="userId">
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院编码：</label>
+				<div class='col-md-10'>
+					<select class="form-control" name='cinemaCode' id='CinemaCode' data-bv-notempty='true' data-bv-notempty-message='影院 不能为空'>
+						<option value="">请选择影院...</option>
+					</select>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>用户名：</label>
+				<div class='col-md-10'>
+					<input class='form-control'  type='text' name='userName' id='UserName' >
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>密码：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='password' id='Password' >
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>费率：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='fee' id='Fee' >
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院提成：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='cinemaFee' id='CinemaFee' >
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>会员支付类型：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text'  id='HuiPayType' >
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>非会员支付类型：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text'  id='FeiPayType' >
+				</div>
+			</div>
+			<!-- payType需 会员支付类型与非会员支付类型拼接而成-->
+			<div class='form-group' style="display: none;">
+				<label class='col-md-2 control-label'></label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='payType' id='PayType' >
+				</div>
+			</div>
+			
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>最低实际价格：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='realPrice' id='RealPrice' >
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>有效期：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='expDate' id='ExpDate' data-bv-notempty='true' data-bv-notempty-message='有效期 不能为空'>
+				</div>
+			</div>
+
+
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" id="goback" >返回</button>
+						<button class="btn btn-primary" type="submit" onclick="judge()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','laydate'], function(){
+			var layer = layui.layer;
+		    var laydate = layui.laydate;
+		    laydate.render({
+		       elem: '#ExpDate',
+		       type: 'datetime'
+		    });
+		});
+		
+		function getUrlParam(name) {//封装方法    
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象    
+			var r = window.location.search.substr(1).match(reg); //匹配目标参数    
+			if (r != null) {
+				return unescape(r[2]);    
+			}
+			
+			return null; //返回参数值
+		}
+		var userid = getUrlParam('userid');
+		$('#UserId').val(userid);
+		
+		//返回接入商可访问影院管理页面
+		$("#goback").click(function(){
+			window.location.href="userCinemaList.html?userid="+$("#UserId").val();
+		});
+		
+		//判断可访问影院是否已存在
+		function judge() {
+			var cinemaCode = $('#CinemaCode').val();
+			$.ajax({
+				type : 'post',
+				url : '/userCinemas/getByUserIdAndCode',
+				async : false,
+				data : {"UserId":$("#UserId").val(),"CinemaCode":$('#CinemaCode').val()},
+				success : function(data) {
+					if(data == null || data.length==0){
+						add();
+					} else {
+						alert("影院已存在");
+					}
+				}
+			});
+		}
+		
+		function add() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var HuiPayType = $('#HuiPayType').val();
+		    var FeiPayType = $('#FeiPayType').val();
+		    $('#PayType').val(HuiPayType+","+FeiPayType);
+		    var formdata = $("#form").serializeObject();
+
+			$.ajax({
+				type : 'post',
+				url : '/userCinemas',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("添加成功", {shift: -1, time: 1000}, function(){
+                        location.href = "userCinemaList.html?userid="+$("#UserId").val();
+                    });
+				}
+			});
+		}
+		//获取影院
+		getCinema();
+		function getCinema(){
+			$.ajax({
+		        type:"get",
+		        url:"/cinemas/getCinemas",
+		        success:function(data){
+					for(var i=0; i<data.length;i++){
+						var option = "<option value="+data[i].code+">"+data[i].name+"</option>";
+						$("#CinemaCode").append(option);
+					}
+		        },
+		        error:function(){
+		            J.alert('Error');
+		        }
+		    })
+		}
+		
+	</script>
+</body>
+</html>

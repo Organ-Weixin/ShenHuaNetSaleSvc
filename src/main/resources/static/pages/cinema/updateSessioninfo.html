@@ -65,7 +65,7 @@
 			if(id != ""){
 				$.ajax({
 					type : 'get',
-					url : '/sessioninfos/'+id ,
+					url : '/sessioninfoviews/'+id ,
 					async : false,
 					success : function(data) {
 						$('#Id').val(data.id);
@@ -91,7 +91,7 @@
 		    
 			$.ajax({
 				type : 'put',
-				url : '/sessioninfos',
+				url : '/sessioninfoviews',
 				contentType: "application/json; charset=utf-8",  
 				data : JSON.stringify(formdata),
 				success : function(data) {

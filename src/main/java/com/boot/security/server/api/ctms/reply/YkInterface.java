@@ -35,6 +35,7 @@ import com.boot.security.server.api.ctms.reply.YkGetSeatsResult.DataBean.CinemaB
 import com.boot.security.server.api.ctms.reply.YkGetSeatsResult.DataBean.CinemaBean.SeatPlan.Sections.Seats;
 import com.boot.security.server.api.ctms.reply.YkQueryPriceResult.DataBean.DataList;
 import com.boot.security.server.api.ctms.reply.YkQueryPriceResult.DataBean.DataList.TicketsPrice;
+import com.boot.security.server.api.ctms.reply.YkqueryBalanceResult.DataBean.BalanceBean;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Cinema;
@@ -89,7 +90,7 @@ public class YkInterface implements ICTMSInterface {
 		
 		String sign = createSign(userCinema.getDefaultPassword(), param);
 		String getCinemasResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",userCinema.getDefaultPassword(), FormatParam(param), sign),null,"UTF-8");
-//		System.out.println("Yk影院返回："+getCinemasResult);
+		System.out.println("Yk影院返回："+getCinemasResult);
 		Gson gson = new Gson();
 		YkGetCinemasResult CinemaListResult = gson.fromJson(getCinemasResult, YkGetCinemasResult.class);
 		if ("0".equals(CinemaListResult.getRetCode())) {
@@ -552,7 +553,9 @@ public class YkInterface implements ICTMSInterface {
 		String sign = createSign(userCinema.getDefaultPassword(), param);
 		String confirmOrderResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
 				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
-//		System.out.println("确认订单返回："+confirmOrderResult);
+		System.out.println("确认订单返回："+confirmOrderResult);
+		System.out.println("url----"+createVisitUrl(userCinema.getUrl(), "/route/",
+				userCinema.getDefaultPassword(), FormatParam(param), sign));
 		Gson gson = new Gson();
 		YkConfirmOrderResult ykResult = gson.fromJson(confirmOrderResult, YkConfirmOrderResult.class);
 		
@@ -1019,11 +1022,68 @@ public class YkInterface implements ICTMSInterface {
 			throws Exception {
 		CTMSLoginCardReply reply = new CTMSLoginCardReply();
 		
-		CTMSQueryCardReply querycardReply = QueryCard(userCinema, CardNo, CardPassword); //调用查询会员卡接口
+		/*CTMSQueryCardReply querycardReply = QueryCard(userCinema, CardNo, CardPassword); //调用查询会员卡接口
 		reply.Status = querycardReply.Status;
 		reply.ErrorCode = querycardReply.ErrorCode;
-		reply.ErrorMessage = querycardReply.ErrorMessage;
+		reply.ErrorMessage = querycardReply.ErrorMessage;*/
+		//调用查询会员卡余额接口
+		String cardPassword = MD5AESPassword(CardPassword,userCinema.getDefaultPassword());	//使用加密的会员卡 的密码
+		JSONObject  input=new JSONObject();
+		input.put("cinemaLinkId", userCinema.getCinemaId());
+		input.put("cardNumber", CardNo);
+		input.put("cardPassword", cardPassword);
+		String data=input.toJSONString();
+
+		Map<String,String> param = new LinkedHashMap<String,String>();
+		param.put("api", "ykse.partner.card.queryBalance");
+		param.put("channelCode", userCinema.getDefaultUserName());
+		param.put("data", data);
+		param.put("timestamp", String.valueOf(System.currentTimeMillis()));
+		param.put("v", "1.0");
 		
+		String sign = createSign(userCinema.getDefaultPassword(), param);
+		String queryBalanceResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
+				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
+		System.out.println("会员卡余额返回："+queryBalanceResult);
+		Gson gson = new Gson();
+		YkqueryBalanceResult ykResult = gson.fromJson(queryBalanceResult, YkqueryBalanceResult.class);
+		
+		if("0".equals(ykResult.getRetCode())){
+			if("SUCCESS".equals(ykResult.getData().getBizCode())){
+				BalanceBean balance = ykResult.getData().getData();
+				if (balance != null){
+					Membercard memercard = memberCardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
+					if(memercard != null){	//修改
+						memercard.setBalance(Double.valueOf(balance.getBalance()));
+						memercard.setScore(Integer.valueOf(balance.getAccumulationPoints()));
+						memberCardService.Update(memercard);
+						
+					} else {	//新增
+						memercard = new Membercard();
+						memercard.setCinemaCode(userCinema.getCinemaCode());
+						memercard.setCardNo(balance.getCardNumber());
+						memercard.setCardPassword(CardPassword);	//暂存明文
+						memercard.setBalance(Double.valueOf(balance.getBalance()));
+						memercard.setScore(Integer.valueOf(balance.getAccumulationPoints()));
+						
+						memercard.setCreateTime(new Date());
+						memercard.setStatus(0);
+						memberCardService.Save(memercard);
+					}
+				}
+				reply.Status = StatusEnum.Success;
+			} else {
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = ykResult.getData().getBizCode();
+			reply.ErrorMessage=ykResult.getData().getBizMsg();
+		} else {
+			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = ykResult.getRetCode();
+			reply.ErrorMessage = ykResult.getRetMsg();
+		}
+		
+		System.out.println(new Gson().toJson(reply));
 		return reply;
 	}
 
@@ -1312,7 +1372,7 @@ public class YkInterface implements ICTMSInterface {
 			input.put("cinemaLinkId", userCinema.getCinemaId());
 			input.put("cardNumber", CardNo);
 			input.put("outTradeNo", new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date())); 
-			input.put("rechargeAmou", String.valueOf(ChargeAmount));
+			input.put("rechargeAmount", String.valueOf(ChargeAmount));
 			input.put("description ", "充值");
 			String data=input.toJSONString();
 			
@@ -1349,6 +1409,7 @@ public class YkInterface implements ICTMSInterface {
 			reply.ErrorCode = "-1";
 			reply.ErrorMessage = "等级类型不是储值卡或次数卡的会员卡，不能充值！";
 		}
+		System.out.println(new Gson().toJson(reply));
 		return reply;
 	}
 
@@ -1456,11 +1517,12 @@ System.out.println(data);
 				Membercard membercard = new Membercard();
 				membercard.setCinemaCode(userCinema.getCinemaCode());
 				membercard.setCardNo(ykResult.getData().getData().getCardNumber());
-				membercard.setCardPassword(cardPassword);
+				membercard.setCardPassword(CardPassword);	//暂存明文
 				membercard.setMobilePhone(MobilePhone);
 				membercard.setLevelCode(LevelCode);
 				membercard.setBalance(Double.valueOf(ykResult.getData().getData().getBalance()));
 				membercard.setUserName(CardUserName);
+				membercard.setSex(Sex);
 				membercard.setCreateTime(new Date());
 				membercard.setStatus(0);
 				memberCardService.Save(membercard);

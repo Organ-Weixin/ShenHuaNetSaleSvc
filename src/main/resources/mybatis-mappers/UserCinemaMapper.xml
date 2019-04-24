@@ -50,7 +50,39 @@
 		${params.orderBy}
 		limit #{offset}, #{limit}
 	</select>
+	
+	<!--  根据接入商id查询可访问影院-->
+	<select id="countByUserid" resultType="int">
+		select count(1)	from (select * from user_cinema where userId=#{userid})uc LEFT JOIN cinema c on uc.CinemaCode=c.Code 
+		LEFT JOIN middleware m on m.Id=c.MId
+		<include refid="whereBy" />
+	</select>
 
+	<select id="listByUserid" resultType="com.boot.security.server.modelView.UserCinemaTitle">
+		select uc.Id,uc.UserId,uc.CinemaCode,c.name AS CinemaName,m.Title,uc.PayType,uc.ExpDate 
+		from (select * from user_cinema where userId=#{userid})uc LEFT JOIN cinema c on uc.CinemaCode=c.Code 
+		LEFT JOIN middleware m on m.Id=c.MId 
+		<include refid="whereBy" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+	<sql id="whereBy">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and Id = #{params.Id} 
+			</if>
+			<if test="params.CinemaName != null and params.CinemaName != ''">
+				and c.name = #{params.CinemaName} 
+			</if>
+			<if test="params.CinemaCode != null and params.CinemaCode != ''">
+				and uc.CinemaCode = #{params.CinemaCode} 
+			</if>
+			<if test="params.Title != null and params.Title != ''">
+				and m.Title = #{params.Title} 
+			</if>
+		</where>
+	</sql>
+	
 	<update id="update">
 		update user_cinema t
 		<set>

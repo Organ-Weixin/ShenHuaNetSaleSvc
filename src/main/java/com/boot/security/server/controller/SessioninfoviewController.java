@@ -17,56 +17,54 @@ import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
-import com.boot.security.server.dao.CinemaDao;
-import com.boot.security.server.model.Cinema;
+import com.boot.security.server.dao.SessioninfoviewDao;
+import com.boot.security.server.model.Sessioninfoview;
 
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/cinemas")
-public class CinemaController {
+@RequestMapping("/sessioninfoviews")
+public class SessioninfoviewController {
 
     @Autowired
-    private CinemaDao cinemaDao;
+    private SessioninfoviewDao sessioninfoviewDao;
 
     @PostMapping
     @ApiOperation(value = "保存")
-    public Cinema save(@RequestBody Cinema cinema) {
-        cinemaDao.save(cinema);
+    public Sessioninfoview save(@RequestBody Sessioninfoview sessioninfoview) {
+        sessioninfoviewDao.save(sessioninfoview);
 
-        return cinema;
+        return sessioninfoview;
     }
 
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取")
-    public Cinema get(@PathVariable Long id) {
-    	Cinema c = new Cinema();
-    	c = cinemaDao.getById(id);
-    	return cinemaDao.getById(id);
+    public Sessioninfoview get(@PathVariable Long id) {
+        return sessioninfoviewDao.getById(id);
     }
-    
+
     @PutMapping
     @ApiOperation(value = "修改")
-    public Cinema update(@RequestBody Cinema cinema) {
-        cinemaDao.update(cinema);
+    public Sessioninfoview update(@RequestBody Sessioninfoview sessioninfoview) {
+        sessioninfoviewDao.update(sessioninfoview);
 
-        return cinema;
+        return sessioninfoview;
     }
 
     @GetMapping
-    @ApiOperation(value = "列表")
+    @ApiOperation(value = "排期视图列表")
     public PageTableResponse list(PageTableRequest request) {
         return new PageTableHandler(new CountHandler() {
 
             @Override
             public int count(PageTableRequest request) {
-                return cinemaDao.count(request.getParams());
+                return sessioninfoviewDao.count(request.getParams());
             }
         }, new ListHandler() {
 
             @Override
-            public List<Cinema> list(PageTableRequest request) {
-                return cinemaDao.list(request.getParams(), request.getOffset(), request.getLimit());
+            public List<Sessioninfoview> list(PageTableRequest request) {
+                return sessioninfoviewDao.list(request.getParams(), request.getOffset(), request.getLimit());
             }
         }).handle(request);
     }
@@ -74,13 +72,6 @@ public class CinemaController {
     @DeleteMapping("/{id}")
     @ApiOperation(value = "删除")
     public void delete(@PathVariable Long id) {
-        cinemaDao.delete(id);
-    }
-    
-    @GetMapping("/getCinemas")
-    @ApiOperation(value = "获取未删除影院")
-    public List<Cinema> getCinemas() {
-    	
-    	return cinemaDao.getCinemas();
+        sessioninfoviewDao.delete(id);
     }
 }

@@ -18,7 +18,7 @@
 	                   			<td>
 		                   			<form class="form-inline" onsubmit="return false">
 										<div class="form-group">
-											<input type="hidden" id="UserID" name="userid">
+											<input type="hidden" id="UserId" name="userid">
 											<input id="cinemacode" type="text" class="form-control" placeholder="影院编码">
 											<input id="cinemaname" type="text" class="form-control" placeholder="影院名称">
 											<input id="keyword" type="text" class="form-control" placeholder="请输入搜索关键字">
@@ -28,7 +28,7 @@
 	                   			</td>
 	                   			<td align="right">
 	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='userInfo.html'">返回接入商管理</button>
-	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addUserCinema.html'">
+	                   				<button class="layui-btn layui-btn-sm" id="addUsercinema">
                                       <i class="layui-icon">&#xe608;</i> 添加可访问影院
                                     </button>
 	                   			</td>
@@ -71,10 +71,25 @@
 <script type="text/javascript" src="../../layui/layui.js"></script>
 <script type="text/javascript" src="../../js/my/permission.js"></script>
 <script type="text/javascript">
+function getUrlParam(name) {//封装方法    
+	var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象    
+	var r = window.location.search.substr(1).match(reg); //匹配目标参数    
+	if (r != null) {
+		return unescape(r[2]);    
+	}
+	
+	return null; //返回参数值
+}
+	//接入商可访问影院添加
+	$("#addUsercinema").click(function(){
+		window.location.href="addUserCinema.html?userid="+$("#UserId").val();
+	});
 var pers = checkPermission();
 
 var example;
 function init(){
+	var userid = getUrlParam('userid');
+	$('#UserId').val(userid);
 	example = 
     	$('#dt-table').DataTable({
         	"searching": false,
@@ -84,12 +99,13 @@ function init(){
                 "url": "/js/plugin/datatables/Chinese.lang"
             },
         	"ajax": {
-        		"url" : "/userCinemas/getByUserId",
-        		"type":"post",
+        		"url" : "/userCinemas/getByUserId/"+userid,
+        		"type":"get",
         		
         		"data":function(d){
-        			alert(d[0].UserId)
-//       			$('#UserName').val(data.userName);
+        			d.CinemaCode = $('#cinemacode').val();
+    				d.CinemaName = $('#cinemaname').val();
+    				d.Title = $('#keyword').val();
     			}
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
@@ -100,24 +116,24 @@ function init(){
 						}
 				},
 				
-				{"data" : "CinemaName", "defaultContent" : ""},
-				{"data" : "CinemaCode", "defaultContent" : ""},
+				{"data" : "cinemaName", "defaultContent" : ""},
+				{"data" : "cinemaCode", "defaultContent" : ""},
 				{"data" : "title", "defaultContent" : ""},
 				{"data" : "payType", "defaultContent" : ""},
-				{"data" : "ExpDate", "defaultContent" : ""},
+				{"data" : "expDate", "defaultContent" : ""},
 				{ 
-								"data": "", 
-								"defaultContent": "",
-								"orderable":false,
-						        "render": function (data, type, row) {
-						        
-                		           var id = row['id'];
-                		           var href = "updateUserCinema.html?id=" + id;
-                                   var edit = buttonEdit(href, "", pers);
-                		           var del = buttonDel(id, "", pers);
-                                   return edit + del;
-                  	            }		
-							},
+						"data": "", 
+						"defaultContent": "",
+						"orderable":false,
+				        "render": function (data, type, row) {
+				        
+              		           var id = row['id'];
+              		           var href = "updateUserCinema.html?id=" + id;
+                               var edit = buttonEdit(href, "", pers);
+              		           var del = buttonDel(id, "", pers);
+                               return edit + del;
+                	     }		
+				},
                 
             ],
            "order": [[ 0, "asc" ]]
