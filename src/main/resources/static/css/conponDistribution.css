@@ -1,16 +1,14 @@
-html{
-    background: rgb(245,245,245);
-}
 #issue{
             width: 100%;
             height: 100%;
+            background: rgb(245,245,245);
         }
         #content{
             width: 90%;
             height: 100%;
             margin: 0 auto;
             position: relative;
-            top: 20px;
+            padding-top: 22px;
         }
         .issue-title{
             font-size: 32px;
