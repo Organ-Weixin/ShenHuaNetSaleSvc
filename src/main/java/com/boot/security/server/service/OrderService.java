@@ -1,5 +1,6 @@
 package com.boot.security.server.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,8 @@ public interface OrderService {
     List<Userinfo> queryCompany();
     
     List<Orders> queryOrders();
+    
+    List<Orders> getOrdersByCreated(Long userid,String cinemaCode,Date startDate,Date endDate);
     
     @Transactional(propagation = Propagation.REQUIRED)
 	int Insert(OrderView orderview);

@@ -1,5 +1,6 @@
 package com.boot.security.server.dao;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -53,4 +54,9 @@ public interface OrdersDao {
     List<Userinfo> queryCompany();
     
     List<Orders> queryOrders();
+    
+    //查询特定时间范围内的订单
+    @Select("select * from orders t where t.UserId=#{userid} and t.CinemaCode=#{cinemacode} and t.Created > #{startDate} and t.Created < #{endDate}")
+    List<Orders> getOrdersByCreated(@Param("userid")Long userid,@Param("cinemacode")String cinemacode,@Param("startDate")Date startDate,@Param("endDate")Date endDate);
+    
 }

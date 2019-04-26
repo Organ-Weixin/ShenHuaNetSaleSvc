@@ -1,5 +1,6 @@
 package com.boot.security.server.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -123,6 +124,11 @@ public class OrderServiceImpl implements OrderService{
 		orderview.setOrderBaseInfo(ordersDao.getByOrderCode(cinemacode,ordercode));
 		orderview.setOrderSeatDetails(orderseatdetailssDao.getByOrderId(orderview.getOrderBaseInfo().getId()));
 		return orderview;
+	}
+
+	@Override
+	public List<Orders> getOrdersByCreated(Long userid, String cinemaCode, Date startDate, Date endDate) {
+		return ordersDao.getOrdersByCreated(userid, cinemaCode, startDate, endDate);
 	}
 
 }

@@ -436,7 +436,7 @@ public class YkInterface implements ICTMSInterface {
 		String getLockSeatsResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
 				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
 		
-//		System.out.println("锁座返回："+getLockSeatsResult);
+		System.out.println("锁座返回："+getLockSeatsResult);
 		Gson gson = new Gson();
 		YkLockSeatsResult lockSeatsResult = gson.fromJson(getLockSeatsResult, YkLockSeatsResult.class);
 		
@@ -915,15 +915,15 @@ public class YkInterface implements ICTMSInterface {
 	 * return 	密文
 	 */
 	private static String MD5AESPassword(String password,String key) throws Exception{
-		final String hexDigits[] = { "0", "1", "2", "3", "4", "5","6", "7", "8", "9", "A", "B", "C", "D", "E", "F" };
+		/*final String hexDigits[] = { "0", "1", "2", "3", "4", "5","6", "7", "8", "9", "A", "B", "C", "D", "E", "F" };
 		StringBuffer strbuf = new StringBuffer();
 		Random rand = new Random();
 		for(int i=0;i<hexDigits.length;i++){
 			strbuf.append(hexDigits[rand.nextInt(hexDigits.length)]);	//随机生成 16 个字节的加密向量 iv
-		}
+		}*/
 		// Base64 编码 iv,截取前 22 个字节(即不要‘==’)
-		String ivBase64 = Base64Utils.encodeToString(strbuf.toString().getBytes("UTF-8")).substring(0, 22);
-		
+//		String ivBase64 = Base64Utils.encodeToString(strbuf.toString().getBytes("UTF-8")).substring(0, 22);
+		String ivBase64 = Base64Utils.encodeToString("YKSE1234YKSE1234".getBytes("UTF-8")).substring(0, 22);
 		//对密钥 key 使用 md5(32)进行加密，并转换成小写，然后截取前 16 位字节得到 md5key
 		byte[] keyBytes = WebService.getMD5ofStr(key).toLowerCase().substring(0, 16).getBytes("UTF-8");
 		
@@ -1022,10 +1022,6 @@ public class YkInterface implements ICTMSInterface {
 			throws Exception {
 		CTMSLoginCardReply reply = new CTMSLoginCardReply();
 		
-		/*CTMSQueryCardReply querycardReply = QueryCard(userCinema, CardNo, CardPassword); //调用查询会员卡接口
-		reply.Status = querycardReply.Status;
-		reply.ErrorCode = querycardReply.ErrorCode;
-		reply.ErrorMessage = querycardReply.ErrorMessage;*/
 		//调用查询会员卡余额接口
 		String cardPassword = MD5AESPassword(CardPassword,userCinema.getDefaultPassword());	//使用加密的会员卡 的密码
 		JSONObject  input=new JSONObject();
@@ -1055,7 +1051,7 @@ public class YkInterface implements ICTMSInterface {
 					Membercard memercard = memberCardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
 					if(memercard != null){	//修改
 						memercard.setBalance(Double.valueOf(balance.getBalance()));
-						memercard.setScore(Integer.valueOf(balance.getAccumulationPoints()));
+						memercard.setScore((int) Math.round(Double.valueOf(balance.getAccumulationPoints())));
 						memberCardService.Update(memercard);
 						
 					} else {	//新增
@@ -1064,8 +1060,7 @@ public class YkInterface implements ICTMSInterface {
 						memercard.setCardNo(balance.getCardNumber());
 						memercard.setCardPassword(CardPassword);	//暂存明文
 						memercard.setBalance(Double.valueOf(balance.getBalance()));
-						memercard.setScore(Integer.valueOf(balance.getAccumulationPoints()));
-						
+						memercard.setScore((int) Math.round(Double.valueOf(balance.getAccumulationPoints())));
 						memercard.setCreateTime(new Date());
 						memercard.setStatus(0);
 						memberCardService.Save(memercard);
@@ -1151,7 +1146,7 @@ public class YkInterface implements ICTMSInterface {
 					}
 					reply.setGradeType(card.getGradeType());	//卡类型，充值接口使用
 				}
-				
+				LoginCard(userCinema,  CardNo,  CardPassword);	//调用查询卡余额接口
 				reply.Status = StatusEnum.Success;
 			} else {
 				reply.Status = StatusEnum.Failure;
@@ -1475,26 +1470,22 @@ public class YkInterface implements ICTMSInterface {
 		CTMSCardRegisterReply reply = new CTMSCardRegisterReply();
 		
 		String cardPassword = MD5AESPassword(CardPassword,userCinema.getDefaultPassword());	//使用加密的会员卡 的密码
-//		String cardPassword = MD5AESPassword("123456","21218CCA77804D2BA1922C33E0151105");
-//		String cardPassword = "WUtTRTEyMzRZS1NFMTIzNAtd8hvk/Brav7lpI9s/x4tu/6gsRGHhzIiG6Uov9JfSsZlPS27/eA0tpMdFvDF1Qb";
-		System.out.println(userCinema.getDefaultPassword());
-		System.out.println(cardPassword);
 		JSONObject  input=new JSONObject();
 		input.put("cinemaLinkId", userCinema.getCinemaId());
 		input.put("gradeId", LevelCode);
 		input.put("outTradeNo", new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date())); //该值全局唯一,长度必须大于 等于 16 位且小于等 于 32 位 
 		input.put("cardPassword", cardPassword);
-		input.put("cardCostFee", "0.00");	//工本费,不知道先默认传0
+		input.put("cardCostFee", "10.00");	//工本费,不知道先默认传0
 		input.put("memberFee", "0.00");		//会费,不知道先默认传0
 		input.put("firstRechargeAmount", InitialAmount);
 		input.put("mobile", MobilePhone);
 		input.put("cardUserName", CardUserName);
 		input.put("idCard", IDNumber);
-//		input.put("address", "");
-//		input.put("birthdata", "");
-		input.put("email", "Test@test.com");	//中间件没传邮箱，先写一个固定值
+//		input.put("address", "1");
+//		input.put("birthdata", "1990-09-09");
+		input.put("email", "123@123.com");	//中间件没传邮箱，先写一个固定值
 		String data=input.toJSONString();
-System.out.println(data);
+
 		Map<String,String> param = new LinkedHashMap<String,String>();
 		param.put("api", "ykse.partner.card.registerCard");
 		param.put("channelCode", userCinema.getDefaultUserName());
@@ -1506,11 +1497,9 @@ System.out.println(data);
 		String registerCardResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
 				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
 		System.out.println("注册会员卡返回："+registerCardResult);
-		System.out.println("url---"+createVisitUrl(userCinema.getUrl(), "/route/",
-				userCinema.getDefaultPassword(), FormatParam(param), sign));
+		
 		Gson gson = new Gson();
 		YkRegisterCardResult ykResult = gson.fromJson(registerCardResult, YkRegisterCardResult.class);
-		
 		if("0".equals(ykResult.getRetCode())){
 			if("SUCCESS".equals(ykResult.getData().getBizCode())){
 				//插入数据库
@@ -1523,6 +1512,7 @@ System.out.println(data);
 				membercard.setBalance(Double.valueOf(ykResult.getData().getData().getBalance()));
 				membercard.setUserName(CardUserName);
 				membercard.setSex(Sex);
+				membercard.setCreditNum(IDNumber);
 				membercard.setCreateTime(new Date());
 				membercard.setStatus(0);
 				memberCardService.Save(membercard);

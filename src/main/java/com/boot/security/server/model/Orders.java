@@ -6,6 +6,7 @@ public class Orders  extends BaseEntity<Long>{
 	private Cinema Cinema;
 	private UserCinema UserCinema;
 	private Orderseatdetails Orderseatdetails;
+	
 	private Long Id;
 	private String CinemaCode;
 	private Long UserId;
@@ -39,6 +40,16 @@ public class Orders  extends BaseEntity<Long>{
 	private String PayType;
 	private String Printpassword;
 	private String PaySeqNo;
+	private Double TotalLoveSeatDifferences;
+	private Integer FeePayType;
+	private Double TotalGuestPayFee;
+	private Double TotalConponPrice;
+	private String RefundTradeNo;
+	private Integer PayFlag;
+	private Integer OrderPayType;
+	private Date PayTime;
+	private String OrderTradeNo;
+	private String CardNo;
 	private String IDCardNumber;
 	private String MarketingCode;
 	private String OpenID;
@@ -260,6 +271,66 @@ public class Orders  extends BaseEntity<Long>{
 	}
 	public void setPaySeqNo(String PaySeqNo) {
 		this.PaySeqNo = PaySeqNo;
+	}
+	public Double getTotalLoveSeatDifferences() {
+		return TotalLoveSeatDifferences;
+	}
+	public void setTotalLoveSeatDifferences(Double totalLoveSeatDifferences) {
+		TotalLoveSeatDifferences = totalLoveSeatDifferences;
+	}
+	public Integer getFeePayType() {
+		return FeePayType;
+	}
+	public void setFeePayType(Integer feePayType) {
+		FeePayType = feePayType;
+	}
+	public Double getTotalGuestPayFee() {
+		return TotalGuestPayFee;
+	}
+	public void setTotalGuestPayFee(Double totalGuestPayFee) {
+		TotalGuestPayFee = totalGuestPayFee;
+	}
+	public Double getTotalConponPrice() {
+		return TotalConponPrice;
+	}
+	public void setTotalConponPrice(Double totalConponPrice) {
+		TotalConponPrice = totalConponPrice;
+	}
+	public String getRefundTradeNo() {
+		return RefundTradeNo;
+	}
+	public void setRefundTradeNo(String refundTradeNo) {
+		RefundTradeNo = refundTradeNo;
+	}
+	public Integer getPayFlag() {
+		return PayFlag;
+	}
+	public void setPayFlag(Integer payFlag) {
+		PayFlag = payFlag;
+	}
+	public Integer getOrderPayType() {
+		return OrderPayType;
+	}
+	public void setOrderPayType(Integer orderPayType) {
+		OrderPayType = orderPayType;
+	}
+	public Date getPayTime() {
+		return PayTime;
+	}
+	public void setPayTime(Date payTime) {
+		PayTime = payTime;
+	}
+	public String getOrderTradeNo() {
+		return OrderTradeNo;
+	}
+	public void setOrderTradeNo(String orderTradeNo) {
+		OrderTradeNo = orderTradeNo;
+	}
+	public String getCardNo() {
+		return CardNo;
+	}
+	public void setCardNo(String cardNo) {
+		CardNo = cardNo;
 	}
 	public String getIDCardNumber() {
 		return IDCardNumber;
