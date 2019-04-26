@@ -222,4 +222,53 @@ public class ReplyExtension {
         }
         return true;
     }
+	//region查询影片场次信息 QuerySessionsReply
+	public static boolean RequestInfoGuard(QuerySessionsReply reply,String UserName,String Password,String CinemaCode,String StartDate,String EndDate){
+		if (UserName.isEmpty()) {
+			reply.SetNecessaryParamMissReply(UserName);
+			return false;
+		}
+		if(Password.isEmpty()){
+			reply.SetNecessaryParamMissReply(Password);
+			return false;
+		}
+		if(CinemaCode.isEmpty()){
+			reply.SetNecessaryParamMissReply(CinemaCode);
+			return false;
+		}
+		if(StartDate.isEmpty()){
+			reply.SetNecessaryParamMissReply(StartDate);
+			return false;
+		}
+		if(EndDate.isEmpty()){
+			reply.SetNecessaryParamMissReply(EndDate);
+			return false;
+		}
+		return true;
+		
+	}
+	//
+	public static boolean RequestInfoGuard(QueryOrderSessionReply reply, String Username, String Password, String CinemaCode,String SessionCode)
+    {
+        if (Username.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(Username);
+            return false;
+        }
+        if (Password.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(Password);
+            return false;
+        }
+        if (CinemaCode.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(CinemaCode);
+            return false;
+        }
+        if(SessionCode.isEmpty()){
+        	reply.SetNecessaryParamMissReply(SessionCode);
+        	return false;
+        }
+        return true;
+    }
 }

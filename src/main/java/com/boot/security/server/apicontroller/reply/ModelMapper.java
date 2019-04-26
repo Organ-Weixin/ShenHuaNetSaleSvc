@@ -1,15 +1,19 @@
 package com.boot.security.server.apicontroller.reply;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.QueryMemberCardByPhoneReplyMemberCardByPhone;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.QueryMemberCardByPhoneReplyMemberCardByPhone.QueryMemberCardByPhoneReplyPhone;
 import com.boot.security.server.apicontroller.reply.QueryScreenInfoReply.QueryScreensReplyScreenInfo;
 import com.boot.security.server.apicontroller.reply.QueryScreenSeatsReply.QueryScreenSeatsReplyScreenSeats;
 import com.boot.security.server.apicontroller.reply.QueryScreensReply.QueryScreensReplyScreens.QueryScreensReplyScreen;
+import com.boot.security.server.apicontroller.reply.QuerySessionsReply.QuerySessionsReplySessions.QuerySessionsReplySession.QuerySessionsReplyFilms.QuerySessionsReplyFilm;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
+import com.boot.security.server.model.Sessioninfo;
 
 public class ModelMapper {
 	public static QueryScreensReplyScreen MapFrom(QueryScreensReplyScreen screen, Screeninfo entity)
@@ -89,5 +93,45 @@ public class ModelMapper {
 			membercard.setStatus("已绑定");
 		}
 		return membercard;
+	}
+	public static QuerySessionsReply.QuerySessionsReplySessions.QuerySessionsReplySession MapFrom(QuerySessionsReply.QuerySessionsReplySessions.QuerySessionsReplySession session, Sessioninfo entity)
+    {
+        session.setScreenCode(Integer.valueOf(entity.getScreenCode()));
+        session.setCode(entity.getSCode());
+        session.setFeatureNo(entity.getFeatureNo());
+        session.setStartTime(entity.getStartTime());
+        session.setPlaythroughFlag(entity.getPlaythroughFlag());
+		session.setFilms(session.new QuerySessionsReplyFilms());
+		session.getFilms().setFilm(new ArrayList<QuerySessionsReplyFilm>());
+		QuerySessionsReplyFilm film = session.getFilms().new QuerySessionsReplyFilm();
+		film.setCode(entity.getFilmCode());
+		film.setName(entity.getFilmName());
+		film.setDimensional(entity.getDimensional());
+		film.setDuration(entity.getDuration());
+		film.setSequence(entity.getSequence());
+		film.setLanguage(entity.getLanguage());
+		session.getFilms().getFilm().add(film);
+        session.setPrice(session.new QuerySessionsReplyPrices());
+        session.getPrice().setStandardPrice(new DecimalFormat("#.00").format(entity.getStandardPrice()));
+        session.getPrice().setLowestPrice(new DecimalFormat("#.00").format(entity.getLowestPrice()));
+        session.getPrice().setListingPrice(entity.getStandardPrice()==null?"0":new DecimalFormat("#.00").format(entity.getStandardPrice()));
+        return session;
+    }
+	public static QueryOrderSessionReply.QueryOrderSessionReplyOrderSession MapFrom1(QueryOrderSessionReply.QueryOrderSessionReplyOrderSession orderSession,Sessioninfo entity){
+		orderSession.setSessionId(entity.getId());
+		orderSession.setCCode(entity.getCCode());
+		orderSession.setSCode(entity.getSCode());
+		orderSession.setScreenCode(entity.getScreenCode());
+		orderSession.setStartTime(String.valueOf(entity.getStartTime()));
+		orderSession.setFilmCode(entity.getFilmCode());
+		orderSession.setFilmName(entity.getFilmName());
+		orderSession.setDuration(String.valueOf(entity.getDuration()));
+		orderSession.setLanguage(entity.getLanguage());
+		orderSession.setStandardPrice(String.valueOf(entity.getStandardPrice()));
+		orderSession.setLowestPrice(String.valueOf(entity.getLowestPrice()));
+		orderSession.setSettlePrice(String.valueOf(entity.getSettlePrice()));
+		orderSession.setListingPrice(String.valueOf(entity.getListingPrice()));
+		orderSession.setScreenType(entity.getDimensional());
+		return orderSession;
 	}
 }

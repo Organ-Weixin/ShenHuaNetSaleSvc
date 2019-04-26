@@ -29,4 +29,10 @@ public interface SessioninfoService {
 	List<Sessioninfo> getByCCodeGroupByFilm(Long userid,String cinemacode,Date StartDate,Date EndDate);
 	
 	List<Sessioninfo> getFilmsByCinemaCode(String cinemacode);
+	
+	   List<Sessioninfo> getByCinemaStartDateEndDate(String cinemacode,String StartDate,String EndDate);
+
+	   Sessioninfo getSessionCode(String cinemacode,String sessioncode);
+
+
 }

@@ -77,4 +77,14 @@ public interface SessioninfoDao {
     
     @Select("select DISTINCT(se.filmcode),se.filmname from sessioninfo se where ccode = #{cinemacode} and StartTime >= NOW()")
     List<Sessioninfo> getFilmsByCinemaCode(String cinemacode);
+    
+    ////////
+    @Select("select * from sessioninfo t where t.ccode=#{cinemacode} and t.scode = #{sessioncode}")
+	   Sessioninfo getSessionCode(@Param("cinemacode")String cinemacode,@Param("sessioncode")String sessioncode);
+	 
+	 ////
+	 @Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.starttime>=#{StartDate} and t.starttime<=#{EndDate}")
+	    List<Sessioninfo> getByCinemaStartDateEndDate(@Param("cinemacode")String cinemacode,@Param("StartDate")String StartDate,@Param("EndDate")String EndDate);
+	 
+    
 }
