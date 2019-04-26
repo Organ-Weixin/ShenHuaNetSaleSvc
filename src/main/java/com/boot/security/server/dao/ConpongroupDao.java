@@ -19,9 +19,6 @@ public interface ConpongroupDao {
     @Select("select * from conpongroup t where t.id = #{id}")
     Conpongroup getById(Long id);
     
-    @Select("select cinemaname from sys_user where roleid = 4")
-    List<SysUser> getCinemaName();
-    
     @Delete("delete from conpongroup where id = #{id}")
     int delete(Long id);
 

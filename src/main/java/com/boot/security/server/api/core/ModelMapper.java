@@ -80,21 +80,21 @@ public class ModelMapper {
         session.setPlaythroughFlag(entity.getPlaythroughFlag());
         //session.setPlaythroughFlag(StatusEnum.valueOf(entity.getPlaythroughFlag()));
 
-        session.Films =session.new QuerySessionReplyFilms();
-        session.Films.Film = new ArrayList<QuerySessionReplyFilm>();
-        QuerySessionReplyFilm film =session.Films.new QuerySessionReplyFilm();
+        session.setFilms(session.new QuerySessionReplyFilms());
+        session.getFilms().Film = new ArrayList<QuerySessionReplyFilm>();
+        QuerySessionReplyFilm film =session.getFilms().new QuerySessionReplyFilm();
         film.setCode(entity.getFilmCode());
         film.setName(entity.getFilmName());
         film.setDimensional(entity.getDimensional());
         film.setDuration(String.valueOf(entity.getDuration()));
         film.setSequence(String.valueOf(entity.getSequence()));
         film.setLanguage(entity.getLanguage());
-        session.Films.Film.add(film);
+        session.getFilms().Film.add(film);
 
-        session.Price = session.new QuerySessionReplyPrice();
-        session.Price.setStandardPrice(new DecimalFormat("#.00").format(entity.getStandardPrice()));
-        session.Price.setLowestPrice(new DecimalFormat("#.00").format(entity.getLowestPrice()));
-        session.Price.setListingPrice(entity.getStandardPrice()==null?"0":new DecimalFormat("#.00").format(entity.getStandardPrice()));
+        session.setPrice(session.new QuerySessionReplyPrice());
+        session.getPrice().setStandardPrice(new DecimalFormat("#.00").format(entity.getStandardPrice()));
+        session.getPrice().setLowestPrice(new DecimalFormat("#.00").format(entity.getLowestPrice()));
+        session.getPrice().setListingPrice(entity.getStandardPrice()==null?"0":new DecimalFormat("#.00").format(entity.getStandardPrice()));
         return session;
     }
 	

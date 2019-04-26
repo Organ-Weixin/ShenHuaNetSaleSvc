@@ -7,7 +7,7 @@ public class ReleaseSeatReply extends BaseReply {
     {
         Id = ID_ReleaseSeatReply;
     }
-	public ReleaseSeatReplyOrder Order;
+	private ReleaseSeatReplyOrder Order;
 	public ReleaseSeatReplyOrder getOrder() {
 		return Order;
 	}
@@ -15,10 +15,10 @@ public class ReleaseSeatReply extends BaseReply {
 		Order = order;
 	}
 	public class ReleaseSeatReplyOrder{
-		public String OrderCode;
-		public String SessionCode;
-		public int Count;
-		public List<ReleaseSeatReplySeat> Seat;
+		private String OrderCode;
+		private String SessionCode;
+		private int Count;
+		private List<ReleaseSeatReplySeat> Seat;
 		public String getOrderCode() {
 			return OrderCode;
 		}
@@ -44,7 +44,7 @@ public class ReleaseSeatReply extends BaseReply {
 			Seat = seat;
 		}
 		public class ReleaseSeatReplySeat{
-			public String SeatCode;
+			private String SeatCode;
 
 			public String getSeatCode() {
 				return SeatCode;

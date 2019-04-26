@@ -7,7 +7,7 @@ public class QueryFilmReply extends BaseReply {
     {
         Id = ID_QueryFilmReply;
     }
-	public QueryFilmReplyFilms Films;
+	private QueryFilmReplyFilms Films;
 	public QueryFilmReplyFilms getFilms() {
 		return Films;
 	}
@@ -15,8 +15,8 @@ public class QueryFilmReply extends BaseReply {
 		Films = films;
 	}
 	public class QueryFilmReplyFilms{
-		public int Count;
-		public List<QueryFilmReplyFilm> Film;
+		private int Count;
+		private List<QueryFilmReplyFilm> Film;
 		public int getCount() {
 			return Count;
 		}
@@ -30,16 +30,16 @@ public class QueryFilmReply extends BaseReply {
 			Film = film;
 		}
 		public class QueryFilmReplyFilm{
-			public String Code;
-			public String Name;
-			public String Version;
-			public String Duration;
-			public String PublishDate;
-			public String Publisher;
-			public String Producer;
-			public String Director;
-			public String Cast;
-			public String Introduction;
+			private String Code;
+			private String Name;
+			private String Version;
+			private String Duration;
+			private String PublishDate;
+			private String Publisher;
+			private String Producer;
+			private String Director;
+			private String Cast;
+			private String Introduction;
 			public String getCode() {
 				return Code;
 			}

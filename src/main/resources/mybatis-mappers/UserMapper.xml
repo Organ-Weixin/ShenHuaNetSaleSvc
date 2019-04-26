@@ -60,6 +60,14 @@
 		</where>
 	</sql>
 	
+	<sql id="getId">
+		<where>
+			<if test="id !=null and id !='' ">
+				and id = #{id}
+			</if>
+		</where>
+	</sql>
+	
 	<select id="count" resultType="int">
 		select count(1) from userview ss
 		<if test="params.roleId !=1 ">
@@ -79,6 +87,18 @@
 		order by ss.roleId asc
         limit #{offset}, #{limit}
 	</select>
+	
+	<select id="getCinemaName" resultType="SysUser">
+		select ss.* from sys_user ss,(select id,cinemacode,cinemaname from sys_user where roleid = 4 and status = 1) s
+		 <if test='roleId!=1'>
+			,(select id from sys_user <include refid="getId"/> ) sss
+		 </if>
+			where ss.id = s.id
+		 <if test='roleId!=1'>
+			and (ss.createuserid = sss.id or ss.id = sss.id)
+		 </if>
+	</select>
+	
 
 	<insert id="saveUserRoles">
 		insert into sys_role_user(roleId, userId) values

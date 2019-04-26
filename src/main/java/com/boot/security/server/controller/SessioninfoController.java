@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.security.server.page.table.PageTableRequest;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
+import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.dao.SessioninfoDao;
@@ -31,6 +33,8 @@ public class SessioninfoController {
 
     @Autowired
     private SessioninfoDao sessioninfoDao;
+    @Autowired
+    private SessioninfoServiceImpl sessioninfoService;
 
     @PostMapping
     @ApiOperation(value = "保存")
@@ -98,5 +102,10 @@ public class SessioninfoController {
     @ApiOperation(value = "渠道列表")
     public List<Userinfo> getCompany() {
         return sessioninfoDao.getCompany();
+    }
+    
+    @RequestMapping("/getFilmsByCinemaCode")
+    public List<Sessioninfo> getFilmsByCinemaCode(@RequestParam("cinemacode") String cinemacode){
+    	return sessioninfoService.getFilmsByCinemaCode(cinemacode);
     }
 }

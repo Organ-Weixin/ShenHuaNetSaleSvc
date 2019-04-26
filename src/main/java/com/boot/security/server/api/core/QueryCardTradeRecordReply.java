@@ -8,7 +8,7 @@ public class QueryCardTradeRecordReply extends BaseReply {
     {
         Id = ID_QueryCardTradeRecordReply;
     }
-	public QueryCardTradeRecordReplyTradeRecord TradeRecord;
+	private QueryCardTradeRecordReplyTradeRecord TradeRecord;
 	public QueryCardTradeRecordReplyTradeRecord getTradeRecord() {
 		return TradeRecord;
 	}
@@ -16,9 +16,9 @@ public class QueryCardTradeRecordReply extends BaseReply {
 		TradeRecord = tradeRecord;
 	}
 	public class QueryCardTradeRecordReplyTradeRecord{
-		public String CinemaCode;
-		public String CardNo;
-		public List<QueryCardTradeRecordReplyRecord> Record;
+		private String CinemaCode;
+		private String CardNo;
+		private List<QueryCardTradeRecordReplyRecord> Record;
 		public String getCinemaCode() {
 			return CinemaCode;
 		}
@@ -38,11 +38,11 @@ public class QueryCardTradeRecordReply extends BaseReply {
 			Record = record;
 		}
 		public class QueryCardTradeRecordReplyRecord{
-			public String TradeNo;
-			public String TradeType;
-			public Date TradeTime;
-			public Float TradePrice;
-			public String CinemaName;
+			private String TradeNo;
+			private String TradeType;
+			private Date TradeTime;
+			private Float TradePrice;
+			private String CinemaName;
 			public String getTradeNo() {
 				return TradeNo;
 			}

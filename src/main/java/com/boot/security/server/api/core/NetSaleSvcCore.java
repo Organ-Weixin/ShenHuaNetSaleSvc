@@ -136,16 +136,16 @@ public class NetSaleSvcCore {
 	private QueryCinemaListReply QueryCinemaList(QueryCinemaListReply reply, Userinfo UserInfo) {
 		List<Usercinemaview> cinemaList = _userCinemaViewService.GetUserCinemaViewsByUserId(UserInfo.getId());
 
-		reply.Cinemas = reply.new QueryCinemaListReplyCinemas();// 实例化内部类
+		reply.setCinemas(reply.new QueryCinemaListReplyCinemas());// 实例化内部类
 		if (cinemaList == null || cinemaList.size() == 0) {
-			reply.Cinemas.CinemaCount = 0;
+			reply.getCinemas().setCinemaCount(0);
 		} else {
-			reply.Cinemas.CinemaCount = cinemaList.size();
-			reply.Cinemas.Cinema = new ArrayList<QueryCinemaListReplyCinema>();
+			reply.getCinemas().setCinemaCount(cinemaList.size());
+			reply.getCinemas().setCinema(new ArrayList<QueryCinemaListReplyCinema>());
 			for (Usercinemaview cinema : cinemaList) {
-				QueryCinemaListReplyCinema replycinema = reply.Cinemas.new QueryCinemaListReplyCinema();
+				QueryCinemaListReplyCinema replycinema = reply.getCinemas().new QueryCinemaListReplyCinema();
 				ModelMapper.MapFrom(replycinema, cinema);
-				reply.Cinemas.Cinema.add(replycinema);
+				reply.getCinemas().getCinema().add(replycinema);
 			}
 		}
 		reply.SetSuccessReply();
@@ -188,21 +188,21 @@ public class NetSaleSvcCore {
 		if (StatusEnum.Success.equals(CTMSReply.Status)) {
 			log.info("===================");
 			// 获取影院影厅列表
-			reply.Cinema = reply.new QueryCinemaReplyCinema();
-			reply.Cinema.Code = userCinema.getCinemaCode();
-			reply.Cinema.Name = userCinema.getCinemaName();
-			reply.Cinema.Address = userCinema.getCinemaAddress();
+			reply.setCinema(reply.new QueryCinemaReplyCinema());
+			reply.getCinema().setCode(userCinema.getCinemaCode());
+			reply.getCinema().setName(userCinema.getCinemaName());
+			reply.getCinema().setAddress(userCinema.getCinemaAddress());
 
 			List<Screeninfo> ScreenList = _screenInfoService.getByCinemaCode(userCinema.getCinemaCode());
 			if (ScreenList == null || ScreenList.size() == 0) {
-				reply.Cinema.ScreenCount = 0;
+				reply.getCinema().setScreenCount(0);
 			} else {
-				reply.Cinema.ScreenCount = ScreenList.size();
-				reply.Cinema.Screen = new ArrayList<QueryCinemaReplyScreen>();
+				reply.getCinema().setScreenCount(ScreenList.size());
+				reply.getCinema().setScreen(new ArrayList<QueryCinemaReplyScreen>());
 				for (Screeninfo screen : ScreenList) {
-					QueryCinemaReplyScreen replyscreen = reply.Cinema.new QueryCinemaReplyScreen();
+					QueryCinemaReplyScreen replyscreen = reply.getCinema().new QueryCinemaReplyScreen();
 					ModelMapper.MapFrom(replyscreen, screen);
-					reply.Cinema.Screen.add(replyscreen);
+					reply.getCinema().getScreen().add(replyscreen);
 				}
 			}
 			reply.SetSuccessReply();
@@ -254,20 +254,20 @@ public class NetSaleSvcCore {
 
 		if (StatusEnum.Success.equals(CTMSReply.Status)) {
 			// 获取影厅座位列表
-			reply.Cinema = reply.new QuerySeatReplyCinema();
-			reply.Cinema.Code = userCinema.getCinemaCode();
-			reply.Cinema.Screen = reply.Cinema.new QuerySeatReplyScreen();
-			reply.Cinema.Screen.Code = screen.getSCode();
+			reply.setCinema(reply.new QuerySeatReplyCinema());
+			reply.getCinema().setCode(userCinema.getCinemaCode());;
+			reply.getCinema().setScreen(reply.getCinema().new QuerySeatReplyScreen());
+			reply.getCinema().getScreen().setCode(screen.getSCode());
 
 			List<Screenseatinfo> seatList = _seatInfoService.getByCinemaCodeAndScreenCode(userCinema.getCinemaCode(),
 					screen.getSCode());
 
 			if (seatList != null && seatList.size() > 0) {
-				reply.Cinema.Screen.Seat = new ArrayList<QuerySeatReplySeat>();
+				reply.getCinema().getScreen().setSeat(new ArrayList<QuerySeatReplySeat>());
 				for (Screenseatinfo seat : seatList) {
-					QuerySeatReplySeat replyseat = reply.Cinema.Screen.new QuerySeatReplySeat();
+					QuerySeatReplySeat replyseat = reply.getCinema().getScreen().new QuerySeatReplySeat();
 					ModelMapper.MapFrom(replyseat, seat);
-					reply.Cinema.Screen.Seat.add(replyseat);
+					reply.getCinema().getScreen().getSeat().add(replyseat);
 				}
 			}
 			reply.SetSuccessReply();
@@ -329,13 +329,13 @@ public class NetSaleSvcCore {
 
 		if (StatusEnum.Success.equals(CTMSReply.Status)) {
 			List<Filminfo> FilmEntities = CTMSReply.getFilms();
-			reply.Films = reply.new QueryFilmReplyFilms();
-			reply.Films.Film = new ArrayList<QueryFilmReplyFilm>();
-			reply.Films.Count = FilmEntities.size();
+			reply.setFilms(reply.new QueryFilmReplyFilms());
+			reply.getFilms().setFilm(new ArrayList<QueryFilmReplyFilm>());
+			reply.getFilms().setCount(FilmEntities.size());
 			for (Filminfo film : FilmEntities) {
-				QueryFilmReplyFilm replyfilm = reply.Films.new QueryFilmReplyFilm();
+				QueryFilmReplyFilm replyfilm = reply.getFilms().new QueryFilmReplyFilm();
 				ModelMapper.MapFrom(replyfilm, film);
-				reply.Films.Film.add(replyfilm);
+				reply.getFilms().getFilm().add(replyfilm);
 			}
 			reply.SetSuccessReply();
 		} else {
@@ -400,14 +400,14 @@ public class NetSaleSvcCore {
 			List<Sessioninfo> sessionList = _sessionInfoService.getByCinemaCodeAndDate(userCinema.getUserId(),
 					userCinema.getCinemaCode(), StartDate, EndDate);
 
-			reply.Sessions = reply.new QuerySessionReplySessions();
-			reply.Sessions.CinemaCode = userCinema.getCinemaCode();
+			reply.setSessions(reply.new QuerySessionReplySessions());
+			reply.getSessions().setCinemaCode(userCinema.getCinemaCode());;
 			if (sessionList != null && sessionList.size() > 0) {
-				reply.Sessions.Session = new ArrayList<QuerySessionReplySession>();
+				reply.getSessions().setSession(new ArrayList<QuerySessionReplySession>());
 				for (Sessioninfo session : sessionList) {
-					QuerySessionReplySession replysession = reply.Sessions.new QuerySessionReplySession();
+					QuerySessionReplySession replysession = reply.getSessions().new QuerySessionReplySession();
 					ModelMapper.MapFrom(replysession, session);
-					reply.Sessions.Session.add(replysession);
+					reply.getSessions().getSession().add(replysession);
 				}
 			}
 			reply.SetSuccessReply();
@@ -468,17 +468,17 @@ public class NetSaleSvcCore {
 		}
 
 		if (StatusEnum.Success.equals(CTMSReply.Status)) {
-			reply.SessionSeat = reply.new QuerySessionSeatReplySessionSeat();
-			reply.SessionSeat.CinemaCode = userCinema.getCinemaCode();
-			reply.SessionSeat.SessionCode = SessionCode;
-			 reply.SessionSeat.Seat = new ArrayList<QuerySessionSeatReplySeat>();
+			reply.setSessionSeat(reply.new QuerySessionSeatReplySessionSeat());
+			reply.getSessionSeat().setCinemaCode(userCinema.getCinemaCode());
+			reply.getSessionSeat().setSessionCode(SessionCode);
+			 reply.getSessionSeat().setSeat(new ArrayList<QuerySessionSeatReplySeat>());
 			for (SessionSeat seat : CTMSReply.getSessionSeats()) {
-				QuerySessionSeatReplySeat replyseat = reply.SessionSeat.new QuerySessionSeatReplySeat();
+				QuerySessionSeatReplySeat replyseat = reply.getSessionSeat().new QuerySessionSeatReplySeat();
 				replyseat.setCode(seat.getSeatCode());
 				replyseat.setRowNum(seat.getRowNum());
 				replyseat.setColumnNum(seat.getColumnNum());
 				replyseat.setStatus(seat.getStatus().getStatusCode());
-				reply.SessionSeat.Seat.add(replyseat);
+				reply.getSessionSeat().getSeat().add(replyseat);
 			}
 			reply.SetSuccessReply();
 		} else {
@@ -561,19 +561,19 @@ public class NetSaleSvcCore {
 		}
 
 		if (StatusEnum.Success.equals(CTMSReply.Status)) {
-			reply.Order = reply.new LockSeatReplyOrder();
-			reply.Order.OrderCode = order.getOrderBaseInfo().getLockOrderCode();
-			reply.Order.AutoUnlockDatetime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-					.format(order.getOrderBaseInfo().getAutoUnlockDatetime());
-			reply.Order.SessionCode = order.getOrderBaseInfo().getSessionCode();
-			reply.Order.Count = order.getOrderBaseInfo().getTicketCount();
+			reply.setOrder(reply.new LockSeatReplyOrder());
+			reply.getOrder().setOrderCode(order.getOrderBaseInfo().getLockOrderCode());
+			reply.getOrder().setAutoUnlockDatetime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+					.format(order.getOrderBaseInfo().getAutoUnlockDatetime()));
+			reply.getOrder().setSessionCode(order.getOrderBaseInfo().getSessionCode());
+			reply.getOrder().setCount(order.getOrderBaseInfo().getTicketCount());
 			List<LockSeatReplySeat> replySeats = new ArrayList<LockSeatReplySeat>();
 			for (Orderseatdetails seat : order.getOrderSeatDetails()) {
-				LockSeatReplySeat replyseat = reply.Order.new LockSeatReplySeat();
+				LockSeatReplySeat replyseat = reply.getOrder().new LockSeatReplySeat();
 				replyseat.setSeatCode(seat.getSeatCode());
 				replySeats.add(replyseat);
 			}
-			reply.Order.Seat=replySeats;
+			reply.getOrder().setSeat(replySeats);
 			reply.SetSuccessReply();
 		} else {
 			reply.GetErrorFromCTMSReply(CTMSReply);
@@ -642,17 +642,17 @@ public class NetSaleSvcCore {
 		}
 
 		if (StatusEnum.Success.equals(CTMSReply.Status)) {
-			reply.Order = reply.new ReleaseSeatReplyOrder();
-			reply.Order.OrderCode = order.getOrderBaseInfo().getLockOrderCode();
-			reply.Order.SessionCode = order.getOrderBaseInfo().getSessionCode();
-			reply.Order.Count = order.getOrderBaseInfo().getTicketCount();
+			reply.setOrder(reply.new ReleaseSeatReplyOrder());
+			reply.getOrder().setOrderCode(order.getOrderBaseInfo().getLockOrderCode());
+			reply.getOrder().setSessionCode(order.getOrderBaseInfo().getSessionCode());
+			reply.getOrder().setCount(order.getOrderBaseInfo().getTicketCount());
 			List<ReleaseSeatReplySeat> replySeats = new ArrayList<ReleaseSeatReplySeat>();
 			for (Orderseatdetails seat : order.getOrderSeatDetails()) {
-				ReleaseSeatReplySeat replyseat = reply.Order.new ReleaseSeatReplySeat();
+				ReleaseSeatReplySeat replyseat = reply.getOrder().new ReleaseSeatReplySeat();
 				replyseat.setSeatCode(seat.getSeatCode());
 				replySeats.add(replyseat);
 			}
-			reply.Order.Seat = replySeats;
+			reply.getOrder().setSeat(replySeats);
 			reply.SetSuccessReply();
 		} else {
 			reply.GetErrorFromCTMSReply(CTMSReply);
@@ -734,22 +734,22 @@ public class NetSaleSvcCore {
 			CTMSReply = _CTMSInterface.SubmitOrder(userCinema, order);
 
 			if (StatusEnum.Success.equals(CTMSReply.Status)) {
-				reply.Order = reply.new SubmitOrderReplyOrder();
-				reply.Order.CinemaType = userCinema.getCinemaType();
-				reply.Order.OrderCode = order.getOrderBaseInfo().getSubmitOrderCode();
-				reply.Order.SessionCode = order.getOrderBaseInfo().getSessionCode();
-				reply.Order.Count = order.getOrderBaseInfo().getTicketCount();
-				reply.Order.PrintNo = order.getOrderBaseInfo().getPrintNo();
-				reply.Order.VerifyCode = order.getOrderBaseInfo().getVerifyCode();
+				reply.setOrder(reply.new SubmitOrderReplyOrder());
+				reply.getOrder().setCinemaType(userCinema.getCinemaType());
+				reply.getOrder().setOrderCode(order.getOrderBaseInfo().getSubmitOrderCode());
+				reply.getOrder().setSessionCode(order.getOrderBaseInfo().getSessionCode());
+				reply.getOrder().setCount(order.getOrderBaseInfo().getTicketCount());
+				reply.getOrder().setPrintNo(order.getOrderBaseInfo().getPrintNo());
+				reply.getOrder().setVerifyCode(order.getOrderBaseInfo().getVerifyCode());
 
 				List<SubmitOrderReplySeat> replySeats = new ArrayList<SubmitOrderReplySeat>();
 				for (Orderseatdetails seat : order.getOrderSeatDetails()) {
-					SubmitOrderReplySeat replyseat = reply.Order.new SubmitOrderReplySeat();
+					SubmitOrderReplySeat replyseat = reply.getOrder().new SubmitOrderReplySeat();
 					replyseat.setSeatCode(seat.getSeatCode());
 					replyseat.setFilmTicketCode(seat.getFilmTicketCode());
 					replySeats.add(replyseat);
 				}
-				reply.Order.Seat = replySeats;
+				reply.getOrder().setSeat(replySeats);
 				reply.SetSuccessReply();
 			} else {
 				reply.GetErrorFromCTMSReply(CTMSReply);
@@ -807,13 +807,13 @@ public class NetSaleSvcCore {
 		}
 
 		if (StatusEnum.Success.equals(CTMSReply.Status)) {
-			reply.Order = reply.new QueryPrintReplyOrder();
-			reply.Order.OrderCode = order.getOrderBaseInfo().getSubmitOrderCode();
-			reply.Order.PrintNo = order.getOrderBaseInfo().getPrintNo();
-			reply.Order.VerifyCode = order.getOrderBaseInfo().getVerifyCode();
-			reply.Order.Status = order.getOrderBaseInfo().getPrintStatus() == 1?"Yes":"No";
-			reply.Order.PrintTime = order.getOrderBaseInfo().getPrintTime() == null ? ""
-					: new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderBaseInfo().getPrintTime());
+			reply.setOrder(reply.new QueryPrintReplyOrder());
+			reply.getOrder().setOrderCode(order.getOrderBaseInfo().getSubmitOrderCode());
+			reply.getOrder().setPrintNo(order.getOrderBaseInfo().getPrintNo());
+			reply.getOrder().setVerifyCode(order.getOrderBaseInfo().getVerifyCode());
+			reply.getOrder().setStatus(order.getOrderBaseInfo().getPrintStatus() == 1?"Yes":"No");
+			reply.getOrder().setPrintTime(order.getOrderBaseInfo().getPrintTime() == null ? ""
+					: new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderBaseInfo().getPrintTime()));
 			reply.SetSuccessReply();
 		} else {
 			reply.GetErrorFromCTMSReply(CTMSReply);
@@ -864,16 +864,16 @@ public class NetSaleSvcCore {
 			CTMSReply = _CTMSInterface.RefundTicket(userCinema, order);
 
 			if (StatusEnum.Success.equals(CTMSReply.Status)) {
-				reply.Order = reply.new RefundTicketReplyOrder();
-				reply.Order.OrderCode = order.getOrderBaseInfo().getSubmitOrderCode();
-				reply.Order.PrintNo = order.getOrderBaseInfo().getPrintNo();
-				reply.Order.VerifyCode = order.getOrderBaseInfo().getVerifyCode();
-				reply.Order.Status = order.getOrderBaseInfo().getOrderStatus() == 9? "Yes" : "No";
-				reply.Order.RefundTime = reply.Order.Status == "Yes"
+				reply.setOrder(reply.new RefundTicketReplyOrder());
+				reply.getOrder().setOrderCode(order.getOrderBaseInfo().getSubmitOrderCode());
+				reply.getOrder().setPrintNo(order.getOrderBaseInfo().getPrintNo());
+				reply.getOrder().setVerifyCode(order.getOrderBaseInfo().getVerifyCode());
+				reply.getOrder().setStatus(order.getOrderBaseInfo().getOrderStatus() == 9? "Yes" : "No");
+				reply.getOrder().setRefundTime(reply.getOrder().getStatus() == "Yes"
 						? order.getOrderBaseInfo().getRefundTime() == null ? ""
 								: new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 										.format(order.getOrderBaseInfo().getRefundTime())
-						: "";
+						: "");
 				reply.SetSuccessReply();
 			} else {
 				reply.GetErrorFromCTMSReply(CTMSReply);
@@ -927,27 +927,27 @@ public class NetSaleSvcCore {
 		}
 
 		if (StatusEnum.Success.equals(CTMSReply.Status)) {
-			reply.Order = reply.new QueryOrderReplyOrder();
-			reply.Order.OrderCode = order.getOrderBaseInfo().getSubmitOrderCode();
-			reply.Order.CinemaCode = userCinema.getCinemaCode();
-			reply.Order.CinemaType = userCinema.getCinemaType().toString();
-			reply.Order.CinemaName = userCinema.getCinemaName();
+			reply.setOrder(reply.new QueryOrderReplyOrder());
+			reply.getOrder().setOrderCode(order.getOrderBaseInfo().getSubmitOrderCode());
+			reply.getOrder().setCinemaCode(userCinema.getCinemaCode());
+			reply.getOrder().setCinemaType(userCinema.getCinemaType().toString());
+			reply.getOrder().setCinemaName(userCinema.getCinemaName());
 			Screeninfo screenInfo = _screenInfoService.getByScreenCode(userCinema.getCinemaCode(),
 					order.getOrderBaseInfo().getScreenCode());
-			reply.Order.ScreenCode = order.getOrderBaseInfo().getScreenCode();
-			reply.Order.ScreenName = screenInfo == null ? ""
-					: screenInfo.getSName() == null ? "" : screenInfo.getSName();
+			reply.getOrder().setScreenCode(order.getOrderBaseInfo().getScreenCode());
+			reply.getOrder().setScreenName(screenInfo == null ? ""
+					: screenInfo.getSName() == null ? "" : screenInfo.getSName());
 			Sessioninfo sessionInfo = _sessionInfoService.getBySessionCode(userCinema.getUserId(),
 					userCinema.getCinemaCode(), order.getOrderBaseInfo().getSessionCode());
-			reply.Order.SessionCode = order.getOrderBaseInfo().getSessionCode();
-			reply.Order.StartTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-					.format(order.getOrderBaseInfo().getSessionTime());
-			reply.Order.PlaythroughFlag = sessionInfo == null ? "No"
-					: sessionInfo.getPlaythroughFlag() == null ? "No" : sessionInfo.getPlaythroughFlag();
-			reply.Order.PrintNo = order.getOrderBaseInfo().getPrintNo();
-			reply.Order.VerifyCode = order.getOrderBaseInfo().getVerifyCode();
+			reply.getOrder().setSessionCode(order.getOrderBaseInfo().getSessionCode());
+			reply.getOrder().setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+					.format(order.getOrderBaseInfo().getSessionTime()));
+			reply.getOrder().setPlaythroughFlag(sessionInfo == null ? "No"
+					: sessionInfo.getPlaythroughFlag() == null ? "No" : sessionInfo.getPlaythroughFlag());
+			reply.getOrder().setPrintNo(order.getOrderBaseInfo().getPrintNo());
+			reply.getOrder().setVerifyCode(order.getOrderBaseInfo().getVerifyCode());
 
-			QueryOrderReplyFilms films = reply.Order.new QueryOrderReplyFilms();
+			QueryOrderReplyFilms films = reply.getOrder().new QueryOrderReplyFilms();
 			List<QueryOrderReplyFilm> filmlist = new ArrayList<QueryOrderReplyFilm>();
 
 			QueryOrderReplyFilm film = films.new QueryOrderReplyFilm();
@@ -960,9 +960,9 @@ public class NetSaleSvcCore {
 
 			filmlist.add(film);
 			films.setFilm(filmlist);
-			reply.Order.Films = films;
+			reply.getOrder().setFilms(films);
 
-			QueryOrderReplySeats seats = reply.Order.new QueryOrderReplySeats();
+			QueryOrderReplySeats seats = reply.getOrder().new QueryOrderReplySeats();
 			List<QueryOrderReplySeat> seatlist = new ArrayList<QueryOrderReplySeat>();
 			for (Orderseatdetails orderseat : order.getOrderSeatDetails()) {
 				QueryOrderReplySeat replyseat = seats.new QueryOrderReplySeat();
@@ -979,7 +979,7 @@ public class NetSaleSvcCore {
 				seatlist.add(replyseat);
 			}
 			seats.setSeat(seatlist);
-			reply.Order.Seats = seats;
+			reply.getOrder().setSeats(seats);
 			reply.SetSuccessReply();
 		} else {
 			reply.GetErrorFromCTMSReply(CTMSReply);
@@ -1062,7 +1062,7 @@ public class NetSaleSvcCore {
             }
             tickets.setCount(ticketlist.size());
             tickets.setTicket(ticketlist);
-            reply.Tickets = tickets;
+            reply.setTickets(tickets);
             reply.SetSuccessReply();
         }
         else
@@ -1176,15 +1176,15 @@ public class NetSaleSvcCore {
         {
             Membercard membercard = _membercardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
 
-            reply.CinemaCode = userCinema.getCinemaCode();
-            reply.Card = reply.new LoginCardReplyCard();
+            reply.setCinemaCode(userCinema.getCinemaCode());
+            reply.setCard(reply.new LoginCardReplyCard());
             if (membercard != null)
             {
-                reply.Card.CardNo = membercard.getCardNo();
-                reply.Card.CardPassword = membercard.getCardPassword();
-                reply.Card.MobilePhone = membercard.getMobilePhone();
-                reply.Card.LevelCode = membercard.getLevelCode();
-                reply.Card.LevelName = membercard.getLevelName();
+                reply.getCard().setCardNo(membercard.getCardNo());
+                reply.getCard().setCardPassword(membercard.getCardPassword());
+                reply.getCard().setMobilePhone(membercard.getMobilePhone());
+                reply.getCard().setLevelCode(membercard.getLevelCode());
+                reply.getCard().setLevelName(membercard.getLevelName());
             }
             reply.SetSuccessReply();
         }
@@ -1233,25 +1233,25 @@ public class NetSaleSvcCore {
         {
             Membercard membercard = _membercardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
 
-            reply.CinemaCode = userCinema.getCinemaCode();
-            reply.Card = reply.new QueryCardReplyCard();
+            reply.setCinemaCode(userCinema.getCinemaCode());
+            reply.setCard(reply.new QueryCardReplyCard());
             if (membercard != null)
             {
-                reply.Card.CardNo = membercard.getCardNo();
-                reply.Card.CardPassword = membercard.getCardPassword();
-                reply.Card.MobilePhone = membercard.getMobilePhone();
-                reply.Card.LevelCode = membercard.getLevelCode();
-                reply.Card.LevelName = membercard.getLevelName();
+                reply.getCard().setCardNo(membercard.getCardNo());
+                reply.getCard().setCardPassword(membercard.getCardPassword());
+                reply.getCard().setMobilePhone(membercard.getMobilePhone());
+                reply.getCard().setLevelCode(membercard.getLevelCode());
+                reply.getCard().setLevelName(membercard.getLevelName());
                 if(membercard.getScore()==null||membercard.getScore().equals("0")){
                 	membercard.setScore(0);
                 }
-                reply.Card.Score = String.valueOf(membercard.getScore());
-                reply.Card.Balance = new DecimalFormat("#0.00").format(membercard.getBalance());
-                reply.Card.UserName = membercard.getUserName();
-                reply.Card.Sex = membercard.getSex();
-                reply.Card.CreditNum = membercard.getCreditNum();
+                reply.getCard().setScore(String.valueOf(membercard.getScore()));
+                reply.getCard().setBalance(new DecimalFormat("#0.00").format(membercard.getBalance()));
+                reply.getCard().setUserName(membercard.getUserName());
+                reply.getCard().setSex(membercard.getSex());
+                reply.getCard().setCreditNum(membercard.getCreditNum());
                 if(membercard.getBirthday()!=null){
-                	reply.Card.Birthday = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(membercard.getBirthday());
+                	reply.getCard().setBirthday(new SimpleDateFormat("yyyy-MM-dd").format(membercard.getBirthday()));
                 }
             }
             reply.SetSuccessReply();
@@ -1319,11 +1319,11 @@ ScreenType,ListingPrice,LowestPrice))
 		}
         if (CTMSReply.Status == StatusEnum.Success)
         {
-            reply.CinemaCode = userCinema.getCinemaCode();
-            reply.Card = reply.new QueryDiscountReplyCard();
-            reply.Card.DiscountType = String.valueOf(CTMSReply.getDiscountType());
-            reply.Card.Price = CTMSReply.getPrice();
-            reply.Card.CinemaPayAmount = CTMSReply.getCinemaPayAmount();
+            reply.setCinemaCode(userCinema.getCinemaCode());
+            reply.setCard(reply.new QueryDiscountReplyCard());
+            reply.getCard().setDiscountType(String.valueOf(CTMSReply.getDiscountType()));
+            reply.getCard().setPrice(CTMSReply.getPrice());
+            reply.getCard().setCinemaPayAmount(CTMSReply.getCinemaPayAmount());
             reply.SetSuccessReply();
         }
         else
@@ -1388,8 +1388,8 @@ ScreenType,ListingPrice,LowestPrice))
 		}
         if (CTMSReply.Status == StatusEnum.Success)
         {
-            reply.TradeNo = CTMSReply.getTradeNo();
-            reply.DeductAmount = CTMSReply.getDeductAmount();
+            reply.setTradeNo(CTMSReply.getTradeNo());
+            reply.setDeductAmount(CTMSReply.getDeductAmount());
             reply.SetSuccessReply();
         }
         else
@@ -1443,7 +1443,7 @@ ScreenType,ListingPrice,LowestPrice))
 		}
         if (CTMSReply.Status == StatusEnum.Success)
         {
-            reply.TradeNo = CTMSReply.getTradeNo();
+            reply.setTradeNo(CTMSReply.getTradeNo());
             reply.SetSuccessReply();
         }
         else
@@ -1515,12 +1515,12 @@ ScreenType,ListingPrice,LowestPrice))
 		}
         if (CTMSReply.Status == StatusEnum.Success)
         {
-            reply.TradeRecord = reply.new QueryCardTradeRecordReplyTradeRecord();
-            reply.TradeRecord.CinemaCode = userCinema.getCinemaCode();
-            reply.TradeRecord.CardNo = CardNo;
+            reply.setTradeRecord(reply.new QueryCardTradeRecordReplyTradeRecord());
+            reply.getTradeRecord().setCinemaCode(userCinema.getCinemaCode());
+            reply.getTradeRecord().setCardNo(CardNo);
             List<QueryCardTradeRecordReplyRecord> records=new ArrayList<QueryCardTradeRecordReplyRecord>();
             for(CardTradeRecord traderecord:CTMSReply.getCardTradeRecords()){
-            	QueryCardTradeRecordReplyRecord record=reply.TradeRecord.new QueryCardTradeRecordReplyRecord();
+            	QueryCardTradeRecordReplyRecord record=reply.getTradeRecord().new QueryCardTradeRecordReplyRecord();
             	record.setTradeNo(traderecord.getTradeNo());
             	record.setTradeType(traderecord.getTradeType());
             	record.setTradeTime(traderecord.getTradeTime());
@@ -1528,7 +1528,7 @@ ScreenType,ListingPrice,LowestPrice))
             	record.setCinemaName(traderecord.getCinemaName());
             	records.add(record);
             }
-            reply.TradeRecord.Record = records;
+            reply.getTradeRecord().setRecord(records);
             reply.SetSuccessReply();
         }
         else
@@ -1637,18 +1637,18 @@ ScreenType,ListingPrice,LowestPrice))
         {
             List<Membercardlevel> cardLevels = _memberCardLevelService.getByCinemaCode(userCinema.getCinemaCode());
 
-            reply.CinemaCode = userCinema.getCinemaCode();
-            reply.Levels = reply.new QueryCardLevelReplyLevels();
+            reply.setCinemaCode(userCinema.getCinemaCode());
+            reply.setLevels(reply.new QueryCardLevelReplyLevels());
             if (cardLevels != null && cardLevels.size() > 0)
             {
             	List<QueryCardLevelReplyLevel> levels=new ArrayList<QueryCardLevelReplyLevel>();
             	for(Membercardlevel cardlevel:cardLevels){
-            		QueryCardLevelReplyLevel level=reply.Levels.new QueryCardLevelReplyLevel();
+            		QueryCardLevelReplyLevel level=reply.getLevels().new QueryCardLevelReplyLevel();
             		level.setLevelCode(cardlevel.getLevelCode());
             		level.setLevelName(cardlevel.getLevelName());
             		levels.add(level);
             	}
-                reply.Levels.Level = levels;
+                reply.getLevels().setLevel(levels);
             }
             reply.SetSuccessReply();
         }
@@ -1704,10 +1704,10 @@ ScreenType,ListingPrice,LowestPrice))
 		}
         if (CTMSReply.Status == StatusEnum.Success)
         {
-            reply.CardNo = CTMSReply.getCardNo();
-            reply.Balance = CTMSReply.getBalance();
-            reply.ExpireDate = CTMSReply.getExpireDate();
-            reply.CreateTime = CTMSReply.getCreateTime();
+            reply.setCardNo(CTMSReply.getCardNo());
+            reply.setBalance(CTMSReply.getBalance());
+            reply.setExpireDate(CTMSReply.getExpireDate());
+            reply.setCreateTime(CTMSReply.getCreateTime());
             reply.SetSuccessReply();
         }
         else

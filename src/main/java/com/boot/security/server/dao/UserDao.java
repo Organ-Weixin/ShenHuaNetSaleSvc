@@ -26,6 +26,8 @@ public interface UserDao {
 	@Select("select * from sys_user t where t.username = #{username}")
 	SysUser getUser(String username);
 	
+	List<SysUser> getCinemaName(@Param("id")Long id,@Param("roleId")Long roleId);
+	
 	@Update("update sys_user t set t.password = #{password} where t.id = #{id}")
 	int changePassword(@Param("id") Long id, @Param("password") String password);
 

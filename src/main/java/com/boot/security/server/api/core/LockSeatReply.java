@@ -7,7 +7,7 @@ public class LockSeatReply extends BaseReply {
     {
         Id = ID_LockSeatReply;
     }
-	public LockSeatReplyOrder Order;
+	private LockSeatReplyOrder Order;
 	public LockSeatReplyOrder getOrder() {
 		return Order;
 	}
@@ -15,11 +15,11 @@ public class LockSeatReply extends BaseReply {
 		Order = order;
 	}
 	public class LockSeatReplyOrder{
-		public String OrderCode;
-		public String AutoUnlockDatetime;
-		public String SessionCode;
-		public int Count;
-		public List<LockSeatReplySeat> Seat;
+		private String OrderCode;
+		private String AutoUnlockDatetime;
+		private String SessionCode;
+		private int Count;
+		private List<LockSeatReplySeat> Seat;
 		public String getOrderCode() {
 			return OrderCode;
 		}

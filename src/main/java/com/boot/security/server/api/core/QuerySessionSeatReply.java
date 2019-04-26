@@ -7,7 +7,7 @@ public class QuerySessionSeatReply extends BaseReply {
     {
         Id = ID_QuerySessionSeatReply;
     }
-	public QuerySessionSeatReplySessionSeat SessionSeat;
+	private QuerySessionSeatReplySessionSeat SessionSeat;
 	public QuerySessionSeatReplySessionSeat getSessionSeat() {
 		return SessionSeat;
 	}
@@ -15,9 +15,9 @@ public class QuerySessionSeatReply extends BaseReply {
 		SessionSeat = sessionSeat;
 	}
 	public class QuerySessionSeatReplySessionSeat{
-		public String CinemaCode;
-		public String SessionCode;
-		public List<QuerySessionSeatReplySeat> Seat;
+		private String CinemaCode;
+		private String SessionCode;
+		private List<QuerySessionSeatReplySeat> Seat;
 		public String getCinemaCode() {
 			return CinemaCode;
 		}
@@ -37,10 +37,10 @@ public class QuerySessionSeatReply extends BaseReply {
 			Seat = seat;
 		}
 		public class QuerySessionSeatReplySeat{
-			public String Code;
-			public String RowNum;
-			public String ColumnNum;
-			public String Status;
+			private String Code;
+			private String RowNum;
+			private String ColumnNum;
+			private String Status;
 			public String getCode() {
 				return Code;
 			}

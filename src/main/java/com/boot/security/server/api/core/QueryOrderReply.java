@@ -10,7 +10,7 @@ public class QueryOrderReply extends BaseReply {
     {
         Id = ID_QueryOrderReply;
     }
-	public QueryOrderReplyOrder Order;
+	private QueryOrderReplyOrder Order;
 	public QueryOrderReplyOrder getOrder() {
 		return Order;
 	}
@@ -18,19 +18,19 @@ public class QueryOrderReply extends BaseReply {
 		Order = order;
 	}
 	public class QueryOrderReplyOrder{
-		public String OrderCode;
-		public String CinemaCode;
-		public String CinemaType;
-		public String CinemaName;
-		public String ScreenCode;
-		public String ScreenName;
-		public String SessionCode;
-		public String StartTime;
-		public String PlaythroughFlag;
-		public String PrintNo;
-		public String VerifyCode;
-		public QueryOrderReplyFilms Films;
-		public QueryOrderReplySeats Seats;
+		private String OrderCode;
+		private String CinemaCode;
+		private String CinemaType;
+		private String CinemaName;
+		private String ScreenCode;
+		private String ScreenName;
+		private String SessionCode;
+		private String StartTime;
+		private String PlaythroughFlag;
+		private String PrintNo;
+		private String VerifyCode;
+		private QueryOrderReplyFilms Films;
+		private QueryOrderReplySeats Seats;
 		public String getOrderCode() {
 			return OrderCode;
 		}

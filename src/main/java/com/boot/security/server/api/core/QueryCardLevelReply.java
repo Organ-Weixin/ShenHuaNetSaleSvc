@@ -7,8 +7,8 @@ public class QueryCardLevelReply extends BaseReply {
     {
         Id = ID_QueryCardLevelReply;
     }
-	public String CinemaCode;
-	public QueryCardLevelReplyLevels Levels;
+	private String CinemaCode;
+	private QueryCardLevelReplyLevels Levels;
 	public String getCinemaCode() {
 		return CinemaCode;
 	}
@@ -22,7 +22,7 @@ public class QueryCardLevelReply extends BaseReply {
 		Levels = levels;
 	}
 	public class QueryCardLevelReplyLevels{
-		public List<QueryCardLevelReplyLevel> Level;
+		private List<QueryCardLevelReplyLevel> Level;
 
 		public List<QueryCardLevelReplyLevel> getLevel() {
 			return Level;
@@ -32,8 +32,8 @@ public class QueryCardLevelReply extends BaseReply {
 			Level = level;
 		}
 		public class QueryCardLevelReplyLevel{
-			public String LevelCode;
-			public String LevelName;
+			private String LevelCode;
+			private String LevelName;
 			public String getLevelCode() {
 				return LevelCode;
 			}

@@ -5,7 +5,7 @@ public class CardPayBackReply extends BaseReply {
     {
         Id = ID_CardPayBackReply;
     }
-	public String TradeNo;
+	private String TradeNo;
 	public String getTradeNo() {
 		return TradeNo;
 	}

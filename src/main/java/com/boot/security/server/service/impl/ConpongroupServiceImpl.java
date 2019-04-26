@@ -14,11 +14,7 @@ import com.boot.security.server.service.ConpongroupService;
 public class ConpongroupServiceImpl implements ConpongroupService{
 	@Autowired
 	ConpongroupDao ConpongroupD;
-	@Override
-	public List<SysUser> getCinemaName() {
-		// TODO Auto-generated method stub
-		return ConpongroupD.getCinemaName();
-	}
+	
 	@Override
 	public int save(Conpongroup conpongroup) {
 		// TODO Auto-generated method stub

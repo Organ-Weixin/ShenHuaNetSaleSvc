@@ -9,7 +9,7 @@ public class SubmitOrderReply extends BaseReply {
     {
         Id = ID_SubmitOrderReply;
     }
-	public SubmitOrderReplyOrder Order;
+	private SubmitOrderReplyOrder Order;
 	public SubmitOrderReplyOrder getOrder() {
 		return Order;
 	}
@@ -17,13 +17,13 @@ public class SubmitOrderReply extends BaseReply {
 		Order = order;
 	}
 	public class SubmitOrderReplyOrder{
-		public int CinemaType;
-		public String OrderCode;
-		public String SessionCode;
-		public int Count;
-		public String PrintNo;
-		public String VerifyCode;
-		public List<SubmitOrderReplySeat> Seat;
+		private int CinemaType;
+		private String OrderCode;
+		private String SessionCode;
+		private int Count;
+		private String PrintNo;
+		private String VerifyCode;
+		private List<SubmitOrderReplySeat> Seat;
 		public int getCinemaType() {
 			return CinemaType;
 		}
@@ -67,8 +67,8 @@ public class SubmitOrderReply extends BaseReply {
 			Seat = seat;
 		}
 		public class SubmitOrderReplySeat{
-	        public String SeatCode;
-	        public String FilmTicketCode;
+			private String SeatCode;
+			private String FilmTicketCode;
 			public String getSeatCode() {
 				return SeatCode;
 			}

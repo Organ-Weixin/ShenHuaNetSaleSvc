@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaAllSessionResult.ResBean.SessionsBean.SessionBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaResult.ResBean.CinemasBean.CinemaBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetOrderStatusResult.ResBean.SeatsBean.SeatBean;
@@ -298,6 +297,7 @@ public class Dy1905Interface implements ICTMSInterface {
 		param.put("pSessionID", SessionCode);
 		param.put("pVerifyInfo",pVerifyInfo);
 		String getSessionSeatResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/GetSessionSeat/v2", param,"UTF-8");
+		System.out.println(getSessionSeatResult);
 		Gson gson = new Gson();
 		Dy1905GetSessionSeatResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(getSessionSeatResult,"GetSessionSeatResult"),Dy1905GetSessionSeatResult.class);
 		List<SessionSeatBean> Dy1905SessionSeatList = new ArrayList<SessionSeatBean>();
@@ -309,7 +309,18 @@ public class Dy1905Interface implements ICTMSInterface {
 				sessionSeats.setSeatCode(Dy1905SessionSeat.getSeatNo());
 				sessionSeats.setRowNum(Dy1905SessionSeat.getSeatRow());
 				sessionSeats.setColumnNum(Dy1905SessionSeat.getSeatCol());
-				sessionSeats.setStatus(SessionSeatStatusEnum.All);
+				if(Dy1905SessionSeat.getSeatStatus().equals("0")){
+					sessionSeats.setStatus(SessionSeatStatusEnum.Available);
+				}
+				if(Dy1905SessionSeat.getSeatStatus().equals("-1")){
+					sessionSeats.setStatus(SessionSeatStatusEnum.Unavailable);
+				}
+				if(Dy1905SessionSeat.getSeatStatus().equals("1")){
+					sessionSeats.setStatus(SessionSeatStatusEnum.Sold);
+				}
+				if(Dy1905SessionSeat.getSeatStatus().equals("1")){
+					sessionSeats.setStatus(SessionSeatStatusEnum.Locked);
+				}
 				SessionSeatList.add(sessionSeats);
 			}
 			reply.setSessionSeats(SessionSeatList);
@@ -325,7 +336,18 @@ public class Dy1905Interface implements ICTMSInterface {
 						sessionSeats.setSeatCode(Dy1905SessionSeat.getSeatNo());
 						sessionSeats.setRowNum(Dy1905SessionSeat.getSeatRow());
 						sessionSeats.setColumnNum(Dy1905SessionSeat.getSeatCol());
-						sessionSeats.setStatus(SessionSeatStatusEnum.All);
+						if(Dy1905SessionSeat.getSeatStatus().equals("0")){
+							sessionSeats.setStatus(SessionSeatStatusEnum.Available);
+						}
+						if(Dy1905SessionSeat.getSeatStatus().equals("-1")){
+							sessionSeats.setStatus(SessionSeatStatusEnum.Unavailable);
+						}
+						if(Dy1905SessionSeat.getSeatStatus().equals("1")){
+							sessionSeats.setStatus(SessionSeatStatusEnum.Sold);
+						}
+						if(Dy1905SessionSeat.getSeatStatus().equals("1")){
+							sessionSeats.setStatus(SessionSeatStatusEnum.Locked);
+						}
 						SessionSeatList.add(sessionSeats);
 					}
 					reply.setSessionSeats(SessionSeatList);
@@ -482,7 +504,9 @@ public class Dy1905Interface implements ICTMSInterface {
 		String pVerifyInfo=MD5Util.MD5Encode(userCinema.getDefaultUserName()+order.getOrderBaseInfo().getSessionCode()+OrderID
 				+SeatCode+TicketPrice+Fee+userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
 		param.put("pVerifyInfo",pVerifyInfo);
+		System.out.println("订单编号-----------------"+OrderID);
 		String checkSeatStateResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/LockSeatCustom", param,"UTF-8");
+		System.out.println("1905返回结果"+checkSeatStateResult);
 		////////////////////////////////////////////////
 		Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd")
 				.registerTypeAdapter(Integer.class, new IntegerDefaultAdapter())
@@ -1037,6 +1061,35 @@ public class Dy1905Interface implements ICTMSInterface {
 			}
 			reply.ErrorCode = Dy1905Reply.getMakeMemberCardResult().getResultCode();
 			reply.ErrorMessage = Dy1905Reply.getMakeMemberCardResult().getResultMsg();
+			return reply;
+		}
+		
+		/*
+		 *  手机号查询会员卡
+		 * */
+		public Dy1905GetMemberCardByMobileReply GetMemberCardByMobile(Usercinemaview userCinema,String MobilePhone)throws Exception {
+			Dy1905GetMemberCardByMobileReply reply = new Dy1905GetMemberCardByMobileReply();
+			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() + MobilePhone + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
+			Map<String,String> param = new LinkedHashMap<String,String>();
+			param.put("pAppCode", userCinema.getDefaultUserName());
+			param.put("pCinemaID", userCinema.getCinemaId());
+			param.put("pMobile", MobilePhone);
+			param.put("pVerifyInfo", pVerifyInfo);
+			String CardsListResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/GetMemberCardByMobile",param,"UTF-8");
+			System.out.println(CardsListResult);
+			Gson gson = new Gson();
+			Dy1905CardsListResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(CardsListResult,"CardsListResult"), Dy1905CardsListResult.class);
+			if(Dy1905Reply.getCardsListResult().getResultCode().equals("0")){
+				List<String> Cards = Dy1905Reply.getCardsListResult().getCards().getCardNo();
+				reply.setData(reply.new GetMemberCardByMobileReplyMemberCard());
+				reply.getData().setCards(reply.getData().new GetMemberCardByMobileReplyCard());
+				reply.getData().getCards().setCardNo(Cards);
+				reply.Status = "Success";
+			}else{
+				reply.Status = "Failure";
+			}
+			reply.ErrorCode = Dy1905Reply.getCardsListResult().getResultCode();
+			reply.ErrorMessage = Dy1905Reply.getCardsListResult().getResultMsg();
 			return reply;
 		}
 }

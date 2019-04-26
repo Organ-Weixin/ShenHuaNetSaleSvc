@@ -7,7 +7,7 @@ public class RefundTicketReply extends BaseReply {
     {
         Id = ID_RefundTicketReply;
     }
-	public RefundTicketReplyOrder Order;
+	private RefundTicketReplyOrder Order;
 	public RefundTicketReplyOrder getOrder() {
 		return Order;
 	}
@@ -15,11 +15,11 @@ public class RefundTicketReply extends BaseReply {
 		Order = order;
 	}
 	public class RefundTicketReplyOrder{
-		public String OrderCode;
-		public String PrintNo;
-		public String VerifyCode;
-		public String Status;
-		public String RefundTime;
+		private String OrderCode;
+		private String PrintNo;
+		private String VerifyCode;
+		private String Status;
+		private String RefundTime;
 		public String getOrderCode() {
 			return OrderCode;
 		}

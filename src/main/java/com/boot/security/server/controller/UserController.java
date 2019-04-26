@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.security.server.annotation.LogAnnotation;
@@ -124,4 +126,11 @@ public class UserController {
 	public SysUser user(@PathVariable Long id) {
 		return userDao.getById(id);
 	}
+	
+	@RequestMapping(value="/getCinemaName",method=RequestMethod.POST)
+	@PreAuthorize("hasAuthority('sys:user:query')")
+    public List<SysUser> getCinemaName(@RequestParam(value = "id") Long id,@RequestParam(value = "roleId") Long roleId){
+    	List<SysUser> list = userService.getCinemaName(id,roleId);
+    	return list;
+    }
 }

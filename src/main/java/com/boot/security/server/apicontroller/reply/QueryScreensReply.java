@@ -3,7 +3,7 @@ package com.boot.security.server.apicontroller.reply;
 import java.util.List;
 
 public class QueryScreensReply extends BaseReply {
-	public QueryScreensReplyScreens data;
+	private QueryScreensReplyScreens data;
 
 	public QueryScreensReplyScreens getData() {
 		return data;
@@ -13,8 +13,8 @@ public class QueryScreensReply extends BaseReply {
 		this.data = data;
 	}
 	public class QueryScreensReplyScreens{
-		public int ScreenCount;
-		public List<QueryScreensReplyScreen> Screen;
+		private int ScreenCount;
+		private List<QueryScreensReplyScreen> Screen;
 		public int getScreenCount() {
 			return ScreenCount;
 		}
@@ -27,13 +27,14 @@ public class QueryScreensReply extends BaseReply {
 		public void setScreen(List<QueryScreensReplyScreen> screen) {
 			Screen = screen;
 		}
+
 		public class QueryScreensReplyScreen{
-			public Long ScreenId;
-			public String CinemaCode;
-			public String ScreenCode;
-			public String ScreenName;
-			public int SeatCount;
-			public String Type;
+			private Long ScreenId;
+			private String CinemaCode;
+			private String ScreenCode;
+			private String ScreenName;
+			private int SeatCount;
+			private String Type;
 			public Long getScreenId() {
 				return ScreenId;
 			}

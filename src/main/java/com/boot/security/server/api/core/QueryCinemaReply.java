@@ -7,7 +7,7 @@ public class QueryCinemaReply extends BaseReply{
     {
         Id = ID_QueryCinemaReply;
     }
-	public QueryCinemaReplyCinema Cinema;
+	private QueryCinemaReplyCinema Cinema;
 	public QueryCinemaReplyCinema getCinema() {
 		return Cinema;
 	}
@@ -15,11 +15,11 @@ public class QueryCinemaReply extends BaseReply{
 		Cinema = cinema;
 	}
 	public class QueryCinemaReplyCinema{
-		public String Code;
-		public String Name;
-		public String Address;
-		public int ScreenCount;
-		public List<QueryCinemaReplyScreen> Screen;
+		private String Code;
+		private String Name;
+		private String Address;
+		private int ScreenCount;
+		private List<QueryCinemaReplyScreen> Screen;
 		public String getCode() {
 			return Code;
 		}

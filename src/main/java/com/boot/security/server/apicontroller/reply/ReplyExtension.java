@@ -1,5 +1,7 @@
 package com.boot.security.server.apicontroller.reply;
 
+import com.boot.security.server.api.ctms.reply.Dy1905GetMemberCardByMobileReply;
+
 public class ReplyExtension {
 	
 	//region QueryScreensReply
@@ -22,7 +24,59 @@ public class ReplyExtension {
         }
         return true;
     }
-	//endregion
+	
+	//region QueryScreenInfoReply
+	public static boolean RequestInfoGuard(QueryScreenInfoReply reply, String Username, String Password, String CinemaCode,String ScreenCode)
+    {
+        if (Username.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(Username);
+            return false;
+        }
+        if (Password.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(Password);
+            return false;
+        }
+        if (CinemaCode.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(CinemaCode);
+            return false;
+        }
+        if (ScreenCode.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(ScreenCode);
+            return false;
+        }
+        return true;
+    }
+
+	//region QueryScreenSeatsReply
+	public static boolean RequestInfoGuard(QueryScreenSeatsReply reply, String Username, String Password, String CinemaCode,String ScreenCode)
+    {
+        if (Username.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(Username);
+            return false;
+        }
+        if (Password.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(Password);
+            return false;
+        }
+        if (CinemaCode.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(CinemaCode);
+            return false;
+        }
+        if (ScreenCode.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(ScreenCode);
+            return false;
+        }
+        return true;
+    }
+	
 	
 	//region QueryCinemasReply
 	public static boolean RequestInfoGuard(QueryCinemasReply reply, String Username, String Password, String AppId,String CurrentPage,String PageSize) {
@@ -116,6 +170,56 @@ public class ReplyExtension {
 		}
         return true;
     }
-	//endregion
-
+	
+	//region QueryMemberCardByPhoneReply
+	public static boolean RequestInfoGuard(QueryMemberCardByPhoneReply reply, String Username, String Password, String CinemaCode ,String MobilePhone)
+    {
+        if (Username.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(Username);
+            return false;
+        }
+        if (Password.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(Password);
+            return false;
+        }
+        if (CinemaCode.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(CinemaCode);
+            return false;
+        }
+        if (MobilePhone.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(MobilePhone);
+            return false;
+        }
+        return true;
+    }
+	
+	//region Dy1905GetMemberCardByMobileReply
+	public static boolean RequestInfoGuard(Dy1905GetMemberCardByMobileReply reply, String Username, String Password, String CinemaCode ,String MobilePhone)
+    {
+        if (Username.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(Username);
+            return false;
+        }
+        if (Password.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(Password);
+            return false;
+        }
+        if (CinemaCode.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(CinemaCode);
+            return false;
+        }
+        if (MobilePhone.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(MobilePhone);
+            return false;
+        }
+        return true;
+    }
 }

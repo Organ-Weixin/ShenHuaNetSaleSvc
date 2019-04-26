@@ -3,6 +3,7 @@ package com.boot.security.server.controller;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.catalina.connector.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,12 +45,6 @@ public class ConpongroupController {
     @ApiOperation(value = "根据id获取")
     public Conpongroup get(@PathVariable Long id) {
         return conpongroupService.getById(id);
-    }
-    
-    @RequestMapping("/getCinemaName")
-    public List<SysUser> getCinemaName(){
-    	List<SysUser> list = conpongroupService.getCinemaName();
-    	return list;
     }
     
     @PutMapping

@@ -8,6 +8,8 @@ import com.boot.security.server.model.SysUser;
 
 public interface UserService {
 	
+	List<SysUser> getCinemaName(Long id,Long roleId);
+	
 	SysUser saveUser(UserDto userDto);
 
 	SysUser updateUser(UserDto userDto);

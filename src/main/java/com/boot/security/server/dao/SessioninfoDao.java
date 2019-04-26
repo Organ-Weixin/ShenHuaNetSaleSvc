@@ -74,4 +74,7 @@ public interface SessioninfoDao {
     //获取渠道
     @Select("select * from userinfo where IsDel='0'")
     List<Userinfo> getCompany();
+    
+    @Select("select DISTINCT(se.filmcode),se.filmname from sessioninfo se where ccode = #{cinemacode} and StartTime >= NOW()")
+    List<Sessioninfo> getFilmsByCinemaCode(String cinemacode);
 }

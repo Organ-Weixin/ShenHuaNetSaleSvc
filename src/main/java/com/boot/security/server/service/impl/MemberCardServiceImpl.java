@@ -1,5 +1,7 @@
 package com.boot.security.server.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,5 +30,11 @@ public class MemberCardServiceImpl implements MemberCardService {
 	public int Update(Membercard membercard) {
 		// TODO Auto-generated method stub
 		return membercardDao.update(membercard);
+	}
+
+	@Override
+	public List<Membercard> getByCinemaCodeAndMobilePhone(String cinemacode, String mobilephone) {
+		// TODO Auto-generated method stub
+		return membercardDao.getByCinemaCodeAndMobilePhone(cinemacode, mobilephone);
 	}
 }

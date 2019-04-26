@@ -9,7 +9,7 @@ public class QueryCinemaListReply extends BaseReply {
     {
         Id = ID_QueryCinemaListReply;
     }
-	public QueryCinemaListReplyCinemas Cinemas;
+	private QueryCinemaListReplyCinemas Cinemas;
 	public QueryCinemaListReplyCinemas getCinemas() {
 		return Cinemas;
 	}
@@ -17,8 +17,8 @@ public class QueryCinemaListReply extends BaseReply {
 		Cinemas = cinemas;
 	}
 	public class QueryCinemaListReplyCinemas{
-		public int CinemaCount;
-		public List<QueryCinemaListReplyCinema> Cinema;
+		private int CinemaCount;
+		private List<QueryCinemaListReplyCinema> Cinema;
 		public int getCinemaCount() {
 			return CinemaCount;
 		}
@@ -32,10 +32,10 @@ public class QueryCinemaListReply extends BaseReply {
 			Cinema = cinema;
 		}
 		public class QueryCinemaListReplyCinema{
-			public String Code;
-			public String Name;
-			public int Type;
-			public String Address;
+			private String Code;
+			private String Name;
+			private int Type;
+			private String Address;
 			public String getCode() {
 				return Code;
 			}

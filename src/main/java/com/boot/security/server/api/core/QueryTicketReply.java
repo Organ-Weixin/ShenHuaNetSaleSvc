@@ -7,7 +7,7 @@ public class QueryTicketReply extends BaseReply {
     {
         Id = ID_QueryTicketReply;
     }
-	public QueryTicketReplyTickets Tickets;
+	private QueryTicketReplyTickets Tickets;
 	public QueryTicketReplyTickets getTickets() {
 		return Tickets;
 	}
@@ -15,8 +15,8 @@ public class QueryTicketReply extends BaseReply {
 		Tickets = tickets;
 	}
 	public class QueryTicketReplyTickets{
-		public int Count;
-		public List<QueryTicketReplyTicket> Ticket;
+		private int Count;
+		private List<QueryTicketReplyTicket> Ticket;
 		public int getCount() {
 			return Count;
 		}
@@ -30,22 +30,22 @@ public class QueryTicketReply extends BaseReply {
 			Ticket = ticket;
 		}
 		public class QueryTicketReplyTicket{
-			public String PrintNo;
-			public String TicketInfoCode;
-			public String CinemaCode;
-			public String CinemaName;
-			public String ScreenCode;
-			public String ScreenName;
-			public String FilmCode;
-			public String FilmName;
-			public String SessionCode;
-			public String SessionDateTime;
-			public String TicketCode;
-			public String SeatCode;
-			public String SeatName;
-			public String Price;
-			public String Service;
-			public String PrintFlag;
+			private String PrintNo;
+			private String TicketInfoCode;
+			private String CinemaCode;
+			private String CinemaName;
+			private String ScreenCode;
+			private String ScreenName;
+			private String FilmCode;
+			private String FilmName;
+			private String SessionCode;
+			private String SessionDateTime;
+			private String TicketCode;
+			private String SeatCode;
+			private String SeatName;
+			private String Price;
+			private String Service;
+			private String PrintFlag;
 			public String getPrintNo() {
 				return PrintNo;
 			}

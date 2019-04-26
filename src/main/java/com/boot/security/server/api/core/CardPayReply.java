@@ -5,8 +5,8 @@ public class CardPayReply extends BaseReply {
     {
         Id = ID_CardPayReply;
     }
-	public String TradeNo;
-	public Float DeductAmount;
+	private String TradeNo;
+	private Float DeductAmount;
 	public String getTradeNo() {
 		return TradeNo;
 	}

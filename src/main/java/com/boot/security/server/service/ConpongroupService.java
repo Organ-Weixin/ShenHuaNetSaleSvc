@@ -11,8 +11,6 @@ import com.boot.security.server.model.SysUser;
 public interface ConpongroupService {
 	Conpongroup getById(Long id);
 	
-	List<SysUser> getCinemaName();
-	
 	int delete(Long id);
 
     int update(Conpongroup conpongroup);

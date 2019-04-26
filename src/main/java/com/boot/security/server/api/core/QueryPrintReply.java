@@ -7,7 +7,7 @@ public class QueryPrintReply extends BaseReply {
     {
         Id = ID_QueryPrintReply;
     }
-	public QueryPrintReplyOrder Order;
+	private QueryPrintReplyOrder Order;
 	public QueryPrintReplyOrder getOrder() {
 		return Order;
 	}
@@ -15,11 +15,11 @@ public class QueryPrintReply extends BaseReply {
 		Order = order;
 	}
 	public class QueryPrintReplyOrder{
-		public String OrderCode;
-		public String PrintNo;
-		public String VerifyCode;
-		public String Status;
-		public String PrintTime;
+		private String OrderCode;
+		private String PrintNo;
+		private String VerifyCode;
+		private String Status;
+		private String PrintTime;
 		public String getOrderCode() {
 			return OrderCode;
 		}

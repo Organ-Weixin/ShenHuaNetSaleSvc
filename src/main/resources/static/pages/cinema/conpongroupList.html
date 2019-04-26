@@ -10,27 +10,28 @@
 </head>
 <body>
     <div id="show">
+    <input type="text" id="userId" hidden>
+    <input type="text" id="roleId" hidden>
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div>
                 <header style="height: 100%">
                     <div align="left">
-	                    <select name="city" lay-verify="" class="city">
+	                    <select  class="form-control" style="width:180px;float:left" name="city" >
 						  <option value="">衢州</option>
 						  <option value="010">杭州</option>
 						  <option value="021">宁波</option>
 						  <option value="0571">嘉兴</option>
 						</select>  
-						<select name="cinema" lay-verify="" class="cinema">
-						  <option value="">神画新天地影城</option>
-						  <option value="010">神画新天地影城</option>
-						  <option value="021">神画新天地影城</option>
-						  <option value="0571">神画新天地影城</option>
+						<select class="form-control" style="width:180px;float:left;margin-left:1%" name="cinema" id="cinemaName">
 						</select>
-						<div id="add">+新建优惠券</div>
+						<button class="layui-btn layui-btn-sm" id="add">
+                                      <i class="layui-icon">&#xe608;</i> 新建优惠券
+                                    </button>
+						<!-- <div id="add">+新建优惠券</div> -->
 					</div>
                 </header>
                 
-                <div>
+                <div style="margin-top:1%">
                     <div class="widget-body no-padding">
                         <table id="dt-table" class="table table-striped table-bordered table-hover" style="width:100%">
                             <thead>
@@ -38,7 +39,7 @@
                                 </tr>                       
                                 <tr>
 									<th>#</th>
-									<th>影院名称</th>
+									<th>影院编码</th>
 									<th>卡券类型</th>
 									<th>卡券名称</th>
 									<th>有效期</th>
@@ -48,6 +49,7 @@
 									<th>已领取</th>
 									<th>库存</th>
 									<th>已使用</th>
+									<th>优惠券管理</th>
 									<th>操作</th>
                                 </tr>
                             </thead>
@@ -262,19 +264,7 @@
                 <input type="radio" name="shop" value="appoint" class="shop-radio shop-appoint">
                 <span class="apply-font">指定门店</span>
         </form>
-        <div class="appoint-shop">
-            <div class="shop-name">
-                <input type="checkbox" name="cinema">
-                <span>神画新天地影城</span>
-            </div>
-            <div class="shop-name">
-                <input type="checkbox" name="cinema">
-                <span>杭州神画国际影城</span>
-            </div>
-            <div class="shop-name">
-                <input type="checkbox" name="cinema">
-                <span>龙游神画巨幕影城</span>
-            </div>
+        <div class="appoint-shop" id="appoint-shop">
         </div>
     </div>
 </div>
@@ -292,6 +282,52 @@
 <script type="text/javascript" src="../../layui/layui.js"></script>
 <script type="text/javascript" src="../../js/my/permission.js"></script>
 <script type="text/javascript">
+window.onload=function(){
+	$("tbody").on('mouseenter','.span',function(){
+		$(this).css("cursor","pointer");
+		$(this).css("color","#FF8000");
+	})
+	$("tbody").on('mouseleave','.span',function(){
+		$(this).css("color","#0000E3");
+	})
+	$("tbody").on('click','.span',function(){
+		window.location.href="conponsList.html?groupCode="+$(this).attr('title');
+	})
+	//获取影院列表
+	getCinema();
+	function getCinema(){
+		$.ajax({
+			url:'/users/getCinemaName',
+			data:{"id":$("#userId").val(),"roleId":$("#roleId").val()},
+			type:'post',
+			success:function(data){
+				for(var i=0; i<data.length; i++){
+					var option = "<option value="+data[i].cinemaCode+">"+data[i].cinemaName+"</option>";
+					var cinema = "<div class='shop-name'>";
+					cinema = cinema + "<input type='checkbox' name='cinema'>"
+					cinema = cinema + "<span value="+data[i].cinemaCode+">"+data[i].cinemaName+"</span>"
+					cinema = cinema + "</div>";
+					$("#cinemaName").append(option);
+					$("#appoint-shop").append(cinema);
+				}
+			}
+		});
+	}
+}
+
+initUser();
+function initUser(){
+	$.ajax({
+		type : 'get',
+		url : '/users/current',
+		async : false,
+		success : function(data) {
+			$("#userId").val(data.id);
+			$("#roleId").val(data.roleId);
+		}
+	});
+} 
+
 /*创建优惠券  */
 	$(".type-sure").click(function(){
         var val=$('input:radio[name="type"]:checked').val();
@@ -384,7 +420,7 @@
 	        		"url" : "/conpongroups",
 	        		"type":"get",
 	        		"data":function(d){
-	    				d.CinemaCode = $("#cinemaCode").val();
+	    				d.CinemaCode = $("#cinemaName").val();
 	    			}
 	        	},
 	        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
@@ -395,7 +431,6 @@
 							}
 					},
 					{"data" : "cinemaCode", "defaultContent" : "","orderable":false},
-					{"data" : "groupName", "defaultContent" : "","orderable":false},
 					{"data" : "typeName", "defaultContent" : "","orderable":false,
 						"render":function(data, type, row){
 							var conpontype = row['conpongroup'];
@@ -403,23 +438,28 @@
 							return typeName['typeName'];
 						}
 					},
+					{"data" : "groupName", "defaultContent" : "","orderable":false},
+					{"data" : "validityDate", "defaultContent" : "","orderable":false},
+					{"data" : "", "defaultContent" : "0","orderable":false},
 					{"data" : "price", "defaultContent" : "","orderable":false},
 					{"data" : "conponNumber", "defaultContent" : "","orderable":false},
-					{"data" : "validityDate", "defaultContent" : "","orderable":false},
-					{"data" : "used", "defaultContent" : "0","orderable":false},
-					{"data" : "unused", "defaultContent" : "0","orderable":false},
 					{"data" : "received", "defaultContent" : "0","orderable":false},
-					{"data" : "remark", "defaultContent" : "","orderable":false},
+					{"data" : "unused", "defaultContent" : "0","orderable":false},
+					{"data" : "used", "defaultContent" : "0","orderable":false},
+					{"data" : "", "defaultContent" : "","orderable":false,
+						"render":function(data, type, row){
+							var groupCode = row['groupCode'];
+							return '<span style="color:#0000E3" class="span" title="'+groupCode+'">券码管理</span>';
+						}
+					},
 					{ 
 									"data": "", 
 									"defaultContent": "",
 									"orderable":false,
 							        "render": function (data, type, row) {
-	                		           var id = row['id'];
-	                		           var href = "updateConpongroup.html?id=" + id;
-	                                   var edit = buttonEdit(href, "", pers);
+							        	var id = row['id'];
 	                		           var del = buttonDel(id, "", pers);
-	                                   return edit + del;
+	                                   return del;
 	                  	            }		
 								},
 	                
@@ -459,7 +499,10 @@
 	    });
 	}
 	
-	$("#searchBt").click(function(){
+	/* $("#searchBt").click(function(){
+		example.ajax.reload();
+	}); */
+	$("#cinemaName").blur(function(){
 		example.ajax.reload();
 	});
 	init();

@@ -7,10 +7,10 @@ public class CardRegisterReply extends BaseReply {
     {
         Id = ID_CardRegisterReply;
     }
-	public String CardNo;
-	public Float Balance;
-	public Date ExpireDate;
-	public Date CreateTime;
+	private String CardNo;
+	private Float Balance;
+	private Date ExpireDate;
+	private Date CreateTime;
 	public String getCardNo() {
 		return CardNo;
 	}

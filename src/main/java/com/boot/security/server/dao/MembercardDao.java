@@ -33,4 +33,7 @@ public interface MembercardDao {
     int count(@Param("params") Map<String, Object> params);
 
     List<Membercard> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    
+    @Select("select * from membercard t where t.cinemacode = #{cinemacode} and t.mobilephone = #{mobilephone}")
+    List<Membercard> getByCinemaCodeAndMobilePhone(@Param("cinemacode") String cinemacode,@Param("mobilephone") String mobilephone);
 }

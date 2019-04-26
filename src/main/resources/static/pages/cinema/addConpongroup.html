@@ -7,6 +7,8 @@
 <body>
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 	<form class="form-horizontal" onsubmit="return false" id="form">
+	<input type="text" id="id" hidden>
+	<input type="text" id="roleId" hidden>
 		<fieldset>
 			<div class='form-group'>
 				<label class='col-md-2 control-label'>影院编码<font style="color:red">*</font></label>
@@ -90,9 +92,41 @@
 	<script type="text/javascript" src="../../js/common.js"></script>
 	<script type="text/javascript" src="../../layui/layui.js"></script>
 	<script type="text/javascript">
+	window.onload=function(){
+		//获取影院列表
+		getCinema();
+		function getCinema(){
+			$.ajax({
+				url:'/users/getCinemaName',
+				data:{"id":$("#id").val(),"roleId":$("#roleId").val()},
+				type:'post',
+				success:function(data){
+					for(var i=0; i<data.length;i++){
+						var option = "<option value="+data[i].id+">"+data[i].cinemaName+"</option>";
+						$("#cinemaname").append(option);
+					}
+				}
+			});
+		}
+		
+	}
+	
 		layui.use(['layer','laydate'], function(){
 		    var layer = layui.layer;
 		});
+		
+		initData();
+		function initData(){
+			$.ajax({
+				type : 'get',
+				url : '/users/current',
+				async : false,
+				success : function(data) {
+					$("#id").val(data.id);
+					$("#roleId").val(data.roleId);
+				}
+			});
+		} 
 		
 		function add() {
 			$('#form').bootstrapValidator();
@@ -116,20 +150,8 @@
 				}
 			});
 		}
-		//获取影院列表
-		function getCinema(){
-			$.ajax({
-				url:'/conpongroups/getCinemaName',
-				type:'post',
-				success:function(data){
-					for(var i=0; i<data.length;i++){
-						var option = "<option value="+data[i].id+">"+data[i].cinemaName+"</option>";
-						$("#cinemaname").append(option);
-					}
-				}
-			});
-		}
-		getCinema();
+		
+		getConponsType();
 		function getConponsType(){
 			$.ajax({
 				url:'/conpontypes/getConponsType',
@@ -142,7 +164,7 @@
 				}
 			});
 		}
-		getConponsType();
+		
 		$("#addType").click(function(){
 			var select = "<div class = 'col-md-10' style='float:left;width:800px;margin-left:223px;margin-top:10px'>";
 			select = select +"<select class='form-control' style='folat:left'>";

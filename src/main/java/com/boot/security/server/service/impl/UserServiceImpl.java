@@ -78,4 +78,10 @@ public class UserServiceImpl implements UserService {
 
 		return userDto;
 	}
+
+	@Override
+	public List<SysUser> getCinemaName(Long id,Long roleId) {
+		// TODO Auto-generated method stub
+		return userDao.getCinemaName(id,roleId);
+	}
 }

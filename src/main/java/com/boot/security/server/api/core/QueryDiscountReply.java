@@ -5,8 +5,8 @@ public class QueryDiscountReply extends BaseReply {
     {
         Id = ID_QueryDiscountReply;
     }
-	public String CinemaCode;
-	public QueryDiscountReplyCard Card;
+	private String CinemaCode;
+	private QueryDiscountReplyCard Card;
 	public String getCinemaCode() {
 		return CinemaCode;
 	}
@@ -20,9 +20,9 @@ public class QueryDiscountReply extends BaseReply {
 		Card = card;
 	}
 	public class QueryDiscountReplyCard{
-		public String DiscountType;
-		public Float Price;
-		public Float CinemaPayAmount;
+		private String DiscountType;
+		private Float Price;
+		private Float CinemaPayAmount;
 		public String getDiscountType() {
 			return DiscountType;
 		}

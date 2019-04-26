@@ -7,7 +7,7 @@ public class QuerySessionReply extends BaseReply {
     {
         Id = ID_QuerySessionReply;
     }
-	public QuerySessionReplySessions Sessions;
+	private QuerySessionReplySessions Sessions;
 	public QuerySessionReplySessions getSessions() {
 		return Sessions;
 	}
@@ -15,8 +15,8 @@ public class QuerySessionReply extends BaseReply {
 		Sessions = sessions;
 	}
 	public class QuerySessionReplySessions{
-		public String CinemaCode;
-		public List<QuerySessionReplySession> Session;
+		private String CinemaCode;
+		private List<QuerySessionReplySession> Session;
 		public String getCinemaCode() {
 			return CinemaCode;
 		}
@@ -30,13 +30,13 @@ public class QuerySessionReply extends BaseReply {
 			Session = session;
 		}
 		public class QuerySessionReplySession{
-			public String ScreenCode;
-			public String Code;
-			public String FeatureNo;
-			public String StartTime;
-			public String PlaythroughFlag;
-			public QuerySessionReplyFilms Films;
-			public QuerySessionReplyPrice Price;
+			private String ScreenCode;
+			private String Code;
+			private String FeatureNo;
+			private String StartTime;
+			private String PlaythroughFlag;
+			private QuerySessionReplyFilms Films;
+			private QuerySessionReplyPrice Price;
 			public String getScreenCode() {
 				return ScreenCode;
 			}
@@ -90,12 +90,12 @@ public class QuerySessionReply extends BaseReply {
 					Film = film;
 				}
 				public class QuerySessionReplyFilm{
-					public String Code;
-					public String Name;
-					public String Dimensional;
-					public String Duration;
-					public String Sequence;
-					public String Language;
+					private String Code;
+					private String Name;
+					private String Dimensional;
+					private String Duration;
+					private String Sequence;
+					private String Language;
 					public String getCode() {
 						return Code;
 					}

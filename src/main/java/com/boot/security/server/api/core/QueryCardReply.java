@@ -5,8 +5,8 @@ public class QueryCardReply extends BaseReply {
     {
         Id = ID_QueryCardReply;
     }
-	public String CinemaCode;
-	public QueryCardReplyCard Card;
+	private String CinemaCode;
+	private QueryCardReplyCard Card;
 	public String getCinemaCode() {
 		return CinemaCode;
 	}
@@ -20,17 +20,17 @@ public class QueryCardReply extends BaseReply {
 		Card = card;
 	}
 	public class QueryCardReplyCard{
-		public String CardNo;
-		public String CardPassword;
-		public String LevelCode;
-		public String LevelName;
-		public String Score;
-		public String Balance;
-		public String UserName;
-		public String Sex;
-		public String CreditNum;
-		public String Birthday;
-		public String MobilePhone;
+		private String CardNo;
+		private String CardPassword;
+		private String LevelCode;
+		private String LevelName;
+		private String Score;
+		private String Balance;
+		private String UserName;
+		private String Sex;
+		private String CreditNum;
+		private String Birthday;
+		private String MobilePhone;
 		public String getCardNo() {
 			return CardNo;
 		}

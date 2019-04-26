@@ -36,7 +36,7 @@ public class TokenServiceImpl implements TokenService {
 	@Override
 	public Token saveToken(LoginUser loginUser) {
 		String token = UUID.randomUUID().toString();
-
+		System.out.println("登陆token"+token);
 		loginUser.setToken(token);
 		cacheLoginUser(loginUser);
 		// 登陆日志

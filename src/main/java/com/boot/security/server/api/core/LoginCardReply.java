@@ -5,8 +5,8 @@ public class LoginCardReply extends BaseReply {
     {
         Id = ID_LoginCardReply;
     }
-	public String CinemaCode;
-	public LoginCardReplyCard Card;
+	private String CinemaCode;
+	private LoginCardReplyCard Card;
 	public String getCinemaCode() {
 		return CinemaCode;
 	}
@@ -20,11 +20,11 @@ public class LoginCardReply extends BaseReply {
 		Card = card;
 	}
 	public class LoginCardReplyCard{
-		public String CardNo;
-		public String CardPassword;
-		public String MobilePhone;
-		public String LevelCode;
-		public String LevelName;
+		private String CardNo;
+		private String CardPassword;
+		private String MobilePhone;
+		private String LevelCode;
+		private String LevelName;
 		public String getCardNo() {
 			return CardNo;
 		}
