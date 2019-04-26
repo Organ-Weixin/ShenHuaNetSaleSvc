@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.ConponsDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and Id = #{params.Id} 
+			</if>
+			<if test="params.TypeCode != null and params.TypeCode != ''">
+				and TypeCode = #{params.TypeCode} 
+			</if>
+			<if test="params.TypeName != null and params.TypeName != ''">
+				and TypeName = #{params.TypeName} 
+			</if>
+			<if test="params.CinemaCode != null and params.CinemaCode != ''">
+				and CinemaCode = #{params.CinemaCode} 
+			</if>
+			<if test="params.GroupCode != null and params.GroupCode != ''">
+				and GroupCode = #{params.GroupCode} 
+			</if>
+			<if test="params.OpenID != null and params.OpenID != ''">
+				and OpenID = #{params.OpenID} 
+			</if>
+			<if test="params.Price != null and params.Price != ''">
+				and Price = #{params.Price} 
+			</if>
+			<if test="params.ConponCode != null and params.ConponCode != ''">
+				and ConponCode = #{params.ConponCode} 
+			</if>
+			<if test="params.SnackCode != null and params.SnackCode != ''">
+				and SnackCode = #{params.SnackCode} 
+			</if>
+			<if test="params.ValidityDate != null and params.ValidityDate != ''">
+				and ValidityDate = #{params.ValidityDate} 
+			</if>
+			<if test="params.ReceivedDate != null and params.ReceivedDate != ''">
+				and ReceivedDate = #{params.ReceivedDate} 
+			</if>
+			<if test="params.Status != null and params.Status != ''">
+				and Status = #{params.Status} 
+			</if>
+			<if test="params.UseDate != null and params.UseDate != ''">
+				and UseDate = #{params.UseDate} 
+			</if>
+			<if test="params.Created != null and params.Created != ''">
+				and Created = #{params.Created} 
+			</if>
+			<if test="params.Updated != null and params.Updated != ''">
+				and Updated = #{params.Updated} 
+			</if>
+			<if test="params.Deleted != null and params.Deleted != ''">
+				and Deleted = #{params.Deleted} 
+			</if>
+			<if test="params.Title != null and params.Title != ''">
+				and Title = #{params.Title} 
+			</if>
+			<if test="params.Remark != null and params.Remark != ''">
+				and Remark = #{params.Remark} 
+			</if>
+		
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from conpons t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Conpons">
+		select * from conpons t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="update">
+		update conpons t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="TypeCode != null">
+				TypeCode = #{TypeCode}, 
+			</if>
+			<if test="TypeName != null">
+				TypeName = #{TypeName}, 
+			</if>
+			<if test="CinemaCode != null">
+				CinemaCode = #{CinemaCode}, 
+			</if>
+			<if test="GroupCode != null">
+				GroupCode = #{GroupCode}, 
+			</if>
+			<if test="OpenID != null">
+				OpenID = #{OpenID}, 
+			</if>
+			<if test="Price != null">
+				Price = #{Price}, 
+			</if>
+			<if test="ConponCode != null">
+				ConponCode = #{ConponCode}, 
+			</if>
+			<if test="SnackCode != null">
+				SnackCode = #{SnackCode}, 
+			</if>
+			<if test="ValidityDate != null">
+				ValidityDate = #{ValidityDate}, 
+			</if>
+			<if test="ReceivedDate != null">
+				ReceivedDate = #{ReceivedDate}, 
+			</if>
+			<if test="Status != null">
+				Status = #{Status}, 
+			</if>
+			<if test="UseDate != null">
+				UseDate = #{UseDate}, 
+			</if>
+			<if test="Created != null">
+				Created = #{Created}, 
+			</if>
+			<if test="Updated != null">
+				Updated = #{Updated}, 
+			</if>
+			<if test="Deleted != null">
+				Deleted = #{Deleted}, 
+			</if>
+			<if test="Title != null">
+				Title = #{Title}, 
+			</if>
+			<if test="Remark != null">
+				Remark = #{Remark}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+
+</mapper>
