@@ -9,7 +9,6 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -33,8 +32,8 @@ import com.boot.security.server.api.ctms.reply.YkGetSchedulesResult.dataBean.Sch
 import com.boot.security.server.api.ctms.reply.YkGetSeatsResult.DataBean.CinemaBean.SeatPlan;
 import com.boot.security.server.api.ctms.reply.YkGetSeatsResult.DataBean.CinemaBean.SeatPlan.Sections;
 import com.boot.security.server.api.ctms.reply.YkGetSeatsResult.DataBean.CinemaBean.SeatPlan.Sections.Seats;
-import com.boot.security.server.api.ctms.reply.YkQueryPriceResult.DataBean.DataList;
-import com.boot.security.server.api.ctms.reply.YkQueryPriceResult.DataBean.DataList.TicketsPrice;
+import com.boot.security.server.api.ctms.reply.YkQueryPriceResult.DataBean.CardPrice;
+import com.boot.security.server.api.ctms.reply.YkQueryPriceResult.DataBean.CardPrice.TicketsPrice;
 import com.boot.security.server.api.ctms.reply.YkqueryBalanceResult.DataBean.BalanceBean;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
@@ -1052,6 +1051,7 @@ public class YkInterface implements ICTMSInterface {
 					if(memercard != null){	//修改
 						memercard.setBalance(Double.valueOf(balance.getBalance()));
 						memercard.setScore((int) Math.round(Double.valueOf(balance.getAccumulationPoints())));
+						memercard.setUpdated(new Date());
 						memberCardService.Update(memercard);
 						
 					} else {	//新增
@@ -1078,7 +1078,6 @@ public class YkInterface implements ICTMSInterface {
 			reply.ErrorMessage = ykResult.getRetMsg();
 		}
 		
-		System.out.println(new Gson().toJson(reply));
 		return reply;
 	}
 
@@ -1122,6 +1121,7 @@ public class YkInterface implements ICTMSInterface {
 						if(card.getValidateDate()!=null){ //有效期
 							memercard.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").parse(card.getValidateDate()));
 						}
+						memercard.setUpdated(new Date());
 						memberCardService.Update(memercard);
 						
 					} else {	//新增
@@ -1146,7 +1146,7 @@ public class YkInterface implements ICTMSInterface {
 					}
 					reply.setGradeType(card.getGradeType());	//卡类型，充值接口使用
 				}
-				LoginCard(userCinema,  CardNo,  CardPassword);	//调用查询卡余额接口
+				LoginCard(userCinema,  CardNo,  CardPassword);	//调用查询卡余额接口,查余额、积分
 				reply.Status = StatusEnum.Success;
 			} else {
 				reply.Status = StatusEnum.Failure;
@@ -1197,10 +1197,10 @@ public class YkInterface implements ICTMSInterface {
 		
 		if("0".equals(ykResult.getRetCode())){
 			if("SUCCESS".equals(ykResult.getData().getBizCode())){
-				List<DataList> datalist = ykResult.getData().getData();
-				if(datalist != null && datalist.size()>0){
-					for(TicketsPrice ticket:datalist.get(0).getTickets()){
-						if(ticket.getIsCardDiscount()  && "成人票".equals(ticket.getTicketType())){	//暂时取成人票的会员价
+				CardPrice cardPrice = ykResult.getData().getData();
+				if(cardPrice != null){
+					for(TicketsPrice ticket:cardPrice.getTickets()){
+						if("成人票".equals(ticket.getTicketType())){	//暂时取成人票的会员价
 							reply.setCinemaCode(userCinema.getCinemaCode());
 							reply.setPrice(Float.valueOf(ticket.getPrice()));
 						}
@@ -1387,6 +1387,10 @@ public class YkInterface implements ICTMSInterface {
 			
 			if("0".equals(ykResult.getRetCode())){
 				if("SUCCESS".equals(ykResult.getData().getBizCode())){
+					Membercard memercard = memberCardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
+					memercard.setBalance(Double.valueOf(ykResult.getData().getData().getBalance()));
+					memercard.setUpdated(new Date());
+					memberCardService.Update(memercard);
 					
 					reply.Status = StatusEnum.Success;
 				} else {
@@ -1404,7 +1408,7 @@ public class YkInterface implements ICTMSInterface {
 			reply.ErrorCode = "-1";
 			reply.ErrorMessage = "等级类型不是储值卡或次数卡的会员卡，不能充值！";
 		}
-		System.out.println(new Gson().toJson(reply));
+		
 		return reply;
 	}
 
@@ -1439,6 +1443,8 @@ public class YkInterface implements ICTMSInterface {
 					cardlevel.setLevelCode(card.getGradeId());
 					cardlevel.setLevelName(card.getGradeDesc());
 					cardlevel.setCinemaCode(userCinema.getCinemaCode());
+					cardlevel.setCardCostFee(Double.valueOf(card.getCardCostFee()));
+					cardlevel.setMemberFee(Double.valueOf(card.getMemberFee()));
 					newcardlevel.add(cardlevel);
 				}
 				//删除旧的
@@ -1470,14 +1476,15 @@ public class YkInterface implements ICTMSInterface {
 		CTMSCardRegisterReply reply = new CTMSCardRegisterReply();
 		
 		String cardPassword = MD5AESPassword(CardPassword,userCinema.getDefaultPassword());	//使用加密的会员卡 的密码
+		Membercardlevel cardlevel =  memberCardLevelService.getByCinemaCodeAndLevelCode(userCinema.getCinemaCode(), LevelCode);
 		JSONObject  input=new JSONObject();
 		input.put("cinemaLinkId", userCinema.getCinemaId());
 		input.put("gradeId", LevelCode);
 		input.put("outTradeNo", new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date())); //该值全局唯一,长度必须大于 等于 16 位且小于等 于 32 位 
 		input.put("cardPassword", cardPassword);
-		input.put("cardCostFee", "10.00");	//工本费,不知道先默认传0
-		input.put("memberFee", "0.00");		//会费,不知道先默认传0
-		input.put("firstRechargeAmount", InitialAmount);
+		input.put("cardCostFee", cardlevel.getCardCostFee().toString());
+		input.put("memberFee", cardlevel.getMemberFee().toString());
+		input.put("firstRechargeAmount", InitialAmount);//该接口的“首次充值”功能当前版本还没实现，所以接口的 firstRechargeAmount 参数在当前版本请设置为 0。
 		input.put("mobile", MobilePhone);
 		input.put("cardUserName", CardUserName);
 		input.put("idCard", IDNumber);

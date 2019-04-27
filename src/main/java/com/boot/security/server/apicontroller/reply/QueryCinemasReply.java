@@ -35,7 +35,7 @@ public class QueryCinemasReply extends BaseReply {
 		}
 
 		public static class CinemasReply {
-			private Integer CinemaId;
+			private Long CinemaId;
 			private String CinemaCode;
 			private String CinemaName;
 			private String CinemaType;
@@ -50,10 +50,10 @@ public class QueryCinemasReply extends BaseReply {
 			private String CinemaPhone;
 			private String IsSnackDistribution;
 			
-			public Integer getCinemaId() {
+			public Long getCinemaId() {
 				return CinemaId;
 			}
-			public void setCinemaId(Integer cinemaId) {
+			public void setCinemaId(Long cinemaId) {
 				CinemaId = cinemaId;
 			}
 			public String getCinemaCode() {

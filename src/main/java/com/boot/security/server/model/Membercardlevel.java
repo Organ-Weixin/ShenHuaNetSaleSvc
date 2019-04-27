@@ -8,6 +8,8 @@ public class Membercardlevel extends BaseEntity<Long> {
 	private String CinemaCode;
 	private String LevelCode;
 	private String LevelName;
+	private Double CardCostFee;
+	private Double MemberFee;
 
 	public Long getId() {
 		return Id;
@@ -33,5 +35,17 @@ public class Membercardlevel extends BaseEntity<Long> {
 	public void setLevelName(String LevelName) {
 		this.LevelName = LevelName;
 	}
-
+	public Double getCardCostFee() {
+		return CardCostFee;
+	}
+	public void setCardCostFee(Double cardCostFee) {
+		CardCostFee = cardCostFee;
+	}
+	public Double getMemberFee() {
+		return MemberFee;
+	}
+	public void setMemberFee(Double memberFee) {
+		MemberFee = memberFee;
+	}
+	
 }

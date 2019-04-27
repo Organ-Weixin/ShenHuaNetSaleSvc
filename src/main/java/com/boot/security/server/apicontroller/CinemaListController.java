@@ -14,8 +14,11 @@ import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.apicontroller.reply.QueryCinemasReply.QueryCinemasBean;
 import com.boot.security.server.apicontroller.reply.QueryCinemasReply.QueryCinemasBean.CinemasReply;
 import com.boot.security.server.model.Cinema;
+import com.boot.security.server.model.CinemaTypeEnum;
+import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
+import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 
 import io.swagger.annotations.ApiOperation;
@@ -29,6 +32,8 @@ public class CinemaListController {
 	
 	@Autowired
 	private CinemaServiceImpl _cinemaService;
+	@Autowired
+	private UserCinemaViewServiceImpl userCinemaViewService;
 
 	@GetMapping("/QueryCinemas/{UserName}/{Password}/{AppId}/{CurrentPage}/{PageSize}")
 	@ApiOperation(value = "获取影院")
@@ -56,8 +61,12 @@ public class CinemaListController {
     	   List<CinemasReply> cinemas = new ArrayList<CinemasReply>();
     	   for(Cinema cinema : cinemalist){
     		   CinemasReply cinemareply = new CinemasReply();
+    		   cinemareply.setCinemaId(cinema.getId());
     		   cinemareply.setCinemaCode(cinema.getCode());
     		   cinemareply.setCinemaName(cinema.getName());
+    		   
+    		   Usercinemaview usercinema = userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(), cinema.getCode());
+    		   cinemareply.setCinemaType(usercinema==null?"":CinemaTypeEnum.getNameByCode(usercinema.getCinemaType()));
     		   cinemareply.setAddress(cinema.getAddress());
     		   cinemareply.setStatus(cinema.getIsOpen()==1?"开通":"关闭");
     		   cinemas.add(cinemareply);

@@ -30,4 +30,12 @@ public enum CinemaTypeEnum {
 		TypeCode = typeCode;
 	}
 	
+	public static String getNameByCode(int TypeCode){
+		for(CinemaTypeEnum cinemaType : CinemaTypeEnum.values()){
+			if(TypeCode == cinemaType.getTypeCode()){
+				return cinemaType.getTypeName();
+			}
+		}
+		return null;
+	}
 }

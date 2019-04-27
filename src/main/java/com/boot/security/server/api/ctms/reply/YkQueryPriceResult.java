@@ -49,7 +49,7 @@ public class YkQueryPriceResult {
 	public static class DataBean {
 		private String bizCode;
 		private String bizMsg;
-		private List<DataList> data;
+		private CardPrice data;
 		
 		public String getBizCode() {
 			return bizCode;
@@ -63,14 +63,14 @@ public class YkQueryPriceResult {
 		public void setBizMsg(String bizMsg) {
 			this.bizMsg = bizMsg;
 		}
-		public List<DataList> getData() {
+		public CardPrice getData() {
 			return data;
 		}
-		public void setData(List<DataList> data) {
+		public void setData(CardPrice data) {
 			this.data = data;
 		}
 
-		public static class DataList {
+		public static class CardPrice {
 			private Integer calculatePerTicketTimes;
 			private List<TicketsPrice> tickets;
 			

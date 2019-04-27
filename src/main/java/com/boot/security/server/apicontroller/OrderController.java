@@ -9,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.security.server.api.core.LockSeatReply;
@@ -56,26 +59,25 @@ public class OrderController {
 	@Autowired
 	private OrderServiceImpl _orderService;
 	
-	@PostMapping("/LockSeat")
+//	@PostMapping("/LockSeat")
+	@RequestMapping(value="/LockSeat",method = RequestMethod.POST)
 	@ApiOperation(value = "锁座")
 	public LockSeatReply LockSeat(@RequestBody NetSaleQueryJson QueryJson){
 		try {
-			System.out.println("+++++"+new Gson().toJson(QueryJson));
-			System.out.println(QueryJson.getUserName());
-			System.out.println(QueryJson.getQueryXml());
 			LockSeatReply lockSeatReply =NetSaleSvcCore.getInstance().LockSeat(QueryJson.getUserName(),QueryJson.getPassword(),QueryJson.getQueryXml());
-			System.out.println("+++++"+new Gson().toJson(lockSeatReply));
 			//锁座时新增订单需要传入OpenID,之后修改订单就不需要再操作
 			if(lockSeatReply.Status.equals("Success")){
 				Orders orderbase=_orderService.getOrderBaseByLockOrderCode(lockSeatReply.getOrder().getOrderCode());
 				orderbase.setOpenID(QueryJson.getOpenID());
 				_orderService.UpdateOrderBaseInfo(orderbase);
 			}
-			System.out.println("-------------"+new Gson().toJson(lockSeatReply));
+			
 			return lockSeatReply;
 		} catch (JsonSyntaxException e) {
-			 return new LockSeatReply();
+			
+			return new LockSeatReply();
 		} catch (Exception e) {
+			
 			return new LockSeatReply();
 		}
 	}
@@ -85,7 +87,7 @@ public class OrderController {
 	public ReleaseSeatReply ReleaseSeat(@RequestBody NetSaleQueryJson QueryJson){
 		try {
 			ReleaseSeatReply releaseSeatReply = NetSaleSvcCore.getInstance().ReleaseSeat(QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getQueryXml());
-			System.out.println("解锁成功+++++"+new Gson().toJson(releaseSeatReply));
+//			System.out.println("解锁成功+++++"+new Gson().toJson(releaseSeatReply));
 			return releaseSeatReply;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -98,7 +100,7 @@ public class OrderController {
 	public SubmitOrderReply SubmitOrder(@RequestBody NetSaleQueryJson QueryJson){
 		try {
 			SubmitOrderReply submitOrderReply = NetSaleSvcCore.getInstance().SubmitOrder(QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getQueryXml());
-			System.out.println("提交成功+++++"+new Gson().toJson(submitOrderReply));
+//			System.out.println("提交成功+++++"+new Gson().toJson(submitOrderReply));
 			return submitOrderReply;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -111,7 +113,7 @@ public class OrderController {
 	public QueryOrderReply QueryOrder(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String OrderCode){
 		QueryOrderReply orderReply = NetSaleSvcCore.getInstance().QueryOrder(UserName, Password, CinemaCode, OrderCode);
-		System.out.println("查询订单----"+new Gson().toJson(orderReply));
+//		System.out.println("查询订单----"+new Gson().toJson(orderReply));
 		return orderReply;
 	}
 	
@@ -188,7 +190,7 @@ public class OrderController {
 	public QueryTicketReply QueryTicket(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String PrintNo,@PathVariable String VerifyCode){
 		QueryTicketReply reply = NetSaleSvcCore.getInstance().QueryTicket(UserName, Password, CinemaCode, PrintNo, VerifyCode);
-		System.out.println("查询影片----"+new Gson().toJson(reply));
+//		System.out.println("查询影片----"+new Gson().toJson(reply));
 		return reply;
 	}
 	
@@ -197,7 +199,7 @@ public class OrderController {
 	public QueryPrintReply QueryPrint(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String PrintNo,@PathVariable String VerifyCode){
 		QueryPrintReply reply = NetSaleSvcCore.getInstance().QueryPrint(UserName, Password, CinemaCode, PrintNo, VerifyCode);
-		System.out.println("查询出票状态----"+new Gson().toJson(reply));
+//		System.out.println("查询出票状态----"+new Gson().toJson(reply));
 		return reply;
 	}
 	
@@ -206,7 +208,7 @@ public class OrderController {
 	public RefundTicketReply RefundTicket(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String PrintNo,@PathVariable String VerifyCode){
 		RefundTicketReply reply = NetSaleSvcCore.getInstance().RefundTicket(UserName, Password, CinemaCode, PrintNo, VerifyCode);
-		System.out.println("退票----"+new Gson().toJson(reply));
+//		System.out.println("退票----"+new Gson().toJson(reply));
 		return reply;
 	}
 	
@@ -271,7 +273,12 @@ public class OrderController {
 				orderinfo.setSubmitOrderCode(order.getSubmitOrderCode());
 				orderinfo.setPrintNo(order.getPrintNo());
 				orderinfo.setVerifyCode(order.getVerifyCode());
-				orderinfo.setPrintStatus(order.getPrintStatus()==1?"Yes":"No");
+				if(order.getPrintStatus()==null || order.getPrintStatus()==0){
+					orderinfo.setPrintStatus("No");
+				} else {
+					orderinfo.setPrintStatus("Yes");
+				}
+				
 				orderinfo.setPrintTime(order.getPrintTime()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getPrintTime()));
 				orderinfo.setRefundTime(order.getRefundTime()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getRefundTime()));
 				orderinfoList.add(orderinfo);

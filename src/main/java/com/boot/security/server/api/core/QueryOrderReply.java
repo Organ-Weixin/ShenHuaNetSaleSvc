@@ -110,7 +110,7 @@ public class QueryOrderReply extends BaseReply {
 			Seats = seats;
 		}
 		public class QueryOrderReplyFilms{
-			public List<QueryOrderReplyFilm> Film;
+			private List<QueryOrderReplyFilm> Film;
 
 			public List<QueryOrderReplyFilm> getFilm() {
 				return Film;
@@ -120,10 +120,10 @@ public class QueryOrderReply extends BaseReply {
 				Film = film;
 			}
 			public class QueryOrderReplyFilm{
-				public String Code;
-				public String Name;
-				public String Duration;
-				public String Sequence;
+				private String Code;
+				private String Name;
+				private String Duration;
+				private String Sequence;
 				public String getCode() {
 					return Code;
 				}
@@ -153,7 +153,7 @@ public class QueryOrderReply extends BaseReply {
 			
 		}
 		public class QueryOrderReplySeats{
-			public List<QueryOrderReplySeat> Seat;
+			private List<QueryOrderReplySeat> Seat;
 
 			public List<QueryOrderReplySeat> getSeat() {
 				return Seat;
@@ -163,14 +163,14 @@ public class QueryOrderReply extends BaseReply {
 				Seat = seat;
 			}
 			public class QueryOrderReplySeat{
-		        public String SeatCode;
-		        public String RowNum;
-		        public String ColumnNum;
-		        public String FilmTicketCode;
-		        public String PrintStatus;
-		        public String PrintTime;
-		        public String RefundStatus;
-		        public String RefundTime;
+				private String SeatCode;
+				private String RowNum;
+				private String ColumnNum;
+		        private String FilmTicketCode;
+		        private String PrintStatus;
+		        private String PrintTime;
+		        private String RefundStatus;
+		        private String RefundTime;
 				public String getSeatCode() {
 					return SeatCode;
 				}
