@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.boot.security.server.dao.ConpongroupDao;
 import com.boot.security.server.model.Conpongroup;
-import com.boot.security.server.model.SysUser;
 import com.boot.security.server.service.ConpongroupService;
 @Service
 public class ConpongroupServiceImpl implements ConpongroupService{

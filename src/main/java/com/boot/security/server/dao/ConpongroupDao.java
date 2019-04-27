@@ -11,7 +11,6 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.boot.security.server.model.Conpongroup;
-import com.boot.security.server.model.SysUser;
 
 @Mapper
 public interface ConpongroupDao {

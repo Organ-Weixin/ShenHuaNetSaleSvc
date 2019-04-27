@@ -10,13 +10,9 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import com.boot.security.server.api.core.LockSeatReply.LockSeatReplyOrder.LockSeatReplySeat;
-import com.boot.security.server.api.core.LoginCardReply.LoginCardReplyCard;
-import com.boot.security.server.api.core.QueryCardLevelReply.QueryCardLevelReplyLevels;
 import com.boot.security.server.api.core.QueryCardLevelReply.QueryCardLevelReplyLevels.QueryCardLevelReplyLevel;
-import com.boot.security.server.api.core.QueryCardReply.QueryCardReplyCard;
 import com.boot.security.server.api.core.QueryCardTradeRecordReply.QueryCardTradeRecordReplyTradeRecord.QueryCardTradeRecordReplyRecord;
 import com.boot.security.server.api.core.QueryCinemaListReply.QueryCinemaListReplyCinemas.QueryCinemaListReplyCinema;
 import com.boot.security.server.api.core.QueryCinemaReply.QueryCinemaReplyCinema.QueryCinemaReplyScreen;
@@ -55,7 +51,6 @@ import com.boot.security.server.api.ctms.reply.CTMSQueryTicketReply;
 import com.boot.security.server.api.ctms.reply.CTMSRefundTicketReply;
 import com.boot.security.server.api.ctms.reply.CTMSReleaseSeatReply;
 import com.boot.security.server.api.ctms.reply.CTMSSubmitOrderReply;
-import com.boot.security.server.api.ctms.reply.CxInterface;
 import com.boot.security.server.api.ctms.reply.ICTMSInterface;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
@@ -74,7 +69,6 @@ import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
-import com.boot.security.server.model.YesOrNoEnum;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
@@ -85,8 +79,6 @@ import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.JaxbXmlUtil;
 import com.boot.security.server.utils.SpringUtil;
-import com.boot.security.server.utils.XmlToJsonUtil;
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 public class NetSaleSvcCore { 

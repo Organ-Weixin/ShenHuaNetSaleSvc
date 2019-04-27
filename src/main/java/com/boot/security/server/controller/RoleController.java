@@ -1,8 +1,6 @@
 package com.boot.security.server.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,12 +10,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.security.server.annotation.LogAnnotation;
 import com.boot.security.server.dao.RoleDao;
-import com.boot.security.server.dao.UserDao;
 import com.boot.security.server.dto.RoleDto;
 import com.boot.security.server.model.Role;
 import com.boot.security.server.page.table.PageTableHandler;

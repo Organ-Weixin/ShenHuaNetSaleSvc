@@ -101,7 +101,7 @@ public class MemberController {
 	}
 	
 	@GetMapping("/CardCharge/{Username}/{Password}/{CinemaCode}/{CardNo}/{CardPassword}/{ChargeType}/{ChargeAmount}")
-	@ApiOperation(value = "会员卡支付")
+	@ApiOperation(value = "会员卡充值")
 	public CardChargeReply CardCharge(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String ChargeType,@PathVariable String ChargeAmount){
 		return new NetSaleSvcCore().CardCharge(Username, Password, CinemaCode, CardNo, CardPassword, ChargeType, ChargeAmount);

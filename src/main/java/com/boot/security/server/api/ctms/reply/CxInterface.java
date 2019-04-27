@@ -23,7 +23,6 @@ import com.boot.security.server.api.ctms.reply.CxQueryPlanSeatResult.ResBean.Pla
 import com.boot.security.server.api.ctms.reply.CxQuerySeatInfoResult.ResBean.ScreenSitesBean.ScreenSiteBean;
 import com.boot.security.server.api.ctms.reply.CxQueryTicketInfoResult.ResBean.TicketsBean.TicketBean;
 import com.boot.security.server.api.ctms.reply.CxSubmitOrderResult.ResBean.SeatInfosBean.SeatInfoBean;
-import com.boot.security.server.api.ctms.reply.CxApplyFetchTicketResult.ResBean.TicketsBean;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Cinema;
@@ -46,8 +45,6 @@ import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.utils.MD5Util;
 import com.boot.security.server.utils.SpringUtil;
 import com.oristartech.tsp.ws.soap.WebService;
-
-import ch.qos.logback.core.net.SyslogOutputStream;
 
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
@@ -538,13 +535,19 @@ public class CxInterface implements ICTMSInterface {
 			// 修改会员卡信息
 			Membercard membercard = _membercardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
 			if (membercard != null) {
-				membercard.setScore(Integer.parseInt(cxReply.getQueryMemberInfoResult().getIntegralBalance()));
-				membercard.setBalance(Double.parseDouble(cxReply.getQueryMemberInfoResult().getBasicBalance()));
+				if(cxReply.getQueryMemberInfoResult().getIntegralBalance()!=null){
+					membercard.setScore(Integer.parseInt(cxReply.getQueryMemberInfoResult().getIntegralBalance()));
+				}
+				if(cxReply.getQueryMemberInfoResult().getBasicBalance()!=null){
+					membercard.setBalance(Double.parseDouble(cxReply.getQueryMemberInfoResult().getBasicBalance()));
+				}
 				membercard.setUserName(cxReply.getQueryMemberInfoResult().getUserName());
 				membercard.setSex(cxReply.getQueryMemberInfoResult().getSex());
 				membercard.setCreditNum(cxReply.getQueryMemberInfoResult().getCreditNum());
-				membercard.setBirthday(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-						.parse(cxReply.getQueryMemberInfoResult().getBirthday()));
+				if(cxReply.getQueryMemberInfoResult().getBirthday()!=null){
+					membercard.setBirthday(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+							.parse(cxReply.getQueryMemberInfoResult().getBirthday()));
+				}
 				// 更新
 				_membercardService.Update(membercard);
 			} else {

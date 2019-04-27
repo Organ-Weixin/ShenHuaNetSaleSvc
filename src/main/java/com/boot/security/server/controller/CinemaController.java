@@ -40,8 +40,6 @@ public class CinemaController {
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取")
     public Cinema get(@PathVariable Long id) {
-    	Cinema c = new Cinema();
-    	c = cinemaDao.getById(id);
     	return cinemaDao.getById(id);
     }
     

@@ -51,7 +51,7 @@ public class LockSeatReply extends BaseReply {
 			Seat = seat;
 		}
 		public class LockSeatReplySeat{
-			public String SeatCode;
+			private String SeatCode;
 
 			public String getSeatCode() {
 				return SeatCode;

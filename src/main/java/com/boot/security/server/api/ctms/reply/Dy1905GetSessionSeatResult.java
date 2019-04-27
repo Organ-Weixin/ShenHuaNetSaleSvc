@@ -2,7 +2,6 @@ package com.boot.security.server.api.ctms.reply;
 
 import java.util.List;
 
-import com.boot.security.server.model.SessionSeatStatusEnum;
 
 public class Dy1905GetSessionSeatResult {
 	private ResBean GetSessionSeatResult;

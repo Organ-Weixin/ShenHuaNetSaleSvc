@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.boot.security.server.dao.UsercinemaviewDao;
-import com.boot.security.server.dao.UserinfoDao;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.service.UserCinemaViewService;
 

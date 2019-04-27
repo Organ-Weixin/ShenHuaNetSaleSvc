@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boot.security.server.annotation.LogAnnotation;
 import com.boot.security.server.dao.UserDao;
 import com.boot.security.server.dto.UserDto;
-import com.boot.security.server.model.Role;
 import com.boot.security.server.model.SysUser;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;

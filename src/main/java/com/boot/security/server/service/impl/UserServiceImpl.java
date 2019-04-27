@@ -12,7 +12,6 @@ import org.springframework.util.CollectionUtils;
 
 import com.boot.security.server.dao.UserDao;
 import com.boot.security.server.dto.UserDto;
-import com.boot.security.server.model.Role;
 import com.boot.security.server.model.SysUser;
 import com.boot.security.server.model.SysUser.Status;
 import com.boot.security.server.service.UserService;

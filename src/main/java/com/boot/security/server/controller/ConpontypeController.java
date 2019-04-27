@@ -18,7 +18,6 @@ import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.service.impl.ConpontypeServiceImpl;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
-import com.boot.security.server.dao.ConpontypeDao;
 import com.boot.security.server.model.Conpontype;
 
 import io.swagger.annotations.ApiOperation;

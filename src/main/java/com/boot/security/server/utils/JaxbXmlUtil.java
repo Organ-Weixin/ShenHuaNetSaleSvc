@@ -6,17 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import com.boot.security.server.api.core.LockSeatQueryXml;
 import com.boot.security.server.api.core.LockSeatQueryXml.LockSeatQueryXmlOrder;
 import com.boot.security.server.api.core.LockSeatQueryXml.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat;
-import com.boot.security.server.api.ctms.reply.CxApplyFetchTicketParameter;
-import com.boot.security.server.api.ctms.reply.CxApplyFetchTicketParameter.CxApplyFetchTicketXmlTickets;
-import com.boot.security.server.api.ctms.reply.CxApplyFetchTicketParameter.CxApplyFetchTicketXmlTickets.CxApplyFetchTicketXmlTicket;
-import com.boot.security.server.model.Role;
 
 /**
  * Jaxb工具类 xml和java类相互转换

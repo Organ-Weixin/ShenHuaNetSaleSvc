@@ -1,6 +1,5 @@
 package com.boot.security.server.api.ctms.reply;
 
-import java.util.Date;
 
 public class Dy1905MakeMemberCardResult {
 	private ResBean MakeMemberCardResult;

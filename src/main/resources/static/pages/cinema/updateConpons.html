@@ -20,7 +20,7 @@
 				<label class='col-md-2 control-label'>影院编码<font style="color:red">*</font></label>
 				<div class='col-md-10'>
 					 <select class="form-control" id="cinemaName" name="cinemaCode">
-					 	<option>请选择...</option>
+					 	<option value="">请选择...</option>
 					 </select>
 				</div>
 			</div>
@@ -28,18 +28,19 @@
 				<label class='col-md-2 control-label'>上级优惠卷类型</label>
 				<div class='col-md-10'>
 					<select class="form-control" id="typename" name="typeCode">
-					 	<option>请选择...</option>
+					 	<option value="">请选择...</option>
 					 </select>
 				</div>
 			</div>
 			<div class='form-group' id="types">
+				<input type="text"  name="snackCode" id="snackList">
 				<label class='col-md-2 control-label'>影片/套餐</label>
 				<div class='col-md-10' style="float:left;width:800px;">
-					<select class="form-control" id="Snacks" name="snackCode">
-						<option>请选择...</option>
+					<select class="form-control" id="Snacks">
+						<option value="">请选择...</option>
 					 </select>
 				</div>
-				<button style="margin-left:20px" id="addType">+</button>
+				<button style="margin-left:20px;margin-top:3px" id="addType">+</button>
 			</div>
 			<div class='form-group'>
 				<label class='col-md-2 control-label'>优惠券名称</label>
@@ -87,6 +88,7 @@
 			<div class="form-actions">
 				<div class="row" align="center">
 					<div class="col-md-12">
+						<button id="">AAA</button>
 					    <button class="btn btn-primary" id="goback">返回</button>
 						<button class="btn btn-primary" type="submit" onclick="update()">
 							<i class="fa fa-save"></i> 保存
@@ -94,7 +96,7 @@
 					</div>
 				</div>
 			</div>
-
+	
 		</fieldset>
 	</form>
 </div>
@@ -154,7 +156,14 @@
 		}
 		
 		$("#StatusSelect").val($("#Status").val());
+		
+		/* $("#snackList").val($("#SnackCode").val());
+		$("#types").on('blur','.col-md-10 select',function(){
+			$("#snackList").val($("#snackList").val()+","+$(this).val());
+		}); */
+		
 	}
+	
 	
 		layui.use(['layer','laydate'], function(){
 		    var layer = layui.layer;
@@ -203,13 +212,19 @@
 			});
 		}
 		 $("#addType").click(function(){
-			var select = "<div class = 'col-md-10' style='float:left;width:800px;margin-left:223px;margin-top:10px'>";
-			select = select +"<select class='form-control' style='folat:left'>";
+			var select = "<div class = 'col-md-10' style='float:left;width:1000px;margin-left:231px;margin-top:10px'>";
+			select = select +"<select class='form-control' style='width:775px;float:left;'>";
 			select = select +""+$("#Snacks").html()+"";
 			select = select +"</select>";
+			select = select +"<button style='margin-left:35px;margin-top:5px;float:left' class='delType'>x</button>";
 			select = select +"</div>";
 			$("#types").append(select);
 		}); 
+		
+		 $("#types").on('click','.col-md-10 .delType',function(){
+			 $(this).parent().remove();
+		 });
+		 
 		
 		initData();
 		

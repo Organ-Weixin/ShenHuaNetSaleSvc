@@ -3,7 +3,6 @@ package com.boot.security.server.service;
 import java.util.List;
 
 import com.boot.security.server.dto.UserDto;
-import com.boot.security.server.model.Role;
 import com.boot.security.server.model.SysUser;
 
 public interface UserService {

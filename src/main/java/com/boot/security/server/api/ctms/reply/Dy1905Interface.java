@@ -1,6 +1,5 @@
 package com.boot.security.server.api.ctms.reply;
 
-import java.lang.management.LockInfo;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -191,7 +190,7 @@ public class Dy1905Interface implements ICTMSInterface {
 		if(Dy1905Reply.getGetFeatureFilmResult().getResultCode().equals("0")){
 			QuerySession(userCinema, StartDate, EndDate);
 			List<Filminfo> newFilm = new ArrayList<Filminfo>();
-			Map<String,Object> params = new HashMap();
+			Map<String,Object> params = new HashMap<String,Object>();
 			params.put("CCode", userCinema.getCinemaCode());
 			if(StartDate!=null){
 				params.put("StartTime", new SimpleDateFormat("yyyy-MM-dd").format(StartDate));
@@ -241,7 +240,7 @@ public class Dy1905Interface implements ICTMSInterface {
 			throws Exception {
 		CTMSQuerySessionReply reply = new CTMSQuerySessionReply();
 		String pVerifyInfo=MD5Util.MD5Encode(userCinema.getDefaultUserName()+userCinema.getCinemaId()+userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
-		Map<String,String> param = new LinkedHashMap();
+		Map<String,String> param = new LinkedHashMap<String,String>();
 		param.put("pAppCode",userCinema.getDefaultUserName());
 		param.put("pCinemaID",userCinema.getCinemaId());
 		param.put("pVerifyInfo",pVerifyInfo);
@@ -251,7 +250,7 @@ public class Dy1905Interface implements ICTMSInterface {
 		if(Dy1905Reply.getGetCinemaSessionResult().getResultCode().equals("0")){
 			List<SessionBean> dy1905Sessions = Dy1905Reply.getGetCinemaSessionResult().getSessions().getSession();
 			if(dy1905Sessions.size()>0){
-				List<Sessioninfo> newSessions = new ArrayList();
+				List<Sessioninfo> newSessions = new ArrayList<Sessioninfo>();
 				for (SessionBean cinemaplan : dy1905Sessions) {
 					Screeninfo screen = screeninfoService.getByScreenId(userCinema.getCinemaCode(), cinemaplan.getScreenNo());
 					Sessioninfo session = new Sessioninfo();// 先创建实例
@@ -262,7 +261,7 @@ public class Dy1905Interface implements ICTMSInterface {
 					newSessions.add(session);
 				}
 			//删除旧的放映信息
-			Map<String,Object> params = new HashMap();
+			Map<String,Object> params = new HashMap<String,Object>();
 			params.put("CCode", userCinema.getCinemaCode());
 			params.put("UserId", userCinema.getUserId());
 			if(StartDate!=null){
@@ -451,12 +450,12 @@ public class Dy1905Interface implements ICTMSInterface {
 				}
 				break;
 			case "Illegal":
-				Dy1905SessionSeatList = new ArrayList();
+				Dy1905SessionSeatList = new ArrayList<SessionSeatBean>();
 				reply.Status = StatusEnum.Failure;
 				break;	
 				//非法座位状态  ：0 -->其他状态码
 			default:
-				Dy1905SessionSeatList = new ArrayList();
+				Dy1905SessionSeatList = new ArrayList<SessionSeatBean>();
 				Status = SessionSeatStatusEnum.Illegal;
 				reply.Status = StatusEnum.Failure;
 				break;	
@@ -512,7 +511,6 @@ public class Dy1905Interface implements ICTMSInterface {
 				.registerTypeAdapter(Integer.class, new IntegerDefaultAdapter())
 				.registerTypeAdapter(Double.class, new DoubleDefaultAdapter()).create();
 		Dy1905LockSeatCustomResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(checkSeatStateResult,"RealCheckSeatStateResult"),Dy1905LockSeatCustomResult.class);
-		List<LockInfo> newLockSeat = new ArrayList();
 		if(Dy1905Reply.getRealCheckSeatStateResult().getResultCode().equals("0")){
 			List<SeatInfoBean> dy1905LockSeat = Dy1905Reply.getRealCheckSeatStateResult().getSeatInfos().getSeatInfo();
 			order.getOrderBaseInfo().setLockOrderCode(Dy1905Reply.getRealCheckSeatStateResult().getOrderNo());
@@ -975,7 +973,7 @@ public class Dy1905Interface implements ICTMSInterface {
 			Gson gson = new Gson();
 			Dy1905MemberTypeListResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(MemberTypeListResult,"MemberTypeListResult"), Dy1905MemberTypeListResult.class);
 			List<LevelBean> Dy1905Level = Dy1905Reply.getMemberTypeListResult().getTypes().getType().get(0).getLevels().getLevel();
-			List<Membercardlevel> newmembercardlevelList = new ArrayList();
+			List<Membercardlevel> newmembercardlevelList = new ArrayList<Membercardlevel>();
 			if(Dy1905Reply.getMemberTypeListResult().getResultCode().equals("0")){
 				for(LevelBean Level :Dy1905Level){
 					Membercardlevel membercardlevel = new Membercardlevel();
@@ -1079,7 +1077,7 @@ public class Dy1905Interface implements ICTMSInterface {
 			System.out.println(CardsListResult);
 			Gson gson = new Gson();
 			Dy1905CardsListResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(CardsListResult,"CardsListResult"), Dy1905CardsListResult.class);
-			if(Dy1905Reply.getCardsListResult().getResultCode().equals("0")){
+			if(Dy1905Reply.getCardsListResult().getResultCode().equals("0")&&Dy1905Reply.getCardsListResult().getCards()!=null){
 				List<String> Cards = Dy1905Reply.getCardsListResult().getCards().getCardNo();
 				reply.setData(reply.new GetMemberCardByMobileReplyMemberCard());
 				reply.getData().setCards(reply.getData().new GetMemberCardByMobileReplyCard());

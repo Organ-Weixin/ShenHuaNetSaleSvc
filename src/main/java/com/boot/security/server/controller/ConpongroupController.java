@@ -1,9 +1,7 @@
 package com.boot.security.server.controller;
 
-import java.util.Date;
 import java.util.List;
 
-import org.apache.catalina.connector.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +18,7 @@ import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.service.impl.ConpongroupServiceImpl;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
-import com.boot.security.server.dao.ConpongroupDao;
 import com.boot.security.server.model.Conpongroup;
-import com.boot.security.server.model.SysUser;
 
 import io.swagger.annotations.ApiOperation;
 

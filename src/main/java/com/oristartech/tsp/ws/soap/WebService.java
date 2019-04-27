@@ -60,6 +60,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.connection.ReactiveStringCommands.SetRangeCommand;
 
 import javax.annotation.Resource;
 import java.awt.*;
@@ -674,15 +675,16 @@ public class WebService {
 	//region 查询会员卡
 	public static CxQueryMemberInfoResult  QueryMemberInfo(Usercinemaview userCinema,String pLoginNum,String pLmsPassword){
 		try{
+			String RealPassword = MD5Util.MD5Encode(pLmsPassword, "UTF-8");
 			Map<String,String> param = new LinkedHashMap();
 			param.put("pAppCode",userCinema.getRealUserName());
 			param.put("pCinemaCode",userCinema.getCinemaCode());
 			param.put("pLoginNum", pLoginNum);
-			param.put("pLmsPassword",pLmsPassword );
+			param.put("pLmsPassword",RealPassword );
 			param.put("pCompress", "0");
 //			log.info(param.toString());
 //			log.info(MD5Util.getCxSign(param, PayConstant.signkey));
-			String result = WebService.cinemaTss(userCinema.getUrl()).queryMemberInfo(userCinema.getRealUserName(),userCinema.getCinemaCode(),pLoginNum,pLmsPassword,"0",MD5Util.getCxSign(param,userCinema.getRealPassword()));
+			String result = WebService.cinemaTss(userCinema.getUrl()).queryMemberInfo(userCinema.getRealUserName(),userCinema.getCinemaCode(),pLoginNum,RealPassword,"0",MD5Util.getCxSign(param,userCinema.getRealPassword()));
 			Gson gson = new Gson();
 //			log.info(result);
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result,"QueryMemberInfoResult"), CxQueryMemberInfoResult.class);
@@ -842,6 +844,7 @@ public class WebService {
 			param.put("pCinemaCode",userCinema.getCinemaCode());
 			param.put("pCompress", "0");
 			String result = WebService.cinemaTss(userCinema.getUrl()).queryMemberLevel(userCinema.getRealUserName(),userCinema.getCinemaCode(),"0", MD5Util.getCxSign(param,userCinema.getRealPassword()));
+			log.info(result);
 			Gson gson = new Gson();
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result,"QueryMemberLevelResult"),CxQueryMemberLevelResult.class);
 		}catch(Exception e){
@@ -854,12 +857,13 @@ public class WebService {
 	//region 会员卡注册
 	public static CxPhoneNumRegResult  PhoneNumReg(Usercinemaview userCinema,String pLmsPassword, String LevelCode, String InitialAmount, String pName, String pMobileNum, String pCreditNum, String pSex){
 		try{
+			String RealPassword = MD5Util.MD5Encode(pLmsPassword, "UTF-8");
 			Map<String,Object> param = new LinkedHashMap();
 			param.put("pAppCode",userCinema.getRealUserName());
 			param.put("pCinemaCode",userCinema.getCinemaCode());
 			param.put("pMobileNum", pMobileNum);
-			param.put("pLmsPassword", pLmsPassword);
-			param.put("pLoginPasswd", pLmsPassword);
+			param.put("pLmsPassword", RealPassword);
+			param.put("pLoginPasswd", RealPassword);
 			param.put("pName",pName);
 			param.put("pSex", pSex);
 			param.put("pBirthday","");
@@ -868,7 +872,7 @@ public class WebService {
 			param.put("pOperator", "APP");
 			param.put("pCompress", "0");
 			String result = WebService.cinemaTss(userCinema.getUrl()).phoneNumReg(userCinema.getRealUserName(),userCinema.getCinemaCode(),pMobileNum,
-					pLmsPassword,pLmsPassword,pName,pSex,"",pCreditNum,"","APP","0",MD5Util.getCxSign(param,userCinema.getRealPassword()));
+					RealPassword,RealPassword,pName,pSex,"",pCreditNum,"","APP","0",MD5Util.getCxSign(param,userCinema.getRealPassword()));
 			Gson gson = new Gson();
 			log.info(result);
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result,"PhoneNumRegResult"),CxPhoneNumRegResult.class);
@@ -881,12 +885,17 @@ public class WebService {
 	
 	public static void main(String args[]) {
 		try {
-			System.out.println("=====================");
-			// System.out.println(QueryCinemaInfo());
-
+			Usercinemaview userCinema = new Usercinemaview();
+			userCinema.setRealUserName("QJUSER");//
+			userCinema.setRealPassword("e10adc3949ba59abbe56e057f20f883e");
+			userCinema.setUrl("http://121.32.27.26:18080/tsp-ws/services/tsp/cinema");
+			userCinema.setCinemaCode("62549174");
+			QueryMemberLevel(userCinema);
+			/*System.out.println(PhoneNumReg(userCinema, "mima123", "26", "200", "刘钰栋", "15268553143", "41061119971208453X", "1"));*/
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
 
 }

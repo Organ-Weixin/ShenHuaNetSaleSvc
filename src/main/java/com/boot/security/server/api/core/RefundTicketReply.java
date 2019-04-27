@@ -1,6 +1,5 @@
 package com.boot.security.server.api.core;
 
-import com.boot.security.server.model.YesOrNoEnum;
 
 public class RefundTicketReply extends BaseReply {
 	public RefundTicketReply()

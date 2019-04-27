@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.boot.security.server.api.ctms.reply.CxQueryDiscountActivityResult.ResBean.RuleBean.resultsBean.resultBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaAllSessionResult.ResBean.SessionsBean.SessionBean.FilmsBean.FilmBean;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;

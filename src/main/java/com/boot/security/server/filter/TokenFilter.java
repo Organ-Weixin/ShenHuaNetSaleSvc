@@ -17,10 +17,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.boot.security.server.api.ctms.reply.CxInterface;
 import com.boot.security.server.dto.LoginUser;
 import com.boot.security.server.service.TokenService;
-import com.google.gson.Gson;
 
 /**
  * Token过滤器
@@ -54,7 +52,6 @@ public class TokenFilter extends OncePerRequestFilter {
 		    loginUser.setPassword("$2a$10$azKn2zt4uvOFuK.IDWzpoui6EIvkQ8MMz.sDpgDPNs3dKncylMxsu");
 		    loginUser.setStatus(1);
 		    loginUser.setId(1L);
-		    
 			if (loginUser != null) {
 				loginUser = checkLoginTime(loginUser);
 				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
@@ -66,7 +63,6 @@ public class TokenFilter extends OncePerRequestFilter {
 		{
 			if (StringUtils.isNotBlank(token)) {
 				LoginUser loginUser = tokenService.getLoginUser(token);
-				System.out.println(new Gson().toJson(loginUser));
 				if (loginUser != null) {
 					loginUser = checkLoginTime(loginUser);
 					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
