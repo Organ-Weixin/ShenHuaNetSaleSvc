@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"> 
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
+	<link rel="stylesheet" href="../../layui/css/layui.css" media="all" />
+    <link rel="stylesheet" type="text/css" media="screen" href="../../css/fullReduction.css"/>
+    <title>Document</title>
+</head>
+<body>
+<div id="full-reduce">
+	<div id="content">
+		<div class="fr-title">满减活动</div>
+		<div class="fr-activity">
+			<div class="new-activity">新建满减活动</div>
+			<div class="query">
+                <input type="text" placeholder="活动名称" class="activity-name">
+                <select class="activity-state">
+                    <option value="" disabled selected style="display: none">活动状态</option>
+                    <option value="">未开启</option>
+                    <option value="">已启用</option>
+                    <option value="">停止</option>
+                    <option value="">已过期</option>
+                </select>
+                <button class="query-btn">查询</button>
+                <button class="del-btn">清空</button>
+            </div>
+		</div>
+		<div class="fr-form">
+				<div>
+                    <div class="widget-body no-padding">
+                        <table id="dt-table" class="table table-striped table-bordered table-hover" style="width:100%">
+                            <thead>                       
+                                <tr>
+									<th>序号</th>
+									<th>活动名称</th>
+									<th>优惠类型</th>
+									<th>门栏金额</th>
+									<th>优惠金额</th>
+									<th>开始日期</th>
+									<th>结束日期</th>
+									<th>是否叠加</th>
+									<th>活动状态</th>
+									<th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+		</div>
+	</div>
+	<div id="create" style="display:none">
+        <div class="create-title">新建满减活动</div>
+        <div class="create-container">
+            <div class="create-name">
+                <span class="headings">活动名称</span>
+                <input type="text" class="name-inp">
+            </div>
+            <div class="create-kind other">
+                <span class="headings">优惠类别</span>
+                <select class="kind-select">
+                    <option value="">影票</option>
+                    <option value="">卖品</option>
+                    <option value="">联合</option>
+                </select>
+            </div>
+            <div class="create-bar other">
+                <span class="headings">门栏金额</span>
+                <input type="text" class="bar-inp">
+                <span class="unit">（元）</span>
+            </div>
+            <div class="create-discounts other">
+                <span class="headings">优惠金额</span>
+                <input type="text" class="discounts-inp">
+                <span class="unit">（元）</span>
+            </div>
+            <div class="create-cinema other">
+                <span class="headings">选择影城</span>
+                <div class="cinema-content">
+                    <div class="cinema-option">
+                        <form>
+                            <input type="radio" name="cinema">&nbsp;&nbsp;<span>全部影城</span>
+                            <input type="radio" name="cinema">&nbsp;&nbsp;<span>指定影城</span>
+                        </form>
+                        <span class="cinema-least">至少选择1家影城</span>
+                    </div>
+                    <div class="cinema-name">
+                        <div><input type="checkbox"><span>衢州新新天地数字影城</span></div>
+                        <div><input type="checkbox"><span>浙江省衢州市常山县神画巨幕城</span></div>
+                        <div><input type="checkbox"><span>浙江省温州市乐清市神画国际影城</span></div>
+                        <div><input type="checkbox"><span>池州神画巨幕国际影城</span></div>
+                        <div><input type="checkbox"><span>杭州神画国际影城</span></div>
+                        <div><input type="checkbox"><span>浙江杭州蓝钻神画影城</span></div>
+                        <div><input type="checkbox"><span>浙江衢州市龙游神画巨幕影城</span></div>
+                        <div><input type="checkbox"><span>浙江安吉九州大地影院</span></div>
+                        <div><input type="checkbox"><span>浙江金华光影MAX巨幕影城</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="create-options other">
+                <span class="headings">联合选项</span>
+                <div class="inactive-info">?</div>
+                <div class="clues">
+                    <div class="triangle"></div>
+                    <div class="triangle-container">可指定影片+卖品 满 指定金额 减 指定金额</div>
+                </div>
+                <div class="options-content">
+                    <form>
+                        <input type="radio" name="goods">&nbsp;&nbsp;<span>全部卖品</span>
+                        <input type="radio" name="goods">&nbsp;&nbsp;<span>指定卖品参加</span>
+                        <input type="radio" name="goods">&nbsp;&nbsp;<span>指定卖品不参加</span>
+                    </form>
+                    <span class="options-least">至少选择1个卖品</span>
+                    <ul class="goods-kind">
+                        <li>热卖</li>
+                        <li>
+	                        <span class="reg-add">+</span>
+	                        <span class="reg-goods">套餐</span>
+                        </li>
+                        <li>
+                        <span class="reg-add">+</span>
+                        <span class="reg-goods">小食</span>
+                        </li>
+                        <li>
+	                        <span class="reg-add">+</span>
+	                        <span class="reg-goods">饮品</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="movie-options">
+                    <form>
+                        <input type="radio" name="movie">&nbsp;&nbsp;<span>全部影片</span>
+                        <input type="radio" name="movie">&nbsp;&nbsp;<span>指定影片参与</span>
+                        <input type="radio" name="movie">&nbsp;&nbsp;<span>指定影片不参与</span>
+                    </form>
+                    <span class="movie-least">至少选择一部影片</span>
+                    <input type="text" placeholder="输入影片名称" class="movie-inp movie-btn">
+                    <div>
+                        <input type="text" class="movie-dis movie-btn" disabled>
+                        <span class="empty">删除</span>
+                    </div>
+                </div>
+            </div>
+            <div class="create-time other">
+                <span class="headings">活动时间</span>
+                <input type="text" id="test1" placeholder="请选择时间">
+				<span class="time-to">至</span>
+				<input type="text" id="test2" placeholder="请选择时间">
+            </div>
+            <div class="create-share other">
+                <span class="headings">优惠共享</span>
+                <select class="share-options">
+                    <option value="">不与其他优惠叠加</option>
+                </select>
+            </div>
+            <div class="create-state other">
+                <span class="headings">启用状态</span>
+                <select class="state-options">
+                    <option value="">未启用</option>
+                    <option value="">启用</option>
+                </select>
+            </div>
+        </div>
+        <div>
+			<button class="layui-btn layui-btn-lg layui-btn-normal cancel">取消</button>
+	    	<button class="layui-btn layui-btn-lg layui-btn-normal confirm">创建</button>	
+		</div>
+    </div>
+
+</div>
+</body>
+<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/jq.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript" src="../../js/my/permission.js"></script>
+<script>
+$(".inactive-info").mouseenter(function () {
+    $(".clues").css("display","block")
+});
+$(".inactive-info").mouseleave(function () {
+    $(".clues").css("display","none")
+});
+$(".movie-inp").blur(function(){
+    var val = $(".movie-inp").val();
+    $(".movie-dis").val(val)
+});
+$(".empty").click(function(){
+    $(".movie-dis").val("");
+});
+$(".new-activity").click(function(){
+	$("#content").css("display","none");
+	$("#create").css("display","block");
+});
+$(".cancel").click(function(){
+	$("#create").css("display","none");
+	$("#content").css("display","block");
+});
+/*时间选择插件 */
+layui.use('laydate', function(){
+	  var laydate = layui.laydate;
+	  //执行一个laydate实例
+	  laydate.render({
+	    elem: '#test1' //指定元素
+	  });
+	  laydate.render({
+	    elem: '#test2' //指定元素
+	  });
+	});
+</script>
+</html>

@@ -30,17 +30,8 @@
                                 </select>
                                 <span>，</span>
                                 <input type="text" class="stup-num" placeholder="输入张数">
-                                <span class="stup-del">张</span>
-                            </div>
-                            <div class="stup-setting">
-                                <input type="text" class="stup-num" placeholder="输入张数">
-                                <span>张，赠送</span>
-                                <select name="choose" class="stup-choose">
-                                    <option value="">选择优惠券</option>
-                                </select>
-                                <span>，</span>
-                                <input type="text" class="stup-num" placeholder="输入张数">
-                                <span class="stup-del">张</span>
+                                <span>张</span>
+                                <span class="stup-del">删除</span>
                             </div>
                         </div>
                     </div>
@@ -61,9 +52,9 @@
                 <input type="text" id="test1" placeholder="选择活动时间">
             </div>
             <div class="container-btm">
-                <div class="change-num">已兑换数量：<input type="text" value="0" class="change-num-inp btm-inp"></div>
-                <div class="change-consume">已兑换消耗票根数：<input type="text" value="0" class="change-consume-inp btm-inp"></div>
-                <div class="enable-state">启用状态：<input type="text" value="未启用" class="enable-state-inp btm-inp"></div>
+                <div class="change-num">已兑换数量：<input type="text" value="0" class="change-num-inp btm-inp" disabled="disabled"></div>
+                <div class="change-consume">已兑换消耗票根数：<input type="text" value="0" class="change-consume-inp btm-inp" disabled="disabled"></div>
+                <div class="enable-state">启用状态：<input type="text" value="未启用" class="enable-state-inp btm-inp" disabled="disabled"></div>
             </div>
             <div class="container-btn">
                 <div class="last-btn">
@@ -84,14 +75,28 @@
 <script type="text/javascript">
 $(".top-add").click(function () {
     $(".top-content :first").clone(true).appendTo(".top-content");
+    if($(".stup-setting").length<3){
+    	$(".top-wrapper").css("overflow","hidden")
+    }else{
+    	$(".top-wrapper").css("overflow","visible")
+    }
 });
-// $(".stup-del").click(function () {
-//     if ($(".stup-setting").length > 1){
-//         $(this).parent(".stup-setting").remove();
-//     } else {
-//         $(".stup-del").removeAttr('onclick');
-//     }
-// });
+$(".stup-del").click(function () {
+    if ($(".stup-setting").length > 1){
+        $(this).parent(".stup-setting").remove();
+    } else {
+        $(".stup-del").removeAttr('onclick');
+    };
+    if ($(".stup-setting").length < 3){
+    	$(".top-wrapper").css("overflow","hidden")
+    }
+});
+$(".btn-stup").click(function(){
+	var text = $(this).text();
+	if(text){
+		$(this).text(text === "启用" ? "停止" : "启用")
+	}
+});
 // 时间选择插件
 	layui.use('laydate', function(){
 		  var laydate = layui.laydate;

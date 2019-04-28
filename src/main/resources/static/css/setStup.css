@@ -43,14 +43,14 @@
         .top-wrapper{
             position: relative;
             height: 120px;
-            width: 660px;
+            width: 700px;
             left: 200px;
             top: 50px;
             overflow: hidden;
         }
         .top-content{
             height: 120px;
-            width: 700px;
+            width: 730px;
             overflow-y: scroll;
         }
         .stup-setting{
@@ -67,9 +67,9 @@
             background: rgb(245,245,245);
             border: none;
         }
-        /*.stup-del{*/
-        /*    cursor: pointer;*/
-        /*}*/
+        .stup-del{
+            cursor: pointer;
+        }
         .top-add{
             position: relative;
             width: 120px;

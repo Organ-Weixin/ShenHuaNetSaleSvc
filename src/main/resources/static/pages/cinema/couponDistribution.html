@@ -58,10 +58,10 @@
                 </div>
                 <div class="specify">
                     <span class="specify-title">指定用户：</span>
-                    <input type="text" placeholder="输入用户手机号/会员卡号" class="specify-btn">
+                    <input type="text" placeholder="输入用户手机号/会员卡号" class="specify-btn specify-inp">
                     <div>
-                        <input type="text" class="specify-btn">
-                        <span>删除</span>
+                        <input type="text" class="specify-btn specify-dis" disabled="disabled">
+                        <span class="empty">删除</span>
                     </div>
                 </div>
             </div>
@@ -86,7 +86,26 @@
             </div>
         </div>
     	<div class="record-container">
-    		<table id="demo" lay-filter="test"></table>
+    		<div>
+                    <div class="widget-body no-padding">
+                        <table id="dt-table" class="table table-striped table-bordered table-hover" style="width:100%">
+                            <thead>                       
+                                <tr>
+									<th>#</th>
+									<th>发放时间</th>
+									<th>发放券类</th>
+									<th>顾客群体</th>
+									<th>适用影城</th>
+									<th>状态</th>
+									<th>操作账号</th>
+									<th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
     	</div>
     </div>
 </div>
@@ -111,12 +130,20 @@ $(function (){
     });
     $(".top-add").click(function () {
         $(".top-content :first").clone(true).appendTo(".top-content");
+        if($(".issue-setting").length<3){
+        	$(".top-wrapper").css("overflow","hidden")
+        }else{
+        	$(".top-wrapper").css("overflow","visible")
+        }
     });
     $(".issue-del").click(function () {
         if ($(".issue-setting").length > 1){
             $(this).parent(".issue-setting").remove();
         } else {
             $(".issue-del").removeAttr('onclick');
+        };
+        if ($(".issue-setting").length < 3){
+        	$(".top-wrapper").css("overflow","hidden")
         }
     });
     $(".inactive-info").mouseenter(function () {
@@ -134,47 +161,13 @@ $(function (){
     $(".type-cancel").click(function(){
     	$("#choose").css("display","none");
     });
+    $(".specify-inp").blur(function(){
+    	var val = $(".specify-inp").val();
+    	$(".specify-dis").val(val)
+    })
+    $(".empty").click(function(){
+    	$(".specify-dis").val("");
+    })
 });
-layui.use('table', function(){
-	  var table = layui.table;
-	  
-	  //第一个实例
-	  table.render({
-	    elem: '#demo',
-	    height: 312,
-	    url: '', //数据接口
-	    page: true, //开启分页
-	    cols: [[ //表头
-	      {field: 'id', title: '#', width:100, fixed: 'left'},
-	      {field: 'username', title: '发放时间', width:245},
-	      {field: 'sex', title: '发放券类', width:260},
-	      {field: 'city', title: '顾客群体', width:170},
-	      {field: 'sign', title: '适用影城', width: 260},
-	      {field: 'experience', title: '状态', width: 140},
-	      {field: 'score', title: '操作账号', width: 200},
-	      {field: 'classify', title: '操作', width: 150},
-	    ]]
-	  });  
-	});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </script>
 </html>
