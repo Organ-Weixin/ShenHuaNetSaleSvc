@@ -11,12 +11,14 @@ import com.boot.security.server.api.core.LockSeatQueryXml.LockSeatQueryXmlOrder.
 import com.boot.security.server.api.core.QueryCinemaListReply.QueryCinemaListReplyCinemas.QueryCinemaListReplyCinema;
 import com.boot.security.server.api.core.QueryCinemaReply.QueryCinemaReplyCinema.QueryCinemaReplyScreen;
 import com.boot.security.server.api.core.QueryFilmReply.QueryFilmReplyFilms.QueryFilmReplyFilm;
+import com.boot.security.server.api.core.QueryGoodsReply.QueryGoodsReplyGoodss.QueryGoodsReplyGoods;
 import com.boot.security.server.api.core.QuerySeatReply.QuerySeatReplyCinema.QuerySeatReplyScreen.QuerySeatReplySeat;
 import com.boot.security.server.api.core.QuerySessionReply.QuerySessionReplySessions.QuerySessionReplySession;
 import com.boot.security.server.api.core.QuerySessionReply.QuerySessionReplySessions.QuerySessionReplySession.QuerySessionReplyFilms.QuerySessionReplyFilm;
 import com.boot.security.server.api.core.SubmitOrderQueryXml.SubmitOrderQueryXmlOrder.SubmitOrderQueryXmlSeat;
 import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Filminfo;
+import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orders;
@@ -177,5 +179,28 @@ public class ModelMapper {
         	}
         }
         return order;
+    }
+	
+	public static QueryGoodsReplyGoods MapFrom(QueryGoodsReplyGoods goods, Goods entity)
+    {
+		goods.setCinemaCode(entity.getCinemaCode());
+		goods.setGoodsCode(entity.getGoodsCode());
+		goods.setGoodsDesc(entity.getGoodsDesc());
+		goods.setGoodsId(entity.getId());
+		goods.setGoodsKey(entity.getGoodsKey());
+		goods.setGoodsName(entity.getGoodsName());
+		goods.setGoodsPic(entity.getGoodsPic());
+		goods.setGoodsStatus(entity.getGoodsStatus()==1?"Up":"Down");
+		goods.setGoodsType(entity.getGoodsType().toString());
+		goods.setIsDiscount(entity.getIsDiscount());
+		goods.setIsPackage(entity.getIsPackage());
+		goods.setIsRecommand(entity.getIsRecommand());
+		goods.setSettlePrice(entity.getSettlePrice().floatValue());
+		goods.setShowSeqNo(entity.getShowSeqNo());
+		goods.setStandardPrice(entity.getStandardPrice().floatValue());
+		goods.setStockCount(entity.getStockCount());
+		goods.setUnitName(entity.getUnitName());
+		goods.setUserId(entity.getUserId().longValue());
+		return goods;
     }
 }

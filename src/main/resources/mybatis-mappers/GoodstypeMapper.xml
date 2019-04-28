@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.GoodstypeDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and Id = #{params.Id} 
+			</if>
+			<if test="params.CinemaCode != null and params.CinemaCode != ''">
+				and CinemaCode = #{params.CinemaCode} 
+			</if>
+			<if test="params.UserId != null and params.UserId != ''">
+				and UserId = #{params.UserId} 
+			</if>
+			<if test="params.TypeName != null and params.TypeName != ''">
+				and TypeName = #{params.TypeName} 
+			</if>
+			<if test="params.TypeDesc != null and params.TypeDesc != ''">
+				and TypeDesc = #{params.TypeDesc} 
+			</if>
+			<if test="params.TypePic != null and params.TypePic != ''">
+				and TypePic = #{params.TypePic} 
+			</if>
+		
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from goodstype t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Goodstype">
+		select * from goodstype t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="update">
+		update goodstype t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="CinemaCode != null">
+				CinemaCode = #{CinemaCode}, 
+			</if>
+			<if test="UserId != null">
+				UserId = #{UserId}, 
+			</if>
+			<if test="TypeName != null">
+				TypeName = #{TypeName}, 
+			</if>
+			<if test="TypeDesc != null">
+				TypeDesc = #{TypeDesc}, 
+			</if>
+			<if test="TypePic != null">
+				TypePic = #{TypePic}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+
+</mapper>

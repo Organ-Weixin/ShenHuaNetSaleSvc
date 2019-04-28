@@ -15,6 +15,13 @@ public class Filminfo extends BaseEntity<Long> {
 	private String Director;
 	private String Cast;
 	private String Introduction;
+	public Double Score;
+	public String Area;
+	public String Type;
+	public String Language;
+	public String Status;
+	public String Image;
+	public String Trailer;
 
 	public Long getId() {
 		return Id;
@@ -82,5 +89,48 @@ public class Filminfo extends BaseEntity<Long> {
 	public void setIntroduction(String Introduction) {
 		this.Introduction = Introduction;
 	}
+	public Double getScore() {
+		return Score;
+	}
+	public void setScore(Double score) {
+		Score = score;
+	}
+	public String getArea() {
+		return Area;
+	}
+	public void setArea(String area) {
+		Area = area;
+	}
+	public String getType() {
+		return Type;
+	}
+	public void setType(String type) {
+		Type = type;
+	}
+	public String getLanguage() {
+		return Language;
+	}
+	public void setLanguage(String language) {
+		Language = language;
+	}
+	public String getStatus() {
+		return Status;
+	}
+	public void setStatus(String status) {
+		Status = status;
+	}
+	public String getImage() {
+		return Image;
+	}
+	public void setImage(String image) {
+		Image = image;
+	}
+	public String getTrailer() {
+		return Trailer;
+	}
+	public void setTrailer(String trailer) {
+		Trailer = trailer;
+	}
+	
 
 }

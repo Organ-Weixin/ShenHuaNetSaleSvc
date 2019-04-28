@@ -10,13 +10,19 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import com.boot.security.server.api.core.LockSeatReply.LockSeatReplyOrder.LockSeatReplySeat;
+import com.boot.security.server.api.core.LoginCardReply.LoginCardReplyCard;
+import com.boot.security.server.api.core.QueryCardLevelReply.QueryCardLevelReplyLevels;
 import com.boot.security.server.api.core.QueryCardLevelReply.QueryCardLevelReplyLevels.QueryCardLevelReplyLevel;
+import com.boot.security.server.api.core.QueryCardReply.QueryCardReplyCard;
 import com.boot.security.server.api.core.QueryCardTradeRecordReply.QueryCardTradeRecordReplyTradeRecord.QueryCardTradeRecordReplyRecord;
 import com.boot.security.server.api.core.QueryCinemaListReply.QueryCinemaListReplyCinemas.QueryCinemaListReplyCinema;
 import com.boot.security.server.api.core.QueryCinemaReply.QueryCinemaReplyCinema.QueryCinemaReplyScreen;
 import com.boot.security.server.api.core.QueryFilmReply.QueryFilmReplyFilms.QueryFilmReplyFilm;
+import com.boot.security.server.api.core.QueryGoodsReply.QueryGoodsReplyGoodss;
+import com.boot.security.server.api.core.QueryGoodsReply.QueryGoodsReplyGoodss.QueryGoodsReplyGoods;
 import com.boot.security.server.api.core.QueryOrderReply.QueryOrderReplyOrder.QueryOrderReplyFilms;
 import com.boot.security.server.api.core.QueryOrderReply.QueryOrderReplyOrder.QueryOrderReplyFilms.QueryOrderReplyFilm;
 import com.boot.security.server.api.core.QueryOrderReply.QueryOrderReplyOrder.QueryOrderReplySeats;
@@ -42,6 +48,7 @@ import com.boot.security.server.api.ctms.reply.CTMSQueryCardTradeRecordReply;
 import com.boot.security.server.api.ctms.reply.CTMSQueryCinemaReply;
 import com.boot.security.server.api.ctms.reply.CTMSQueryDiscountReply;
 import com.boot.security.server.api.ctms.reply.CTMSQueryFilmReply;
+import com.boot.security.server.api.ctms.reply.CTMSQueryGoodsReply;
 import com.boot.security.server.api.ctms.reply.CTMSQueryOrderReply;
 import com.boot.security.server.api.ctms.reply.CTMSQueryPrintReply;
 import com.boot.security.server.api.ctms.reply.CTMSQuerySeatReply;
@@ -51,11 +58,13 @@ import com.boot.security.server.api.ctms.reply.CTMSQueryTicketReply;
 import com.boot.security.server.api.ctms.reply.CTMSRefundTicketReply;
 import com.boot.security.server.api.ctms.reply.CTMSReleaseSeatReply;
 import com.boot.security.server.api.ctms.reply.CTMSSubmitOrderReply;
+import com.boot.security.server.api.ctms.reply.CxInterface;
 import com.boot.security.server.api.ctms.reply.ICTMSInterface;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Filminfo;
+import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.OrderStatusEnum;
@@ -69,6 +78,8 @@ import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
+import com.boot.security.server.model.YesOrNoEnum;
+import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
@@ -79,6 +90,8 @@ import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.JaxbXmlUtil;
 import com.boot.security.server.utils.SpringUtil;
+import com.boot.security.server.utils.XmlToJsonUtil;
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 public class NetSaleSvcCore { 
@@ -91,6 +104,7 @@ public class NetSaleSvcCore {
 	 OrderServiceImpl _orderService = SpringUtil.getBean(OrderServiceImpl.class);
 	 MemberCardServiceImpl _membercardService=SpringUtil.getBean(MemberCardServiceImpl.class);
 	 MemberCardLevelServiceImpl _memberCardLevelService=SpringUtil.getBean(MemberCardLevelServiceImpl.class);
+	 GoodsServiceImpl _goodsService=SpringUtil.getBean(GoodsServiceImpl.class);
 	 
 	 protected static Logger log = LoggerFactory.getLogger(NetSaleSvcCore.class);
 	 
@@ -1708,5 +1722,59 @@ ScreenType,ListingPrice,LowestPrice))
         }
         return reply;
     }
+	//endregion
+	
+	//region 查询影院卖品
+	public QueryGoodsReply QueryGoods(String Username, String Password, String CinemaCode){
+		QueryGoodsReply queryGoodsReply=new QueryGoodsReply();
+		if (!ReplyExtension.RequestInfoGuard(queryGoodsReply,Username, Password, CinemaCode))
+        {
+            return queryGoodsReply;
+        }
+		//获取用户信息
+        Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+        if (UserInfo == null)
+        {
+        	queryGoodsReply.SetUserCredentialInvalidReply();
+            return queryGoodsReply;
+        }
+        //验证影院是否存在且可访问
+        Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),CinemaCode);
+        if (userCinema == null)
+        {
+        	queryGoodsReply.SetCinemaInvalidReply();
+            return queryGoodsReply;
+        }
+        return QueryGoods(queryGoodsReply,userCinema);
+	}
+	private QueryGoodsReply QueryGoods(QueryGoodsReply reply,Usercinemaview userCinema){
+		_CTMSInterface = CTMSInterfaceFactory.Create(userCinema);
+        CTMSQueryGoodsReply CTMSReply=null;
+        try {
+			CTMSReply = _CTMSInterface.QueryGoods(userCinema);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        if (StatusEnum.Success.equals(CTMSReply.Status)) {
+			List<Goods> goodsList = _goodsService.getByCinemaCode(userCinema.getUserId(),userCinema.getCinemaCode());
+			if(goodsList!=null&& goodsList.size()>0){
+				QueryGoodsReplyGoodss goodss=new QueryGoodsReplyGoodss();
+				goodss.setCount(goodsList.size());
+				List<QueryGoodsReplyGoods> replygoodslist=new ArrayList<QueryGoodsReplyGoods>();
+				for(Goods goods:goodsList){
+					QueryGoodsReplyGoods replygoods=new QueryGoodsReplyGoods();
+					ModelMapper.MapFrom(replygoods, goods);
+					replygoodslist.add(replygoods);
+				}
+				goodss.setGoods(replygoodslist);
+				reply.setGoodss(goodss);
+			}
+			reply.SetSuccessReply();
+		} else {
+			reply.GetErrorFromCTMSReply(CTMSReply);
+		}
+		return reply;
+	}
 	//endregion
 }

@@ -1,5 +1,6 @@
 package com.boot.security.server.apicontroller.reply;
 
+import com.boot.security.server.api.ctms.reply.CTMSBaseReply;
 import com.boot.security.server.model.ErrorCodeEnum;
 import com.boot.security.server.model.StatusEnum;
 
@@ -194,6 +195,12 @@ public class BaseReply {
         Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.CardLevelInvalid.getCode();
         ErrorMessage = ErrorCodeEnum.CardLevelInvalid.getMessage();
+    }
+    public void SetFilmCodeNotExistReply()
+    {
+        Status = StatusEnum.Failure.getStatusCode();
+        ErrorCode = ErrorCodeEnum.FilmCodeNotExist.getCode();
+        ErrorMessage = ErrorCodeEnum.FilmCodeNotExist.getMessage();
     }
 	
     public String Status;

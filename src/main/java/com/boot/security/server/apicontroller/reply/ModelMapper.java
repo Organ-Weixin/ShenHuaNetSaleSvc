@@ -4,12 +4,14 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+import com.boot.security.server.apicontroller.reply.QueryFilmReply.QueryFilmReplyFilm;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.QueryMemberCardByPhoneReplyMemberCardByPhone;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.QueryMemberCardByPhoneReplyMemberCardByPhone.QueryMemberCardByPhoneReplyPhone;
 import com.boot.security.server.apicontroller.reply.QueryScreenInfoReply.QueryScreensReplyScreenInfo;
 import com.boot.security.server.apicontroller.reply.QueryScreenSeatsReply.QueryScreenSeatsReplyScreenSeats;
 import com.boot.security.server.apicontroller.reply.QueryScreensReply.QueryScreensReplyScreens.QueryScreensReplyScreen;
 import com.boot.security.server.apicontroller.reply.QuerySessionsReply.QuerySessionsReplySessions.QuerySessionsReplySession.QuerySessionsReplyFilms.QuerySessionsReplyFilm;
+import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
@@ -27,6 +29,31 @@ public class ModelMapper {
         }
         screen.setType(entity.getType());
         return screen;
+    }
+	
+	public static QueryFilmReplyFilm MapFrom(QueryFilmReplyFilm data, Filminfo entity)
+    {
+        data.setFilmId(entity.getId());
+        data.setFilmCode(entity.getFilmCode());
+        data.setFilmName(entity.getFilmName());
+        data.setVersion(entity.getVersion());
+        data.setDuration(entity.getDuration());
+        if(entity.getPublishDate()!=null){
+        	data.setPublishDate(new SimpleDateFormat("yyyy-MM-dd").format(entity.getPublishDate()));
+        }
+        data.setPublisher(entity.getPublisher());
+        data.setProducer(entity.getProducer());
+        data.setDirector(entity.getDirector());
+        data.setCast(entity.getCast());
+        data.setIntroduction(entity.getIntroduction());
+        data.setScore(entity.getScore());
+        data.setArea(entity.getArea());
+        data.setType(entity.getType());
+        data.setLanguage(entity.getLanguage());
+        data.setStatus(entity.getStatus());
+        data.setImage(entity.getImage());
+        data.setTrailer(entity.getTrailer());
+        return data;
     }
 	public static QueryScreensReplyScreenInfo MapFrom(QueryScreensReplyScreenInfo screeninfo, Screeninfo entity){
 		screeninfo.setScreenId(entity.getId());

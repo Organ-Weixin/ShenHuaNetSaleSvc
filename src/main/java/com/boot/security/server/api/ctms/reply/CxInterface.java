@@ -23,6 +23,7 @@ import com.boot.security.server.api.ctms.reply.CxQueryPlanSeatResult.ResBean.Pla
 import com.boot.security.server.api.ctms.reply.CxQuerySeatInfoResult.ResBean.ScreenSitesBean.ScreenSiteBean;
 import com.boot.security.server.api.ctms.reply.CxQueryTicketInfoResult.ResBean.TicketsBean.TicketBean;
 import com.boot.security.server.api.ctms.reply.CxSubmitOrderResult.ResBean.SeatInfosBean.SeatInfoBean;
+import com.boot.security.server.api.ctms.reply.CxApplyFetchTicketResult.ResBean.TicketsBean;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Cinema;
@@ -45,6 +46,8 @@ import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.utils.MD5Util;
 import com.boot.security.server.utils.SpringUtil;
 import com.oristartech.tsp.ws.soap.WebService;
+
+import ch.qos.logback.core.net.SyslogOutputStream;
 
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
@@ -767,5 +770,11 @@ public class CxInterface implements ICTMSInterface {
 		calendar.add(calendar.DATE, 1);
 		nextDay = calendar.getTime();
 		return nextDay;
+	}
+
+	@Override
+	public CTMSQueryGoodsReply QueryGoods(Usercinemaview userCinema) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

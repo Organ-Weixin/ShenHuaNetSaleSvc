@@ -53,4 +53,6 @@ public interface ICTMSInterface {
     CTMSQueryCardLevelReply QueryCardLevel(Usercinemaview userCinema) throws Exception;
     //会员卡注册
     CTMSCardRegisterReply CardRegister(Usercinemaview userCinema, String CardPassword, String LevelCode, String InitialAmount, String CardUserName, String MobilePhone, String IDNumber, String Sex) throws Exception;
+    //查询影院卖品
+    CTMSQueryGoodsReply QueryGoods(Usercinemaview userCinema) throws Exception;
 }

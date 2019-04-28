@@ -28,6 +28,7 @@ public class BaseReply {
 	public static String ID_CardChargeReply="ID_CardChargeReply";
 	public static String ID_QueryCardLevelReply="ID_QueryCardLevelReply";
 	public static String ID_CardRegisterReply="ID_CardRegisterReply";
+	public static String ID_QueryGoodsReply="ID_QueryGoodsReply";
 	
 	public BaseReply()
     {

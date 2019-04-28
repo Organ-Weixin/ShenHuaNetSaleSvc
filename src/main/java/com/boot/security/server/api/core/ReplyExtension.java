@@ -686,4 +686,25 @@ public class ReplyExtension {
         return true;
     }
 	//endregion
+	
+	//region QueryGoodsReply
+	public static boolean RequestInfoGuard(QueryGoodsReply reply, String Username, String Password, String CinemaCode) {
+		if (Username.isEmpty()) {
+			reply.SetNecessaryParamMissReply(Username);
+			return false;
+		}
+		if (Password.isEmpty()) {
+			reply.SetNecessaryParamMissReply(Password);
+			return false;
+		}
+		if (CinemaCode.isEmpty()) {
+			reply.SetNecessaryParamMissReply(CinemaCode);
+			return false;
+		}
+		return true;
+	}
+	//endregion
+	
+	//region 
+	//endregion
 }

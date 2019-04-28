@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.GoodsordersDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and Id = #{params.Id} 
+			</if>
+			<if test="params.CinemaCode != null and params.CinemaCode != ''">
+				and CinemaCode = #{params.CinemaCode} 
+			</if>
+			<if test="params.UserId != null and params.UserId != ''">
+				and UserId = #{params.UserId} 
+			</if>
+			<if test="params.LocalOrderCode != null and params.LocalOrderCode != ''">
+				and LocalOrderCode = #{params.LocalOrderCode} 
+			</if>
+			<if test="params.OrderCode != null and params.OrderCode != ''">
+				and OrderCode = #{params.OrderCode} 
+			</if>
+			<if test="params.PickUpCode != null and params.PickUpCode != ''">
+				and PickUpCode = #{params.PickUpCode} 
+			</if>
+			<if test="params.VerifyCode != null and params.VerifyCode != ''">
+				and VerifyCode = #{params.VerifyCode} 
+			</if>
+			<if test="params.OrderStatus != null and params.OrderStatus != ''">
+				and OrderStatus = #{params.OrderStatus} 
+			</if>
+			<if test="params.TotalPrice != null and params.TotalPrice != ''">
+				and TotalPrice = #{params.TotalPrice} 
+			</if>
+			<if test="params.TotalFee != null and params.TotalFee != ''">
+				and TotalFee = #{params.TotalFee} 
+			</if>
+			<if test="params.SubmitTime != null and params.SubmitTime != ''">
+				and SubmitTime = #{params.SubmitTime} 
+			</if>
+			<if test="params.Created != null and params.Created != ''">
+				and Created = #{params.Created} 
+			</if>
+			<if test="params.Updated != null and params.Updated != ''">
+				and Updated = #{params.Updated} 
+			</if>
+			<if test="params.MobilePhone != null and params.MobilePhone != ''">
+				and MobilePhone = #{params.MobilePhone} 
+			</if>
+			<if test="params.GoodsCount != null and params.GoodsCount != ''">
+				and GoodsCount = #{params.GoodsCount} 
+			</if>
+			<if test="params.RefundTime != null and params.RefundTime != ''">
+				and RefundTime = #{params.RefundTime} 
+			</if>
+			<if test="params.PickUpTime != null and params.PickUpTime != ''">
+				and PickUpTime = #{params.PickUpTime} 
+			</if>
+			<if test="params.DeliveryAddress != null and params.DeliveryAddress != ''">
+				and DeliveryAddress = #{params.DeliveryAddress} 
+			</if>
+			<if test="params.SendTime != null and params.SendTime != ''">
+				and SendTime = #{params.SendTime} 
+			</if>
+			<if test="params.OrderPayFlag != null and params.OrderPayFlag != ''">
+				and OrderPayFlag = #{params.OrderPayFlag} 
+			</if>
+			<if test="params.OrderPayType != null and params.OrderPayType != ''">
+				and OrderPayType = #{params.OrderPayType} 
+			</if>
+			<if test="params.OrderPayTime != null and params.OrderPayTime != ''">
+				and OrderPayTime = #{params.OrderPayTime} 
+			</if>
+			<if test="params.OrderTradeNo != null and params.OrderTradeNo != ''">
+				and OrderTradeNo = #{params.OrderTradeNo} 
+			</if>
+		
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from goodsorders t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Goodsorders">
+		select * from goodsorders t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="update">
+		update goodsorders t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="CinemaCode != null">
+				CinemaCode = #{CinemaCode}, 
+			</if>
+			<if test="UserId != null">
+				UserId = #{UserId}, 
+			</if>
+			<if test="LocalOrderCode != null">
+				LocalOrderCode = #{LocalOrderCode}, 
+			</if>
+			<if test="OrderCode != null">
+				OrderCode = #{OrderCode}, 
+			</if>
+			<if test="PickUpCode != null">
+				PickUpCode = #{PickUpCode}, 
+			</if>
+			<if test="VerifyCode != null">
+				VerifyCode = #{VerifyCode}, 
+			</if>
+			<if test="OrderStatus != null">
+				OrderStatus = #{OrderStatus}, 
+			</if>
+			<if test="TotalPrice != null">
+				TotalPrice = #{TotalPrice}, 
+			</if>
+			<if test="TotalFee != null">
+				TotalFee = #{TotalFee}, 
+			</if>
+			<if test="SubmitTime != null">
+				SubmitTime = #{SubmitTime}, 
+			</if>
+			<if test="Created != null">
+				Created = #{Created}, 
+			</if>
+			<if test="Updated != null">
+				Updated = #{Updated}, 
+			</if>
+			<if test="MobilePhone != null">
+				MobilePhone = #{MobilePhone}, 
+			</if>
+			<if test="GoodsCount != null">
+				GoodsCount = #{GoodsCount}, 
+			</if>
+			<if test="RefundTime != null">
+				RefundTime = #{RefundTime}, 
+			</if>
+			<if test="PickUpTime != null">
+				PickUpTime = #{PickUpTime}, 
+			</if>
+			<if test="DeliveryAddress != null">
+				DeliveryAddress = #{DeliveryAddress}, 
+			</if>
+			<if test="SendTime != null">
+				SendTime = #{SendTime}, 
+			</if>
+			<if test="OrderPayFlag != null">
+				OrderPayFlag = #{OrderPayFlag}, 
+			</if>
+			<if test="OrderPayType != null">
+				OrderPayType = #{OrderPayType}, 
+			</if>
+			<if test="OrderPayTime != null">
+				OrderPayTime = #{OrderPayTime}, 
+			</if>
+			<if test="OrderTradeNo != null">
+				OrderTradeNo = #{OrderTradeNo}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+
+</mapper>

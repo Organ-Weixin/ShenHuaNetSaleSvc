@@ -155,4 +155,10 @@ public class DefaultCTMSInterface implements ICTMSInterface {
 		throw new Exception(CinemaInterfaceMiss);
 	}
 
+	@Override
+	public CTMSQueryGoodsReply QueryGoods(Usercinemaview userCinema) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

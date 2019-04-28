@@ -25,6 +25,33 @@ public class ReplyExtension {
         return true;
     }
 	
+	//region QueryFilmReply
+		public static boolean RequestInfoGuard(QueryFilmReply reply, String Username, String Password, String CinemaCode, String FilmCode)
+	    {
+	        if (Username.isEmpty())
+	        {
+	            reply.SetNecessaryParamMissReply(Username);
+	            return false;
+	        }
+	        if (Password.isEmpty())
+	        {
+	            reply.SetNecessaryParamMissReply(Password);
+	            return false;
+	        }
+	        if (CinemaCode.isEmpty())
+	        {
+	            reply.SetNecessaryParamMissReply(CinemaCode);
+	            return false;
+	        }
+	        if (FilmCode.isEmpty())
+	        {
+	            reply.SetNecessaryParamMissReply(FilmCode);
+	            return false;
+	        }
+	        return true;
+	    }
+		//endregion
+	
 	//region QueryScreenInfoReply
 	public static boolean RequestInfoGuard(QueryScreenInfoReply reply, String Username, String Password, String CinemaCode,String ScreenCode)
     {

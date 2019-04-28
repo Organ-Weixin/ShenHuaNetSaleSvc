@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.GoodsorderdetailsDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and Id = #{params.Id} 
+			</if>
+			<if test="params.OrderId != null and params.OrderId != ''">
+				and OrderId = #{params.OrderId} 
+			</if>
+			<if test="params.GoodsCode != null and params.GoodsCode != ''">
+				and GoodsCode = #{params.GoodsCode} 
+			</if>
+			<if test="params.GoodsName != null and params.GoodsName != ''">
+				and GoodsName = #{params.GoodsName} 
+			</if>
+			<if test="params.StandardPrice != null and params.StandardPrice != ''">
+				and StandardPrice = #{params.StandardPrice} 
+			</if>
+			<if test="params.SettlePrice != null and params.SettlePrice != ''">
+				and SettlePrice = #{params.SettlePrice} 
+			</if>
+			<if test="params.ChannelFee != null and params.ChannelFee != ''">
+				and ChannelFee = #{params.ChannelFee} 
+			</if>
+			<if test="params.GoodsCount != null and params.GoodsCount != ''">
+				and GoodsCount = #{params.GoodsCount} 
+			</if>
+			<if test="params.SubTotalAmount != null and params.SubTotalAmount != ''">
+				and SubTotalAmount = #{params.SubTotalAmount} 
+			</if>
+			<if test="params.Created != null and params.Created != ''">
+				and Created = #{params.Created} 
+			</if>
+			<if test="params.Updated != null and params.Updated != ''">
+				and Updated = #{params.Updated} 
+			</if>
+			<if test="params.IsPackage != null and params.IsPackage != ''">
+				and IsPackage = #{params.IsPackage} 
+			</if>
+			<if test="params.GoodsDetail != null and params.GoodsDetail != ''">
+				and GoodsDetail = #{params.GoodsDetail} 
+			</if>
+		
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from goodsorderdetails t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Goodsorderdetails">
+		select * from goodsorderdetails t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="update">
+		update goodsorderdetails t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="OrderId != null">
+				OrderId = #{OrderId}, 
+			</if>
+			<if test="GoodsCode != null">
+				GoodsCode = #{GoodsCode}, 
+			</if>
+			<if test="GoodsName != null">
+				GoodsName = #{GoodsName}, 
+			</if>
+			<if test="StandardPrice != null">
+				StandardPrice = #{StandardPrice}, 
+			</if>
+			<if test="SettlePrice != null">
+				SettlePrice = #{SettlePrice}, 
+			</if>
+			<if test="ChannelFee != null">
+				ChannelFee = #{ChannelFee}, 
+			</if>
+			<if test="GoodsCount != null">
+				GoodsCount = #{GoodsCount}, 
+			</if>
+			<if test="SubTotalAmount != null">
+				SubTotalAmount = #{SubTotalAmount}, 
+			</if>
+			<if test="Created != null">
+				Created = #{Created}, 
+			</if>
+			<if test="Updated != null">
+				Updated = #{Updated}, 
+			</if>
+			<if test="IsPackage != null">
+				IsPackage = #{IsPackage}, 
+			</if>
+			<if test="GoodsDetail != null">
+				GoodsDetail = #{GoodsDetail}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+
+</mapper>

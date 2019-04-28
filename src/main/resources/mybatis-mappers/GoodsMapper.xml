@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.GoodsDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and Id = #{params.Id} 
+			</if>
+			<if test="params.CinemaCode != null and params.CinemaCode != ''">
+				and CinemaCode = #{params.CinemaCode} 
+			</if>
+			<if test="params.UserId != null and params.UserId != ''">
+				and UserId = #{params.UserId} 
+			</if>
+			<if test="params.GoodsCode != null and params.GoodsCode != ''">
+				and GoodsCode = #{params.GoodsCode} 
+			</if>
+			<if test="params.GoodsName != null and params.GoodsName != ''">
+				and GoodsName = #{params.GoodsName} 
+			</if>
+			<if test="params.GoodsType != null and params.GoodsType != ''">
+				and GoodsType = #{params.GoodsType} 
+			</if>
+			<if test="params.StandardPrice != null and params.StandardPrice != ''">
+				and StandardPrice = #{params.StandardPrice} 
+			</if>
+			<if test="params.SettlePrice != null and params.SettlePrice != ''">
+				and SettlePrice = #{params.SettlePrice} 
+			</if>
+			<if test="params.GoodsPic != null and params.GoodsPic != ''">
+				and GoodsPic = #{params.GoodsPic} 
+			</if>
+			<if test="params.StockCount != null and params.StockCount != ''">
+				and StockCount = #{params.StockCount} 
+			</if>
+			<if test="params.GoodsDesc != null and params.GoodsDesc != ''">
+				and GoodsDesc = #{params.GoodsDesc} 
+			</if>
+			<if test="params.UnitName != null and params.UnitName != ''">
+				and UnitName = #{params.UnitName} 
+			</if>
+			<if test="params.ShowSeqNo != null and params.ShowSeqNo != ''">
+				and ShowSeqNo = #{params.ShowSeqNo} 
+			</if>
+			<if test="params.IsDiscount != null and params.IsDiscount != ''">
+				and IsDiscount = #{params.IsDiscount} 
+			</if>
+			<if test="params.GoodsKey != null and params.GoodsKey != ''">
+				and GoodsKey = #{params.GoodsKey} 
+			</if>
+			<if test="params.GoodsStatus != null and params.GoodsStatus != ''">
+				and GoodsStatus = #{params.GoodsStatus} 
+			</if>
+			<if test="params.IsRecommand != null and params.IsRecommand != ''">
+				and IsRecommand = #{params.IsRecommand} 
+			</if>
+			<if test="params.IsPackage != null and params.IsPackage != ''">
+				and IsPackage = #{params.IsPackage} 
+			</if>
+		
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from goods t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Goods">
+		select * from goods t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="update">
+		update goods t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="CinemaCode != null">
+				CinemaCode = #{CinemaCode}, 
+			</if>
+			<if test="UserId != null">
+				UserId = #{UserId}, 
+			</if>
+			<if test="GoodsCode != null">
+				GoodsCode = #{GoodsCode}, 
+			</if>
+			<if test="GoodsName != null">
+				GoodsName = #{GoodsName}, 
+			</if>
+			<if test="GoodsType != null">
+				GoodsType = #{GoodsType}, 
+			</if>
+			<if test="StandardPrice != null">
+				StandardPrice = #{StandardPrice}, 
+			</if>
+			<if test="SettlePrice != null">
+				SettlePrice = #{SettlePrice}, 
+			</if>
+			<if test="GoodsPic != null">
+				GoodsPic = #{GoodsPic}, 
+			</if>
+			<if test="StockCount != null">
+				StockCount = #{StockCount}, 
+			</if>
+			<if test="GoodsDesc != null">
+				GoodsDesc = #{GoodsDesc}, 
+			</if>
+			<if test="UnitName != null">
+				UnitName = #{UnitName}, 
+			</if>
+			<if test="ShowSeqNo != null">
+				ShowSeqNo = #{ShowSeqNo}, 
+			</if>
+			<if test="IsDiscount != null">
+				IsDiscount = #{IsDiscount}, 
+			</if>
+			<if test="GoodsKey != null">
+				GoodsKey = #{GoodsKey}, 
+			</if>
+			<if test="GoodsStatus != null">
+				GoodsStatus = #{GoodsStatus}, 
+			</if>
+			<if test="IsRecommand != null">
+				IsRecommand = #{IsRecommand}, 
+			</if>
+			<if test="IsPackage != null">
+				IsPackage = #{IsPackage}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+
+</mapper>

@@ -90,6 +90,27 @@
 			<if test="Introduction != null">
 				Introduction = #{Introduction}, 
 			</if>
+			<if test="Score != null">
+				Score = #{Score}, 
+			</if>
+			<if test="Area != null">
+				Area = #{Area}, 
+			</if>
+			<if test="Type != null">
+				Type = #{Type}, 
+			</if>
+			<if test="Language != null">
+				Language = #{Language}, 
+			</if>
+			<if test="Status != null">
+				Status = #{Status}, 
+			</if>
+			<if test="Image != null">
+				Image = #{Image}, 
+			</if>
+			<if test="Trailer != null">
+				Trailer = #{Trailer}
+			</if>
 
 		</set>
 
