@@ -28,7 +28,7 @@ public interface CinemaDao {
     @Update("update  cinema set Name=#{Name},Address=#{Address},ScreenCount=#{ScreenCount},CinemaId=#{CinemaId} where Code=#{Code}")
     int updateByCode(Cinema cinema);
     
-    @Insert("insert into cinema(MId, Code, Name, Address, ScreenCount, IsDel, ManualAdd, IsOpen, CinemaId) values(#{MId}, #{Code}, #{Name}, #{Address}, #{ScreenCount}, #{IsDel}, #{ManualAdd}, #{IsOpen}, #{CinemaId})")
+    @Insert("insert into cinema(MId, Code, Name, Province, City, Address, ScreenCount, IsDel, ManualAdd, IsOpen, ContactName, ContactMobile, TheaterChain, Latitude, Longitude, IsOpenSnacks, CinemaPhone, TicketHint, CinemaLabel, IsSnackDistribution, Created, Updated, CinemaId) values(#{MId}, #{Code}, #{Name}, #{Province}, #{City}, #{Address}, #{ScreenCount}, #{IsDel}, #{ManualAdd}, #{IsOpen}, #{ContactName}, #{ContactMobile}, #{TheaterChain}, #{Latitude}, #{Longitude}, #{IsOpenSnacks}, #{CinemaPhone}, #{TicketHint}, #{CinemaLabel}, #{IsSnackDistribution}, #{Created}, #{Updated}, #{CinemaId})")
     int save(Cinema cinema);
   
     int update(Cinema cinema);

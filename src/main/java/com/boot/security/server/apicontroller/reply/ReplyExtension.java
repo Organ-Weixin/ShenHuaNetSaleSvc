@@ -106,7 +106,7 @@ public class ReplyExtension {
 	
 	
 	//region QueryCinemasReply
-	public static boolean RequestInfoGuard(QueryCinemasReply reply, String Username, String Password, String AppId,String CurrentPage,String PageSize) {
+	public static boolean RequestInfoGuard(QueryCinemasReply reply, String Username, String Password, String AppId) {
         if (Username.isEmpty())
         {
             reply.SetNecessaryParamMissReply(Username);
@@ -122,16 +122,7 @@ public class ReplyExtension {
             reply.SetNecessaryParamMissReply(AppId);
             return false;
         }
-        if (CurrentPage.isEmpty())
-        {
-            reply.SetNecessaryParamMissReply(CurrentPage);
-            return false;
-        }
-        if (PageSize.isEmpty())
-        {
-            reply.SetNecessaryParamMissReply(PageSize);
-            return false;
-        }
+        
         return true;
     }
 	//endregion

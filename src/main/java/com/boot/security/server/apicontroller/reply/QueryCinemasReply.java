@@ -42,8 +42,12 @@ public class QueryCinemasReply extends BaseReply {
 			private String ContactName;
 			private String ContactMobile;
 			private String TheaterChain;
+			private String Province;
+			private String City;
 			private String Address;
 			private String Status;
+			private Double Latitude;
+			private Double Longitude;
 			private String OpenSnacks;	//是否开通套餐
 			private String TicketHint;
 			private String CinemaLabel;
@@ -92,6 +96,18 @@ public class QueryCinemasReply extends BaseReply {
 			public void setTheaterChain(String theaterChain) {
 				TheaterChain = theaterChain;
 			}
+			public String getProvince() {
+				return Province;
+			}
+			public void setProvince(String province) {
+				Province = province;
+			}
+			public String getCity() {
+				return City;
+			}
+			public void setCity(String city) {
+				City = city;
+			}
 			public String getAddress() {
 				return Address;
 			}
@@ -103,6 +119,18 @@ public class QueryCinemasReply extends BaseReply {
 			}
 			public void setStatus(String status) {
 				Status = status;
+			}
+			public Double getLatitude() {
+				return Latitude;
+			}
+			public void setLatitude(Double latitude) {
+				Latitude = latitude;
+			}
+			public Double getLongitude() {
+				return Longitude;
+			}
+			public void setLongitude(Double longitude) {
+				Longitude = longitude;
 			}
 			public String getOpenSnacks() {
 				return OpenSnacks;

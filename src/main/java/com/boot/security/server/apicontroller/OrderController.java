@@ -9,11 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.security.server.api.core.LockSeatReply;
@@ -42,7 +40,6 @@ import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import io.swagger.annotations.ApiOperation;
@@ -154,10 +151,10 @@ public class OrderController {
 			orderResult.setTotalFee(order.getOrderBaseInfo().getTotalFee());
 			orderResult.setTotalSalePrice(order.getOrderBaseInfo().getTotalSalePrice());
 			orderResult.setMobilePhone(order.getOrderBaseInfo().getMobilePhone());
-			orderResult.setLockTime(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(order.getOrderBaseInfo().getLockTime()));
-			orderResult.setAutoUnlockDatetime(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(order.getOrderBaseInfo().getAutoUnlockDatetime()));
+			orderResult.setLockTime(order.getOrderBaseInfo().getLockTime()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderBaseInfo().getLockTime()));
+			orderResult.setAutoUnlockDatetime(order.getOrderBaseInfo().getAutoUnlockDatetime()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderBaseInfo().getAutoUnlockDatetime()));
 			orderResult.setLockOrderCode(order.getOrderBaseInfo().getLockOrderCode());
-			orderResult.setCreated(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(order.getOrderBaseInfo().getCreated()));
+			orderResult.setCreated(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderBaseInfo().getCreated()));
 			orderResult.setTotalLoveSeatDifferences(order.getOrderBaseInfo().getTotalLoveSeatDifferences());
 			orderResult.setFeePayType(order.getOrderBaseInfo().getFeePayType()==null?"":order.getOrderBaseInfo().getFeePayType().toString());
 			orderResult.setTotalGuestPayFee(order.getOrderBaseInfo().getTotalGuestPayFee());
@@ -266,8 +263,8 @@ public class OrderController {
 				orderinfo.setTotalSalePrice(order.getTotalSalePrice());
 				orderinfo.setOrderStatus(order.getOrderStatus());
 				orderinfo.setMobilePhone(order.getMobilePhone());
-				orderinfo.setLockTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getLockTime()));
-				orderinfo.setAutoUnlockDatetime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getAutoUnlockDatetime()));
+				orderinfo.setLockTime(order.getLockTime()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getLockTime()));
+				orderinfo.setAutoUnlockDatetime(order.getAutoUnlockDatetime()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getAutoUnlockDatetime()));
 				orderinfo.setLockOrderCode(order.getLockOrderCode());
 				orderinfo.setSubmitTime(order.getSubmitTime()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getSubmitTime()));
 				orderinfo.setSubmitOrderCode(order.getSubmitOrderCode());

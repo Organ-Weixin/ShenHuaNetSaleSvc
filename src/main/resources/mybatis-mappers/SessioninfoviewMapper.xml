@@ -8,49 +8,28 @@
 			<if test="params.Id != null and params.Id != ''">
 				and Id = #{params.Id} 
 			</if>
-			<if test="params.SCode != null and params.SCode != ''">
-				and SCode = #{params.SCode} 
-			</if>
 			<if test="params.CCode != null and params.CCode != ''">
-				and CCode = #{params.CCode} 
+				and CinemaCode = #{params.CCode} 
 			</if>
 			<if test="params.ScreenCode != null and params.ScreenCode != ''">
 				and ScreenCode = #{params.ScreenCode} 
 			</if>
 			<if test="params.Name != null and params.Name != ''">
-				and Name = #{params.Name} 
+				and CinemaName = #{params.Name} 
 			</if>
 			<if test="params.Company != null and params.Company != ''">
 				and Company = #{params.Company} 
 			</if>
-			<if test="params.FilmCode != null and params.FilmCode != ''">
-				and FilmCode = #{params.FilmCode} 
-			</if>
 			<if test="params.FilmName != null and params.FilmName != ''">
-				and FilmName = #{params.FilmName} 
+				and FilmName like concat('%', #{params.FilmName}, '%')  
 			</if>
 			<if test="params.SName != null and params.SName != ''">
 				and SName = #{params.SName} 
 			</if>
 			<if test="params.StartTime != null and params.StartTime != ''">
-				and StartTime = #{params.StartTime} 
+				and StartTime like concat('%', #{params.StartTime}, '%') 
 			</if>
-			<if test="params.Duration != null and params.Duration != ''">
-				and Duration = #{params.Duration} 
-			</if>
-			<if test="params.Language != null and params.Language != ''">
-				and Language = #{params.Language} 
-			</if>
-			<if test="params.StandardPrice != null and params.StandardPrice != ''">
-				and StandardPrice = #{params.StandardPrice} 
-			</if>
-			<if test="params.LowestPrice != null and params.LowestPrice != ''">
-				and LowestPrice = #{params.LowestPrice} 
-			</if>
-			<if test="params.Price != null and params.Price != ''">
-				and Price = #{params.Price} 
-			</if>
-		
+			
 		</where>
 	</sql>
 
@@ -60,9 +39,9 @@
 	</select>
 
 	<select id="list" resultType="Sessioninfoview">
-		select * from sessioninfoview t
+		SELECT * FROM sessioninfoview t 
 		<include refid="where" />
-		${params.orderBy}
+		${params.orderBy} 
 		limit #{offset}, #{limit}
 	</select>
 

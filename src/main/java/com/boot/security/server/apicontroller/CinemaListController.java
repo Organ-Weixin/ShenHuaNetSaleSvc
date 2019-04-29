@@ -14,9 +14,11 @@ import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.apicontroller.reply.QueryCinemasReply.QueryCinemasBean;
 import com.boot.security.server.apicontroller.reply.QueryCinemasReply.QueryCinemasBean.CinemasReply;
 import com.boot.security.server.model.Cinema;
+import com.boot.security.server.model.CinemaMiniProgramAccounts;
 import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
+import com.boot.security.server.service.impl.CinemaMiniProgramAccountsServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
@@ -34,15 +36,16 @@ public class CinemaListController {
 	private CinemaServiceImpl _cinemaService;
 	@Autowired
 	private UserCinemaViewServiceImpl userCinemaViewService;
+	@Autowired
+	private CinemaMiniProgramAccountsServiceImpl cinemaMiniProgramAccountsService;
 
-	@GetMapping("/QueryCinemas/{UserName}/{Password}/{AppId}/{CurrentPage}/{PageSize}")
+	@GetMapping("/QueryCinemas/{UserName}/{Password}/{AppId}")
 	@ApiOperation(value = "获取影院")
-	public QueryCinemasReply QueryCinemas(@PathVariable String UserName,@PathVariable String Password,@PathVariable String AppId,
-			@PathVariable String CurrentPage,@PathVariable String PageSize){
+	public QueryCinemasReply QueryCinemas(@PathVariable String UserName,@PathVariable String Password,@PathVariable String AppId){
 		
 		QueryCinemasReply cinemasReply = new QueryCinemasReply();
 		//校验参数
-		if(!ReplyExtension.RequestInfoGuard(cinemasReply, UserName, UserName, AppId, CurrentPage, PageSize)){
+		if(!ReplyExtension.RequestInfoGuard(cinemasReply, UserName, UserName, AppId)){
 			return cinemasReply;
 		}
 		//获取用户信息(渠道)
@@ -52,24 +55,39 @@ public class CinemaListController {
             return cinemasReply;
         }
         
-       List<Cinema> cinemalist =  _cinemaService.getCinemas();
+        List<CinemaMiniProgramAccounts> cinemaMiniProgramlist =  cinemaMiniProgramAccountsService.getByAppId(AppId);
        QueryCinemasBean queryCinemasBean = new QueryCinemasBean();
-       if(cinemalist == null || cinemalist.size()==0){
+       if(cinemaMiniProgramlist == null || cinemaMiniProgramlist.size()==0){
     	   queryCinemasBean.setCinemaCount(0);
        } else {
-    	   queryCinemasBean.setCinemaCount(cinemalist.size());
+    	   queryCinemasBean.setCinemaCount(cinemaMiniProgramlist.size());
     	   List<CinemasReply> cinemas = new ArrayList<CinemasReply>();
-    	   for(Cinema cinema : cinemalist){
-    		   CinemasReply cinemareply = new CinemasReply();
-    		   cinemareply.setCinemaId(cinema.getId());
-    		   cinemareply.setCinemaCode(cinema.getCode());
-    		   cinemareply.setCinemaName(cinema.getName());
-    		   
-    		   Usercinemaview usercinema = userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(), cinema.getCode());
-    		   cinemareply.setCinemaType(usercinema==null?"":CinemaTypeEnum.getNameByCode(usercinema.getCinemaType()));
-    		   cinemareply.setAddress(cinema.getAddress());
-    		   cinemareply.setStatus(cinema.getIsOpen()==1?"开通":"关闭");
-    		   cinemas.add(cinemareply);
+    	   for(CinemaMiniProgramAccounts cinemaMini : cinemaMiniProgramlist){
+    		   Cinema cinema = _cinemaService.getByCinemaCode(cinemaMini.getCinemaCode());
+    		   if(cinema != null){
+    			   CinemasReply cinemareply = new CinemasReply();
+        		   cinemareply.setCinemaId(cinema.getId());
+        		   cinemareply.setCinemaCode(cinema.getCode());
+        		   cinemareply.setCinemaName(cinema.getName());
+        		   
+        		   Usercinemaview usercinema = userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(), cinema.getCode());
+        		   cinemareply.setCinemaType(usercinema==null?"":CinemaTypeEnum.getNameByCode(usercinema.getCinemaType()));
+        		   cinemareply.setContactName(cinema.getContactName());
+        		   cinemareply.setContactMobile(cinema.getContactMobile());
+        		   cinemareply.setTheaterChain(cinema.getTheaterChain()==null?"":cinema.getTheaterChain().toString());
+        		   cinemareply.setProvince(cinema.getProvince());
+        		   cinemareply.setCity(cinema.getCity());
+        		   cinemareply.setAddress(cinema.getAddress());
+        		   cinemareply.setStatus(cinema.getIsOpen()==1?"开通":"关闭");
+        		   cinemareply.setLatitude(cinema.getLatitude());
+        		   cinemareply.setLongitude(cinema.getLongitude());
+        		   cinemareply.setOpenSnacks(cinema.getIsOpenSnacks()==1?"是":"否");
+        		   cinemareply.setTicketHint(cinema.getTicketHint());
+        		   cinemareply.setCinemaLabel(cinema.getCinemaLabel());
+        		   cinemareply.setCinemaPhone(cinema.getCinemaPhone());
+        		   cinemareply.setIsSnackDistribution(cinema.getIsSnackDistribution()==1?"是":"否");
+        		   cinemas.add(cinemareply);
+    		   }
     	   }
     	   queryCinemasBean.setCinemas(cinemas);
        }

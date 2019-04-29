@@ -6,109 +6,109 @@ public class Sessioninfoview extends BaseEntity<Long> {
 
 	private Long Id;
 	private String SCode;
-	private String CCode;
+	private String CinemaCode;
+	private String CinemaName;
 	private String ScreenCode;
-	private String Name;
+	private String ScreenName;
 	private String Company;
 	private String FilmCode;
 	private String FilmName;
-	private String SName;
 	private Date StartTime;
 	private Integer Duration;
 	private String Language;
 	private Double StandardPrice;
 	private Double LowestPrice;
 	private Double Price;
-
+	
 	public Long getId() {
 		return Id;
 	}
-	public void setId(Long Id) {
-		this.Id = Id;
+	public void setId(Long id) {
+		Id = id;
 	}
 	public String getSCode() {
 		return SCode;
 	}
-	public void setSCode(String SCode) {
-		this.SCode = SCode;
+	public void setSCode(String sCode) {
+		SCode = sCode;
 	}
-	public String getCCode() {
-		return CCode;
+	public String getCinemaCode() {
+		return CinemaCode;
 	}
-	public void setCCode(String CCode) {
-		this.CCode = CCode;
+	public void setCinemaCode(String cinemaCode) {
+		CinemaCode = cinemaCode;
+	}
+	public String getCinemaName() {
+		return CinemaName;
+	}
+	public void setCinemaName(String cinemaName) {
+		CinemaName = cinemaName;
 	}
 	public String getScreenCode() {
 		return ScreenCode;
 	}
-	public void setScreenCode(String ScreenCode) {
-		this.ScreenCode = ScreenCode;
+	public void setScreenCode(String screenCode) {
+		ScreenCode = screenCode;
 	}
-	public String getName() {
-		return Name;
+	public String getScreenName() {
+		return ScreenName;
 	}
-	public void setName(String Name) {
-		this.Name = Name;
+	public void setScreenName(String screenName) {
+		ScreenName = screenName;
 	}
 	public String getCompany() {
 		return Company;
 	}
-	public void setCompany(String Company) {
-		this.Company = Company;
+	public void setCompany(String company) {
+		Company = company;
 	}
 	public String getFilmCode() {
 		return FilmCode;
 	}
-	public void setFilmCode(String FilmCode) {
-		this.FilmCode = FilmCode;
+	public void setFilmCode(String filmCode) {
+		FilmCode = filmCode;
 	}
 	public String getFilmName() {
 		return FilmName;
 	}
-	public void setFilmName(String FilmName) {
-		this.FilmName = FilmName;
-	}
-	public String getSName() {
-		return SName;
-	}
-	public void setSName(String SName) {
-		this.SName = SName;
+	public void setFilmName(String filmName) {
+		FilmName = filmName;
 	}
 	public Date getStartTime() {
 		return StartTime;
 	}
-	public void setStartTime(Date StartTime) {
-		this.StartTime = StartTime;
+	public void setStartTime(Date startTime) {
+		StartTime = startTime;
 	}
 	public Integer getDuration() {
 		return Duration;
 	}
-	public void setDuration(Integer Duration) {
-		this.Duration = Duration;
+	public void setDuration(Integer duration) {
+		Duration = duration;
 	}
 	public String getLanguage() {
 		return Language;
 	}
-	public void setLanguage(String Language) {
-		this.Language = Language;
+	public void setLanguage(String language) {
+		Language = language;
 	}
 	public Double getStandardPrice() {
 		return StandardPrice;
 	}
-	public void setStandardPrice(Double StandardPrice) {
-		this.StandardPrice = StandardPrice;
+	public void setStandardPrice(Double standardPrice) {
+		StandardPrice = standardPrice;
 	}
 	public Double getLowestPrice() {
 		return LowestPrice;
 	}
-	public void setLowestPrice(Double LowestPrice) {
-		this.LowestPrice = LowestPrice;
+	public void setLowestPrice(Double lowestPrice) {
+		LowestPrice = lowestPrice;
 	}
 	public Double getPrice() {
 		return Price;
 	}
-	public void setPrice(Double Price) {
-		this.Price = Price;
+	public void setPrice(Double price) {
+		Price = price;
 	}
-
+	
 }
