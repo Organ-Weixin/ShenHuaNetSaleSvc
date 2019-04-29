@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
 import com.boot.security.server.model.Sessioninfo;
 
 public interface SessioninfoService {

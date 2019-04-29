@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.boot.security.server.dao.ScreenseatinfoDao;
 import com.boot.security.server.dao.SessioninfoDao;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.service.SessioninfoService;

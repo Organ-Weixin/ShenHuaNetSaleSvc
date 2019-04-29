@@ -78,7 +78,9 @@ public class ModelMapper {
         session.setScreenCode(entity.getScreenCode());
         session.setCode(entity.getSCode());
         session.setFeatureNo(entity.getFeatureNo());
-        session.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(entity.getStartTime()));
+        if(entity.getStartTime()!=null){
+        	session.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(entity.getStartTime()));
+        }
         session.setPlaythroughFlag(entity.getPlaythroughFlag());
         //session.setPlaythroughFlag(StatusEnum.valueOf(entity.getPlaythroughFlag()));
 
@@ -88,8 +90,12 @@ public class ModelMapper {
         film.setCode(entity.getFilmCode());
         film.setName(entity.getFilmName());
         film.setDimensional(entity.getDimensional());
-        film.setDuration(String.valueOf(entity.getDuration()));
-        film.setSequence(String.valueOf(entity.getSequence()));
+        if(entity.getDuration()!=null){
+        	film.setDuration(String.valueOf(entity.getDuration()));
+        }
+        if(entity.getSequence()!=null){
+        	film.setSequence(String.valueOf(entity.getSequence()));
+        }
         film.setLanguage(entity.getLanguage());
         session.getFilms().Film.add(film);
 
@@ -121,7 +127,9 @@ public class ModelMapper {
             orderBaseInfo.setOrderStatus(OrderStatusEnum.Created.getStatusCode());
             orderBaseInfo.setCreated(new Date());
             orderBaseInfo.setDeleted(0);	//订单删除标识
-            orderBaseInfo.setIsMemberPay(Integer.valueOf(queryXmlObj.getOrder().getPayType()));
+            if(queryXmlObj.getOrder().getPayType()!=null){
+            	orderBaseInfo.setIsMemberPay(Integer.valueOf(queryXmlObj.getOrder().getPayType()));
+            }
             if (userCinema.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode())
             {
                 //数据库中会员及非会员支付类型以逗号分隔存于PayType字段中，会员在前
@@ -190,17 +198,37 @@ public class ModelMapper {
 		goods.setGoodsKey(entity.getGoodsKey());
 		goods.setGoodsName(entity.getGoodsName());
 		goods.setGoodsPic(entity.getGoodsPic());
-		goods.setGoodsStatus(entity.getGoodsStatus()==1?"Up":"Down");
-		goods.setGoodsType(entity.getGoodsType().toString());
-		goods.setIsDiscount(entity.getIsDiscount());
-		goods.setIsPackage(entity.getIsPackage());
-		goods.setIsRecommand(entity.getIsRecommand());
-		goods.setSettlePrice(entity.getSettlePrice().floatValue());
-		goods.setShowSeqNo(entity.getShowSeqNo());
-		goods.setStandardPrice(entity.getStandardPrice().floatValue());
-		goods.setStockCount(entity.getStockCount());
+		if(entity.getGoodsStatus()!=null){
+			goods.setGoodsStatus(entity.getGoodsStatus()==1?"Up":"Down");
+		}
+		if(entity.getGoodsType()!=null){
+			goods.setGoodsType(entity.getGoodsType().toString());
+		}
+		if(entity.getIsDiscount()!=null){
+			goods.setIsDiscount(entity.getIsDiscount());
+		}
+		if(entity.getIsPackage()!=null){
+			goods.setIsPackage(entity.getIsPackage());
+		}
+		if(entity.getIsRecommand()!=null){
+			goods.setIsRecommand(entity.getIsRecommand());
+		}
+		if(entity.getSettlePrice()!=null){
+			goods.setSettlePrice(entity.getSettlePrice().floatValue());
+		}
+		if(entity.getShowSeqNo()!=null){
+			goods.setShowSeqNo(entity.getShowSeqNo());
+		}
+		if(entity.getStandardPrice()!=null){
+			goods.setStandardPrice(entity.getStandardPrice().floatValue());
+		}
+		if(entity.getStockCount()!=null){
+			goods.setStockCount(entity.getStockCount());
+		}
 		goods.setUnitName(entity.getUnitName());
-		goods.setUserId(entity.getUserId().longValue());
+		if(entity.getUserId()!=null){
+			goods.setUserId(entity.getUserId().longValue());
+		}
 		return goods;
     }
 }

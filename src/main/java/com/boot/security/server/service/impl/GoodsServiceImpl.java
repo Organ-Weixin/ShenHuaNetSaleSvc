@@ -24,4 +24,22 @@ public class GoodsServiceImpl implements GoodsService {
 		return goodsDao.getByCinemaCode(userid,cinemacode);
 	}
 
+	@Override
+	public Goods getByCinemaCodeAndGoodsCode(String cinemacode, String goodscode) {
+		// TODO Auto-generated method stub
+		return goodsDao.getByCinemaCodeAndGoodsCode(cinemacode, goodscode);
+	}
+
+	@Override
+	public int save(Goods goods) {
+		// TODO Auto-generated method stub
+		return goodsDao.save(goods);
+	}
+
+	@Override
+	public int update(Goods goods) {
+		// TODO Auto-generated method stub
+		return goodsDao.update(goods);
+	}
+
 }

@@ -14,7 +14,7 @@
 			<input type="text" id="GroupCode" hidden>
 			<input type="text" id="CinemaCode" hidden>
 			<input type="text" id="TypeCode" hidden>
-			<input type="text" id="SnackCode" hidden>
+			<!-- <input type="text" id="SnackCode" hidden> -->
 			<input type="text" id="Status" hidden>
 			<div class='form-group'>
 				<label class='col-md-2 control-label'>影院编码<font style="color:red">*</font></label>
@@ -26,6 +26,7 @@
 			</div>
 			<div class='form-group'>
 				<label class='col-md-2 control-label'>上级优惠卷类型</label>
+				<input type="text" id="conpontype" name="typeName" hidden>
 				<div class='col-md-10'>
 					<select class="form-control" id="typename" name="typeCode">
 					 	<option value="">请选择...</option>
@@ -33,10 +34,10 @@
 				</div>
 			</div>
 			<div class='form-group' id="types">
-				<input type="text"  name="snackCode" id="snackList">
+				<input type="text"  name="snackCode" id="snackList" hidden>
 				<label class='col-md-2 control-label'>影片/套餐</label>
 				<div class='col-md-10' style="float:left;width:800px;">
-					<select class="form-control" id="Snacks">
+					<select name="goods" class="form-control" id="Snacks">
 						<option value="">请选择...</option>
 					 </select>
 				</div>
@@ -88,9 +89,8 @@
 			<div class="form-actions">
 				<div class="row" align="center">
 					<div class="col-md-12">
-						<button id="">AAA</button>
 					    <button class="btn btn-primary" id="goback">返回</button>
-						<button class="btn btn-primary" type="submit" onclick="update()">
+						<button class="btn btn-primary" type="submit" onclick="getGoodList()">
 							<i class="fa fa-save"></i> 保存
 						</button>
 					</div>
@@ -135,7 +135,20 @@
 						var option = "<option value="+data[i].snackCode+">"+data[i].snackName+"</option>";
 						$("#Snacks").append(option);
 					}
-					$("#Snacks").val($("#SnackCode").val());
+					var snackArray = new Array();
+					snackArray = $("#snackList").val().split(',');
+					var select = "<div class = 'col-md-10 ss' style='float:left;width:1000px;margin-left:231px;margin-top:10px'>";
+					select = select +"<select name='goods' class='form-control' style='width:775px;float:left;'>";
+					select = select +""+$("#Snacks").html()+"";
+					select = select +"</select>";
+					select = select +"<button style='margin-left:35px;margin-top:5px;float:left' class='delType'>x</button>";
+					select = select +"</div>";
+					for(var i=0; i<snackArray.length-1;i++){
+						$("#types").append(select);
+					}
+					for(var i=0;i<snackArray.length;i++){
+						$("select[name=goods]").eq(i).val(snackArray[i]);
+					}
 				}
 			});
 		} 
@@ -150,20 +163,58 @@
 						var option = "<option value="+data[i].filmCode+">"+data[i].filmName+"</option>";
 						$("#Snacks").append(option); 
 					}
-					$("#Snacks").val($("#SnackCode").val());
+					var snackArray = new Array();
+					snackArray = $("#snackList").val().split(',');
+					var select = "<div class = 'col-md-10 ss' style='float:left;width:1000px;margin-left:231px;margin-top:10px'>";
+					select = select +"<select name='goods' class='form-control' style='width:775px;float:left;'>";
+					select = select +""+$("#Snacks").html()+"";
+					select = select +"</select>";
+					select = select +"<button style='margin-left:35px;margin-top:5px;float:left' class='delType'>x</button>";
+					select = select +"</div>";
+					for(var i=0; i<snackArray.length-1;i++){
+						$("#types").append(select);
+					}
+					for(var i=0;i<snackArray.length;i++){
+						$("select[name=goods]").eq(i).val(snackArray[i]);
+					}
 				}
 			});
 		}
 		
 		$("#StatusSelect").val($("#Status").val());
 		
-		/* $("#snackList").val($("#SnackCode").val());
-		$("#types").on('blur','.col-md-10 select',function(){
-			$("#snackList").val($("#snackList").val()+","+$(this).val());
-		}); */
-		
+			$("#typename").blur(function(){
+				$("#conpontype").val($(this).find("option:selected").text());
+				if($("#typename").val()=="05"||$("#typename").val()=="06"){
+					$("select[name=goods]").val("");
+					$("#types").css("display","none");
+				}
+				if($("#typename").val()=="04"){
+					$("#types").css("display","block");
+					for(var i=0;i<$("select[name=goods]").length;i++){
+						$("select[name=goods]").eq(i+1).remove();
+						$(".delType").eq(i).remove();
+					} 
+					$("#Snacks").html('"<option value="">请选择...</option>"');
+					$("#Snacks").val("");
+					$("#snackList").val("");
+					getFilms();
+				}
+				if($("#typename").val()=="07"){
+					$("#types").css("display","block");
+					for(var i=0;i<$("select[name=goods]").length;i++){
+						$("select[name=goods]").eq(i+1).remove();
+						$(".delType").eq(i).remove();
+					} 
+					$("#Snacks").html('"<option value="">请选择...</option>"');
+					$("#Snacks").val("");
+					$("#snackList").val("");
+					getSnacks();
+				}
+			});
+			
 	}
-	
+//////////////////	window.onload
 	
 		layui.use(['layer','laydate'], function(){
 		    var layer = layui.layer;
@@ -179,9 +230,32 @@
 			});
 		});
 		
+		
+		function getGoodList(){
+			var goodCodes = "";
+			for(var i=0;i<$("select[name=goods]").length;i++){
+				goodCodes += $("select[name=goods]").eq(i).val()+",";
+			}
+			var goodList = goodCodes.substring(0,goodCodes.length-1).split(',');
+			var new_arr=[];
+			for(var i=0;i<goodList.length;i++){
+				var items=goodList[i];
+				if($.inArray(items,new_arr)==-1) {
+				　　　　new_arr.push(items);
+				　　}
+			}
+			$("#snackList").val(new_arr);
+			if($("#snackList").val()!=null&&$("#snackList").val()!=""&&$("#typename").val()!=null&&$("#typename").val()!=""){
+				update();
+			}else{
+				alert("信息未完善！");
+			}
+		}
+		
 		$("#goback").click(function(){
 			window.location.href="conponsList.html?groupCode="+$("#GroupCode").val();
 		});
+		
 		
 		initUser();
 		function initUser(){
@@ -212,8 +286,8 @@
 			});
 		}
 		 $("#addType").click(function(){
-			var select = "<div class = 'col-md-10' style='float:left;width:1000px;margin-left:231px;margin-top:10px'>";
-			select = select +"<select class='form-control' style='width:775px;float:left;'>";
+			var select = "<div class = 'col-md-10 ss' style='float:left;width:1000px;margin-left:231px;margin-top:10px'>";
+			select = select +"<select name='goods' class='form-control' style='width:775px;float:left;'>";
 			select = select +""+$("#Snacks").html()+"";
 			select = select +"</select>";
 			select = select +"<button style='margin-left:35px;margin-top:5px;float:left' class='delType'>x</button>";
@@ -224,8 +298,8 @@
 		 $("#types").on('click','.col-md-10 .delType',function(){
 			 $(this).parent().remove();
 		 });
-		 
 		
+		 
 		initData();
 		
 		function initData(){
@@ -238,13 +312,13 @@
 					success : function(data) {
 						$('#Id').val(data.id);
 						$('#TypeCode').val(data.typeCode);
-						$('#TypeName').val(data.typeName);
+						$('#conpontype').val(data.typeName);
 						$('#CinemaCode').val(data.cinemaCode);
 						$('#GroupCode').val(data.groupCode);
 						$('#OpenID').val(data.openID);
 						$('#Price').val(data.price);
 						$('#ConponCode').val(data.conponCode);
-						$('#SnackCode').val(data.snackCode);
+						$('#snackList').val(data.snackCode);
 						$('#ValidityDate').val(data.validityDate);
 						$('#ReceivedDate').val(data.receivedDate);
 						$('#Status').val(data.status);

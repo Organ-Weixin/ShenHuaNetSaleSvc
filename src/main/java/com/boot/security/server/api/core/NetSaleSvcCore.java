@@ -305,20 +305,36 @@ public class NetSaleSvcCore {
 			return queryFilmReply;
 		}
 		// 验证日期是否正确
-		Date Start = new SimpleDateFormat("yyyy-MM-dd").parse(StartDate);
-		Date End = new SimpleDateFormat("yyyy-MM-dd").parse(EndDate);
-		if (Start == null) {
+		Date Start = new Date();
+		Date End = new Date();
+		if(StartDate!=null){
+			Start = new SimpleDateFormat("yyyy-MM-dd").parse(StartDate);
+		}else{
 			queryFilmReply.SetStartDateInvalidReply();
 			return queryFilmReply;
 		}
-		if (End == null) {
+		if(EndDate!=null){
+			End = new SimpleDateFormat("yyyy-MM-dd").parse(EndDate);
+		}else{
 			queryFilmReply.SetEndDateInvalidReply();
 			return queryFilmReply;
 		}
-		if (Start.getTime() > End.getTime()) {
+		if(Start.getTime() > End.getTime()){
 			queryFilmReply.SetDateInvalidReply();
 			return queryFilmReply;
 		}
+		/*if (Start == null) {
+			queryFilmReply.SetStartDateInvalidReply();
+			return queryFilmReply;
+		}*/
+		/*if (End == null) {
+			queryFilmReply.SetEndDateInvalidReply();
+			return queryFilmReply;
+		}*/
+		/*if (Start.getTime() > End.getTime()) {
+			queryFilmReply.SetDateInvalidReply();
+			return queryFilmReply;
+		}*/
 
 		return QueryFilm(queryFilmReply, userCinema, Start, End);
 	}
@@ -374,7 +390,25 @@ public class NetSaleSvcCore {
 			return querySessionReply;
 		}
 		// 验证日期是否正确
-		Date Start = new SimpleDateFormat("yyyy-MM-dd").parse(StartDate);
+		Date Start = new Date();
+		Date End = new Date();
+		if(StartDate!=null){
+			Start = new SimpleDateFormat("yyyy-MM-dd").parse(StartDate);
+		}else{
+			querySessionReply.SetStartDateInvalidReply();
+			return querySessionReply;
+		}
+		if(EndDate!=null){
+			End = new SimpleDateFormat("yyyy-MM-dd").parse(EndDate);
+		}else{
+			querySessionReply.SetEndDateInvalidReply();
+			return querySessionReply;
+		}
+		if(Start.getTime() > End.getTime()){
+			querySessionReply.SetDateInvalidReply();
+			return querySessionReply;
+		}
+		/*Date Start = new SimpleDateFormat("yyyy-MM-dd").parse(StartDate);
 		Date End = new SimpleDateFormat("yyyy-MM-dd").parse(EndDate);
 		if (Start == null) {
 			querySessionReply.SetStartDateInvalidReply();
@@ -387,7 +421,7 @@ public class NetSaleSvcCore {
 		if (Start.getTime() > End.getTime()) {
 			querySessionReply.SetDateInvalidReply();
 			return querySessionReply;
-		}
+		}*/
 
 		return QuerySession(querySessionReply, userCinema, Start, End);
 	}
@@ -569,8 +603,10 @@ public class NetSaleSvcCore {
 		if (StatusEnum.Success.equals(CTMSReply.Status)) {
 			reply.setOrder(reply.new LockSeatReplyOrder());
 			reply.getOrder().setOrderCode(order.getOrderBaseInfo().getLockOrderCode());
-			reply.getOrder().setAutoUnlockDatetime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-					.format(order.getOrderBaseInfo().getAutoUnlockDatetime()));
+			if(order.getOrderBaseInfo().getAutoUnlockDatetime()!=null){
+				reply.getOrder().setAutoUnlockDatetime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+						.format(order.getOrderBaseInfo().getAutoUnlockDatetime()));
+			}
 			reply.getOrder().setSessionCode(order.getOrderBaseInfo().getSessionCode());
 			reply.getOrder().setCount(order.getOrderBaseInfo().getTicketCount());
 			List<LockSeatReplySeat> replySeats = new ArrayList<LockSeatReplySeat>();
@@ -1057,7 +1093,7 @@ public class NetSaleSvcCore {
             	ticket.setFilmCode(order.getOrderBaseInfo().getFilmCode());
             	ticket.setFilmName(order.getOrderBaseInfo().getFilmName());
             	ticket.setSessionCode(order.getOrderBaseInfo().getSessionCode());
-            	ticket.setSessionDateTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderBaseInfo().getSessionTime()));
+            	ticket.setSessionDateTime(order.getOrderBaseInfo().getSessionTime()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderBaseInfo().getSessionTime()));
             	ticket.setTicketCode(orderseat.getFilmTicketCode());
             	ticket.setSeatCode(orderseat.getSeatCode());
             	ticket.setSeatName(orderseat.getRowNum()+"排"+orderseat.getColumnNum()+"座");

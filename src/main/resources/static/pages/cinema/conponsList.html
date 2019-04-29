@@ -19,9 +19,13 @@
 	                   			<td>
 		                   			<form class="form-inline" onsubmit="return false">
 										<div class="form-group">
-											id：
-											<input id="id" type="text" class="form-control" placeholder="id">
-											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
+											<select id="statuss" class="form-control">
+												<option value="">全部</option>
+												<option value="0">非法状态</option>
+												<option value="2">已使用</option>
+												<option value="3">未使用</option>
+												<option value="4">已领取</option>
+											</select>
 										</div>
 									</form>
 	                   			</td>
@@ -104,7 +108,7 @@ function init(){
         		"type":"get",
         		"data":function(d){
         			d.GroupCode = groupCode;
-    				d.Id = $("#id").val();
+    				d.Status = $("#statuss").val();
     			}
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
@@ -165,7 +169,7 @@ function del(id){
     });
 }
 
-$("#searchBt").click(function(){
+$("#statuss").blur(function(){
 	example.ajax.reload();
 });
 

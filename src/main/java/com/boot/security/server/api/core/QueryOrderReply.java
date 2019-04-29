@@ -2,8 +2,6 @@ package com.boot.security.server.api.core;
 
 import java.util.List;
 
-import com.boot.security.server.model.CinemaTypeEnum;
-import com.boot.security.server.model.YesOrNoEnum;
 
 public class QueryOrderReply extends BaseReply {
 	public QueryOrderReply()

@@ -746,5 +746,10 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 		reply.ErrorMessage = mtxReply.getGetCardTypeReturn().getResultMsg();
 		return reply;
 	}
+	@Override
+	public CTMSQueryGoodsReply QueryGoods(Usercinemaview userCinema) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

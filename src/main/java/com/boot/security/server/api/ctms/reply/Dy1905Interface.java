@@ -15,12 +15,14 @@ import com.boot.security.server.api.ctms.reply.Dy1905GetOrderStatusResult.ResBea
 import com.boot.security.server.api.ctms.reply.Dy1905GetScreenResult.ResBean.ScreensBean.ScreenBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetScreenSeatResult.ResBean.ScreenSeatsBean.ScreenSeatBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetSessionSeatResult.ResBean.SessionSeatsBean.SessionSeatBean;
+import com.boot.security.server.api.ctms.reply.Dy1905GoodsListResult.ResBean.GoodsBean.GoodBean;
 import com.boot.security.server.api.ctms.reply.Dy1905LockSeatCustomResult.ResBean.SeatInfosBean.SeatInfoBean;
 import com.boot.security.server.api.ctms.reply.Dy1905MakeMemberCardResult.ResBean.CardInfoBean;
 import com.boot.security.server.api.ctms.reply.Dy1905MemberTypeListResult.ResBean.TypesBean.TypeBean.LevelsBean.LevelBean;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
+import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.LoveFlagEnum;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
@@ -36,6 +38,7 @@ import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
+import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
@@ -58,6 +61,7 @@ public class Dy1905Interface implements ICTMSInterface {
 	FilminfoServiceImpl filminfoService = SpringUtil.getBean(FilminfoServiceImpl.class);
 	MemberCardServiceImpl memberCardService = SpringUtil.getBean(MemberCardServiceImpl.class);
 	MemberCardLevelServiceImpl memberCardLevelService = SpringUtil.getBean(MemberCardLevelServiceImpl.class);
+	GoodsServiceImpl goodsService = SpringUtil.getBean(GoodsServiceImpl.class);
 	/*
 	 * 查询影院信息（完成）
 	 * */
@@ -1088,6 +1092,52 @@ public class Dy1905Interface implements ICTMSInterface {
 			}
 			reply.ErrorCode = Dy1905Reply.getCardsListResult().getResultCode();
 			reply.ErrorMessage = Dy1905Reply.getCardsListResult().getResultMsg();
+			return reply;
+		}
+		
+		/*
+		 * 卖品
+		 * */
+		/*
+		 * 卖品列表
+		 * */
+		@Override
+		public CTMSQueryGoodsReply QueryGoods(Usercinemaview userCinema) throws Exception {
+			CTMSQueryGoodsReply reply = new CTMSQueryGoodsReply();
+			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
+			Map<String,String> param = new LinkedHashMap<String,String>();
+			param.put("pAppCode",userCinema.getDefaultUserName());
+			param.put("pCinemaID",userCinema.getCinemaId());
+			param.put("pVerifyInfo",pVerifyInfo);
+			String GoodsListResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/GoodsList",param,"UTF-8");
+			System.out.println(GoodsListResult);
+			Gson gson = new Gson();
+			Dy1905GoodsListResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(GoodsListResult,"GoodsListResult"), Dy1905GoodsListResult.class);
+			if(Dy1905Reply.getGoodsListResult().getResultCode().equals("0")){
+				List<Goods> goodList = new ArrayList<Goods>();
+				List<GoodBean> dy1905goodList =  Dy1905Reply.getGoodsListResult().getGoods().getGood();
+				for(GoodBean dy1905good : dy1905goodList){
+					Goods goodModel = goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), dy1905good.getSerial());
+					Goods goods = new Goods();
+					goods.setCinemaCode(userCinema.getCinemaCode());
+					goods.setUserId(userCinema.getUserId());
+					goods.setIsPackage(0);
+					if(goodModel==null){
+						Dy1905ModelMapper.MaptoEntity(dy1905good, goods);
+						goodsService.save(goods);
+					}else{
+						goods.setId(goodModel.getId());
+						Dy1905ModelMapper.MaptoEntity(dy1905good, goods);
+						goodsService.update(goods);
+					}
+					goodList.add(goods);
+				}
+				reply.Status = StatusEnum.Success;
+			}else{
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = Dy1905Reply.getGoodsListResult().getResultCode();
+			reply.ErrorMessage = Dy1905Reply.getGoodsListResult().getResultMsg();
 			return reply;
 		}
 }

@@ -7,7 +7,7 @@ public class Goods extends BaseEntity<Long> {
 
 	private Long Id;
 	private String CinemaCode;
-	private Integer UserId;
+	private Long UserId;
 	private String GoodsCode;
 	private String GoodsName;
 	private Integer GoodsType;
@@ -36,10 +36,10 @@ public class Goods extends BaseEntity<Long> {
 	public void setCinemaCode(String CinemaCode) {
 		this.CinemaCode = CinemaCode;
 	}
-	public Integer getUserId() {
+	public Long getUserId() {
 		return UserId;
 	}
-	public void setUserId(Integer UserId) {
+	public void setUserId(Long UserId) {
 		this.UserId = UserId;
 	}
 	public String getGoodsCode() {

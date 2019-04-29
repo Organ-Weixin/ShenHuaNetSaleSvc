@@ -3,7 +3,6 @@ package com.boot.security.server.apicontroller.reply;
 import java.util.Date;
 import java.util.List;
 
-import com.boot.security.server.apicontroller.reply.QuerySessionsReply.QuerySessionsReplySessions.QuerySessionsReplySession.QuerySessionsReplyPrices;
 
 public class QuerySessionsReply extends BaseReply {
 	// 获取影片场次信息
