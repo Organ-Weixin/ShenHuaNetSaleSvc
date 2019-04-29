@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"> 
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
+	<link rel="stylesheet" href="../../layui/css/layui.css" media="all" />
+    <link rel="stylesheet" type="text/css" media="screen" href="../../css/ticketSale.css"/>
+    <title>Document</title>
+</head>
+<body>
+<div id="ticket-sale">
+	<div id="content">
+		<div class="ts-title">票务促销</div>
+		<select class="region">
+			<option>衢州</option>
+		</select>
+		<select class="cinema">
+			<option>神画新天地影城</option>
+		</select>
+		<div class="ts-activity">
+			<div class="new-activity">新建营销活动</div>
+			<div class="query">
+                <input type="text" placeholder="活动名称" class="activity-name">
+                <select class="activity-way">
+                	<option>活动方式</option>
+                </select>
+                <select class="activity-state">
+                    <option value="" disabled selected style="display: none">活动状态</option>
+                    <option value="">未开启</option>
+                    <option value="">已启用</option>
+                    <option value="">停止</option>
+                    <option value="">已过期</option>
+                </select>
+                <button class="query-btn">查询</button>
+                <button class="del-btn">清空</button>
+            </div>
+		</div>
+		<div class="ts-form">
+				<div>
+                    <div class="widget-body no-padding">
+                        <table id="dt-table" class="table table-striped table-bordered table-hover" style="width:100%">
+                            <thead>                       
+                                <tr>
+									<th>序号</th>
+									<th>活动名称</th>
+									<th>优惠类型</th>
+									<th>门栏金额</th>
+									<th>优惠金额</th>
+									<th>开始日期</th>
+									<th>结束日期</th>
+									<th>是否叠加</th>
+									<th>活动状态</th>
+									<th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+		</div>
+	</div>
+    <div id="create">
+        <div class="create-title">新建营销活动</div>
+        <div class="create-container">
+<!--            活动名称-->
+            <div class="create-name">
+                <span class="headings">活动名称</span>
+                <input type="text" class="name-inp">
+            </div>
+<!--            活动方式-->
+            <div class="create-kind other">
+                <span class="headings">活动方式</span>
+                <select class="kind-select">
+                    <option value="">立减</option>
+                    <option value="">固定价</option>
+                    <option value="">最低放行价</option>
+                </select>
+            </div>
+<!--            立减金额-->
+            <div class="create-amount other">
+                <span class="headings">立减金额</span>
+                <input type="text" class="amount-inp">
+                <span class="unit">（元）</span>
+            </div>
+<!--            活动票数-->
+            <div class="create-votes other">
+                <span class="headings">活动票数</span>
+                <div class="number-options">
+                    <form>
+                        <input type="radio" name="number">&nbsp;&nbsp;<span>不限数量</span>
+                        <input type="radio" name="number">&nbsp;&nbsp;<span>指定数量</span>
+                        <input type="radio" name="number">&nbsp;&nbsp;<span>分天限量</span>
+                    </form>
+                </div>
+                <div class="votes-info">
+                    <span>每天</span>
+                    <select style="height: 40px;width: 60px;font-size: 16px;">
+                        <option value="">11</option>
+                    </select>
+                    <span>：</span>
+                    <select style="height: 40px;width: 60px;font-size: 16px;">
+                        <option value="">00</option>
+                    </select>
+                    <span>活动开始，每天限量</span>
+                    <input type="text" style="height: 35px;width: 100px;font-size: 16px;">
+                    <span>张活动票</span>
+                    <span class="describe">应为最小不低于1的数字</span>
+                </div>
+                <div class="votes-explain">活动时间内，每日11:00:00开始抢票，每天23:59:59或活动票抢完后，活动立刻停止，价格恢复。第二天11:00:00活动重新开始</div>
+            </div>
+<!--            每人限购-->
+            <div class="create-purchasing other">
+                <span class="headings">每人限购</span>
+                <div class="purchasing-option">
+                    <form style="margin-bottom:15px;">
+                        <input type="radio" name="purchasing">&nbsp;&nbsp;<span>不限</span>
+                        <input type="radio" name="purchasing">&nbsp;&nbsp;<span>指定张数</span>
+                    </form>
+                    <input type="text" class="amount-inp">
+                    <span class="unit">（张）</span>
+                </div>
+            </div>
+<!--            选择影城-->
+            <div class="create-cinema other">
+                <span class="headings">选择影城</span>
+                <div class="cinema-content">
+                    <div class="cinema-option">
+                        <form>
+                            <input type="radio" name="cinema">&nbsp;&nbsp;<span>全部影城</span>
+                            <input type="radio" name="cinema">&nbsp;&nbsp;<span>指定影城</span>
+                        </form>
+                        <span class="cinema-least">至少选择1家影城</span>
+                    </div>
+                    <div class="cinema-name">
+                        <div><input type="checkbox"><span>衢州新新天地数字影城</span></div>
+                        <div><input type="checkbox"><span>浙江省衢州市常山县神画巨幕城</span></div>
+                        <div><input type="checkbox"><span>浙江省温州市乐清市神画国际影城</span></div>
+                        <div><input type="checkbox"><span>池州神画巨幕国际影城</span></div>
+                        <div><input type="checkbox"><span>杭州神画国际影城</span></div>
+                        <div><input type="checkbox"><span>浙江杭州蓝钻神画影城</span></div>
+                        <div><input type="checkbox"><span>浙江衢州市龙游神画巨幕影城</span></div>
+                        <div><input type="checkbox"><span>浙江安吉九州大地影院</span></div>
+                        <div><input type="checkbox"><span>浙江金华光影MAX巨幕影城</span></div>
+                    </div>
+                </div>
+            </div>
+<!--            选择影厅-->
+            <div class="create-screens other">
+                <span class="headings">选择影厅</span>
+                <div class="screens-content">
+                    <div class="screens-option">
+                        <form>
+                            <input type="radio" name="screens">&nbsp;&nbsp;<span>全部影厅</span>
+                            <input type="radio" name="screens">&nbsp;&nbsp;<span>指定影厅</span>
+                        </form>
+                        <span class="screens-least">至少选择1家影厅</span>
+                    </div>
+                    <div class="screens-name">
+                        <div><input type="checkbox"><span>1号厅</span></div>
+                        <div><input type="checkbox"><span>2号厅</span></div>
+                        <div><input type="checkbox"><span>3号厅</span></div>
+                        <div><input type="checkbox"><span>4号厅</span></div>
+                        <div><input type="checkbox"><span>5号厅</span></div>
+                        <div><input type="checkbox"><span>6号厅</span></div>
+                        <div><input type="checkbox"><span>7号厅</span></div>
+                        <div><input type="checkbox"><span>8号厅</span></div>
+                        <div><input type="checkbox"><span>9号厅</span></div>
+                    </div>
+                </div>
+            </div>
+<!--            选择影片-->
+            <div class="create-movie other">
+                <span class="headings">选择影片</span>
+                <div class="movie-options">
+                    <form>
+                        <input type="radio" name="movie">&nbsp;&nbsp;<span>全部影片</span>
+                        <input type="radio" name="movie">&nbsp;&nbsp;<span>指定影片参与</span>
+                        <input type="radio" name="movie">&nbsp;&nbsp;<span>指定影片不参与</span>
+                    </form>
+                    <span class="movie-least">至少选择一部影片</span>
+                    <input type="text" placeholder="输入影片名称" class="movie-inp movie-btn">
+                </div>
+            </div>
+<!--            已选影片-->
+            <div class="create-selected other">
+                <span class="headings">已选影片</span>
+                <input type="text" class="movie-dis movie-btn" disabled>
+                <span class="empty">删除</span>
+            </div>
+<!--            活动时间-->
+            <div class="create-time other">
+                <span class="headings">活动时间</span>
+                <input type="text" id="test1" placeholder="请选择时间">
+                <span class="time-to">至</span>
+                <input type="text" id="test2" placeholder="请选择时间">
+            </div>
+<!--            指定放映时间-->
+            <div class="create-day other">
+                <span class="headings">指定放映时间</span>
+                <div class="day-all" style="position: relative;top: -25px;">
+                    <input type="text" id="test3" placeholder="请选择时间">
+                    <span class="time-to">至</span>
+                    <input type="text" id="test4" placeholder="请选择时间">
+                    <span style="position: absolute; left: 500px;top: 5px;">，</span>
+                    <select class="day-time">
+                        <option value="">每天</option>
+                    </select>
+                    <span style="position: absolute; left: 625px;top: 5px;">，开场时间在</span>
+                    <select style="position: absolute; left: 755px;height: 40px;width: 60px;font-size: 16px;">
+                        <option value="">0</option>
+                    </select>
+                    <span style="position: absolute; left: 815px;top: 5px;">：</span>
+                    <select style="position: absolute; left: 830px;height: 40px;width: 60px;font-size: 16px;">
+                        <option value="">00</option>
+                    </select>
+                    <span style="position: absolute; left: 895px;top: 5px;">至</span>
+                    <select style="position: absolute; left: 920px;height: 40px;width: 60px;font-size: 16px;">
+                        <option value="">23</option>
+                    </select>
+                    <select style="position: absolute; left: 985px;height: 40px;width: 60px;font-size: 16px;">
+                        <option value="">59</option>
+                    </select>
+                    <span style="position: absolute; left: 1055px;top: 5px;">删除</span>
+                </div>
+                <div class="day-add">
+                    <div class="sign">+</div>
+                    <span class="add-font">添加放映时间</span>
+                </div>
+            </div>
+<!--            优惠共享-->
+            <div class="create-share other">
+                <span class="headings">优惠共享</span>
+                <select class="share-options">
+                    <option value="">不与其他优惠叠加</option>
+                </select>
+            </div>
+<!--            是否可使用优惠券-->
+            <div class="create-use other">
+                <span class="headings">是否可使用优惠券</span>
+                <select class="use-options">
+                    <option value="">否</option>
+                </select>
+            </div>
+<!--            启用状态-->
+            <div class="create-state other">
+                <span class="headings">启用状态</span>
+                <select class="state-options">
+                    <option value="">未启用</option>
+                    <option value="">启用</option>
+                </select>
+            </div>
+        </div>
+        <div>
+            <button class="layui-btn layui-btn-lg layui-btn-normal cancel">取消</button>
+            <button class="layui-btn layui-btn-lg layui-btn-normal confirm">创建</button>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/jq.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript" src="../../js/my/permission.js"></script>
+<script>
+$(".new-activity").click(function(){
+	$("#content").css("display","none");
+	$("#create").css("display","block");
+});
+$(".cancel").click(function(){
+	$("#create").css("display","none");
+	$("#content").css("display","block");
+});
+</script>
+</html>

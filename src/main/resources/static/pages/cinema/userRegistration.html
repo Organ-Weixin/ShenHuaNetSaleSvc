@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"> 
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
+	<link rel="stylesheet" href="../../layui/css/layui.css" media="all" />
+    <link rel="stylesheet" type="text/css" media="screen" href="../../css/userRegistration.css"/>
+</head>
+<body>
+<div id="stup">
+    <div id="content">
+        <div class="stup-title">集票根活动</div>
+        <div class="stup-container">
+            <div class="container-top">
+                <div class="top-title">集满票根：</div>
+                    <div class="top-wrapper">
+                        <div class="top-content">
+                            <div class="stup-setting">
+                                <input type="text" class="stup-num" placeholder="输入张数">
+                                <span>张，赠送</span>
+                                <select name="choose" class="stup-choose">
+                                    <option value="">选择优惠券</option>
+                                </select>
+                                <span>，</span>
+                                <input type="text" class="stup-num" placeholder="输入张数">
+                                <span>张</span>
+                                <span class="stup-del">删除</span>
+                            </div>
+                        </div>
+                    </div>
+                <div class="top-add"><div class="sign">+</div><span class="add-font">添加优惠券</span></div>
+            </div>
+            <div class="container-mid">
+                <div class="upload">
+					<div class="upload-title">消息弹窗图片：</div>
+                    <div class="upload-img">
+                    	<input type="file" onchange="preview(this)" />
+						<div class="upload-limit">最大不能超过1000kb，520*690，或按比例上传</div>
+						<div id="preview"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-btm">
+                <div class="enable-state">启用状态：<input type="text" value="未启用" class="enable-state-inp btm-inp" disabled="disabled"></div>
+            </div>
+            <div class="container-btn">
+                <div class="last-btn">
+                    <button class="btn-cancel">取消</button>
+                    <button class="btn-stup">启用</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/jq.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript" src="../../js/my/permission.js"></script>
+<script type="text/javascript">
+$(".top-add").click(function () {
+    $(".top-content :first").clone(true).appendTo(".top-content");
+    if($(".stup-setting").length<3){
+    	$(".top-wrapper").css("overflow","hidden")
+    }else{
+    	$(".top-wrapper").css("overflow","visible")
+    }
+});
+$(".stup-del").click(function () {
+    if ($(".stup-setting").length > 1){
+        $(this).parent(".stup-setting").remove();
+    } else {
+        $(".stup-del").removeAttr('onclick');
+    };
+    if ($(".stup-setting").length < 3){
+    	$(".top-wrapper").css("overflow","hidden")
+    }
+});
+$(".btn-stup").click(function(){
+	var text = $(this).text();
+	if(text){
+		$(this).text(text === "启用" ? "停止" : "启用")
+	}
+});
+// 时间选择插件
+	layui.use('laydate', function(){
+		  var laydate = layui.laydate;
+		  //执行一个laydate实例
+		  laydate.render({
+		    elem: '#test1' //指定元素
+		  });
+		});
+// 上传图片
+function preview(file){
+       var prevDiv = document.getElementById('preview');
+       if (file.files && file.files[0])
+       {
+           var reader = new FileReader();
+           reader.onload = function(evt){
+               prevDiv.innerHTML = '<img src="' + evt.target.result + '" />';
+           }
+           reader.readAsDataURL(file.files[0]);
+       }
+       else
+       {
+           prevDiv.innerHTML = '<div class="img" style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src=\'' + file.value + '\'"></div>';
+       }
+   }
+</script>
+</html>
