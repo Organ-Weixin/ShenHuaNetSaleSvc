@@ -12,7 +12,7 @@
                 <h3 class="box-title">基础信息</h3>
             </div>
             <input type="hidden" id="Id" name="id">
-			<input type="hidden" id="CCode" name="ccode">
+			<input type="hidden" id="CinemaCode" name="cinemaCode">
 			<input type="hidden" id="SCode" name="scode">
 			<input type="hidden" id="FilmCode" name="filmCode">
 			<input type="hidden" id="UserID" name="userID">
@@ -69,7 +69,7 @@
 					async : false,
 					success : function(data) {
 						$('#Id').val(data.id);
-						$('#CCode').val(data.ccode);
+						$('#CinemaCode').val(data.cinemaCode);
 						$('#SCode').val(data.scode);
 						$('#FilmCode').val(data.filmCode);
 						$('#UserID').val(data.userID);
@@ -88,10 +88,9 @@
 		    }
 		    
 		    var formdata = $("#form").serializeObject();
-		    
 			$.ajax({
 				type : 'put',
-				url : '/sessioninfoviews',
+				url : '/sessioninfos',
 				contentType: "application/json; charset=utf-8",  
 				data : JSON.stringify(formdata),
 				success : function(data) {

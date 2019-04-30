@@ -1,5 +1,6 @@
 package com.boot.security.server.api.ctms.reply;
 
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import com.boot.security.server.api.ctms.reply.YkGetCardGradeListResult.DataBean
 import com.boot.security.server.api.ctms.reply.YkGetCardRechargeRecordsResult.DataBean.CardRechargeRecords;
 import com.boot.security.server.api.ctms.reply.YkGetCinemasResult.DataBean.YkCinema;
 import com.boot.security.server.api.ctms.reply.YkGetCinemasResult.DataBean.YkCinema.Halls;
+import com.boot.security.server.api.ctms.reply.YkGetGoodsResult.DataBean.GoodsBean.GoodsResult;
 import com.boot.security.server.api.ctms.reply.YkGetScheduleSoldSeatsResult.DataBean.SoldSeats.SectionList;
 import com.boot.security.server.api.ctms.reply.YkGetScheduleSoldSeatsResult.DataBean.SoldSeats.SectionList.SeatsBean;
 import com.boot.security.server.api.ctms.reply.YkGetSchedulesResult.dataBean.ScheduleBean;
@@ -39,6 +41,7 @@ import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
+import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.OrderStatusEnum;
@@ -54,6 +57,7 @@ import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
+import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
@@ -74,6 +78,7 @@ public class YkInterface implements ICTMSInterface {
 	FilminfoServiceImpl _filminfoService = SpringUtil.getBean(FilminfoServiceImpl.class);
 	MemberCardServiceImpl memberCardService = SpringUtil.getBean(MemberCardServiceImpl.class);
 	MemberCardLevelServiceImpl memberCardLevelService = SpringUtil.getBean(MemberCardLevelServiceImpl.class);
+	GoodsServiceImpl goodsService = SpringUtil.getBean(GoodsServiceImpl.class);
 	/*
 	 * 查询影院信息
 	 */
@@ -1105,38 +1110,15 @@ public class YkInterface implements ICTMSInterface {
 				if(card != null){
 					Membercard memercard = memberCardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
 					if(memercard != null){	//修改
-						memercard.setMobilePhone(card.getMobile());
-						memercard.setLevelCode(card.getGradeId());
-						memercard.setLevelName(card.getGradeDesc());
-						memercard.setUserName(card.getCardUserName());
-//						memercard.setSex();
-						memercard.setCreditNum(card.getIdCard()); //证件号码
-//						memercard.setStatus();
-						if(card.getBirthdate() != null){
-							memercard.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse(card.getBirthdate()));
-						}
-						if(card.getValidateDate()!=null){ //有效期
-							memercard.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").parse(card.getValidateDate()));
-						}
+						YkModelMapper.MapToEntity(card, memercard);
 						memercard.setUpdated(new Date());
 						memberCardService.Update(memercard);
 						
 					} else {	//新增
 						memercard = new Membercard();
+						YkModelMapper.MapToEntity(card, memercard);
 						memercard.setCinemaCode(userCinema.getCinemaCode());
 						memercard.setCardNo(card.getCardNumber());
-						memercard.setMobilePhone(card.getMobile());
-						memercard.setLevelCode(card.getGradeId());
-						memercard.setLevelName(card.getGradeDesc());
-						memercard.setUserName(card.getCardUserName());
-//						memercard.setSex();
-						memercard.setCreditNum(card.getIdCard()); 
-						if(card.getBirthdate() != null){
-							memercard.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse(card.getBirthdate()));
-						}
-						if(card.getValidateDate()!=null){ 
-							memercard.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").parse(card.getValidateDate()));
-						}
 						memercard.setCreateTime(new Date());
 						memercard.setStatus(0);
 						memberCardService.Save(memercard);
@@ -1195,7 +1177,7 @@ public class YkInterface implements ICTMSInterface {
 		if("0".equals(ykResult.getRetCode())){
 			if("SUCCESS".equals(ykResult.getData().getBizCode())){
 				CardPrice cardPrice = ykResult.getData().getData();
-				if(cardPrice != null){
+				if(cardPrice.getTickets() != null){
 					for(TicketsPrice ticket:cardPrice.getTickets()){
 						if("成人票".equals(ticket.getTicketType())){	//暂时取成人票的会员价
 							reply.setCinemaCode(userCinema.getCinemaCode());
@@ -1562,6 +1544,20 @@ public class YkInterface implements ICTMSInterface {
 		YkGetGoodsResult ykResult = gson.fromJson(getGoodsResult, YkGetGoodsResult.class);
 		if("0".equals(ykResult.getRetCode())){
 			if("SUCCESS".equals(ykResult.getData().getBizCode())){
+				for(GoodsResult goods : ykResult.getData().getData().getGoodsList()){
+					Goods newGoods = goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), goods.getGoodsId());
+					if(newGoods == null){
+						newGoods = new Goods();
+						newGoods.setCinemaCode(userCinema.getCinemaCode());
+						newGoods.setUserId(userCinema.getUserId());
+						YkModelMapper.MapToEntity(goods, newGoods);
+						goodsService.save(newGoods);	//新增
+						
+					} else {
+						YkModelMapper.MapToEntity(goods, newGoods);
+						goodsService.update(newGoods);	//修改
+					}
+				}
 				
 				reply.Status = StatusEnum.Success;
 			} else {

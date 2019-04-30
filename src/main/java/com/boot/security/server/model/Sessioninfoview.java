@@ -10,6 +10,7 @@ public class Sessioninfoview extends BaseEntity<Long> {
 	private String CinemaName;
 	private String ScreenCode;
 	private String ScreenName;
+	private Long UserID;
 	private String Company;
 	private String FilmCode;
 	private String FilmName;
@@ -55,6 +56,13 @@ public class Sessioninfoview extends BaseEntity<Long> {
 	}
 	public void setScreenName(String screenName) {
 		ScreenName = screenName;
+	}
+	
+	public Long getUserID() {
+		return UserID;
+	}
+	public void setUserID(Long userID) {
+		UserID = userID;
 	}
 	public String getCompany() {
 		return Company;

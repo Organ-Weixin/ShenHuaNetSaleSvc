@@ -1,9 +1,13 @@
 package com.boot.security.server.api.ctms.reply;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.boot.security.server.api.ctms.reply.YkGetGoodsResult.DataBean.GoodsBean.GoodsResult;
+import com.boot.security.server.model.Goods;
+import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
 import com.boot.security.server.model.Sessioninfo;
@@ -73,4 +77,45 @@ public class YkModelMapper {
 		return entity;
 	}
 	
+	//会员卡信息转为entity
+	public static Membercard MapToEntity(com.boot.security.server.api.ctms.reply.YkGetCardDetailResult.DataBean.CardBean model,Membercard entity) throws Exception{
+		entity.setMobilePhone(model.getMobile());
+		entity.setLevelCode(model.getGradeId());
+		entity.setLevelName(model.getGradeDesc());
+		entity.setUserName(model.getCardUserName());
+//		memercard.setSex();
+		entity.setCreditNum(model.getIdCard()); //证件号码
+//		memercard.setStatus();
+		if(model.getBirthdate() != null){
+			entity.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse(model.getBirthdate()));
+		}
+		if(model.getValidateDate()!=null){ //有效期
+			entity.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").parse(model.getValidateDate()));
+		}
+		
+		return entity;
+	}
+		
+	//卖品信息转为entity
+	public static Goods MapToEntity(GoodsResult model,Goods entity){
+		entity.setGoodsCode(model.getGoodsId());
+		entity.setGoodsName(model.getName());
+		entity.setStandardPrice(new BigDecimal(model.getSalePrice()));
+		entity.setSettlePrice(new BigDecimal(model.getSettlePrice()));
+		entity.setGoodsPic(model.getGoodsPicUrl());
+		entity.setGoodsDesc(model.getDesc());
+		if("Y".equals(model.getIsDiscount())){	//是否享受会员卡优惠
+			entity.setIsDiscount(1);
+		} else {
+			entity.setIsDiscount(0);
+		}
+		
+		if(model.getIsPackage()){			//是否套餐
+			entity.setIsPackage(1);
+		} else {
+			entity.setIsPackage(0);
+		}
+		return entity;
+	}
+		
 }

@@ -72,6 +72,7 @@ public class YkQueryPriceResult {
 
 		public static class CardPrice {
 			private Integer calculatePerTicketTimes;
+			private Integer maxDiscountTickets;
 			private List<TicketsPrice> tickets;
 			
 			public Integer getCalculatePerTicketTimes() {
@@ -79,6 +80,12 @@ public class YkQueryPriceResult {
 			}
 			public void setCalculatePerTicketTimes(Integer calculatePerTicketTimes) {
 				this.calculatePerTicketTimes = calculatePerTicketTimes;
+			}
+			public Integer getMaxDiscountTickets() {
+				return maxDiscountTickets;
+			}
+			public void setMaxDiscountTickets(Integer maxDiscountTickets) {
+				this.maxDiscountTickets = maxDiscountTickets;
 			}
 			public List<TicketsPrice> getTickets() {
 				return tickets;
