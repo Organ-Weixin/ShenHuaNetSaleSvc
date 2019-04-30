@@ -42,6 +42,7 @@ import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
+import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.OrderStatusEnum;
@@ -1571,6 +1572,32 @@ public class YkInterface implements ICTMSInterface {
 			reply.ErrorMessage = ykResult.getRetMsg();
 		}
 		return reply;
+	}
+
+	@Override
+	public CTMSCreateGoodsOrderReply CreateGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CTMSSubmitGoodsOrderReply SubmitGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CTMSQueryGoodsOrderReply QueryGoodsOrder(Usercinemaview userCinema, GoodsOrderView order) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CTMSRefundGoodsReply RefundGoods(Usercinemaview userCinema, GoodsOrderView order) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

@@ -1,20 +1,20 @@
 package com.boot.security.server.model;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 public class Goodsorders extends BaseEntity<Long> {
 
 	private Long Id;
 	private String CinemaCode;
-	private Integer UserId;
+	private Long UserId;
 	private String LocalOrderCode;
 	private String OrderCode;
 	private String PickUpCode;
 	private String VerifyCode;
 	private Integer OrderStatus;
-	private BigDecimal TotalPrice;
-	private BigDecimal TotalFee;
+	private Double TotalPrice;
+	private Double TotalSettlePrice;
+	private Double TotalFee;
 	private Date SubmitTime;
 	private Date Created;
 	private Date Updated;
@@ -28,6 +28,10 @@ public class Goodsorders extends BaseEntity<Long> {
 	private Integer OrderPayType;
 	private Date OrderPayTime;
 	private String OrderTradeNo;
+	private String PayType;
+	private String PaySeqNo;
+	private String CardNo;
+	private String CardPassword;
 
 	public Long getId() {
 		return Id;
@@ -41,10 +45,10 @@ public class Goodsorders extends BaseEntity<Long> {
 	public void setCinemaCode(String CinemaCode) {
 		this.CinemaCode = CinemaCode;
 	}
-	public Integer getUserId() {
+	public Long getUserId() {
 		return UserId;
 	}
-	public void setUserId(Integer UserId) {
+	public void setUserId(Long UserId) {
 		this.UserId = UserId;
 	}
 	public String getLocalOrderCode() {
@@ -77,16 +81,23 @@ public class Goodsorders extends BaseEntity<Long> {
 	public void setOrderStatus(Integer OrderStatus) {
 		this.OrderStatus = OrderStatus;
 	}
-	public BigDecimal getTotalPrice() {
+	public Double getTotalPrice() {
 		return TotalPrice;
 	}
-	public void setTotalPrice(BigDecimal TotalPrice) {
+	public void setTotalPrice(Double TotalPrice) {
 		this.TotalPrice = TotalPrice;
 	}
-	public BigDecimal getTotalFee() {
+	
+	public Double getTotalSettlePrice() {
+		return TotalSettlePrice;
+	}
+	public void setTotalSettlePrice(Double totalSettlePrice) {
+		TotalSettlePrice = totalSettlePrice;
+	}
+	public Double getTotalFee() {
 		return TotalFee;
 	}
-	public void setTotalFee(BigDecimal TotalFee) {
+	public void setTotalFee(Double TotalFee) {
 		this.TotalFee = TotalFee;
 	}
 	public Date getSubmitTime() {
@@ -167,5 +178,30 @@ public class Goodsorders extends BaseEntity<Long> {
 	public void setOrderTradeNo(String OrderTradeNo) {
 		this.OrderTradeNo = OrderTradeNo;
 	}
+	public String getPayType() {
+		return PayType;
+	}
+	public void setPayType(String payType) {
+		PayType = payType;
+	}
+	public String getPaySeqNo() {
+		return PaySeqNo;
+	}
+	public void setPaySeqNo(String paySeqNo) {
+		PaySeqNo = paySeqNo;
+	}
+	public String getCardNo() {
+		return CardNo;
+	}
+	public void setCardNo(String cardNo) {
+		CardNo = cardNo;
+	}
+	public String getCardPassword() {
+		return CardPassword;
+	}
+	public void setCardPassword(String cardPassword) {
+		CardPassword = cardPassword;
+	}
+	
 
 }

@@ -120,6 +120,9 @@
 			<if test="TotalPrice != null">
 				TotalPrice = #{TotalPrice}, 
 			</if>
+			<if test="TotalSettlePrice != null">
+				TotalSettlePrice = #{TotalSettlePrice}, 
+			</if>
 			<if test="TotalFee != null">
 				TotalFee = #{TotalFee}, 
 			</if>
@@ -161,6 +164,18 @@
 			</if>
 			<if test="OrderTradeNo != null">
 				OrderTradeNo = #{OrderTradeNo}, 
+			</if>
+			<if test="PayType != null">
+				PayType = #{PayType}, 
+			</if>
+			<if test="PaySeqNo != null">
+				PaySeqNo = #{PaySeqNo}, 
+			</if>
+			<if test="CardNo != null">
+				CardNo = #{CardNo}, 
+			</if>
+			<if test="CardPassword != null">
+				CardPassword = #{CardPassword}, 
 			</if>
 
 		</set>

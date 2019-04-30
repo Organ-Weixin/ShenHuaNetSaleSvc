@@ -28,6 +28,7 @@ import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
+import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.LoveFlagEnum;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
@@ -774,6 +775,32 @@ public class CxInterface implements ICTMSInterface {
 
 	@Override
 	public CTMSQueryGoodsReply QueryGoods(Usercinemaview userCinema) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CTMSCreateGoodsOrderReply CreateGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CTMSSubmitGoodsOrderReply SubmitGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CTMSQueryGoodsOrderReply QueryGoodsOrder(Usercinemaview userCinema, GoodsOrderView order) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CTMSRefundGoodsReply RefundGoods(Usercinemaview userCinema, GoodsOrderView order) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}

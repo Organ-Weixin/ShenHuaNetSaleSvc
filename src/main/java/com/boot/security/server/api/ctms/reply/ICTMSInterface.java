@@ -3,6 +3,7 @@ package com.boot.security.server.api.ctms.reply;
 import java.util.Date;
 
 import com.boot.security.server.model.CardChargeTypeEnum;
+import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.SessionSeatStatusEnum;
@@ -55,4 +56,12 @@ public interface ICTMSInterface {
     CTMSCardRegisterReply CardRegister(Usercinemaview userCinema, String CardPassword, String LevelCode, String InitialAmount, String CardUserName, String MobilePhone, String IDNumber, String Sex) throws Exception;
     //查询影院卖品
     CTMSQueryGoodsReply QueryGoods(Usercinemaview userCinema) throws Exception;
+    //创建卖品订单
+    CTMSCreateGoodsOrderReply CreateGoodsOrder(Usercinemaview userCinema,GoodsOrderView order) throws Exception;
+    //提交卖品订单
+    CTMSSubmitGoodsOrderReply SubmitGoodsOrder(Usercinemaview userCinema,GoodsOrderView order) throws Exception;
+    //查询卖品订单
+    CTMSQueryGoodsOrderReply QueryGoodsOrder(Usercinemaview userCinema,GoodsOrderView order) throws Exception;
+    //退卖品
+    CTMSRefundGoodsReply RefundGoods(Usercinemaview userCinema,GoodsOrderView order) throws Exception;
 }

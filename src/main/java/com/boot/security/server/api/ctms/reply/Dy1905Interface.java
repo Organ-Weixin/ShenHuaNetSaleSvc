@@ -23,6 +23,7 @@ import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
+import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.LoveFlagEnum;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
@@ -1139,5 +1140,28 @@ public class Dy1905Interface implements ICTMSInterface {
 			reply.ErrorCode = Dy1905Reply.getGoodsListResult().getResultCode();
 			reply.ErrorMessage = Dy1905Reply.getGoodsListResult().getResultMsg();
 			return reply;
+		}
+		@Override
+		public CTMSCreateGoodsOrderReply CreateGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
+				throws Exception {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		@Override
+		public CTMSSubmitGoodsOrderReply SubmitGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
+				throws Exception {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		@Override
+		public CTMSQueryGoodsOrderReply QueryGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
+				throws Exception {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		@Override
+		public CTMSRefundGoodsReply RefundGoods(Usercinemaview userCinema, GoodsOrderView order) throws Exception {
+			// TODO Auto-generated method stub
+			return null;
 		}
 }

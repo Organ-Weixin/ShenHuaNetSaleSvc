@@ -100,8 +100,8 @@ public class YkModelMapper {
 	public static Goods MapToEntity(GoodsResult model,Goods entity){
 		entity.setGoodsCode(model.getGoodsId());
 		entity.setGoodsName(model.getName());
-		entity.setStandardPrice(new BigDecimal(model.getSalePrice()));
-		entity.setSettlePrice(new BigDecimal(model.getSettlePrice()));
+		entity.setStandardPrice(new Double(model.getSalePrice()));
+		entity.setSettlePrice(new Double(model.getSettlePrice()));
 		entity.setGoodsPic(model.getGoodsPicUrl());
 		entity.setGoodsDesc(model.getDesc());
 		if("Y".equals(model.getIsDiscount())){	//是否享受会员卡优惠

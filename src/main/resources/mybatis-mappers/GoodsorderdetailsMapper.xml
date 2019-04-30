@@ -90,6 +90,9 @@
 			<if test="SubTotalAmount != null">
 				SubTotalAmount = #{SubTotalAmount}, 
 			</if>
+			<if test="SubTotalSettleAmount != null">
+				SubTotalSettleAmount = #{SubTotalSettleAmount}, 
+			</if>
 			<if test="Created != null">
 				Created = #{Created}, 
 			</if>

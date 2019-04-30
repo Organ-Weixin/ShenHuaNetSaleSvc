@@ -1,8 +1,5 @@
 package com.boot.security.server.model;
 
-import java.math.BigDecimal;
-
-
 public class Goods extends BaseEntity<Long> {
 
 	private Long Id;
@@ -11,8 +8,8 @@ public class Goods extends BaseEntity<Long> {
 	private String GoodsCode;
 	private String GoodsName;
 	private Integer GoodsType;
-	private BigDecimal StandardPrice;
-	private BigDecimal SettlePrice;
+	private Double StandardPrice;
+	private Double SettlePrice;
 	private String GoodsPic;
 	private Integer StockCount;
 	private String GoodsDesc;
@@ -60,16 +57,16 @@ public class Goods extends BaseEntity<Long> {
 	public void setGoodsType(Integer GoodsType) {
 		this.GoodsType = GoodsType;
 	}
-	public BigDecimal getStandardPrice() {
+	public Double getStandardPrice() {
 		return StandardPrice;
 	}
-	public void setStandardPrice(BigDecimal StandardPrice) {
+	public void setStandardPrice(Double StandardPrice) {
 		this.StandardPrice = StandardPrice;
 	}
-	public BigDecimal getSettlePrice() {
+	public Double getSettlePrice() {
 		return SettlePrice;
 	}
-	public void setSettlePrice(BigDecimal SettlePrice) {
+	public void setSettlePrice(Double SettlePrice) {
 		this.SettlePrice = SettlePrice;
 	}
 	public String getGoodsPic() {

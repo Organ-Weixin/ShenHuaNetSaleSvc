@@ -1,19 +1,19 @@
 package com.boot.security.server.model;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 public class Goodsorderdetails extends BaseEntity<Long> {
 
 	private Long Id;
-	private Integer OrderId;
+	private Long OrderId;
 	private String GoodsCode;
 	private String GoodsName;
-	private BigDecimal StandardPrice;
-	private BigDecimal SettlePrice;
-	private BigDecimal ChannelFee;
+	private Double StandardPrice;
+	private Double SettlePrice;
+	private Double ChannelFee;
 	private Integer GoodsCount;
-	private BigDecimal SubTotalAmount;
+	private Double SubTotalAmount;
+	private Double SubTotalSettleAmount;
 	private Date Created;
 	private Date Updated;
 	private Integer IsPackage;
@@ -25,10 +25,10 @@ public class Goodsorderdetails extends BaseEntity<Long> {
 	public void setId(Long Id) {
 		this.Id = Id;
 	}
-	public Integer getOrderId() {
+	public Long getOrderId() {
 		return OrderId;
 	}
-	public void setOrderId(Integer OrderId) {
+	public void setOrderId(Long OrderId) {
 		this.OrderId = OrderId;
 	}
 	public String getGoodsCode() {
@@ -43,22 +43,22 @@ public class Goodsorderdetails extends BaseEntity<Long> {
 	public void setGoodsName(String GoodsName) {
 		this.GoodsName = GoodsName;
 	}
-	public BigDecimal getStandardPrice() {
+	public Double getStandardPrice() {
 		return StandardPrice;
 	}
-	public void setStandardPrice(BigDecimal StandardPrice) {
+	public void setStandardPrice(Double StandardPrice) {
 		this.StandardPrice = StandardPrice;
 	}
-	public BigDecimal getSettlePrice() {
+	public Double getSettlePrice() {
 		return SettlePrice;
 	}
-	public void setSettlePrice(BigDecimal SettlePrice) {
+	public void setSettlePrice(Double SettlePrice) {
 		this.SettlePrice = SettlePrice;
 	}
-	public BigDecimal getChannelFee() {
+	public Double getChannelFee() {
 		return ChannelFee;
 	}
-	public void setChannelFee(BigDecimal ChannelFee) {
+	public void setChannelFee(Double ChannelFee) {
 		this.ChannelFee = ChannelFee;
 	}
 	public Integer getGoodsCount() {
@@ -67,11 +67,18 @@ public class Goodsorderdetails extends BaseEntity<Long> {
 	public void setGoodsCount(Integer GoodsCount) {
 		this.GoodsCount = GoodsCount;
 	}
-	public BigDecimal getSubTotalAmount() {
+	public Double getSubTotalAmount() {
 		return SubTotalAmount;
 	}
-	public void setSubTotalAmount(BigDecimal SubTotalAmount) {
+	public void setSubTotalAmount(Double SubTotalAmount) {
 		this.SubTotalAmount = SubTotalAmount;
+	}
+	
+	public Double getSubTotalSettleAmount() {
+		return SubTotalSettleAmount;
+	}
+	public void setSubTotalSettleAmount(Double subTotalSettleAmount) {
+		SubTotalSettleAmount = subTotalSettleAmount;
 	}
 	public Date getCreated() {
 		return Created;

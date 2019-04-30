@@ -3,6 +3,7 @@ package com.boot.security.server.api.ctms.reply;
 import java.util.Date;
 
 import com.boot.security.server.model.CardChargeTypeEnum;
+import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.SessionSeatStatusEnum;
@@ -158,7 +159,33 @@ public class DefaultCTMSInterface implements ICTMSInterface {
 	@Override
 	public CTMSQueryGoodsReply QueryGoods(Usercinemaview userCinema) throws Exception {
 		// TODO Auto-generated method stub
-		return null;
+		throw new Exception(CinemaInterfaceMiss);
+	}
+
+	@Override
+	public CTMSCreateGoodsOrderReply CreateGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
+			throws Exception {
+		// TODO Auto-generated method stub
+		throw new Exception(CinemaInterfaceMiss);
+	}
+
+	@Override
+	public CTMSSubmitGoodsOrderReply SubmitGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
+			throws Exception {
+		// TODO Auto-generated method stub
+		throw new Exception(CinemaInterfaceMiss);
+	}
+
+	@Override
+	public CTMSQueryGoodsOrderReply QueryGoodsOrder(Usercinemaview userCinema, GoodsOrderView order) throws Exception {
+		// TODO Auto-generated method stub
+		throw new Exception(CinemaInterfaceMiss);
+	}
+
+	@Override
+	public CTMSRefundGoodsReply RefundGoods(Usercinemaview userCinema, GoodsOrderView order) throws Exception {
+		// TODO Auto-generated method stub
+		throw new Exception(CinemaInterfaceMiss);
 	}
 
 }

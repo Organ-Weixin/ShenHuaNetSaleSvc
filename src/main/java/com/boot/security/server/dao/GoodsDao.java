@@ -18,7 +18,10 @@ public interface GoodsDao {
     @Select("select * from goods t where t.id = #{id}")
     Goods getById(Long id);
     
-    @Select("select * from goods t where t.userid = #{userid} and t.cinemacode = #{cinemacode}")
+    @Select("select * from goods t where t.goodscode = #{goodscode}")
+    Goods getByGoodsCode(String goodscode);
+    
+    @Select("select * from goods t where t.cinemacode = #{cinemacode}")
     List<Goods> getByCinemaCode(@Param("userid") Long userid,@Param("cinemacode") String cinemacode);
     
     @Select("select * from goods t where t.cinemacode = #{cinemacode} and goodscode = #{goodscode}")
@@ -30,7 +33,7 @@ public interface GoodsDao {
     int update(Goods goods);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into goods(CinemaCode, UserId, GoodsCode, GoodsName, GoodsType, StandardPrice, SettlePrice, GoodsPic, StockCount, GoodsDesc, UnitName, ShowSeqNo, IsDiscount, GoodsKey, GoodsStatus, IsRecommand, IsPackage) values(#{CinemaCode}, #{UserId}, #{GoodsCode}, #{GoodsName}, #{GoodsType}, #{StandardPrice}, #{SettlePrice}, #{GoodsPic}, #{StockCount}, #{GoodsDesc}, #{UnitName}, #{ShowSeqNo}, #{IsDiscount}, #{GoodsKey}, #{GoodsStatus}, #{IsRecommand}, #{IsPackage})")
+    @Insert("insert into goods(Id, CinemaCode, UserId, GoodsCode, GoodsName, GoodsType, StandardPrice, SettlePrice, GoodsPic, StockCount, GoodsDesc, UnitName, ShowSeqNo, IsDiscount, GoodsKey, GoodsStatus, IsRecommand, IsPackage) values(#{Id}, #{CinemaCode}, #{UserId}, #{GoodsCode}, #{GoodsName}, #{GoodsType}, #{StandardPrice}, #{SettlePrice}, #{GoodsPic}, #{StockCount}, #{GoodsDesc}, #{UnitName}, #{ShowSeqNo}, #{IsDiscount}, #{GoodsKey}, #{GoodsStatus}, #{IsRecommand}, #{IsPackage})")
     int save(Goods goods);
     
     int count(@Param("params") Map<String, Object> params);

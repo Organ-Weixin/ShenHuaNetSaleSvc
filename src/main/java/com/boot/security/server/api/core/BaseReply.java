@@ -29,6 +29,10 @@ public class BaseReply {
 	public static String ID_QueryCardLevelReply="ID_QueryCardLevelReply";
 	public static String ID_CardRegisterReply="ID_CardRegisterReply";
 	public static String ID_QueryGoodsReply="ID_QueryGoodsReply";
+	public static String ID_CreateGoodsOrderReply="ID_CreateGoodsOrderReply";
+	public static String ID_SubmitGoodsOrderReply="ID_SubmitGoodsOrderReply";
+	public static String ID_QueryGoodsOrderReply="ID_QueryGoodsOrderReply";
+	public static String ID_RefundGoodsReply="ID_RefundGoodsReply";
 	
 	public BaseReply()
     {
@@ -218,6 +222,13 @@ public class BaseReply {
         Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.CardLevelInvalid.getCode();
         ErrorMessage = ErrorCodeEnum.CardLevelInvalid.getMessage();
+    }
+    //卖品数量非法
+    public void SetGoodsCountInvalidReply()
+    {
+        Status = StatusEnum.Failure.getStatusCode();
+        ErrorCode = ErrorCodeEnum.GoodsCountInvalid.getCode();
+        ErrorMessage = ErrorCodeEnum.GoodsCountInvalid.getMessage();
     }
 	
     public String Status;

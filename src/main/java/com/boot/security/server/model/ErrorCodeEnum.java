@@ -20,7 +20,8 @@ public enum ErrorCodeEnum {
 	MemberCardInvalid("会员卡不存在或未绑定！","10000015"),
 	CardChargeTypeInvalid("会员卡充值类型不合法！合法取值包括：Cash，UnionCardPay，UnionOnlinePay，AliPay，WxPay","10000016"),
 	CardLevelInvalid("会员卡等级不存在！","10000017"),
-	FilmCodeNotExist("影片编码不存在或不合法！","10000018");
+	FilmCodeNotExist("影片编码不存在或不合法！","10000018"),
+	GoodsCountInvalid("卖品数量不合法","10000019");
 	
 	private String Message;
 	private String Code;

@@ -13,4 +13,6 @@ public interface GoodsService {
 	int save(Goods goods);
 	
 	int update(Goods goods);
+	
+	Goods getByGoodsCode(String goodscode);
 }

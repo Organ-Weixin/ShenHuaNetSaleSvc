@@ -705,6 +705,92 @@ public class ReplyExtension {
 	}
 	//endregion
 	
-	//region 
+	//region SubmitGoodsOrderReply
+	public static boolean RequestInfoGuard(SubmitGoodsOrderReply reply, String Username, String Password, String QueryXml) {
+		if (Username.isEmpty()) {
+			reply.SetNecessaryParamMissReply(Username);
+			return false;
+		}
+		if (Password.isEmpty()) {
+			reply.SetNecessaryParamMissReply(Password);
+			return false;
+		}
+		if (QueryXml.isEmpty()) {
+			reply.SetNecessaryParamMissReply(QueryXml);
+			return false;
+		}
+
+		return true;
+	}
+	//endregion
+	
+	//region CreateGoodsOrderReply
+	public static boolean RequestInfoGuard(CreateGoodsOrderReply reply, String Username, String Password, String QueryXml) {
+		if (Username.isEmpty()) {
+			reply.SetNecessaryParamMissReply(Username);
+			return false;
+		}
+		if (Password.isEmpty()) {
+			reply.SetNecessaryParamMissReply(Password);
+			return false;
+		}
+		if (QueryXml.isEmpty()) {
+			reply.SetNecessaryParamMissReply(QueryXml);
+			return false;
+		}
+		return true;
+	}
+	//endregion
+	
+	//region QueryGoodsOrderReply
+	public static boolean RequestInfoGuard(QueryGoodsOrderReply reply, String Username, String Password, String CinemaCode,
+			String OrderCode) {
+		if (Username.isEmpty()) {
+			reply.SetNecessaryParamMissReply(Username);
+			return false;
+		}
+		if (Password.isEmpty()) {
+			reply.SetNecessaryParamMissReply(Password);
+			return false;
+		}
+		if (CinemaCode.isEmpty()) {
+			reply.SetNecessaryParamMissReply(CinemaCode);
+			return false;
+		}
+		if (OrderCode.isEmpty()) {
+			reply.SetNecessaryParamMissReply(OrderCode);
+			return false;
+		}
+
+		return true;
+	}
+	//endregion
+	
+	//region RefundGoodsReply
+	public static boolean RequestInfoGuard(RefundGoodsReply reply, String Username, String Password, String CinemaCode,
+			String OrderCode, String PaySeqNo) {
+		if (Username.isEmpty()) {
+			reply.SetNecessaryParamMissReply(Username);
+			return false;
+		}
+		if (Password.isEmpty()) {
+			reply.SetNecessaryParamMissReply(Password);
+			return false;
+		}
+		if (CinemaCode.isEmpty()) {
+			reply.SetNecessaryParamMissReply(CinemaCode);
+			return false;
+		}
+		if (OrderCode.isEmpty()) {
+			reply.SetNecessaryParamMissReply(OrderCode);
+			return false;
+		}
+		if (PaySeqNo.isEmpty()) {
+			reply.SetNecessaryParamMissReply(PaySeqNo);
+			return false;
+		}
+
+		return true;
+	}
 	//endregion
 }

@@ -17,6 +17,12 @@ public interface GoodsordersDao {
 
     @Select("select * from goodsorders t where t.id = #{id}")
     Goodsorders getById(Long id);
+    
+    @Select("select * from goodsorders t where t.cinemacode=#{cinemacode} and t.localordercode = #{localordercode}")
+    Goodsorders getByLocalOrderCode(@Param("cinemacode") String cinemacode, @Param("localordercode") String localordercode);
+    
+    @Select("select * from goodsorders t where t.cinemacode=#{cinemacode} and t.ordercode = #{ordercode}")
+    Goodsorders getByOrderCode(@Param("cinemacode") String cinemacode, @Param("ordercode") String ordercode);
 
     @Delete("delete from goodsorders where id = #{id}")
     int delete(Long id);
@@ -24,7 +30,7 @@ public interface GoodsordersDao {
     int update(Goodsorders goodsorders);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into goodsorders(Id, CinemaCode, UserId, LocalOrderCode, OrderCode, PickUpCode, VerifyCode, OrderStatus, TotalPrice, TotalFee, SubmitTime, Created, Updated, MobilePhone, GoodsCount, RefundTime, PickUpTime, DeliveryAddress, SendTime, OrderPayFlag, OrderPayType, OrderPayTime, OrderTradeNo) values(#{Id}, #{CinemaCode}, #{UserId}, #{LocalOrderCode}, #{OrderCode}, #{PickUpCode}, #{VerifyCode}, #{OrderStatus}, #{TotalPrice}, #{TotalFee}, #{SubmitTime}, #{Created}, #{Updated}, #{MobilePhone}, #{GoodsCount}, #{RefundTime}, #{PickUpTime}, #{DeliveryAddress}, #{SendTime}, #{OrderPayFlag}, #{OrderPayType}, #{OrderPayTime}, #{OrderTradeNo})")
+    @Insert("insert into goodsorders(Id, CinemaCode, UserId, LocalOrderCode, OrderCode, PickUpCode, VerifyCode, OrderStatus, TotalPrice,TotalSettlePrice, TotalFee, SubmitTime, Created, Updated, MobilePhone, GoodsCount, RefundTime, PickUpTime, DeliveryAddress, SendTime, OrderPayFlag, OrderPayType, OrderPayTime, OrderTradeNo,PayType,PaySeqNo,CardNo,CardPassword) values(#{Id}, #{CinemaCode}, #{UserId}, #{LocalOrderCode}, #{OrderCode}, #{PickUpCode}, #{VerifyCode}, #{OrderStatus}, #{TotalPrice},#{TotalSettlePrice},#{TotalFee}, #{SubmitTime}, #{Created}, #{Updated}, #{MobilePhone}, #{GoodsCount}, #{RefundTime}, #{PickUpTime}, #{DeliveryAddress}, #{SendTime}, #{OrderPayFlag}, #{OrderPayType}, #{OrderPayTime}, #{OrderTradeNo},#{PayType},#{PaySeqNo},#{CardNo},#{CardPassword})")
     int save(Goodsorders goodsorders);
     
     int count(@Param("params") Map<String, Object> params);

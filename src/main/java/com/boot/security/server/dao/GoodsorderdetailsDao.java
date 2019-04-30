@@ -17,6 +17,9 @@ public interface GoodsorderdetailsDao {
 
     @Select("select * from goodsorderdetails t where t.id = #{id}")
     Goodsorderdetails getById(Long id);
+    
+    @Select("select * from goodsorderdetails t where t.orderid = #{orderid}")
+    List<Goodsorderdetails> getByOrderId(Long orderid);
 
     @Delete("delete from goodsorderdetails where id = #{id}")
     int delete(Long id);
@@ -24,7 +27,7 @@ public interface GoodsorderdetailsDao {
     int update(Goodsorderdetails goodsorderdetails);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into goodsorderdetails(Id, OrderId, GoodsCode, GoodsName, StandardPrice, SettlePrice, ChannelFee, GoodsCount, SubTotalAmount, Created, Updated, IsPackage, GoodsDetail) values(#{Id}, #{OrderId}, #{GoodsCode}, #{GoodsName}, #{StandardPrice}, #{SettlePrice}, #{ChannelFee}, #{GoodsCount}, #{SubTotalAmount}, #{Created}, #{Updated}, #{IsPackage}, #{GoodsDetail})")
+    @Insert("insert into goodsorderdetails(Id, OrderId, GoodsCode, GoodsName, StandardPrice, SettlePrice, ChannelFee, GoodsCount, SubTotalAmount,SubTotalSettleAmount, Created, Updated, IsPackage, GoodsDetail) values(#{Id}, #{OrderId}, #{GoodsCode}, #{GoodsName}, #{StandardPrice}, #{SettlePrice}, #{ChannelFee}, #{GoodsCount}, #{SubTotalAmount}, #{SubTotalSettleAmount},#{Created}, #{Updated}, #{IsPackage}, #{GoodsDetail})")
     int save(Goodsorderdetails goodsorderdetails);
     
     int count(@Param("params") Map<String, Object> params);

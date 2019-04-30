@@ -42,4 +42,10 @@ public class GoodsServiceImpl implements GoodsService {
 		return goodsDao.update(goods);
 	}
 
+	@Override
+	public Goods getByGoodsCode(String goodscode) {
+		// TODO Auto-generated method stub
+		return goodsDao.getByGoodsCode(goodscode);
+	}
+
 }

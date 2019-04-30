@@ -12,6 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.boot.security.server.api.core.CreateGoodsOrderQueryXml.CreateGoodsOrderQueryXmlGoodsList.CreateGoodsOrderQueryXmlGoods;
+import com.boot.security.server.api.core.CreateGoodsOrderReply.CreateGoodsOrderReplyOrder;
+import com.boot.security.server.api.core.LockSeatQueryXml.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat;
 import com.boot.security.server.api.core.LockSeatReply.LockSeatReplyOrder.LockSeatReplySeat;
 import com.boot.security.server.api.core.LoginCardReply.LoginCardReplyCard;
 import com.boot.security.server.api.core.QueryCardLevelReply.QueryCardLevelReplyLevels;
@@ -21,6 +24,8 @@ import com.boot.security.server.api.core.QueryCardTradeRecordReply.QueryCardTrad
 import com.boot.security.server.api.core.QueryCinemaListReply.QueryCinemaListReplyCinemas.QueryCinemaListReplyCinema;
 import com.boot.security.server.api.core.QueryCinemaReply.QueryCinemaReplyCinema.QueryCinemaReplyScreen;
 import com.boot.security.server.api.core.QueryFilmReply.QueryFilmReplyFilms.QueryFilmReplyFilm;
+import com.boot.security.server.api.core.QueryGoodsOrderReply.QueryGoodsOrderReplyGoodsList;
+import com.boot.security.server.api.core.QueryGoodsOrderReply.QueryGoodsOrderReplyGoodsList.QueryGoodsOrderReplyGoods;
 import com.boot.security.server.api.core.QueryGoodsReply.QueryGoodsReplyGoodss;
 import com.boot.security.server.api.core.QueryGoodsReply.QueryGoodsReplyGoodss.QueryGoodsReplyGoods;
 import com.boot.security.server.api.core.QueryOrderReply.QueryOrderReplyOrder.QueryOrderReplyFilms;
@@ -32,12 +37,17 @@ import com.boot.security.server.api.core.QuerySessionReply.QuerySessionReplySess
 import com.boot.security.server.api.core.QuerySessionSeatReply.QuerySessionSeatReplySessionSeat.QuerySessionSeatReplySeat;
 import com.boot.security.server.api.core.QueryTicketReply.QueryTicketReplyTickets;
 import com.boot.security.server.api.core.QueryTicketReply.QueryTicketReplyTickets.QueryTicketReplyTicket;
+import com.boot.security.server.api.core.RefundGoodsReply.RefundGoodsReplyOrder;
 import com.boot.security.server.api.core.ReleaseSeatReply.ReleaseSeatReplyOrder.ReleaseSeatReplySeat;
+import com.boot.security.server.api.core.SubmitGoodsOrderQueryXml.SubmitGoodsOrderQueryXmlGoodsList.SubmitGoodsOrderQueryXmlGoods;
+import com.boot.security.server.api.core.SubmitGoodsOrderReply.SubmitGoodsOrderReplyOrder;
+import com.boot.security.server.api.core.SubmitOrderQueryXml.SubmitOrderQueryXmlOrder.SubmitOrderQueryXmlSeat;
 import com.boot.security.server.api.core.SubmitOrderReply.SubmitOrderReplyOrder.SubmitOrderReplySeat;
 import com.boot.security.server.api.ctms.reply.CTMSCardChargeReply;
 import com.boot.security.server.api.ctms.reply.CTMSCardPayBackReply;
 import com.boot.security.server.api.ctms.reply.CTMSCardPayReply;
 import com.boot.security.server.api.ctms.reply.CTMSCardRegisterReply;
+import com.boot.security.server.api.ctms.reply.CTMSCreateGoodsOrderReply;
 import com.boot.security.server.api.ctms.reply.CTMSFetchTicketReply;
 import com.boot.security.server.api.ctms.reply.CTMSInterfaceFactory;
 import com.boot.security.server.api.ctms.reply.CTMSLockSeatReply;
@@ -48,6 +58,7 @@ import com.boot.security.server.api.ctms.reply.CTMSQueryCardTradeRecordReply;
 import com.boot.security.server.api.ctms.reply.CTMSQueryCinemaReply;
 import com.boot.security.server.api.ctms.reply.CTMSQueryDiscountReply;
 import com.boot.security.server.api.ctms.reply.CTMSQueryFilmReply;
+import com.boot.security.server.api.ctms.reply.CTMSQueryGoodsOrderReply;
 import com.boot.security.server.api.ctms.reply.CTMSQueryGoodsReply;
 import com.boot.security.server.api.ctms.reply.CTMSQueryOrderReply;
 import com.boot.security.server.api.ctms.reply.CTMSQueryPrintReply;
@@ -55,8 +66,10 @@ import com.boot.security.server.api.ctms.reply.CTMSQuerySeatReply;
 import com.boot.security.server.api.ctms.reply.CTMSQuerySessionReply;
 import com.boot.security.server.api.ctms.reply.CTMSQuerySessionSeatReply;
 import com.boot.security.server.api.ctms.reply.CTMSQueryTicketReply;
+import com.boot.security.server.api.ctms.reply.CTMSRefundGoodsReply;
 import com.boot.security.server.api.ctms.reply.CTMSRefundTicketReply;
 import com.boot.security.server.api.ctms.reply.CTMSReleaseSeatReply;
+import com.boot.security.server.api.ctms.reply.CTMSSubmitGoodsOrderReply;
 import com.boot.security.server.api.ctms.reply.CTMSSubmitOrderReply;
 import com.boot.security.server.api.ctms.reply.CxInterface;
 import com.boot.security.server.api.ctms.reply.ICTMSInterface;
@@ -65,8 +78,12 @@ import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
+import com.boot.security.server.model.GoodsOrderView;
+import com.boot.security.server.model.Goodsorderdetails;
+import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
+import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orderseatdetails;
@@ -79,6 +96,7 @@ import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.model.YesOrNoEnum;
+import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
@@ -105,7 +123,7 @@ public class NetSaleSvcCore {
 	 MemberCardServiceImpl _membercardService=SpringUtil.getBean(MemberCardServiceImpl.class);
 	 MemberCardLevelServiceImpl _memberCardLevelService=SpringUtil.getBean(MemberCardLevelServiceImpl.class);
 	 GoodsServiceImpl _goodsService=SpringUtil.getBean(GoodsServiceImpl.class);
-	 
+	 GoodsOrderServiceImpl _goodsOrderService=SpringUtil.getBean(GoodsOrderServiceImpl.class);
 	 protected static Logger log = LoggerFactory.getLogger(NetSaleSvcCore.class);
 	 
 	 public NetSaleSvcCore(){
@@ -323,18 +341,6 @@ public class NetSaleSvcCore {
 			queryFilmReply.SetDateInvalidReply();
 			return queryFilmReply;
 		}
-		/*if (Start == null) {
-			queryFilmReply.SetStartDateInvalidReply();
-			return queryFilmReply;
-		}*/
-		/*if (End == null) {
-			queryFilmReply.SetEndDateInvalidReply();
-			return queryFilmReply;
-		}*/
-		/*if (Start.getTime() > End.getTime()) {
-			queryFilmReply.SetDateInvalidReply();
-			return queryFilmReply;
-		}*/
 
 		return QueryFilm(queryFilmReply, userCinema, Start, End);
 	}
@@ -1809,6 +1815,307 @@ ScreenType,ListingPrice,LowestPrice))
 			reply.SetSuccessReply();
 		} else {
 			reply.GetErrorFromCTMSReply(CTMSReply);
+		}
+		return reply;
+	}
+	//endregion
+	
+	//region 创建卖品订单
+	public CreateGoodsOrderReply CreateGoodsOrder(String Username, String Password, String QueryXml) throws JsonSyntaxException, Exception{
+		CreateGoodsOrderReply createGoodsOrderReply=new CreateGoodsOrderReply();
+		if (!ReplyExtension.RequestInfoGuard(createGoodsOrderReply, Username, Password, QueryXml)) {
+			return createGoodsOrderReply;
+		}
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+		if (UserInfo == null) {
+			createGoodsOrderReply.SetUserCredentialInvalidReply();
+			return createGoodsOrderReply;
+		}
+		// 验证xml参数
+		CreateGoodsOrderQueryXml QueryXmlObj=JaxbXmlUtil.convertToJavaBean(QueryXml, CreateGoodsOrderQueryXml.class);
+		if (QueryXmlObj.getGoodsList() == null || QueryXmlObj.getGoodsList().getGoods()==null) {
+			createGoodsOrderReply.SetXmlDeserializeFailReply(QueryXml);
+			return createGoodsOrderReply;
+		}
+		// 验证影院是否存在且可访问
+		Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),
+				QueryXmlObj.getCinemaCode());
+		if (userCinema == null) {
+			createGoodsOrderReply.SetCinemaInvalidReply();
+			return createGoodsOrderReply;
+		}
+		// 验证卖品数量
+		if (QueryXmlObj.getGoodsList().getGoods().size()<=0) {
+			createGoodsOrderReply.SetGoodsCountInvalidReply();
+			return createGoodsOrderReply;
+		}
+		// 将请求参数转为订单
+		GoodsOrderView order=new GoodsOrderView();
+		Goodsorders orderBaseInfo=new Goodsorders();
+		orderBaseInfo = ModelMapper.MapFrom(orderBaseInfo, userCinema, QueryXmlObj);
+		order.setOrderBaseInfo(orderBaseInfo);
+		List<Goodsorderdetails> goodsDetails = new ArrayList<Goodsorderdetails>();
+		for(CreateGoodsOrderQueryXmlGoods xmlgoods:QueryXmlObj.getGoodsList().getGoods()){
+			Goods localGoods=_goodsService.getByGoodsCode(xmlgoods.getGoodsCode());
+			Goodsorderdetails goods=new Goodsorderdetails();
+			goods.setGoodsCode(localGoods.getGoodsCode());
+			goods.setGoodsName(localGoods.getGoodsName());
+			goods.setStandardPrice(localGoods.getStandardPrice());
+			goods.setSettlePrice(localGoods.getSettlePrice());
+			goods.setChannelFee(xmlgoods.getGoodsChannelFee());
+			goods.setGoodsCount(xmlgoods.getGoodsCount());
+			goods.setSubTotalAmount(localGoods.getStandardPrice()*xmlgoods.getGoodsCount());
+			goods.setSubTotalSettleAmount(localGoods.getSettlePrice()*xmlgoods.getGoodsCount());
+			goods.setCreated(new Date());
+			goods.setIsPackage(localGoods.getIsPackage());
+			goods.setGoodsDetail(localGoods.getGoodsDesc());
+			goodsDetails.add(goods);
+		}
+		order.getOrderBaseInfo().setTotalPrice(order.getOrderGoodsDetails().stream().mapToDouble(Goodsorderdetails::getSubTotalAmount).sum());
+		order.getOrderBaseInfo().setTotalFee(order.getOrderGoodsDetails().stream().mapToDouble(Goodsorderdetails::getChannelFee).sum());
+		order.setOrderGoodsDetails(goodsDetails);
+		return CreateGoodsOrder(createGoodsOrderReply, userCinema, order);
+	}
+	private CreateGoodsOrderReply CreateGoodsOrder(CreateGoodsOrderReply reply,Usercinemaview userCinema,GoodsOrderView order){
+		_CTMSInterface = CTMSInterfaceFactory.Create(userCinema);
+		CTMSCreateGoodsOrderReply CTMSReply = null;
+		try {
+			CTMSReply = _CTMSInterface.CreateGoodsOrder(userCinema, order);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (StatusEnum.Success.equals(CTMSReply.Status)) {
+			//更新本地订单号
+			order.getOrderBaseInfo().setLocalOrderCode(CTMSReply.getOrderCode());
+			reply.setOrder(new CreateGoodsOrderReplyOrder());
+			reply.getOrder().setOrderCode(CTMSReply.getOrderCode());
+			reply.getOrder().setOrderStatus(order.getOrderBaseInfo().getOrderStatus().toString());
+			reply.getOrder().setOrderTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderBaseInfo().getCreated()));
+			reply.SetSuccessReply();
+		} else {
+			reply.GetErrorFromCTMSReply(CTMSReply);
+		}
+		// 将订单保存到数据库
+		_goodsOrderService.Insert(order);
+		return reply;
+	}
+	//endregion
+	
+	//region 确认卖品订单
+	public SubmitGoodsOrderReply SubmitGoodsOrder(String Username, String Password, String QueryXml) throws JsonSyntaxException, Exception{
+		SubmitGoodsOrderReply submitGoodsOrderReply=new SubmitGoodsOrderReply();
+		if (!ReplyExtension.RequestInfoGuard(submitGoodsOrderReply, Username, Password, QueryXml)) {
+			return submitGoodsOrderReply;
+		}
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+		if (UserInfo == null) {
+			submitGoodsOrderReply.SetUserCredentialInvalidReply();
+			return submitGoodsOrderReply;
+		}
+		// 验证提交卖品参数
+		SubmitGoodsOrderQueryXml QueryXmlObj=JaxbXmlUtil.convertToJavaBean(QueryXml, SubmitGoodsOrderQueryXml.class);
+		if (QueryXmlObj.getGoodsList() == null || QueryXmlObj.getGoodsList().getGoods() == null) {
+			submitGoodsOrderReply.SetXmlDeserializeFailReply(QueryXml);
+			return submitGoodsOrderReply;
+		}
+		// 验证是否传递手机号
+		if (QueryXmlObj.getMobilePhone().isEmpty()) {
+			submitGoodsOrderReply.SetNecessaryParamMissReply("MobilePhone");
+		}
+		// 验证影院是否存在且可访问
+		Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),
+				QueryXmlObj.getCinemaCode());
+		if (userCinema == null) {
+			submitGoodsOrderReply.SetCinemaInvalidReply();
+			return submitGoodsOrderReply;
+		}
+		// 验证订单是否存在
+		GoodsOrderView order = null;
+		if (!QueryXmlObj.getOrderCode().isEmpty()) {
+			order = _goodsOrderService.getWithLocalOrderCode(QueryXmlObj.getCinemaCode(), QueryXmlObj.getOrderCode());
+		}
+		if (order == null || (order.getOrderBaseInfo().getOrderStatus() != OrderStatusEnum.Created.getStatusCode()
+				&& order.getOrderBaseInfo().getOrderStatus() != OrderStatusEnum.SubmitFail.getStatusCode()
+				&& order.getOrderBaseInfo().getOrderStatus() != OrderStatusEnum.Payed.getStatusCode())) {
+			submitGoodsOrderReply.SetOrderNotExistReply();
+			return submitGoodsOrderReply;
+		}
+		// 验证卖品数量
+		if (QueryXmlObj.getGoodsList().getGoods().size()<=0
+				|| QueryXmlObj.getGoodsList().getGoods().stream().mapToDouble(SubmitGoodsOrderQueryXmlGoods::getGoodsCount).sum() != order.getOrderBaseInfo().getGoodsCount()) {
+			submitGoodsOrderReply.SetSeatCountInvalidReply();
+			return submitGoodsOrderReply;
+		}
+		// 更新订单信息
+		Goodsorders orderBaseInfo=order.getOrderBaseInfo();
+		orderBaseInfo = ModelMapper.MapFrom(orderBaseInfo, QueryXmlObj);
+		for (Goodsorderdetails goodsdetail : order.getOrderGoodsDetails()) {
+			List<SubmitGoodsOrderQueryXmlGoods> xmlgoods = QueryXmlObj.getGoodsList().getGoods().stream()
+					.filter((SubmitGoodsOrderQueryXmlGoods s) -> goodsdetail.getGoodsCode().equals(s.getGoodsCode()))
+					.collect(Collectors.toList());
+			if(xmlgoods!=null){
+				goodsdetail.setStandardPrice(xmlgoods.get(0).getStandardPrice());
+				goodsdetail.setSettlePrice(xmlgoods.get(0).getSettlePrice());
+				goodsdetail.setChannelFee(xmlgoods.get(0).getGoodsChannelFee());
+				goodsdetail.setGoodsCount(xmlgoods.get(0).getGoodsCount());
+			}
+		}
+		// TODO:满天星的订单属于会员卡支付的话暂时要求传入会员卡交易流水号
+		if (userCinema.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode()
+				&& order.getOrderBaseInfo().getOrderPayType()==OrderPayTypeEnum.MemberCardPay.getTypeCode() && order.getOrderBaseInfo().getPaySeqNo().isEmpty()) {
+			submitGoodsOrderReply.SetMemberPaySeqNoNotExistReply();
+			return submitGoodsOrderReply;
+		}
+		return SubmitGoodsOrder(submitGoodsOrderReply,userCinema, order);
+	}
+	private SubmitGoodsOrderReply SubmitGoodsOrder(SubmitGoodsOrderReply reply,Usercinemaview userCinema, GoodsOrderView order){
+		try {
+			_CTMSInterface = CTMSInterfaceFactory.Create(userCinema);
+			CTMSSubmitGoodsOrderReply CTMSReply = null;
+			CTMSReply = _CTMSInterface.SubmitGoodsOrder(userCinema, order);
+			if (StatusEnum.Success.equals(CTMSReply.Status)) {
+				reply.setOrder(new SubmitGoodsOrderReplyOrder());
+				reply.getOrder().setOrderCode(order.getOrderBaseInfo().getOrderCode());
+				reply.getOrder().setPickUpCode(order.getOrderBaseInfo().getPickUpCode());
+				reply.getOrder().setVerifyCode(order.getOrderBaseInfo().getVerifyCode());
+				
+				reply.SetSuccessReply();
+			}else {
+				reply.GetErrorFromCTMSReply(CTMSReply);
+			}
+		}catch (Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			// 更新订单信息
+			order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
+			_goodsOrderService.Update(order);
+		}
+		return reply;
+	}
+	//endregion
+	
+	//region 查询卖品订单
+	public QueryGoodsOrderReply QueryGoodsOrder(String Username, String Password, String CinemaCode, String OrderCode){
+		QueryGoodsOrderReply queryGoodsOrderReply=new QueryGoodsOrderReply();
+		if (!ReplyExtension.RequestInfoGuard(queryGoodsOrderReply, Username, Password, CinemaCode, OrderCode)) {
+			return queryGoodsOrderReply;
+		}
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+		if (UserInfo == null) {
+			queryGoodsOrderReply.SetUserCredentialInvalidReply();
+			return queryGoodsOrderReply;
+		}
+		// 验证影院是否存在且可访问
+		Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),
+				CinemaCode);
+		if (userCinema == null) {
+			queryGoodsOrderReply.SetCinemaInvalidReply();
+			return queryGoodsOrderReply;
+		}
+		// 验证订单是否存在
+		GoodsOrderView order = _goodsOrderService.getWithOrderCode(CinemaCode, OrderCode);
+		if (order == null) {
+			queryGoodsOrderReply.SetOrderNotExistReply();
+			return queryGoodsOrderReply;
+		}
+		return QueryGoodsOrder(queryGoodsOrderReply, userCinema, order);
+	}
+	private QueryGoodsOrderReply QueryGoodsOrder(QueryGoodsOrderReply reply,Usercinemaview userCinema, GoodsOrderView order){
+		try {
+			_CTMSInterface = CTMSInterfaceFactory.Create(userCinema);
+			CTMSQueryGoodsOrderReply CTMSReply = null;
+			CTMSReply = _CTMSInterface.QueryGoodsOrder(userCinema, order);
+			if (StatusEnum.Success.equals(CTMSReply.Status)) {
+				reply.setOrderCode(order.getOrderBaseInfo().getOrderCode());
+				reply.setPickUpCode(order.getOrderBaseInfo().getPickUpCode());
+				reply.setVerifyCode(order.getOrderBaseInfo().getVerifyCode());
+				reply.setOrderStatus(order.getOrderBaseInfo().getOrderStatus().toString());
+				reply.setOrderTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderBaseInfo().getCreated()));
+				reply.setGoodsList(new QueryGoodsOrderReplyGoodsList());
+				List<QueryGoodsOrderReplyGoods> goodslist=new ArrayList<QueryGoodsOrderReplyGoods>();
+				for (Goodsorderdetails goodsdetail : order.getOrderGoodsDetails()) {
+					QueryGoodsOrderReplyGoods replygoods = new QueryGoodsOrderReplyGoods();
+					replygoods.setGoodsCode(goodsdetail.getGoodsCode());
+					replygoods.setGoodsName(goodsdetail.getGoodsName());
+					replygoods.setStandardPrice(goodsdetail.getStandardPrice());
+					replygoods.setSettlePrice(goodsdetail.getSettlePrice());
+					replygoods.setChannelFee(goodsdetail.getChannelFee());
+					replygoods.setGoodsCount(goodsdetail.getGoodsCount());
+					replygoods.setCreated(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(goodsdetail.getCreated()));
+					replygoods.setIsPackage(goodsdetail.getIsPackage()==1?"Yes":"No");
+					replygoods.setGoodsDetail(goodsdetail.getGoodsDetail());
+					goodslist.add(replygoods);
+				}
+				reply.getGoodsList().setGoods(goodslist);
+				reply.SetSuccessReply();
+			} else {
+				reply.GetErrorFromCTMSReply(CTMSReply);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 更新订单信息
+		order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
+		_goodsOrderService.Update(order);
+		return reply;
+	}
+	//endregion
+	
+	//region 退订卖品
+	public RefundGoodsReply RefundGoods(String Username, String Password, String CinemaCode, String OrderCode,String PaySeqNo){
+		RefundGoodsReply refundGoodsReply=new RefundGoodsReply();
+		if (!ReplyExtension.RequestInfoGuard(refundGoodsReply, Username, Password, CinemaCode, OrderCode, PaySeqNo)) {
+			return refundGoodsReply;
+		}
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+		if (UserInfo == null) {
+			refundGoodsReply.SetUserCredentialInvalidReply();
+			return refundGoodsReply;
+		}
+		// 验证影院是否存在且可访问
+		Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),
+				CinemaCode);
+		if (userCinema == null) {
+			refundGoodsReply.SetCinemaInvalidReply();
+			return refundGoodsReply;
+		}
+		// 验证订单是否存在
+		GoodsOrderView order = _goodsOrderService.getWithOrderCode(CinemaCode,OrderCode);
+		if (order == null || order.getOrderBaseInfo().getOrderStatus() != OrderStatusEnum.Complete.getStatusCode()) {
+			refundGoodsReply.SetOrderNotExistReply();
+			return refundGoodsReply;
+		}
+		return RefundGoods(refundGoodsReply, userCinema, order);
+	}
+	private RefundGoodsReply RefundGoods(RefundGoodsReply reply,Usercinemaview userCinema, GoodsOrderView order){
+		try {
+			_CTMSInterface = CTMSInterfaceFactory.Create(userCinema);
+			CTMSRefundGoodsReply CTMSReply = null;
+			CTMSReply = _CTMSInterface.RefundGoods(userCinema, order);
+
+			if (StatusEnum.Success.equals(CTMSReply.Status)) {
+				reply.setOrder(new RefundGoodsReplyOrder());
+				reply.getOrder().setOrderCode(order.getOrderBaseInfo().getOrderCode());
+				reply.getOrder().setRefundStatus(order.getOrderBaseInfo().getOrderStatus() == 7? "Yes" : "No");
+				reply.getOrder().setRefundTime(reply.getOrder().getRefundStatus() == "Yes"
+						? order.getOrderBaseInfo().getRefundTime() == null ? ""
+								: new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+										.format(order.getOrderBaseInfo().getRefundTime())
+						: "");
+				reply.SetSuccessReply();
+			} else {
+				reply.GetErrorFromCTMSReply(CTMSReply);
+			}
+		} catch (Exception ex) {
+
+		} finally {
+			// 更新订单信息
+			order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
+			_goodsOrderService.UpdateOrderBaseInfo(order.getOrderBaseInfo());
 		}
 		return reply;
 	}
