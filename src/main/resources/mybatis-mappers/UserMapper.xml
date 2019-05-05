@@ -69,11 +69,13 @@
 	</sql>
 	
 	<select id="count" resultType="int">
-		select count(1) from userview ss
-		<if test="params.roleId !=1 ">
-		,(select id from userview <include refid="getUserId" />) s
+		select count(1) from sys_user ss
+		<if test="params.roleId !='1' ">
+		,(select id from sys_user <include refid="getUserId" />) s
 		where ss.createUserId = s.id or ss.id = s.id
+		<include refid="where"/>
 		</if>
+		<include refid="sqlwhere"/>
 	</select>
 
 	<select id="list" resultType="SysUser">

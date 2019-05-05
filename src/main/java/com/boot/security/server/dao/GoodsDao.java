@@ -29,7 +29,10 @@ public interface GoodsDao {
     
     @Delete("delete from goods where id = #{id}")
     int delete(Long id);
-
+    
+    @Delete("delete from goods where cinemacode = #{cinemacode}")
+    int deleteByCinemaCode(String cinemacode);
+    
     int update(Goods goods);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")

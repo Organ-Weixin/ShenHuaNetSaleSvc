@@ -15,4 +15,6 @@ public interface GoodsService {
 	int update(Goods goods);
 	
 	Goods getByGoodsCode(String goodscode);
+	
+	int deleteByCinemaCode(String cinemacode);
 }

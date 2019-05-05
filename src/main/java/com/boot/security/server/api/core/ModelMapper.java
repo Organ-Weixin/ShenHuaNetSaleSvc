@@ -21,8 +21,6 @@ import com.boot.security.server.api.core.SubmitOrderQueryXml.SubmitOrderQueryXml
 import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
-import com.boot.security.server.model.GoodsOrderView;
-import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
@@ -196,14 +194,22 @@ public class ModelMapper {
 		goods.setGoodsKey(entity.getGoodsKey());
 		goods.setGoodsName(entity.getGoodsName());
 		goods.setGoodsPic(entity.getGoodsPic());
-		goods.setGoodsStatus(entity.getGoodsStatus() == 1 ? "Up" : "Down");
-		goods.setGoodsType(entity.getGoodsType().toString());
+		if(entity.getGoodsStatus()!=null){
+			goods.setGoodsStatus(entity.getGoodsStatus() == 1 ? "Up" : "Down");
+		}
+		if(entity.getGoodsType()!=null){
+			goods.setGoodsType(entity.getGoodsType().toString());
+		}
 		goods.setIsDiscount(entity.getIsDiscount());
 		goods.setIsPackage(entity.getIsPackage());
 		goods.setIsRecommand(entity.getIsRecommand());
-		goods.setSettlePrice(entity.getSettlePrice().floatValue());
+		if(entity.getSettlePrice()!=null){
+			goods.setSettlePrice(entity.getSettlePrice().floatValue());
+		}
 		goods.setShowSeqNo(entity.getShowSeqNo());
-		goods.setStandardPrice(entity.getStandardPrice().floatValue());
+		if(entity.getStandardPrice()!=null){
+			goods.setStandardPrice(entity.getStandardPrice().floatValue());
+		}
 		goods.setStockCount(entity.getStockCount());
 		goods.setUnitName(entity.getUnitName());
 		goods.setUserId(entity.getUserId().longValue());

@@ -5,7 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.Goodsorders;
-import com.boot.security.server.model.OrderView;
 
 public interface GoodsOrderService {
 	@Transactional(propagation = Propagation.REQUIRED)

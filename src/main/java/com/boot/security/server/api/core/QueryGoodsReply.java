@@ -2,7 +2,6 @@ package com.boot.security.server.api.core;
 
 import java.util.List;
 
-import com.boot.security.server.api.core.QueryFilmReply.QueryFilmReplyFilms.QueryFilmReplyFilm;
 
 public class QueryGoodsReply extends BaseReply {
 	public QueryGoodsReply()

@@ -24,6 +24,8 @@ import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderView;
+import com.boot.security.server.model.Goodsorderdetails;
+import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.LoveFlagEnum;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
@@ -39,6 +41,7 @@ import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
+import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
@@ -63,6 +66,7 @@ public class Dy1905Interface implements ICTMSInterface {
 	MemberCardServiceImpl memberCardService = SpringUtil.getBean(MemberCardServiceImpl.class);
 	MemberCardLevelServiceImpl memberCardLevelService = SpringUtil.getBean(MemberCardLevelServiceImpl.class);
 	GoodsServiceImpl goodsService = SpringUtil.getBean(GoodsServiceImpl.class);
+	GoodsOrderServiceImpl goodsOrderService = SpringUtil.getBean(GoodsOrderServiceImpl.class);
 	/*
 	 * 查询影院信息（完成）
 	 * */
@@ -209,9 +213,6 @@ public class Dy1905Interface implements ICTMSInterface {
 				//获取排期中的影片信息
 				for(Sessioninfo sessioninfo : sessionInfoList){
 					Filminfo film = filminfoService.getByFilmCode(sessioninfo.getFilmCode());
-					/*List<FilmBean> dy1905Films = Dy1905Reply.getGetFeatureFilmResult().getFilms().getFilm().stream()
-											.filter((FilmBean filmbean)->filmbean.getFilmNo().equals(sessioninfo.getFilmCode()))
-											.collect(Collectors.toList());*/
 					if(film==null){
 						film = new Filminfo();
 						film.setFilmCode(sessioninfo.getFilmCode());
@@ -1115,23 +1116,17 @@ public class Dy1905Interface implements ICTMSInterface {
 			Gson gson = new Gson();
 			Dy1905GoodsListResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(GoodsListResult,"GoodsListResult"), Dy1905GoodsListResult.class);
 			if(Dy1905Reply.getGoodsListResult().getResultCode().equals("0")){
-				List<Goods> goodList = new ArrayList<Goods>();
 				List<GoodBean> dy1905goodList =  Dy1905Reply.getGoodsListResult().getGoods().getGood();
+				goodsService.deleteByCinemaCode(userCinema.getCinemaCode());
 				for(GoodBean dy1905good : dy1905goodList){
-					Goods goodModel = goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), dy1905good.getSerial());
 					Goods goods = new Goods();
 					goods.setCinemaCode(userCinema.getCinemaCode());
 					goods.setUserId(userCinema.getUserId());
+					goods.setIsDiscount(0);
+					goods.setGoodsStatus(0);
 					goods.setIsPackage(0);
-					if(goodModel==null){
-						Dy1905ModelMapper.MaptoEntity(dy1905good, goods);
-						goodsService.save(goods);
-					}else{
-						goods.setId(goodModel.getId());
-						Dy1905ModelMapper.MaptoEntity(dy1905good, goods);
-						goodsService.update(goods);
-					}
-					goodList.add(goods);
+					Dy1905ModelMapper.MaptoEntity(dy1905good, goods);
+					goodsService.save(goods);
 				}
 				reply.Status = StatusEnum.Success;
 			}else{
@@ -1141,27 +1136,162 @@ public class Dy1905Interface implements ICTMSInterface {
 			reply.ErrorMessage = Dy1905Reply.getGoodsListResult().getResultMsg();
 			return reply;
 		}
+		/*
+		 * 创建卖品订单
+		 * */
 		@Override
 		public CTMSCreateGoodsOrderReply CreateGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
 				throws Exception {
-			// TODO Auto-generated method stub
-			return null;
+			CTMSCreateGoodsOrderReply reply = new CTMSCreateGoodsOrderReply();
+			reply.setOrderCode(order.getOrderBaseInfo().getLocalOrderCode());
+			reply.Status = StatusEnum.Success;
+			return reply;
 		}
+		/*
+		 * 提交卖品订单
+		 * */
 		@Override
 		public CTMSSubmitGoodsOrderReply SubmitGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
 				throws Exception {
-			// TODO Auto-generated method stub
-			return null;
+			CTMSSubmitGoodsOrderReply reply = new CTMSSubmitGoodsOrderReply();
+			List<Goodsorderdetails> orderGoodsDetails = order.getOrderGoodsDetails();
+			Map<String,String> param = new LinkedHashMap<String,String>();
+			//循环遍历出卖品编码、卖品数量、卖品价格
+			String GoodsCode = null;
+			String GoodsCount = null;
+			String GoodsPrice = null;
+			GoodsCode = orderGoodsDetails.get(0).getGoodsCode();
+			GoodsCount = String.valueOf(orderGoodsDetails.get(0).getGoodsCount());
+			GoodsPrice = String.valueOf((orderGoodsDetails.get(0).getSettlePrice()*Integer.valueOf(GoodsCount)));
+			if(orderGoodsDetails.size()>1){
+				for(int i=1;i<orderGoodsDetails.size();i++){
+					GoodsCode += ","+orderGoodsDetails.get(i).getGoodsCode();
+					GoodsCount += ","+orderGoodsDetails.get(i).getGoodsCount();
+					GoodsPrice += ","+orderGoodsDetails.get(i).getSettlePrice()*Integer.valueOf(GoodsCount);
+				}
+			}
+			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() 
+					+ order.getOrderBaseInfo().getLocalOrderCode().substring(0,20)
+					+ GoodsCode + GoodsCount + GoodsPrice + order.getOrderBaseInfo().getMobilePhone() + String.valueOf(new Date().getTime()).substring(0,10)
+					+ order.getOrderBaseInfo().getTotalPrice() + order.getOrderBaseInfo().getTotalSettlePrice() 
+					+ order.getOrderBaseInfo().getCardNo() + order.getOrderBaseInfo().getCardPassword() + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
+			System.out.println("本地订单编码："+order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
+			System.out.println("校验信息"+pVerifyInfo);
+			param.put("pAppCode",userCinema.getDefaultUserName());
+			param.put("pCinemaID",userCinema.getCinemaId());
+			param.put("pNetOrder",order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
+			param.put("pGoodsSerial",GoodsCode);
+			param.put("pGoodsCount",GoodsCount);
+			param.put("pGoodsPrice",GoodsPrice);
+			param.put("pTel",order.getOrderBaseInfo().getMobilePhone());
+			param.put("pOrderTime",String.valueOf(new Date().getTime()).substring(0,10));
+			param.put("pTotalPrice",String.valueOf(order.getOrderBaseInfo().getTotalPrice()));
+			param.put("pPayPrice",String.valueOf(order.getOrderBaseInfo().getTotalSettlePrice()));
+			param.put("pCardNo",order.getOrderBaseInfo().getCardNo());
+			param.put("pCardPwd",order.getOrderBaseInfo().getCardPassword());
+			param.put("pVerifyInfo",pVerifyInfo);
+			/*System.out.println("URL："+ userCinema.getUrl() +"---pAppCode："+userCinema.getDefaultUserName()+"---pCinemaID："+userCinema.getCinemaId()
+					+"---pNetOrder："+order.getOrderBaseInfo().getLocalOrderCode()+"---pGoodsSerial："+GoodsCode
+					+"---pGoodsCount："+GoodsCount+"---pGoodsPrice："+GoodsPrice+"---pTel："+order.getOrderBaseInfo().getMobilePhone()
+					+"---pOrderTime："+new Date().getTime()+"---pTotalPrice："+order.getOrderBaseInfo().getTotalPrice()
+					+"---pPayPrice："+order.getOrderBaseInfo().getTotalSettlePrice()+"---pCardNo："+order.getOrderBaseInfo().getCardNo()
+					+"---pCardPwd："+order.getOrderBaseInfo().getCardPassword()+"---token："+userCinema.getDefaultPassword());*/
+			String GoodsOrderResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/GoodsOrder",param,"UTF-8");
+			System.out.println(GoodsOrderResult);
+			Gson gson = new Gson();
+			Dy1905GoodsOrderResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(GoodsOrderResult,"GoodsOrderResult"), Dy1905GoodsOrderResult.class);
+			if(Dy1905Reply.getGoodsOrderResult().getResultCode().equals("0")){
+				order.getOrderBaseInfo().setOrderCode(order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
+				order.getOrderBaseInfo().setPickUpCode(Dy1905Reply.getGoodsOrderResult().getOrderNo());
+				order.getOrderBaseInfo().setOrderStatus(6);
+				/*Goodsorders	orderBaseInfo = goodsOrderService.getByLocalOrderCode(userCinema.getCinemaCode(), order.getOrderBaseInfo().getLocalOrderCode());
+				order.setOrderBaseInfo(orderBaseInfo);
+				orderBaseInfo.setPickUpCode(Dy1905Reply.getGoodsOrderResult().getOrderNo());
+				orderBaseInfo.setOrderCode(order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
+				orderBaseInfo.setSubmitTime(new Date());
+				orderBaseInfo.setUpdated(new Date());
+				goodsOrderService.Update(order);*/
+				reply.Status = StatusEnum.Success;
+			}else{
+				/*Goodsorders	orderBaseInfo = goodsOrderService.getByLocalOrderCode(userCinema.getCinemaCode(), order.getOrderBaseInfo().getLocalOrderCode());
+				if(orderBaseInfo!=null){
+					System.out.println("ID----------------------"+orderBaseInfo.getId());
+					order.setOrderBaseInfo(orderBaseInfo);
+					orderBaseInfo.setUpdated(new Date());
+					orderBaseInfo.setErrorMessage(Dy1905Reply.getGoodsOrderResult().getResultMsg());
+					goodsOrderService.Update(order);
+				}*/
+				order.getOrderBaseInfo().setOrderStatus(5);
+				order.getOrderBaseInfo().setErrorMessage(Dy1905Reply.getGoodsOrderResult().getResultMsg());
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = Dy1905Reply.getGoodsOrderResult().getResultCode();
+			reply.ErrorMessage = Dy1905Reply.getGoodsOrderResult().getResultMsg();
+			return reply;
 		}
+		/*
+		 * 获取卖品订单的状态信息
+		 * */
 		@Override
 		public CTMSQueryGoodsOrderReply QueryGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
 				throws Exception {
-			// TODO Auto-generated method stub
-			return null;
+			CTMSQueryGoodsOrderReply reply = new CTMSQueryGoodsOrderReply();
+			Map<String,String> param = new LinkedHashMap<String,String>();
+			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() + order.getOrderBaseInfo().getOrderCode() + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
+			param.put("pAppCode",userCinema.getDefaultUserName());
+			param.put("pCinemaID",userCinema.getCinemaId());
+			param.put("pNetOrder",order.getOrderBaseInfo().getOrderCode());
+			param.put("pVerifyInfo",pVerifyInfo);
+			String GetGoodsOrderStatusResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/GetGoodsOrderStatus",param,"UTF-8");
+			System.out.println(GetGoodsOrderStatusResult);
+			Gson gson = new Gson();
+			Dy1905GetGoodsOrderStatusResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(GetGoodsOrderStatusResult,"GetGoodsOrderStatusResult"), Dy1905GetGoodsOrderStatusResult.class);
+			if(Dy1905Reply.getGetGoodsOrderStatusResult().getResultCode().equals("0")){
+				order.getOrderBaseInfo().setPickUpCode(Dy1905Reply.getGetGoodsOrderStatusResult().getOrderNo());
+				if(Dy1905Reply.getGetGoodsOrderStatusResult().getStatus().equals("0")){
+					order.getOrderBaseInfo().setOrderStatus(1);
+				}
+				if(Dy1905Reply.getGetGoodsOrderStatusResult().getStatus().equals("1")){
+					order.getOrderBaseInfo().setOrderStatus(6);
+				}
+				if(Dy1905Reply.getGetGoodsOrderStatusResult().getStatus().equals("2")){
+					order.getOrderBaseInfo().setOrderStatus(1);
+				}
+				if(Dy1905Reply.getGetGoodsOrderStatusResult().getStatus().equals("4")){
+					order.getOrderBaseInfo().setOrderStatus(9);
+				}
+				if(Dy1905Reply.getGetGoodsOrderStatusResult().getStatus().equals("1")){
+					order.getOrderBaseInfo().setOrderStatus(7);
+				}
+				reply.Status = StatusEnum.Success;
+			}else{
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = Dy1905Reply.getGetGoodsOrderStatusResult().getResultCode();
+			return reply;
 		}
+		/*
+		 * 卖品退货
+		 * */
 		@Override
 		public CTMSRefundGoodsReply RefundGoods(Usercinemaview userCinema, GoodsOrderView order) throws Exception {
-			// TODO Auto-generated method stub
-			return null;
+			CTMSRefundGoodsReply reply = new CTMSRefundGoodsReply();
+			Map<String,String> param = new LinkedHashMap<String,String>();
+			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() + order.getOrderBaseInfo().getOrderCode() + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
+			param.put("pAppCode",userCinema.getDefaultUserName());
+			param.put("pCinemaID",userCinema.getCinemaId());
+			param.put("pNetOrder",order.getOrderBaseInfo().getOrderCode());
+			param.put("pVerifyInfo",pVerifyInfo);
+			String RefundGoodsResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/RefundGoods",param,"UTF-8");
+			System.out.println(RefundGoodsResult);
+			Gson gson = new Gson();
+			Dy1905RefundGoodsResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(RefundGoodsResult,"RefundGoodsResult"), Dy1905RefundGoodsResult.class);
+			if(Dy1905Reply.getRefundGoodsResult().getResultCode().equals("0")){
+				reply.Status = StatusEnum.Success;
+			}else{
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = Dy1905Reply.getRefundGoodsResult().getResultCode();
+			return reply;
 		}
 }

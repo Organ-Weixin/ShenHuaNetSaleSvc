@@ -32,6 +32,9 @@
 			<if test="params.TotalPrice != null and params.TotalPrice != ''">
 				and TotalPrice = #{params.TotalPrice} 
 			</if>
+			<if test="params.TotalSettlePrice != null and params.TotalSettlePrice != ''">
+				and TotalSettlePrice = #{params.TotalSettlePrice} 
+			</if>
 			<if test="params.TotalFee != null and params.TotalFee != ''">
 				and TotalFee = #{params.TotalFee} 
 			</if>
@@ -56,11 +59,17 @@
 			<if test="params.PickUpTime != null and params.PickUpTime != ''">
 				and PickUpTime = #{params.PickUpTime} 
 			</if>
+			<if test="params.DeliveryType != null and params.DeliveryType != ''">
+				and DeliveryType = #{params.DeliveryType} 
+			</if>
 			<if test="params.DeliveryAddress != null and params.DeliveryAddress != ''">
 				and DeliveryAddress = #{params.DeliveryAddress} 
 			</if>
-			<if test="params.SendTime != null and params.SendTime != ''">
-				and SendTime = #{params.SendTime} 
+			<if test="params.DeliveryTime != null and params.DeliveryTime != ''">
+				and DeliveryTime = #{params.DeliveryTime} 
+			</if>
+			<if test="params.DeliveryMark != null and params.DeliveryMark != ''">
+				and DeliveryMark = #{params.DeliveryMark} 
 			</if>
 			<if test="params.OrderPayFlag != null and params.OrderPayFlag != ''">
 				and OrderPayFlag = #{params.OrderPayFlag} 
@@ -73,6 +82,21 @@
 			</if>
 			<if test="params.OrderTradeNo != null and params.OrderTradeNo != ''">
 				and OrderTradeNo = #{params.OrderTradeNo} 
+			</if>
+			<if test="params.PayType != null and params.PayType != ''">
+				and PayType = #{params.PayType} 
+			</if>
+			<if test="params.PaySeqNo != null and params.PaySeqNo != ''">
+				and PaySeqNo = #{params.PaySeqNo} 
+			</if>
+			<if test="params.CardNo != null and params.CardNo != ''">
+				and CardNo = #{params.CardNo} 
+			</if>
+			<if test="params.CardPassword != null and params.CardPassword != ''">
+				and CardPassword = #{params.CardPassword} 
+			</if>
+			<if test="params.ErrorMessage != null and params.ErrorMessage != ''">
+				and ErrorMessage = #{params.ErrorMessage} 
 			</if>
 		
 		</where>
@@ -147,11 +171,17 @@
 			<if test="PickUpTime != null">
 				PickUpTime = #{PickUpTime}, 
 			</if>
+			<if test="DeliveryType != null">
+				DeliveryType = #{DeliveryType}, 
+			</if>
 			<if test="DeliveryAddress != null">
 				DeliveryAddress = #{DeliveryAddress}, 
 			</if>
-			<if test="SendTime != null">
-				SendTime = #{SendTime}, 
+			<if test="DeliveryTime != null">
+				DeliveryTime = #{DeliveryTime}, 
+			</if>
+			<if test="DeliveryMark != null">
+				DeliveryMark = #{DeliveryMark}, 
 			</if>
 			<if test="OrderPayFlag != null">
 				OrderPayFlag = #{OrderPayFlag}, 
@@ -176,6 +206,9 @@
 			</if>
 			<if test="CardPassword != null">
 				CardPassword = #{CardPassword}, 
+			</if>
+			<if test="ErrorMessage != null">
+				ErrorMessage = #{ErrorMessage}, 
 			</if>
 
 		</set>

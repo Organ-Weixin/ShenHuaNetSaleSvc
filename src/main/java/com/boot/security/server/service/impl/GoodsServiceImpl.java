@@ -48,4 +48,10 @@ public class GoodsServiceImpl implements GoodsService {
 		return goodsDao.getByGoodsCode(goodscode);
 	}
 
+	@Override
+	public int deleteByCinemaCode(String cinemacode) {
+		// TODO Auto-generated method stub
+		return goodsDao.deleteByCinemaCode(cinemacode);
+	}
+
 }

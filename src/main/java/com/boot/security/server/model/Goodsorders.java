@@ -22,8 +22,10 @@ public class Goodsorders extends BaseEntity<Long> {
 	private Integer GoodsCount;
 	private Date RefundTime;
 	private Date PickUpTime;
+	private Integer DeliveryType;
 	private String DeliveryAddress;
-	private Date SendTime;
+	private Date DeliveryTime;
+	private String DeliveryMark;
 	private Integer OrderPayFlag;
 	private Integer OrderPayType;
 	private Date OrderPayTime;
@@ -32,6 +34,7 @@ public class Goodsorders extends BaseEntity<Long> {
 	private String PaySeqNo;
 	private String CardNo;
 	private String CardPassword;
+	private String ErrorMessage;
 
 	public Long getId() {
 		return Id;
@@ -87,12 +90,11 @@ public class Goodsorders extends BaseEntity<Long> {
 	public void setTotalPrice(Double TotalPrice) {
 		this.TotalPrice = TotalPrice;
 	}
-	
 	public Double getTotalSettlePrice() {
 		return TotalSettlePrice;
 	}
-	public void setTotalSettlePrice(Double totalSettlePrice) {
-		TotalSettlePrice = totalSettlePrice;
+	public void setTotalSettlePrice(Double TotalSettlePrice) {
+		this.TotalSettlePrice = TotalSettlePrice;
 	}
 	public Double getTotalFee() {
 		return TotalFee;
@@ -142,17 +144,29 @@ public class Goodsorders extends BaseEntity<Long> {
 	public void setPickUpTime(Date PickUpTime) {
 		this.PickUpTime = PickUpTime;
 	}
+	public Integer getDeliveryType() {
+		return DeliveryType;
+	}
+	public void setDeliveryType(Integer DeliveryType) {
+		this.DeliveryType = DeliveryType;
+	}
 	public String getDeliveryAddress() {
 		return DeliveryAddress;
 	}
 	public void setDeliveryAddress(String DeliveryAddress) {
 		this.DeliveryAddress = DeliveryAddress;
 	}
-	public Date getSendTime() {
-		return SendTime;
+	public Date getDeliveryTime() {
+		return DeliveryTime;
 	}
-	public void setSendTime(Date SendTime) {
-		this.SendTime = SendTime;
+	public void setDeliveryTime(Date DeliveryTime) {
+		this.DeliveryTime = DeliveryTime;
+	}
+	public String getDeliveryMark() {
+		return DeliveryMark;
+	}
+	public void setDeliveryMark(String DeliveryMark) {
+		this.DeliveryMark = DeliveryMark;
 	}
 	public Integer getOrderPayFlag() {
 		return OrderPayFlag;
@@ -181,27 +195,32 @@ public class Goodsorders extends BaseEntity<Long> {
 	public String getPayType() {
 		return PayType;
 	}
-	public void setPayType(String payType) {
-		PayType = payType;
+	public void setPayType(String PayType) {
+		this.PayType = PayType;
 	}
 	public String getPaySeqNo() {
 		return PaySeqNo;
 	}
-	public void setPaySeqNo(String paySeqNo) {
-		PaySeqNo = paySeqNo;
+	public void setPaySeqNo(String PaySeqNo) {
+		this.PaySeqNo = PaySeqNo;
 	}
 	public String getCardNo() {
 		return CardNo;
 	}
-	public void setCardNo(String cardNo) {
-		CardNo = cardNo;
+	public void setCardNo(String CardNo) {
+		this.CardNo = CardNo;
 	}
 	public String getCardPassword() {
 		return CardPassword;
 	}
-	public void setCardPassword(String cardPassword) {
-		CardPassword = cardPassword;
+	public void setCardPassword(String CardPassword) {
+		this.CardPassword = CardPassword;
 	}
-	
+	public String getErrorMessage() {
+		return ErrorMessage;
+	}
+	public void setErrorMessage(String ErrorMessage) {
+		this.ErrorMessage = ErrorMessage;
+	}
 
 }
