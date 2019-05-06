@@ -68,7 +68,6 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
 	}
 	@Override
 	public int UpdateOrderBaseInfo(Goodsorders orderbase) {
-		// TODO Auto-generated method stub
 		return ordersDao.update(orderbase);
 	}
 

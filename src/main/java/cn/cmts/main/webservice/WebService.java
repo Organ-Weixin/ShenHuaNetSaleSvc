@@ -346,7 +346,7 @@ public class WebService {
 			String pVerifyInfo = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),userCinema.getDefaultPassword());
 			String result = WebService.cinemaTss(userCinema.getUrl()).getSPInfos(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), pVerifyInfo);
-			System.out.println("获取卖品信息返回"+result);
+//			System.out.println("获取卖品信息返回"+result);
 			Gson gson = new Gson();
 			return gson.fromJson(result, MtxGetSPInfosResult.class);
 		} catch (Exception e) {
@@ -376,8 +376,6 @@ public class WebService {
 		jo.put("payType",order.getOrderBaseInfo().getPayType());
 		jo.put("paySeqNo", order.getOrderBaseInfo().getPaySeqNo());
 		jo.put("sPInfos",sPInfos );
-//		jo.put("sPCount", sPInfos);
-//		jo.put("sPPrice", sPInfos);
 	
 		String pVerifyInfo=GenerateVerifyInfo(userCinema.getDefaultUserName(),userCinema.getCinemaCode(),order.getOrderBaseInfo().getOrderCode(),
 				order.getOrderBaseInfo().getPayType(),String.valueOf(count),userCinema.getDefaultPassword());

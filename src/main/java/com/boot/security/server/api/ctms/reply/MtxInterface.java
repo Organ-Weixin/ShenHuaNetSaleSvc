@@ -840,6 +840,8 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 			reply.ErrorMessage = mtxReply.getResultmsg();
 			return reply;
 		}
+		
+		
 		//创建卖品订单
 	@Override
 	public CTMSCreateGoodsOrderReply CreateGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
@@ -855,7 +857,7 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 			throws Exception {
 		CTMSSubmitGoodsOrderReply reply=new CTMSSubmitGoodsOrderReply();
 		MtxConfirmSPInfoResult mtxReply=mtxService.ConfirmSPInfo(userCinema, order);
-		System.out.println("提交卖品接口返回：" + new Gson().toJson(mtxReply));
+//		System.out.println("提交卖品接口返回：" + new Gson().toJson(mtxReply));
 		if("0".equals(mtxReply.getResultCode())){
 			order.getOrderBaseInfo().setOrderCode(mtxReply.getOrderNo());
 			order.getOrderBaseInfo().setPickUpCode(mtxReply.getValidCode());
