@@ -14,8 +14,12 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.Get;
 import org.xmlunit.util.Convert;
 
+import com.boot.security.server.api.core.CreateGoodsOrderQueryXml;
+import com.boot.security.server.api.core.ModelMapper;
+import com.boot.security.server.api.core.SubmitGoodsOrderReply.SubmitGoodsOrderReplyOrder;
 import com.boot.security.server.api.ctms.reply.MtxGetCardTraceRecordResult.ResBean.CardTraceRecordsBean.CardTraceRecordBean;
 import com.boot.security.server.api.ctms.reply.MtxGetCardTypeResult.ResBean.MemberTypesBean.MemberTypeBean;
 import com.boot.security.server.api.ctms.reply.MtxGetCinemaPlanResult.ResBean.CinemaPlansBean.CinemaPlanBean;
@@ -23,10 +27,17 @@ import com.boot.security.server.api.ctms.reply.MtxGetHallAllSeatResult.HallAllSe
 import com.boot.security.server.api.ctms.reply.MtxGetHallResult.ResBean.HallsBean.HallBean;
 
 import com.boot.security.server.api.ctms.reply.MtxGetPlanSiteStateResult.ResBean.PlanSiteStatesBean.PlanSiteStateBean;
+import com.boot.security.server.api.ctms.reply.MtxGetSPInfosResult.GetSPInfosBean;
+import com.boot.security.server.api.ctms.reply.MtxGetSPInfosResult.GetSPInfosBean.GetSPInfoBean;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Filminfo;
+import com.boot.security.server.model.Goods;
+import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
+import com.boot.security.server.model.Goodscomponents;
+import com.boot.security.server.model.Goodsorderdetails;
+import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.LoveFlagEnum;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
@@ -43,11 +54,15 @@ import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.service.MemberCardService;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
+import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
+import com.boot.security.server.service.impl.GoodsServiceImpl;
+import com.boot.security.server.service.impl.GoodscomponentsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
+import com.boot.security.server.utils.JaxbXmlUtil;
 import com.boot.security.server.utils.SpringUtil;
 import com.google.gson.Gson;
 
@@ -63,6 +78,9 @@ public class MtxInterface implements ICTMSInterface {
 	 ScreenseatinfoServiceImpl _screenseatinfoService=SpringUtil.getBean(ScreenseatinfoServiceImpl.class);
 	 SessioninfoServiceImpl  _sessioninfoService=SpringUtil.getBean(SessioninfoServiceImpl.class);
 	 FilminfoServiceImpl _filminfoService=SpringUtil.getBean(FilminfoServiceImpl.class);
+	 GoodsServiceImpl _goodsService=SpringUtil.getBean(GoodsServiceImpl.class);
+	 GoodsOrderServiceImpl _goodsOrderService=SpringUtil.getBean(GoodsOrderServiceImpl.class);
+	GoodscomponentsServiceImpl _goodscomponentsService=SpringUtil.getBean(GoodscomponentsServiceImpl.class);
 	//会员卡
 	 private Webservice mtxCardService;
 	 MemberCardServiceImpl _memberCardService=SpringUtil.getBean(MemberCardServiceImpl.class);
@@ -747,32 +765,134 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 		reply.ErrorMessage = mtxReply.getGetCardTypeReturn().getResultMsg();
 		return reply;
 	}
-	@Override
-	public CTMSQueryGoodsReply QueryGoods(Usercinemaview userCinema) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	//卖品------获取卖品
+		@Override
+		public CTMSQueryGoodsReply QueryGoods(Usercinemaview userCinema) throws Exception {
+			CTMSQueryGoodsReply reply = new CTMSQueryGoodsReply();
+			MtxGetSPInfosResult mtxReply = mtxService.GetSPInfos(userCinema);
+//			System.out.println("获取影院卖品信息返回：" + new Gson().toJson(mtxReply));
+			if ("0".equals(mtxReply.getResultCode())) {
+				List<Goods> goods = new ArrayList<Goods>();
+				List<GetSPInfosBean> getSPInfosBeans = mtxReply.getSpinfos();
+				for (GetSPInfosBean getSPInfosBean : getSPInfosBeans) {
+					Goods goo = new Goods();
+					goo.setCinemaCode(userCinema.getCinemaCode());
+					goo.setUserId(userCinema.getUserId());
+					goo.setGoodsCode(getSPInfosBean.getSpno());
+					goo.setGoodsName(getSPInfosBean.getSpname());
+					if (getSPInfosBean.getSptype() != null) {
+						goo.setGoodsType(Integer.valueOf(getSPInfosBean.getSptype()));
+					}
+					if (getSPInfosBean.getSellprice() != null) {
+						goo.setStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));
+					}
+					if (getSPInfosBean.getSellprice() != null) {
+						goo.setSettlePrice(Double.valueOf(getSPInfosBean.getSellprice()));
+					}
+//					goo.setGoodsPic(userCinema.getUrl());
+					goo.setStockCount(100);//给定100
+					goo.setGoodsDesc(getSPInfosBean.getSpname());
+					goo.setShowSeqNo(0);//默认0
+					goo.setUnitName(getSPInfosBean.getUnitname());
+					goo.setIsDiscount(0);//默认0
+					goo.setGoodsStatus(0);//默认0
+					goo.setIsRecommand(0);//默认0
+					if (getSPInfosBean.getComponents() != null && getSPInfosBean.getComponents().size() > 0) {
+//						System.err.println("获取到套餐，套餐:"+getSPInfosBean.getComponents());
+						goo.setIsPackage(1);
+				///////////
+							List<GetSPInfosBean.GetSPInfoBean> getSPInfoBeans=getSPInfosBean.getComponents();
+							for(GetSPInfoBean getSPInfoBean:getSPInfoBeans){
+								Goodscomponents gcs=new Goodscomponents();
+								gcs.setPackageCode(getSPInfoBean.getSpno());
+								gcs.setGoodsCode(getSPInfoBean.getSpno());
+								gcs.setGoodsName(getSPInfoBean.getSpname());
+								gcs.setGoodsCount(Integer.valueOf(getSPInfoBean.getCount()));
+								gcs.setUnitName(getSPInfoBean.getUnitname());
+								if(_goodscomponentsService.getByGoodsCode(getSPInfoBean.getSpno())==null){
+									_goodscomponentsService.save(gcs);
+//									System.out.println("插入套餐信息++++++：");
+								}else{
+									_goodscomponentsService.update(gcs);
+//									System.out.println("更新套餐信息============");
+								}
+							}
+
+					} else {
+						goo.setIsPackage(0);
+					}
+					if (_goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(),
+							getSPInfosBean.getSpno()) == null) {
+						_goodsService.save(goo);
+//						System.out.println("插入卖品信息");
+					} else {
+						_goodsService.update(goo);
+//						System.out.println("更新卖品信息");
+					}
+				}
+				
+				reply.Status = StatusEnum.Success;
+//				System.out.println("更新成功");
+			} else {
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = mtxReply.getResultCode();
+			reply.ErrorMessage = mtxReply.getResultmsg();
+			return reply;
+		}
+		//创建卖品订单
 	@Override
 	public CTMSCreateGoodsOrderReply CreateGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSCreateGoodsOrderReply reply = new CTMSCreateGoodsOrderReply();
+		reply.setOrderCode(order.getOrderBaseInfo().getLocalOrderCode());
+		reply.Status = StatusEnum.Success;
+		return reply;
 	}
+	//提交卖品订单
 	@Override
 	public CTMSSubmitGoodsOrderReply SubmitGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSSubmitGoodsOrderReply reply=new CTMSSubmitGoodsOrderReply();
+		MtxConfirmSPInfoResult mtxReply=mtxService.ConfirmSPInfo(userCinema, order);
+		System.out.println("提交卖品接口返回：" + new Gson().toJson(mtxReply));
+		if("0".equals(mtxReply.getResultCode())){
+			order.getOrderBaseInfo().setOrderCode(mtxReply.getOrderNo());
+			order.getOrderBaseInfo().setPickUpCode(mtxReply.getValidCode());
+			order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
+			reply.Status = StatusEnum.Success;
+//			System.out.println("提交卖品接口成功");
+		}else{
+			order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.SubmitFail.getStatusCode());
+			reply.Status=StatusEnum.Failure;
+//			System.out.println("提交卖品接口失败");
+		}
+		reply.ErrorCode=mtxReply.getResultCode();
+		return reply;
 	}
+	//查询卖品订单
 	@Override
 	public CTMSQueryGoodsOrderReply QueryGoodsOrder(Usercinemaview userCinema, GoodsOrderView order) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSQueryGoodsOrderReply reply=new CTMSQueryGoodsOrderReply();
+		reply.Status=StatusEnum.Success;
+		return reply;
 	}
+	//BackSellGoods退卖品
 	@Override
 	public CTMSRefundGoodsReply RefundGoods(Usercinemaview userCinema, GoodsOrderView order) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSRefundGoodsReply reply=new CTMSRefundGoodsReply();
+		MtxBackSellGoodsResult mtxReply=mtxService.BackSellGoods(userCinema, order);
+		System.out.println("退卖品接口返回：" + new Gson().toJson(mtxReply));
+		if("0".equals(mtxReply.getBackSellGoodsResult().getResultCode())){
+			order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Refund.getStatusCode());
+			order.getOrderBaseInfo().setRefundTime(new Date());
+			reply.Status=StatusEnum.Success;
+		}else{
+			reply.Status=StatusEnum.Failure;
+		}
+		reply.ErrorCode=mtxReply.getBackSellGoodsResult().getResultCode();
+		return reply;
 	}
 
+	
 }

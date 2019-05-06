@@ -1,17 +1,21 @@
 package cn.cmts.main.webservice;
 
+import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
-
-
+import com.alibaba.fastjson.JSONObject;
 import com.boot.security.server.api.ctms.reply.MtxAppPrintTicketResult;
+import com.boot.security.server.api.ctms.reply.MtxBackSellGoodsResult;
 import com.boot.security.server.api.ctms.reply.MtxBackTicketResult;
+import com.boot.security.server.api.ctms.reply.MtxConfirmSPInfoResult;
 
 /*import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;*/
@@ -21,6 +25,7 @@ import com.boot.security.server.api.ctms.reply.MtxGetHallAllSeatResult;
 import com.boot.security.server.api.ctms.reply.MtxGetHallResult;
 import com.boot.security.server.api.ctms.reply.MtxGetOrderStatusResult;
 import com.boot.security.server.api.ctms.reply.MtxGetPlanSiteStateResult;
+import com.boot.security.server.api.ctms.reply.MtxGetSPInfosResult;
 import com.boot.security.server.api.ctms.reply.MtxLiveRealCheckSeatStateResult;
 import com.boot.security.server.api.ctms.reply.MtxRealCheckSeatStateParameter;
 import com.boot.security.server.api.ctms.reply.MtxRealCheckSeatStateParameter.MtxRealCheckSeatStateXmlSeatInfos;
@@ -29,20 +34,17 @@ import com.boot.security.server.api.ctms.reply.MtxRealCheckSeatStateParameter.Mt
 import com.boot.security.server.api.ctms.reply.MtxSellTicketParameter;
 import com.boot.security.server.api.ctms.reply.MtxSellTicketResult;
 import com.boot.security.server.api.ctms.reply.MtxUnLockOrderCenCinResult;
-import com.boot.security.server.api.ctms.reply.MtxLiveRealCheckSeatStateResult.ResBean.SeatInfosBean.SeatInfoBean;
+import com.boot.security.server.model.GoodsOrderView;
+import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.OrderView;
-import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Screeninfo;
-import com.boot.security.server.model.Screenseatinfo;
 import com.boot.security.server.model.SessionSeatStatusEnum;
-import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.utils.JaxbXmlUtil;
 import com.boot.security.server.utils.XmlToJsonUtil;
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
-import com.mysql.fabric.xmlrpc.base.Array;
 
 
 /*	
@@ -324,7 +326,6 @@ public class WebService {
 			String pVerifyInfo = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
 					orderView.getOrderBaseInfo().getSubmitOrderCode(), orderView.getOrderBaseInfo().getVerifyCode(),
 					requestType, TokenId, Token, userCinema.getDefaultPassword());
-
 			String result = WebService.cinemaTss(userCinema.getUrl()).appPrintTicket(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), orderView.getOrderBaseInfo().getSubmitOrderCode(),
 					orderView.getOrderBaseInfo().getVerifyCode(), requestType, TokenId, pVerifyInfo);
@@ -337,7 +338,81 @@ public class WebService {
 		}
 		return null;
 	}
-
+	/*GetSPInfos 获取影院卖品信息
+	 * 转小写（MD5（转小写（pAppCode + pCinemaID +验证密钥）））
+	 * */
+	public static MtxGetSPInfosResult GetSPInfos(Usercinemaview userCinema){
+		try {
+			String pVerifyInfo = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),userCinema.getDefaultPassword());
+			String result = WebService.cinemaTss(userCinema.getUrl()).getSPInfos(userCinema.getDefaultUserName(),
+					userCinema.getCinemaCode(), pVerifyInfo);
+			System.out.println("获取卖品信息返回"+result);
+			Gson gson = new Gson();
+			return gson.fromJson(result, MtxGetSPInfosResult.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	/* ConfirmSPInfo确认卖品接口
+	 * appCode+cinemaId+OrderNo+ payType+paySeqNo+卖品个数+验证密钥
+	 * */
+	public static MtxConfirmSPInfoResult ConfirmSPInfo(Usercinemaview userCinema, GoodsOrderView order){
+		try {
+			int count=0;
+		List<Map<String, String>> sPInfos =new ArrayList<Map<String,String>>();
+		for(Goodsorderdetails goodsorderdetails:order.getOrderGoodsDetails()){
+			Map<String, String> goodsmap=new LinkedHashMap<String,String>();
+			goodsmap.put("sPNo", goodsorderdetails.getGoodsCode());
+			goodsmap.put("sPCount", String.valueOf(goodsorderdetails.getGoodsCount()));
+			count+=goodsorderdetails.getGoodsCount();
+			goodsmap.put("sPPrice", String.valueOf(goodsorderdetails.getStandardPrice()*goodsorderdetails.getGoodsCount()));
+			sPInfos.add(goodsmap);
+		}
+		JSONObject  jo=new JSONObject();
+		jo.put("appCode", userCinema.getDefaultUserName());
+		jo.put("cinemaId", userCinema.getCinemaCode());
+		jo.put("orderNo", order.getOrderBaseInfo().getOrderCode());
+		jo.put("payType",order.getOrderBaseInfo().getPayType());
+		jo.put("paySeqNo", order.getOrderBaseInfo().getPaySeqNo());
+		jo.put("sPInfos",sPInfos );
+//		jo.put("sPCount", sPInfos);
+//		jo.put("sPPrice", sPInfos);
+	
+		String pVerifyInfo=GenerateVerifyInfo(userCinema.getDefaultUserName(),userCinema.getCinemaCode(),order.getOrderBaseInfo().getOrderCode(),
+				order.getOrderBaseInfo().getPayType(),String.valueOf(count),userCinema.getDefaultPassword());
+		
+		jo.put("verifyInfo", GenerateVerifyInfo(userCinema.getDefaultUserName(),userCinema.getCinemaCode(),order.getOrderBaseInfo().getOrderCode(),
+				order.getOrderBaseInfo().getPayType(),String.valueOf(count),userCinema.getDefaultPassword()));
+		String pJsonString=jo.toJSONString();
+			String result=WebService.cinemaTss(userCinema.getUrl()).confirmSPInfo(pJsonString);
+			System.out.println("确认卖品接口1返回"+result);
+			Gson gson = new Gson();
+			return gson.fromJson(result, MtxConfirmSPInfoResult.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	/*BackSellGoods退卖品
+	 *转小写（MD5（转小写（pAppCode + pCinemaID + pOrderNo + pPayseqNo +验证密钥））） 
+	 * */
+	public static MtxBackSellGoodsResult BackSellGoods(Usercinemaview userCinema, GoodsOrderView order){
+		try {
+			String pVerifyInfo=GenerateVerifyInfo(userCinema.getDefaultUserName(),userCinema.getCinemaCode(),
+					order.getOrderBaseInfo().getOrderCode(),order.getOrderBaseInfo().getPaySeqNo(),userCinema.getDefaultPassword());
+			String result=WebService.cinemaTss(userCinema.getUrl()).backSellGoods(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
+					order.getOrderBaseInfo().getOrderCode(), order.getOrderBaseInfo().getPaySeqNo(), pVerifyInfo);
+			System.out.println("获取退卖品的返回"+result);
+			Gson gson=new Gson();
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "MtxBackSellGoodsResult"), MtxBackSellGoodsResult.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
+	
 //满天星校验
 	private static String GenerateVerifyInfo(String... items) {
 		String sourceString = Joiner.on("").join(items);
@@ -362,29 +437,7 @@ public class WebService {
 		}
 		return null;
 	}
-	public static void main(String[] args) {/*
-		OrderView order=new OrderView();
-		Usercinemaview userCinema = new Usercinemaview();
-		userCinema.setDefaultUserName("TEST");
-		userCinema.setDefaultPassword("12345678");
-		userCinema.setUrl("http://ticketnew.mvtapi.com:8702/ticketapi/services/ticketapi?wsdl");
-		userCinema.setCinemaCode("gzxxx");
-		userCinema.setCinemaId("gzxxx");
-		Orders orders=new Orders();
-		orders.setSessionCode("5137013290");
-		orders.setTicketCount(1);
-		orders.setPayType("0");
-		orders.setSerialNum("20190417143543153629");
-		List<Orderseatdetails> orderdList=new ArrayList<Orderseatdetails>();
-		orders.setLockOrderCode("953908299");
-		Orderseatdetails or=new Orderseatdetails();
-		or.setSeatCode("04010214");
-		or.setPrice(110.0);
-		orderdList.add(or);
-		order.setOrderSeatDetails(orderdList);
-		order.setOrderBaseInfo(orders);
-	MtxGetOrderStatusResult result=GetOrderStatus(userCinema, order);
-	*/}
+
 
 	
 }
