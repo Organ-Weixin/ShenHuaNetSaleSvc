@@ -247,7 +247,7 @@ public class ModelMapper {
 		order.setCardNo(queryXmlObj.getCardNo());
 		order.setCardPassword(queryXmlObj.getCardPassword());
 		order.setUpdated(new Date());
-		if (order.getOrderPayType()==OrderPayTypeEnum.MemberCardPay.getTypeCode()) {
+		if (order.getOrderPayType() != null && OrderPayTypeEnum.MemberCardPay.getTypeCode() == order.getOrderPayType()) {
 			order.setPaySeqNo(queryXmlObj.getPaySeqNo());
 		}
 		return order;

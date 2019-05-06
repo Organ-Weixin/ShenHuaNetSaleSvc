@@ -42,7 +42,9 @@ import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
+import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
+import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.OrderStatusEnum;
@@ -1545,21 +1547,20 @@ public class YkInterface implements ICTMSInterface {
 		YkGetGoodsResult ykResult = gson.fromJson(getGoodsResult, YkGetGoodsResult.class);
 		if("0".equals(ykResult.getRetCode())){
 			if("SUCCESS".equals(ykResult.getData().getBizCode())){
+				List<Goods> goodslist = new ArrayList<Goods>();
 				for(GoodsResult goods : ykResult.getData().getData().getGoodsList()){
-					Goods newGoods = goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), goods.getGoodsId());
-					if(newGoods == null){
-						newGoods = new Goods();
-						newGoods.setCinemaCode(userCinema.getCinemaCode());
-						newGoods.setUserId(userCinema.getUserId());
-						YkModelMapper.MapToEntity(goods, newGoods);
-						goodsService.save(newGoods);	//新增
-						
-					} else {
-						YkModelMapper.MapToEntity(goods, newGoods);
-						goodsService.update(newGoods);	//修改
-					}
+					Goods newGoods = new Goods();
+					newGoods.setCinemaCode(userCinema.getCinemaCode());
+					newGoods.setUserId(userCinema.getUserId());
+					YkModelMapper.MapToEntity(goods, newGoods);
+					goodslist.add(newGoods);
 				}
-				
+				//删除旧的
+				goodsService.deleteByCinemaCode(userCinema.getCinemaCode());
+				//插入新的
+				for(Goods goodsinfo : goodslist){
+					goodsService.save(goodsinfo);	
+				}
 				reply.Status = StatusEnum.Success;
 			} else {
 				reply.Status = StatusEnum.Failure;
@@ -1574,30 +1575,187 @@ public class YkInterface implements ICTMSInterface {
 		return reply;
 	}
 
+	/*
+	 * 创建卖品订单
+	 * 凤凰佳影无此接口，直接返回成功
+	 */
 	@Override
 	public CTMSCreateGoodsOrderReply CreateGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSCreateGoodsOrderReply reply = new CTMSCreateGoodsOrderReply();
+		reply.setOrderCode(order.getOrderBaseInfo().getLocalOrderCode());
+		reply.Status = StatusEnum.Success;
+		
+		return reply;
 	}
 
+	/*
+	 * 确认卖品订单
+	 */
 	@Override
 	public CTMSSubmitGoodsOrderReply SubmitGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSSubmitGoodsOrderReply reply = new CTMSSubmitGoodsOrderReply();
+		
+		List<Map<String,String>> goodslist = new ArrayList<Map<String,String>>();
+		for(Goodsorderdetails goodsorderdetails : order.getOrderGoodsDetails()){
+			Map<String,String> goodsmap = new LinkedHashMap<String,String>();
+			goodsmap.put("goodsId", goodsorderdetails.getGoodsCode());
+			goodsmap.put("salePrice", goodsorderdetails.getSettlePrice().toString());
+			goodsmap.put("count", goodsorderdetails.getGoodsCount().toString());
+			goodsmap.put("isPackage", "false");
+			if(order.getOrderBaseInfo().getCardNo() != null){	//是否使用会员卡折扣 
+				goodsmap.put("isCardDiscount", "true");
+			}
+			goodslist.add(goodsmap);
+		}
+		JSONObject  input=new JSONObject();
+		input.put("cinemaLinkId", userCinema.getCinemaId());
+		input.put("thirdOrderId", order.getOrderBaseInfo().getLocalOrderCode());
+		input.put("goodsList", goodslist);
+		input.put("mobile", order.getOrderBaseInfo().getMobilePhone());
+		if(order.getOrderBaseInfo().getCardNo() != null){	//是否使用会员卡折扣 
+			
+			Map<String,String> payCardInfo = new LinkedHashMap<String,String>();
+			payCardInfo.put("cinemaLinkId", userCinema.getCinemaId());
+			payCardInfo.put("cardNumber", order.getOrderBaseInfo().getCardNo());
+			payCardInfo.put("cardPassword", MD5AESPassword(order.getOrderBaseInfo().getCardPassword(),userCinema.getDefaultPassword()));
+			
+			Map<String,Object> payment = new LinkedHashMap<String,Object>();
+			payment.put("paymentMethod", "MemberCard");
+			payment.put("payCardInfo", payCardInfo);
+			
+			List<Map<String,Object>> paymentList = new ArrayList<>();
+			paymentList.add(payment);
+			input.put("paymentList", paymentList);
+		}
+		String data=input.toJSONString();
+
+		Map<String,String> param = new LinkedHashMap<String,String>();
+		param.put("api", "ykse.partner.order.confirmGoodsOrder");
+		param.put("channelCode", userCinema.getDefaultUserName());
+		param.put("data", data);
+		param.put("timestamp", String.valueOf(System.currentTimeMillis()));
+		param.put("v", "1.0");
+		
+		String sign = createSign(userCinema.getDefaultPassword(), param);
+		String confirmGoodsOrderResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
+				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
+		System.out.println("确认卖品订单返回："+confirmGoodsOrderResult);
+		
+		Gson gson = new Gson();
+		YkConfirmGoodsOrderResult ykResult = gson.fromJson(confirmGoodsOrderResult, YkConfirmGoodsOrderResult.class);
+		if("0".equals(ykResult.getRetCode())){
+			if("SUCCESS".equals(ykResult.getData().getBizCode())){
+				order.getOrderBaseInfo().setOrderCode(ykResult.getData().getData().getGoodsOrderId());
+				order.getOrderBaseInfo().setPickUpCode(ykResult.getData().getData().getPickUpCode());
+				order.getOrderBaseInfo().setTotalPrice(Double.valueOf(ykResult.getData().getData().getTotalGoodsPrice()));
+				order.getOrderBaseInfo().setTotalFee(Double.valueOf(ykResult.getData().getData().getTotalGoodsFee()));
+				if("goods_success".equals(ykResult.getData().getData().getOrderStatus())){
+					order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
+					order.getOrderBaseInfo().setSubmitTime(new Date());
+				}
+				reply.Status = StatusEnum.Success;
+			} else {
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = ykResult.getData().getBizCode();
+			reply.ErrorMessage=ykResult.getData().getBizMsg();
+		} else {
+			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = ykResult.getRetCode();
+			reply.ErrorMessage = ykResult.getRetMsg();
+		}
+		return reply;
 	}
 
+	/*
+	 * 查询卖品订单
+	 */
 	@Override
 	public CTMSQueryGoodsOrderReply QueryGoodsOrder(Usercinemaview userCinema, GoodsOrderView order) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSQueryGoodsOrderReply reply = new CTMSQueryGoodsOrderReply();
+		
+		Map<String,String> param = new LinkedHashMap<String,String>();
+		param.put("api", "ykse.partner.order.getGoodsOrderInfo");
+		param.put("channelCode", userCinema.getDefaultUserName());
+		param.put("data", "{\"cinemaLinkId\":\""+userCinema.getCinemaId()+"\",\"goodsOrderId\":\""+order.getOrderBaseInfo().getOrderCode()+"\"}");
+		param.put("timestamp", String.valueOf(System.currentTimeMillis()));
+		param.put("v", "1.0");
+		
+		String sign = createSign(userCinema.getDefaultPassword(), param);
+		String getGoodsOrderInfoResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
+				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
+		System.out.println("查询卖品订单返回："+getGoodsOrderInfoResult);
+		
+		Gson gson = new Gson();
+		YkGetGoodsOrderInfoResult ykResult = gson.fromJson(getGoodsOrderInfoResult, YkGetGoodsOrderInfoResult.class);
+		if("0".equals(ykResult.getRetCode())){
+			if("SUCCESS".equals(ykResult.getData().getBizCode())){
+				order.getOrderBaseInfo().setTotalPrice(Double.valueOf(ykResult.getData().getData().getTotalGoodsPrice()));
+				order.getOrderBaseInfo().setTotalFee(Double.valueOf(ykResult.getData().getData().getTotalGoodsFee()));
+				if("Y".equals(ykResult.getData().getData().getPickupStatus())){	//卖品取货状态 
+					order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Fetched.getStatusCode());
+					order.getOrderBaseInfo().setPickUpTime(new Date());
+				}
+				reply.Status = StatusEnum.Success;
+			} else {
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = ykResult.getData().getBizCode();
+			reply.ErrorMessage=ykResult.getData().getBizMsg();
+		} else {
+			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = ykResult.getRetCode();
+			reply.ErrorMessage = ykResult.getRetMsg();
+		}
+		
+		return reply;
 	}
 
+	/*
+	 * 退卖品
+	 */
 	@Override
 	public CTMSRefundGoodsReply RefundGoods(Usercinemaview userCinema, GoodsOrderView order) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSRefundGoodsReply reply = new CTMSRefundGoodsReply();
+		
+		Map<String,String> param = new LinkedHashMap<String,String>();
+		param.put("api", "ykse.partner.order.refundGoodsOrder");
+		param.put("channelCode", userCinema.getDefaultUserName());
+		param.put("data", "{\"cinemaLinkId\":\""+userCinema.getCinemaId()+"\",\"goodsOrderId\":\""+order.getOrderBaseInfo().getOrderCode()+"\"}");
+		param.put("timestamp", String.valueOf(System.currentTimeMillis()));
+		param.put("v", "1.0");
+		
+		String sign = createSign(userCinema.getDefaultPassword(), param);
+		String refundGoodsOrderResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
+				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
+		System.out.println("退卖品订单返回："+refundGoodsOrderResult);
+		
+		Gson gson = new Gson();
+		YkRefundGoodsOrderResult ykResult = gson.fromJson(refundGoodsOrderResult, YkRefundGoodsOrderResult.class);
+		if("0".equals(ykResult.getRetCode())){
+			if("SUCCESS".equals(ykResult.getData().getBizCode())){
+				order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Refund.getStatusCode());
+				order.getOrderBaseInfo().setRefundTime(new Date());
+				
+				reply.Status = StatusEnum.Success;
+			} else {
+				order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.RefundFail.getStatusCode());
+				order.getOrderBaseInfo().setErrorMessage(ykResult.getData().getBizMsg());
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = ykResult.getData().getBizCode();
+			reply.ErrorMessage=ykResult.getData().getBizMsg();
+		} else {
+			order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.RefundFail.getStatusCode());
+			order.getOrderBaseInfo().setErrorMessage(ykResult.getRetMsg());
+			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = ykResult.getRetCode();
+			reply.ErrorMessage = ykResult.getRetMsg();
+		}
+		
+		return reply;
 	}
 	
 }

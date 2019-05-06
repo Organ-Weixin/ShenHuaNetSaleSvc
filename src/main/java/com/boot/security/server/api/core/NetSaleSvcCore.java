@@ -71,6 +71,7 @@ import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
+import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
@@ -1926,16 +1927,16 @@ ScreenType,ListingPrice,LowestPrice))
 		if (!QueryXmlObj.getOrderCode().isEmpty()) {
 			order = _goodsOrderService.getWithLocalOrderCode(QueryXmlObj.getCinemaCode(), QueryXmlObj.getOrderCode());
 		}
-		if (order == null || (order.getOrderBaseInfo().getOrderStatus() != OrderStatusEnum.Created.getStatusCode()
-				&& order.getOrderBaseInfo().getOrderStatus() != OrderStatusEnum.SubmitFail.getStatusCode()
-				&& order.getOrderBaseInfo().getOrderStatus() != OrderStatusEnum.Payed.getStatusCode())) {
+		if (order == null || (order.getOrderBaseInfo().getOrderStatus() != GoodsOrderStatusEnum.Created.getStatusCode()
+				&& order.getOrderBaseInfo().getOrderStatus() != GoodsOrderStatusEnum.SubmitFail.getStatusCode()
+				&& order.getOrderBaseInfo().getOrderStatus() != GoodsOrderStatusEnum.Payed.getStatusCode())) {
 			submitGoodsOrderReply.SetOrderNotExistReply();
 			return submitGoodsOrderReply;
 		}
 		// 验证卖品数量
 		if (QueryXmlObj.getGoodsList().getGoods().size()<=0
 				|| QueryXmlObj.getGoodsList().getGoods().stream().mapToDouble(SubmitGoodsOrderQueryXmlGoods::getGoodsCount).sum() != order.getOrderBaseInfo().getGoodsCount()) {
-			submitGoodsOrderReply.SetSeatCountInvalidReply();
+			submitGoodsOrderReply.SetGoodsCountInvalidReply();
 			return submitGoodsOrderReply;
 		}
 		// 更新订单信息
@@ -2075,7 +2076,8 @@ ScreenType,ListingPrice,LowestPrice))
 		}
 		// 验证订单是否存在
 		GoodsOrderView order = _goodsOrderService.getWithOrderCode(CinemaCode,OrderCode);
-		if (order == null || order.getOrderBaseInfo().getOrderStatus() != OrderStatusEnum.Complete.getStatusCode()) {
+		if (order == null || (order.getOrderBaseInfo().getOrderStatus() != GoodsOrderStatusEnum.Complete.getStatusCode()
+				&& order.getOrderBaseInfo().getOrderStatus() != GoodsOrderStatusEnum.RefundFail.getStatusCode())) {
 			refundGoodsReply.SetOrderNotExistReply();
 			return refundGoodsReply;
 		}
