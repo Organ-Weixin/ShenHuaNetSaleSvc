@@ -56,6 +56,7 @@ public class OrderController {
 	@Autowired
 	private OrderServiceImpl _orderService;
 	
+	//region 锁座
 //	@PostMapping("/LockSeat")
 	@RequestMapping(value="/LockSeat",method = RequestMethod.POST)
 	@ApiOperation(value = "锁座")
@@ -78,7 +79,9 @@ public class OrderController {
 			return new LockSeatReply();
 		}
 	}
+	//endregion
 	
+	//region 解锁座位
 	@PostMapping("/ReleaseSeat")
 	@ApiOperation(value = "解锁座位")
 	public ReleaseSeatReply ReleaseSeat(@RequestBody NetSaleQueryJson QueryJson){
@@ -91,7 +94,9 @@ public class OrderController {
 			return new ReleaseSeatReply();
 		}
 	}
+	//endregion
 	
+	//region 提交订单
 	@PostMapping("/SubmitOrder")
 	@ApiOperation(value = "提交订单")
 	public SubmitOrderReply SubmitOrder(@RequestBody NetSaleQueryJson QueryJson){
@@ -104,7 +109,9 @@ public class OrderController {
 			return new SubmitOrderReply();
 		}
 	}
+	//endregion
 	
+	//region 查询订单
 	@GetMapping("/QueryOrder/{UserName}/{Password}/{CinemaCode}/{OrderCode}")
 	@ApiOperation(value = "查询订单")
 	public QueryOrderReply QueryOrder(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
@@ -113,7 +120,9 @@ public class OrderController {
 //		System.out.println("查询订单----"+new Gson().toJson(orderReply));
 		return orderReply;
 	}
+	//endregion
 	
+	//region 查询本地订单
 	@GetMapping("/QueryLocalOrder/{UserName}/{Password}/{CinemaCode}/{LockOrderCode}")
 	@ApiOperation(value = "查询本地订单")
 	public QueryLocalOrderReply QueryLocalOrder(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
@@ -181,7 +190,9 @@ public class OrderController {
 		}
 		return orderReply;
 	}
+	//endregion
 	
+	//region 查询影片
 	@GetMapping("/QueryTicket/{UserName}/{Password}/{CinemaCode}/{PrintNo}/{VerifyCode}")
 	@ApiOperation(value = "查询影片")
 	public QueryTicketReply QueryTicket(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
@@ -190,7 +201,9 @@ public class OrderController {
 //		System.out.println("查询影片----"+new Gson().toJson(reply));
 		return reply;
 	}
+	//endregion
 	
+	//region 查询出票状态
 	@GetMapping("/QueryPrint/{UserName}/{Password}/{CinemaCode}/{PrintNo}/{VerifyCode}")
 	@ApiOperation(value = "查询出票状态")
 	public QueryPrintReply QueryPrint(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
@@ -199,7 +212,9 @@ public class OrderController {
 //		System.out.println("查询出票状态----"+new Gson().toJson(reply));
 		return reply;
 	}
+	//endregion
 	
+	//region 退票
 	@GetMapping("/RefundTicket/{UserName}/{Password}/{CinemaCode}/{PrintNo}/{VerifyCode}")
 	@ApiOperation(value = "退票")
 	public RefundTicketReply RefundTicket(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
@@ -208,7 +223,9 @@ public class OrderController {
 //		System.out.println("退票----"+new Gson().toJson(reply));
 		return reply;
 	}
+	//endregion
 	
+	//region 用户购票订单列表
 	@GetMapping("/QueryUserOrders/{UserName}/{Password}/{CinemaCode}/{OpenID}/{startDate}/{endDate}/{CurrentPage}/{PageSize}")
 	@ApiOperation(value = "用户购票订单列表")
 	public QueryUserOrdersReply QueryUserOrders(@PathVariable String UserName, @PathVariable String Password, @PathVariable String CinemaCode, @PathVariable String OpenID,
@@ -286,4 +303,8 @@ public class OrderController {
 		reply.SetSuccessReply();
 		return reply;
 	}
+	//endregion
+	
+	//region 
+	//endregion
 }
