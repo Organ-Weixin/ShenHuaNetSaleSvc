@@ -23,6 +23,7 @@ import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
+import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
@@ -1125,6 +1126,7 @@ public class Dy1905Interface implements ICTMSInterface {
 					goods.setIsDiscount(0);
 					goods.setGoodsStatus(0);
 					goods.setIsPackage(0);
+					goods.setIsRecommand(0);
 					Dy1905ModelMapper.MaptoEntity(dy1905good, goods);
 					goodsService.save(goods);
 				}
@@ -1167,16 +1169,20 @@ public class Dy1905Interface implements ICTMSInterface {
 				for(int i=1;i<orderGoodsDetails.size();i++){
 					GoodsCode += ","+orderGoodsDetails.get(i).getGoodsCode();
 					GoodsCount += ","+orderGoodsDetails.get(i).getGoodsCount();
-					GoodsPrice += ","+orderGoodsDetails.get(i).getSettlePrice()*Integer.valueOf(GoodsCount);
+					GoodsPrice += ","+orderGoodsDetails.get(i).getSettlePrice()*Integer.valueOf(orderGoodsDetails.get(i).getGoodsCount());
 				}
 			}
+//			System.out.println("卖品编码："+GoodsCode+"---卖品数量："+GoodsCount+"---卖品价格："+GoodsPrice);
 			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() 
 					+ order.getOrderBaseInfo().getLocalOrderCode().substring(0,20)
 					+ GoodsCode + GoodsCount + GoodsPrice + order.getOrderBaseInfo().getMobilePhone() + String.valueOf(new Date().getTime()).substring(0,10)
 					+ order.getOrderBaseInfo().getTotalPrice() + order.getOrderBaseInfo().getTotalSettlePrice() 
-					+ order.getOrderBaseInfo().getCardNo() + order.getOrderBaseInfo().getCardPassword() + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
-			System.out.println("本地订单编码："+order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
-			System.out.println("校验信息"+pVerifyInfo);
+					+ order.getOrderBaseInfo().getCardNo() + order.getOrderBaseInfo().getCardPassword() 
+					+ order.getOrderBaseInfo().getDeliveryType() + order.getOrderBaseInfo().getDeliveryAddress()
+					+ order.getOrderBaseInfo().getDeliveryTime() + order.getOrderBaseInfo().getDeliveryMark()
+					+ userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
+			/*System.out.println("本地订单编码："+order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
+			System.out.println("校验信息"+pVerifyInfo);*/
 			param.put("pAppCode",userCinema.getDefaultUserName());
 			param.put("pCinemaID",userCinema.getCinemaId());
 			param.put("pNetOrder",order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
@@ -1189,13 +1195,11 @@ public class Dy1905Interface implements ICTMSInterface {
 			param.put("pPayPrice",String.valueOf(order.getOrderBaseInfo().getTotalSettlePrice()));
 			param.put("pCardNo",order.getOrderBaseInfo().getCardNo());
 			param.put("pCardPwd",order.getOrderBaseInfo().getCardPassword());
+			param.put("pDeliveryType",String.valueOf(order.getOrderBaseInfo().getDeliveryType()));
+			param.put("pSeat",order.getOrderBaseInfo().getDeliveryAddress());
+			param.put("pDeliveryTime",String.valueOf(order.getOrderBaseInfo().getDeliveryTime()));
+			param.put("pMark",order.getOrderBaseInfo().getDeliveryMark());
 			param.put("pVerifyInfo",pVerifyInfo);
-			/*System.out.println("URL："+ userCinema.getUrl() +"---pAppCode："+userCinema.getDefaultUserName()+"---pCinemaID："+userCinema.getCinemaId()
-					+"---pNetOrder："+order.getOrderBaseInfo().getLocalOrderCode()+"---pGoodsSerial："+GoodsCode
-					+"---pGoodsCount："+GoodsCount+"---pGoodsPrice："+GoodsPrice+"---pTel："+order.getOrderBaseInfo().getMobilePhone()
-					+"---pOrderTime："+new Date().getTime()+"---pTotalPrice："+order.getOrderBaseInfo().getTotalPrice()
-					+"---pPayPrice："+order.getOrderBaseInfo().getTotalSettlePrice()+"---pCardNo："+order.getOrderBaseInfo().getCardNo()
-					+"---pCardPwd："+order.getOrderBaseInfo().getCardPassword()+"---token："+userCinema.getDefaultPassword());*/
 			String GoodsOrderResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/GoodsOrder",param,"UTF-8");
 			System.out.println(GoodsOrderResult);
 			Gson gson = new Gson();
@@ -1203,25 +1207,10 @@ public class Dy1905Interface implements ICTMSInterface {
 			if(Dy1905Reply.getGoodsOrderResult().getResultCode().equals("0")){
 				order.getOrderBaseInfo().setOrderCode(order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
 				order.getOrderBaseInfo().setPickUpCode(Dy1905Reply.getGoodsOrderResult().getOrderNo());
-				order.getOrderBaseInfo().setOrderStatus(6);
-				/*Goodsorders	orderBaseInfo = goodsOrderService.getByLocalOrderCode(userCinema.getCinemaCode(), order.getOrderBaseInfo().getLocalOrderCode());
-				order.setOrderBaseInfo(orderBaseInfo);
-				orderBaseInfo.setPickUpCode(Dy1905Reply.getGoodsOrderResult().getOrderNo());
-				orderBaseInfo.setOrderCode(order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
-				orderBaseInfo.setSubmitTime(new Date());
-				orderBaseInfo.setUpdated(new Date());
-				goodsOrderService.Update(order);*/
+				order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
 				reply.Status = StatusEnum.Success;
 			}else{
-				/*Goodsorders	orderBaseInfo = goodsOrderService.getByLocalOrderCode(userCinema.getCinemaCode(), order.getOrderBaseInfo().getLocalOrderCode());
-				if(orderBaseInfo!=null){
-					System.out.println("ID----------------------"+orderBaseInfo.getId());
-					order.setOrderBaseInfo(orderBaseInfo);
-					orderBaseInfo.setUpdated(new Date());
-					orderBaseInfo.setErrorMessage(Dy1905Reply.getGoodsOrderResult().getResultMsg());
-					goodsOrderService.Update(order);
-				}*/
-				order.getOrderBaseInfo().setOrderStatus(5);
+				order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.SubmitFail.getStatusCode());
 				order.getOrderBaseInfo().setErrorMessage(Dy1905Reply.getGoodsOrderResult().getResultMsg());
 				reply.Status = StatusEnum.Failure;
 			}
@@ -1249,19 +1238,19 @@ public class Dy1905Interface implements ICTMSInterface {
 			if(Dy1905Reply.getGetGoodsOrderStatusResult().getResultCode().equals("0")){
 				order.getOrderBaseInfo().setPickUpCode(Dy1905Reply.getGetGoodsOrderStatusResult().getOrderNo());
 				if(Dy1905Reply.getGetGoodsOrderStatusResult().getStatus().equals("0")){
-					order.getOrderBaseInfo().setOrderStatus(1);
+					order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Created.getStatusCode());
 				}
 				if(Dy1905Reply.getGetGoodsOrderStatusResult().getStatus().equals("1")){
-					order.getOrderBaseInfo().setOrderStatus(6);
+					order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
 				}
 				if(Dy1905Reply.getGetGoodsOrderStatusResult().getStatus().equals("2")){
-					order.getOrderBaseInfo().setOrderStatus(1);
+					order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Created.getStatusCode());
 				}
 				if(Dy1905Reply.getGetGoodsOrderStatusResult().getStatus().equals("4")){
-					order.getOrderBaseInfo().setOrderStatus(9);
+					order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Fetched.getStatusCode());
 				}
-				if(Dy1905Reply.getGetGoodsOrderStatusResult().getStatus().equals("1")){
-					order.getOrderBaseInfo().setOrderStatus(7);
+				if(Dy1905Reply.getGetGoodsOrderStatusResult().getRefundStatus().equals("1")){
+					order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Refund.getStatusCode());
 				}
 				reply.Status = StatusEnum.Success;
 			}else{
@@ -1287,8 +1276,11 @@ public class Dy1905Interface implements ICTMSInterface {
 			Gson gson = new Gson();
 			Dy1905RefundGoodsResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(RefundGoodsResult,"RefundGoodsResult"), Dy1905RefundGoodsResult.class);
 			if(Dy1905Reply.getRefundGoodsResult().getResultCode().equals("0")){
+				order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Refund.getStatusCode());
+				order.getOrderBaseInfo().setRefundTime(new Date());
 				reply.Status = StatusEnum.Success;
 			}else{
+				order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.RefundFail.getStatusCode());
 				reply.Status = StatusEnum.Failure;
 			}
 			reply.ErrorCode = Dy1905Reply.getRefundGoodsResult().getResultCode();

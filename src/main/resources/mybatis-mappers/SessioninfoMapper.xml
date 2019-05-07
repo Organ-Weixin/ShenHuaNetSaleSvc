@@ -116,12 +116,11 @@
 	<select id="count" resultType="int">
 		select count(1) from sessioninfo t
 		<include refid="where" />
-		<include refid="where" />
 	</select>
 
 	<select id="getFilms" resultMap="Films">
 		select s.* from sessioninfo s
-		<include refid="where" />
+		<include refid="deleteWhere" />
 		group by s.FilmCode
 	</select>
 	

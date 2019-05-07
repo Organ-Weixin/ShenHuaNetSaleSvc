@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.CouponsDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and Id = #{params.Id} 
+			</if>
+			<if test="params.CouponsCode != null and params.CouponsCode != ''">
+				and CouponsCode = #{params.CouponsCode} 
+			</if>
+			<if test="params.CouponsName != null and params.CouponsName != ''">
+				and CouponsName = #{params.CouponsName} 
+			</if>
+			<if test="params.EffectiveDate != null and params.EffectiveDate != ''">
+				and EffectiveDate = #{params.EffectiveDate} 
+			</if>
+			<if test="params.ExpireDate != null and params.ExpireDate != ''">
+				and ExpireDate = #{params.ExpireDate} 
+			</if>
+			<if test="params.GroupCode != null and params.GroupCode != ''">
+				and GroupCode = #{params.GroupCode} 
+			</if>
+			<if test="params.Status != null and params.Status != ''">
+				and Status = #{params.Status} 
+			</if>
+			<if test="params.OpenID != null and params.OpenID != ''">
+				and OpenID = #{params.OpenID} 
+			</if>
+			<if test="params.CreateDate != null and params.CreateDate != ''">
+				and CreateDate = #{params.CreateDate} 
+			</if>
+			<if test="params.ReceiveDate != null and params.ReceiveDate != ''">
+				and ReceiveDate = #{params.ReceiveDate} 
+			</if>
+			<if test="params.UsedDate != null and params.UsedDate != ''">
+				and UsedDate = #{params.UsedDate} 
+			</if>
+		
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from coupons t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Coupons">
+		select * from coupons t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="update">
+		update coupons t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="CouponsCode != null">
+				CouponsCode = #{CouponsCode}, 
+			</if>
+			<if test="CouponsName != null">
+				CouponsName = #{CouponsName}, 
+			</if>
+			<if test="EffectiveDate != null">
+				EffectiveDate = #{EffectiveDate}, 
+			</if>
+			<if test="ExpireDate != null">
+				ExpireDate = #{ExpireDate}, 
+			</if>
+			<if test="GroupCode != null">
+				GroupCode = #{GroupCode}, 
+			</if>
+			<if test="Status != null">
+				Status = #{Status}, 
+			</if>
+			<if test="OpenID != null">
+				OpenID = #{OpenID}, 
+			</if>
+			<if test="CreateDate != null">
+				CreateDate = #{CreateDate}, 
+			</if>
+			<if test="ReceiveDate != null">
+				ReceiveDate = #{ReceiveDate}, 
+			</if>
+			<if test="UsedDate != null">
+				UsedDate = #{UsedDate}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+
+</mapper>

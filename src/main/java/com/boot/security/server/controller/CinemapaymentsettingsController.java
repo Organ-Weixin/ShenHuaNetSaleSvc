@@ -17,38 +17,38 @@ import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
-import com.boot.security.server.dao.ConponsDao;
-import com.boot.security.server.model.Conpons;
+import com.boot.security.server.dao.CinemapaymentsettingsDao;
+import com.boot.security.server.model.Cinemapaymentsettings;
 
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/conponss")
-public class ConponsController {
+@RequestMapping("/cinemapaymentsettingss")
+public class CinemapaymentsettingsController {
 
     @Autowired
-    private ConponsDao conponsDao;
+    private CinemapaymentsettingsDao cinemapaymentsettingsDao;
 
     @PostMapping
     @ApiOperation(value = "保存")
-    public Conpons save(@RequestBody Conpons conpons) {
-        conponsDao.save(conpons);
+    public Cinemapaymentsettings save(@RequestBody Cinemapaymentsettings cinemapaymentsettings) {
+        cinemapaymentsettingsDao.save(cinemapaymentsettings);
 
-        return conpons;
+        return cinemapaymentsettings;
     }
 
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取")
-    public Conpons get(@PathVariable Long id) {
-        return conponsDao.getById(id);
+    public Cinemapaymentsettings get(@PathVariable Long id) {
+        return cinemapaymentsettingsDao.getById(id);
     }
 
     @PutMapping
     @ApiOperation(value = "修改")
-    public Conpons update(@RequestBody Conpons conpons) {
-        conponsDao.update(conpons);
+    public Cinemapaymentsettings update(@RequestBody Cinemapaymentsettings cinemapaymentsettings) {
+        cinemapaymentsettingsDao.update(cinemapaymentsettings);
 
-        return conpons;
+        return cinemapaymentsettings;
     }
 
     @GetMapping
@@ -58,13 +58,13 @@ public class ConponsController {
 
             @Override
             public int count(PageTableRequest request) {
-                return conponsDao.count(request.getParams());
+                return cinemapaymentsettingsDao.count(request.getParams());
             }
         }, new ListHandler() {
 
             @Override
-            public List<Conpons> list(PageTableRequest request) {
-                return conponsDao.list(request.getParams(), request.getOffset(), request.getLimit());
+            public List<Cinemapaymentsettings> list(PageTableRequest request) {
+                return cinemapaymentsettingsDao.list(request.getParams(), request.getOffset(), request.getLimit());
             }
         }).handle(request);
     }
@@ -72,6 +72,6 @@ public class ConponsController {
     @DeleteMapping("/{id}")
     @ApiOperation(value = "删除")
     public void delete(@PathVariable Long id) {
-        conponsDao.delete(id);
+        cinemapaymentsettingsDao.delete(id);
     }
 }

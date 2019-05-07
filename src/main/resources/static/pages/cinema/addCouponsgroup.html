@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<!-- <div class='form-group'>
+				<label class='col-md-2 control-label'>优惠券类型</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='CouponsType' type='text' name='CouponsType' id='CouponsType' data-bv-notempty='true' data-bv-notempty-message='CouponsType 不能为空'>
+				</div>
+			</div> -->
+			<div class='form-group' style="margin-top:3%">
+				<label class='col-md-2 control-label'>优惠券名称</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='CouponsName' id='CouponsName' data-bv-notempty='true' data-bv-notempty-message='优惠券名称不能为空' style="width:30%">
+				</div>
+			</div>
+			<div class='form-group' style="margin-top:3%">
+				<label class='col-md-2 control-label'>有效期</label>
+				<div class='col-md-10' style="font-size:15px">
+					<div>
+						<input type="radio" name="ValidityType" value="1"> 固定日期
+						<input type="text" id="validityDateStart" value="请选择日期">
+						至
+						<input type="text" id="validityDateEnd" value="请选择日期">
+					</div>
+					<div style="margin-top:2%">
+						<input type="radio" name="ValidityType" value="2"> 领取后,
+						<select id="">
+							<option value="0">当天</option>
+							<option value="1">次日</option>
+							<option value="6">一周后</option>
+						</select>
+						生效，有效天数
+						<select id="">
+							<option value="7">一周</option>
+							<option value="30">30天</option>
+							<option value="180">180天</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<!-- <div class='form-group'>
+				<label class='col-md-2 control-label'>有效期类型</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='ValidityType' type='text' name='ValidityType' id='ValidityType' data-bv-notempty='true' data-bv-notempty-message='ValidityType 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>EffectiveDays</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='EffectiveDays' type='text' name='EffectiveDays' id='EffectiveDays' data-bv-notempty='true' data-bv-notempty-message='EffectiveDays 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>ValidityDays</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='ValidityDays' type='text' name='ValidityDays' id='ValidityDays' data-bv-notempty='true' data-bv-notempty-message='ValidityDays 不能为空'>
+				</div>
+			</div> -->
+			
+			<div class='form-group' style="margin-top:2%">
+				<label class='col-md-2 control-label'>可用时段</label>
+				<div class='col-md-10' style="font-size:15px">
+					<div>
+						<input type="radio" name="CanUsePeriodType" value="1">
+						全部时段
+					</div>
+					<div style="margin-top:2%">
+						<div>
+							<input type="radio" name="CanUsePeriodType" value="2">
+							部分时段
+						</div>
+						<div id="checkCanUseDate" style="display:none">
+							<div style="margin-top:1%">
+								日期:
+									<input type="checkbox" name="checkWeek" style="margin-left:2%">周一
+									<input type="checkbox" name="checkWeek" style="margin-left:2%">周二
+									<input type="checkbox" name="checkWeek" style="margin-left:2%">周三
+									<input type="checkbox" name="checkWeek" style="margin-left:2%">周四
+									<input type="checkbox" name="checkWeek" style="margin-left:2%">周五
+									<input type="checkbox" name="checkWeek" style="margin-left:2%">周六
+									<input type="checkbox" name="checkWeek" style="margin-left:2%">周日
+								<br>
+							</div>
+							<div style="margin-top:1%">
+							其他日期:
+								<input type="text" id="canUseDateStart">
+								至
+								<input type="text" id="canUseDateEnd">
+								<span style="margin-left:2%">添加时段</span>
+								<span style="margin-left:2%">删除时段</span>
+							</div>
+								<font style="margin-left:8%;color:gray;font-size:15px">
+									请使用24小时制输入时间，格式如11:00至14:30
+								</font>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<!-- <div class='form-group'>
+				<label class='col-md-2 control-label'>可用时段类型</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='CanUsePeriodType' type='text' name='CanUsePeriodType' id='CanUsePeriodType' data-bv-notempty='true' data-bv-notempty-message='CanUsePeriodType 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>星期</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='WeekDays' type='text' name='WeekDays' id='WeekDays' data-bv-notempty='true' data-bv-notempty-message='WeekDays 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>时间段</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='TimePeriod' type='text' name='TimePeriod' id='TimePeriod' data-bv-notempty='true' data-bv-notempty-message='TimePeriod 不能为空'>
+				</div>
+			</div> -->
+			<div class='form-group' style="margin-top:5%" style="margin-top:3%">
+				<label class='col-md-2 control-label'>领券限制</label>
+				<div class='col-md-10'>
+					<div>
+						<input class='form-control' value="1" type='text' name='LimitNum' id='LimitNum' style="width:20%;float:left">
+						<font style="font-size:18px;margin-left:5px">张</font>
+					</div>
+					<div style="margin-top:1%">
+						<font style="color:gray;font-size:15px">
+							每个用户领券限制，默认为1
+						</font>
+					</div>
+				</div>
+			</div>
+			<div class='form-group' style="margin-top:3%">
+				<label class='col-md-2 control-label'>减免金额</label>
+				<div class='col-md-10' style="font-size:15px">
+					<div style="margin-top:2%">
+						<input type="radio" name="reductionType">影片&nbsp;&nbsp;减&nbsp;<input type="text" style="width:10%">&nbsp;金额
+						<input type="radio" style="margin-left:3%" id="checkFilms">指定影片可用
+						<div>
+							
+						</div>
+					</div>
+					<div style="margin-top:2%">
+						<input type="radio" name="reductionType">卖品&nbsp;&nbsp;减&nbsp;<input type="text" style="width:10%">&nbsp;金额
+						<input type="radio" style="margin-left:3%" id="checkGoods">指定卖品可用
+						<div>
+							
+						</div>
+					</div>
+					<div style="margin-top:2%">
+						优惠共享
+						<select>
+							<option value="1">可共享</option>
+							<option value="0">不可共享</option>
+						</select>
+					</div>
+				</div>
+			</div>			
+			<!-- <div class='form-group'>
+				<label class='col-md-2 control-label'>减免类型</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='ReductionType' type='text' name='ReductionType' id='ReductionType' data-bv-notempty='true' data-bv-notempty-message='ReductionType 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>减免金额</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='ReductionPrice' type='text' name='ReductionPrice' id='ReductionPrice' data-bv-notempty='true' data-bv-notempty-message='ReductionPrice 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影片编码</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='FilmCodes' type='text' name='FilmCodes' id='FilmCodes' data-bv-notempty='true' data-bv-notempty-message='FilmCodes 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>卖品编码</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='GoodsCodes' type='text' name='GoodsCodes' id='GoodsCodes' data-bv-notempty='true' data-bv-notempty-message='GoodsCodes 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>是否优惠共享</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='IsShare' type='text' name='IsShare' id='IsShare' data-bv-notempty='true' data-bv-notempty-message='IsShare 不能为空'>
+				</div>
+			</div> -->
+			<div class='form-group' style="margin-top:3%">
+				<label class='col-md-2 control-label'>使用须知</label>
+				<div class='col-md-10'>
+					<textarea style="width:70%;height:100px"></textarea>
+					<!-- <input class='form-control' placeholder='Remark' type='text' name='Remark' id='Remark' data-bv-notempty='true' data-bv-notempty-message='Remark 不能为空'>
+			 -->	</div>
+			</div>
+			<div class='form-group' style="margin-top:3%">
+				<label class='col-md-2 control-label'>库存</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='CouponsNumber' id='CouponsNumber' data-bv-notempty='true' data-bv-notempty-message='库存不能为空' style="width:20%;float:left">
+					<font style="font-size:18px;margin-left:5px">份，自动生成相应券码（可在优惠券管理&nbsp;<font style="color:blur">券码</font>&nbsp;处下载）</font>
+				</div>
+			</div>
+			<div class='form-group' style="margin-top:3%">
+				<label class='col-md-2 control-label'>适用门店</label>
+				<div class='col-md-10' style="font-size:15px">
+					<div>
+						<input type="radio" name="CanUseCinemaType" value="1"> 全部门店使用
+					</div>
+					<div style="margin-top:2%">
+						<input type="radio" name="CanUseCinemaType" value="2"> 指定门店
+						<div id="Cinemas">
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- <div class='form-group'>
+				<label class='col-md-2 control-label'>使用门店类型</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='CanUseCinemaType' type='text' name='CanUseCinemaType' id='CanUseCinemaType' data-bv-notempty='true' data-bv-notempty-message='CanUseCinemaType 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>指定门店</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='CinemaCodes' type='text' name='CinemaCodes' id='CinemaCodes' data-bv-notempty='true' data-bv-notempty-message='CinemaCodes 不能为空'>
+				</div>
+			</div> -->
+
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="location.href='couponsgroupList.html'">取消</button>
+						<button class="btn btn-primary" type="submit" onclick="add()">
+							<i class="fa fa-save"></i> 创建	
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		    var laydate = layui.laydate;
+		    laydate.render({
+		       elem: '#validityDateStart',
+		       type: 'date',
+		       min: 'nowTime',
+		    });
+		    laydate.render({
+			   elem: '#validityDateEnd',
+			   type: 'date'
+			});
+		    laydate.render({
+			   elem: '#canUseDateStart',
+			   type: 'time'
+			});
+		    laydate.render({
+			   elem: '#canUseDateEnd',
+			   type: 'time'
+			});
+		});
+		
+		//有效期选择
+		$("input[name='ValidityType']").click(function(){
+			if($(this).css("checked",true).val()==1){
+				
+			}
+			if($(this).css("checked",true).val()==2){
+			}
+		});
+		//可用时段选择
+		$("input[name='CanUsePeriodType']").click(function(){
+			if($(this).css("checked",true).val()==1){
+				$("#checkCanUseDate").css("display","none");
+				$("input[name='checkWeek']").removeAttr("checked");
+				$("#canUseDateStart").val("");
+				$("#canUseDateEnd").val("");
+			}
+			if($(this).css("checked",true).val()==2){
+				$("#checkCanUseDate").css("display","block");
+				$("input[name='checkWeek']").removeAttr("checked");
+				$("#canUseDateStart").val("");
+				$("#canUseDateEnd").val("");
+			}
+		});
+		
+		function add() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var formdata = $("#form").serializeObject();
+
+			$.ajax({
+				type : 'post',
+				url : '/couponsgroups',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("添加成功", {shift: -1, time: 1000}, function(){
+                        location.href = "couponsgroupList.html";
+                    });
+				}
+			});
+		}
+		
+	</script>
+</body>
+</html>

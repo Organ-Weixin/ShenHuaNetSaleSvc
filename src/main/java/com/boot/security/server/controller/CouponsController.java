@@ -15,51 +15,40 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boot.security.server.page.table.PageTableRequest;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
-import com.boot.security.server.service.impl.ConpontypeServiceImpl;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
-import com.boot.security.server.model.Conpontype;
+import com.boot.security.server.dao.CouponsDao;
+import com.boot.security.server.model.Coupons;
 
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/conpontypes")
-public class ConpontypeController {
+@RequestMapping("/couponss")
+public class CouponsController {
 
     @Autowired
-    private ConpontypeServiceImpl conpontypeService;
+    private CouponsDao couponsDao;
 
     @PostMapping
     @ApiOperation(value = "保存")
-    public Conpontype save(@RequestBody Conpontype conpontype) {
-    	conpontypeService.save(conpontype);
+    public Coupons save(@RequestBody Coupons coupons) {
+        couponsDao.save(coupons);
 
-        return conpontype;
+        return coupons;
     }
 
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取")
-    public Conpontype get(@PathVariable Long id) {
-        return conpontypeService.getById(id);
+    public Coupons get(@PathVariable Long id) {
+        return couponsDao.getById(id);
     }
-    
-    @RequestMapping("/getCertificatetype")
-    public List<Conpontype> getCertificatetype(){
-    	List<Conpontype> list = conpontypeService.getCertificatetype();
-    	return list;
-    }
-    
-    @RequestMapping("/getConponsType")
-    public List<Conpontype> getConponsType(){
-    	List<Conpontype> list = conpontypeService.getConpontype();
-    	return list;
-    }
-    
+
     @PutMapping
     @ApiOperation(value = "修改")
-    public Conpontype update(@RequestBody Conpontype conpontype) {
-    	conpontypeService.update(conpontype);
-        return conpontype;
+    public Coupons update(@RequestBody Coupons coupons) {
+        couponsDao.update(coupons);
+
+        return coupons;
     }
 
     @GetMapping
@@ -69,13 +58,13 @@ public class ConpontypeController {
 
             @Override
             public int count(PageTableRequest request) {
-                return conpontypeService.count(request.getParams());
+                return couponsDao.count(request.getParams());
             }
         }, new ListHandler() {
 
             @Override
-            public List<Conpontype> list(PageTableRequest request) {
-                return conpontypeService.list(request.getParams(), request.getOffset(), request.getLimit());
+            public List<Coupons> list(PageTableRequest request) {
+                return couponsDao.list(request.getParams(), request.getOffset(), request.getLimit());
             }
         }).handle(request);
     }
@@ -83,6 +72,6 @@ public class ConpontypeController {
     @DeleteMapping("/{id}")
     @ApiOperation(value = "删除")
     public void delete(@PathVariable Long id) {
-    	conpontypeService.delete(id);
+        couponsDao.delete(id);
     }
 }

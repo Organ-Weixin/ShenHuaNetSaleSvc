@@ -15,40 +15,40 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boot.security.server.page.table.PageTableRequest;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
-import com.boot.security.server.service.impl.ConpongroupServiceImpl;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
-import com.boot.security.server.model.Conpongroup;
+import com.boot.security.server.dao.CouponsgroupDao;
+import com.boot.security.server.model.Couponsgroup;
 
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/conpongroups")
-public class ConpongroupController {
+@RequestMapping("/couponsgroups")
+public class CouponsgroupController {
 
     @Autowired
-    private ConpongroupServiceImpl conpongroupService;
+    private CouponsgroupDao couponsgroupDao;
 
     @PostMapping
     @ApiOperation(value = "保存")
-    public Conpongroup save(@RequestBody Conpongroup conpongroup) {
-    	conpongroupService.save(conpongroup);
+    public Couponsgroup save(@RequestBody Couponsgroup couponsgroup) {
+        couponsgroupDao.save(couponsgroup);
 
-        return conpongroup;
+        return couponsgroup;
     }
 
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取")
-    public Conpongroup get(@PathVariable Long id) {
-        return conpongroupService.getById(id);
+    public Couponsgroup get(@PathVariable Long id) {
+        return couponsgroupDao.getById(id);
     }
-    
+
     @PutMapping
     @ApiOperation(value = "修改")
-    public Conpongroup update(@RequestBody Conpongroup conpongroup) {
-    	conpongroupService.update(conpongroup);
+    public Couponsgroup update(@RequestBody Couponsgroup couponsgroup) {
+        couponsgroupDao.update(couponsgroup);
 
-        return conpongroup;
+        return couponsgroup;
     }
 
     @GetMapping
@@ -58,13 +58,13 @@ public class ConpongroupController {
 
             @Override
             public int count(PageTableRequest request) {
-                return conpongroupService.count(request.getParams());
+                return couponsgroupDao.count(request.getParams());
             }
         }, new ListHandler() {
 
             @Override
-            public List<Conpongroup> list(PageTableRequest request) {
-                return conpongroupService.list(request.getParams(), request.getOffset(), request.getLimit());
+            public List<Couponsgroup> list(PageTableRequest request) {
+                return couponsgroupDao.list(request.getParams(), request.getOffset(), request.getLimit());
             }
         }).handle(request);
     }
@@ -72,6 +72,6 @@ public class ConpongroupController {
     @DeleteMapping("/{id}")
     @ApiOperation(value = "删除")
     public void delete(@PathVariable Long id) {
-    	conpongroupService.delete(id);
+        couponsgroupDao.delete(id);
     }
 }

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.CouponsgroupDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and Id = #{params.Id} 
+			</if>
+			<if test="params.GroupCode != null and params.GroupCode != ''">
+				and GroupCode = #{params.GroupCode} 
+			</if>
+			<if test="params.CouponsType != null and params.CouponsType != ''">
+				and CouponsType = #{params.CouponsType} 
+			</if>
+			<if test="params.CouponsName != null and params.CouponsName != ''">
+				and CouponsName = #{params.CouponsName} 
+			</if>
+			<if test="params.ValidityType != null and params.ValidityType != ''">
+				and ValidityType = #{params.ValidityType} 
+			</if>
+			<if test="params.EffectiveDays != null and params.EffectiveDays != ''">
+				and EffectiveDays = #{params.EffectiveDays} 
+			</if>
+			<if test="params.ValidityDays != null and params.ValidityDays != ''">
+				and ValidityDays = #{params.ValidityDays} 
+			</if>
+			<if test="params.CanUsePeriodType != null and params.CanUsePeriodType != ''">
+				and CanUsePeriodType = #{params.CanUsePeriodType} 
+			</if>
+			<if test="params.WeekDays != null and params.WeekDays != ''">
+				and WeekDays = #{params.WeekDays} 
+			</if>
+			<if test="params.TimePeriod != null and params.TimePeriod != ''">
+				and TimePeriod = #{params.TimePeriod} 
+			</if>
+			<if test="params.LimitNum != null and params.LimitNum != ''">
+				and LimitNum = #{params.LimitNum} 
+			</if>
+			<if test="params.ReductionType != null and params.ReductionType != ''">
+				and ReductionType = #{params.ReductionType} 
+			</if>
+			<if test="params.ReductionPrice != null and params.ReductionPrice != ''">
+				and ReductionPrice = #{params.ReductionPrice} 
+			</if>
+			<if test="params.FilmCodes != null and params.FilmCodes != ''">
+				and FilmCodes = #{params.FilmCodes} 
+			</if>
+			<if test="params.GoodsCodes != null and params.GoodsCodes != ''">
+				and GoodsCodes = #{params.GoodsCodes} 
+			</if>
+			<if test="params.IsShare != null and params.IsShare != ''">
+				and IsShare = #{params.IsShare} 
+			</if>
+			<if test="params.Remark != null and params.Remark != ''">
+				and Remark = #{params.Remark} 
+			</if>
+			<if test="params.CanUseCinemaType != null and params.CanUseCinemaType != ''">
+				and CanUseCinemaType = #{params.CanUseCinemaType} 
+			</if>
+			<if test="params.CinemaCodes != null and params.CinemaCodes != ''">
+				and CinemaCodes = #{params.CinemaCodes} 
+			</if>
+			<if test="params.Status != null and params.Status != ''">
+				and Status = #{params.Status} 
+			</if>
+			<if test="params.CouponsNumber != null and params.CouponsNumber != ''">
+				and CouponsNumber = #{params.CouponsNumber} 
+			</if>
+			<if test="params.FetchNumber != null and params.FetchNumber != ''">
+				and FetchNumber = #{params.FetchNumber} 
+			</if>
+			<if test="params.RemainingNumber != null and params.RemainingNumber != ''">
+				and RemainingNumber = #{params.RemainingNumber} 
+			</if>
+			<if test="params.UsedNumber != null and params.UsedNumber != ''">
+				and UsedNumber = #{params.UsedNumber} 
+			</if>
+			<if test="params.CreateDate != null and params.CreateDate != ''">
+				and CreateDate = #{params.CreateDate} 
+			</if>
+			<if test="params.UpdateDate != null and params.UpdateDate != ''">
+				and UpdateDate = #{params.UpdateDate} 
+			</if>
+		
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from couponsgroup t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Couponsgroup">
+		select * from couponsgroup t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="update">
+		update couponsgroup t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="GroupCode != null">
+				GroupCode = #{GroupCode}, 
+			</if>
+			<if test="CouponsType != null">
+				CouponsType = #{CouponsType}, 
+			</if>
+			<if test="CouponsName != null">
+				CouponsName = #{CouponsName}, 
+			</if>
+			<if test="ValidityType != null">
+				ValidityType = #{ValidityType}, 
+			</if>
+			<if test="EffectiveDays != null">
+				EffectiveDays = #{EffectiveDays}, 
+			</if>
+			<if test="ValidityDays != null">
+				ValidityDays = #{ValidityDays}, 
+			</if>
+			<if test="CanUsePeriodType != null">
+				CanUsePeriodType = #{CanUsePeriodType}, 
+			</if>
+			<if test="WeekDays != null">
+				WeekDays = #{WeekDays}, 
+			</if>
+			<if test="TimePeriod != null">
+				TimePeriod = #{TimePeriod}, 
+			</if>
+			<if test="LimitNum != null">
+				LimitNum = #{LimitNum}, 
+			</if>
+			<if test="ReductionType != null">
+				ReductionType = #{ReductionType}, 
+			</if>
+			<if test="ReductionPrice != null">
+				ReductionPrice = #{ReductionPrice}, 
+			</if>
+			<if test="FilmCodes != null">
+				FilmCodes = #{FilmCodes}, 
+			</if>
+			<if test="GoodsCodes != null">
+				GoodsCodes = #{GoodsCodes}, 
+			</if>
+			<if test="IsShare != null">
+				IsShare = #{IsShare}, 
+			</if>
+			<if test="Remark != null">
+				Remark = #{Remark}, 
+			</if>
+			<if test="CanUseCinemaType != null">
+				CanUseCinemaType = #{CanUseCinemaType}, 
+			</if>
+			<if test="CinemaCodes != null">
+				CinemaCodes = #{CinemaCodes}, 
+			</if>
+			<if test="Status != null">
+				Status = #{Status}, 
+			</if>
+			<if test="CouponsNumber != null">
+				CouponsNumber = #{CouponsNumber}, 
+			</if>
+			<if test="FetchNumber != null">
+				FetchNumber = #{FetchNumber}, 
+			</if>
+			<if test="RemainingNumber != null">
+				RemainingNumber = #{RemainingNumber}, 
+			</if>
+			<if test="UsedNumber != null">
+				UsedNumber = #{UsedNumber}, 
+			</if>
+			<if test="CreateDate != null">
+				CreateDate = #{CreateDate}, 
+			</if>
+			<if test="UpdateDate != null">
+				UpdateDate = #{UpdateDate}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+
+</mapper>

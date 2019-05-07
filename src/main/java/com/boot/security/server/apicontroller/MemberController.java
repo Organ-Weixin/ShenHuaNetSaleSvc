@@ -23,17 +23,21 @@ import com.boot.security.server.api.core.QueryDiscountReply;
 import com.boot.security.server.api.ctms.reply.Dy1905GetMemberCardByMobileReply;
 import com.boot.security.server.api.ctms.reply.Dy1905Interface;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
+import com.boot.security.server.apicontroller.reply.PayParametersReply;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.QueryMemberCardByPhoneReplyMemberCardByPhone.QueryMemberCardByPhoneReplyPhone;
 import com.boot.security.server.model.Cinema;
+import com.boot.security.server.model.Cinemapaymentsettings;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
+import com.boot.security.server.service.impl.CinemapaymentsettingsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
+import com.boot.security.server.utils.WxPayUtil;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -49,6 +53,8 @@ public class MemberController {
 	MemberCardServiceImpl _memberCardService;
 	@Autowired
 	UserCinemaViewServiceImpl _userCinemaViewService;
+	@Autowired
+	CinemapaymentsettingsServiceImpl _cinemapaymentsettingsService;
 	
 	@GetMapping("/LoginCard/{Username}/{Password}/{CinemaCode}/{OpenID}/{CardNo}/{CardPassword}")
 	@ApiOperation(value = "会员卡登陆")
@@ -187,5 +193,80 @@ public class MemberController {
      	}
 		return new Dy1905Interface().GetMemberCardByMobile(userCinema, MobilePhone);
 	}
-	
+	@GetMapping("/PrePayCardCharge/{Username}/{Password}/{CinemaCode}/{OpenID}/{ChargeAmount}")
+	@ApiOperation(value = "预支付会员卡充值(准备支付参数)")
+	public PayParametersReply PrePayCardCharge(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
+			@PathVariable String OpenID,@PathVariable String ChargeAmount){
+		PayParametersReply payParametersReply = new PayParametersReply();
+		//校验参数
+		if (!ReplyExtension.RequestInfoPrePayCardCharge(payParametersReply, Username, Password, CinemaCode, OpenID, ChargeAmount))
+        {
+            return payParametersReply;
+        }
+		//获取用户信息(渠道)
+        Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+        if (UserInfo == null)
+        {
+        	payParametersReply.SetUserCredentialInvalidReply();
+            return payParametersReply;
+        }
+        //验证影院是否存在且可访问
+        Cinema cinema = _cinemaService.getByCinemaCode(CinemaCode);
+        if (cinema == null)
+        {
+        	payParametersReply.SetCinemaInvalidReply();
+            return payParametersReply;
+        }
+        //获取影院的支付配置
+        Cinemapaymentsettings cinemapaymentsettings = _cinemapaymentsettingsService.getByCinemaCode(CinemaCode);
+        if(cinemapaymentsettings == null){
+        	//payParametersReply.
+        }
+        //验证此用户是否存在会员卡
+        List<Membercard> membercardList = _memberCardService.getByCinemaCodeAndOpenId(CinemaCode, OpenID);
+        if(membercardList.size()<=0){
+        	payParametersReply.SetMemberCardInvalidReply();
+        	return payParametersReply;
+        }
+        //准备参数
+        String WxpayAppId = cinemapaymentsettings.getWxpayAppId();
+        String WxpayMchId = cinemapaymentsettings.getWxpayMchId();
+        String WxpayKey = cinemapaymentsettings.getWxpayKey();
+        String strbody = "";
+        String notify_url = "";
+        String out_trade_no = "";
+        String time_expire = "";
+		return null;
+	}
+	/*@GetMapping("/PrePayCardCharge/{Username}/{Password}/{CinemaCode}/{OpenID}/{ChargeAmount}")
+	@ApiOperation(value = "预支付会员卡充值(准备支付参数)")
+	public PayParametersReply PrePayCardRegister(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
+			@PathVariable String OpenID,@PathVariable String InitialAmount){
+		PayParametersReply payParametersReply = new PayParametersReply();
+		//校验参数
+		if (!ReplyExtension.RequestInfoPrePayCardRegister(payParametersReply, Username, Password, CinemaCode, OpenID, InitialAmount))
+        {
+            return payParametersReply;
+        }
+		//获取用户信息(渠道)
+        Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+        if (UserInfo == null)
+        {
+        	payParametersReply.SetUserCredentialInvalidReply();
+            return payParametersReply;
+        }
+        //验证影院是否存在且可访问
+        Cinema cinema = _cinemaService.getByCinemaCode(CinemaCode);
+        if (cinema == null)
+        {
+        	payParametersReply.SetCinemaInvalidReply();
+            return payParametersReply;
+        }
+        payParametersReply.getData().setTimeStamp(WxPayUtil.getTimestamp());
+        payParametersReply.getData().setNonceStr(WxPayUtil.getNoncestr());
+        payParametersReply.getData().setSignType("MD5");
+       // payParametersReply.getData().setPackages(WxPayUtil.createSign(characterEncoding, parameters, value));
+       // payParametersReply.getData().setPaySign(paySign);
+		return null;
+	}*/
 }

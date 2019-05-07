@@ -289,4 +289,60 @@ public class ReplyExtension {
         }
         return true;
     }
+	//预支付会员卡支付
+	public static boolean RequestInfoPrePayCardCharge(PayParametersReply reply, String Username, String Password, String CinemaCode,String OpenID,String ChargeAmount)
+    {
+        if (Username.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(Username);
+            return false;
+        }
+        if (Password.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(Password);
+            return false;
+        }
+        if (CinemaCode.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(CinemaCode);
+            return false;
+        }
+        if(OpenID.isEmpty()){
+        	reply.SetNecessaryParamMissReply(OpenID);
+        	return false;
+        }
+        if(ChargeAmount.isEmpty()){
+        	reply.SetNecessaryParamMissReply(ChargeAmount);
+        	return false;
+        }
+        return true;
+    }
+	//预支付会员卡支付
+	public static boolean RequestInfoPrePayCardRegister(PayParametersReply reply, String Username, String Password, String CinemaCode,String OpenID,String InitialAmount)
+    {
+        if (Username.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(Username);
+            return false;
+        }
+        if (Password.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(Password);
+            return false;
+        }
+        if (CinemaCode.isEmpty())
+        {
+            reply.SetNecessaryParamMissReply(CinemaCode);
+            return false;
+        }
+        if(OpenID.isEmpty()){
+        	reply.SetNecessaryParamMissReply(OpenID);
+        	return false;
+        }
+        if(InitialAmount.isEmpty()){
+        	reply.SetNecessaryParamMissReply(InitialAmount);
+        	return false;
+        }
+        return true;
+    }	
 }

@@ -10,5 +10,5 @@ public interface MemberCardService {
 	int Save(Membercard membercard);
 	int Update(Membercard membercard);
 	List<Membercard> getByCinemaCodeAndMobilePhone(String cinemacode,String mobilephone);
-
+	List<Membercard> getByCinemaCodeAndOpenId(String cinemacode,String openid);
 }
