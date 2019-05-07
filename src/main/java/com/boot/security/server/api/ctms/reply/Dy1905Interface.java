@@ -1117,7 +1117,7 @@ public class Dy1905Interface implements ICTMSInterface {
 			Dy1905GoodsListResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(GoodsListResult,"GoodsListResult"), Dy1905GoodsListResult.class);
 			if(Dy1905Reply.getGoodsListResult().getResultCode().equals("0")){
 				List<GoodBean> dy1905goodList =  Dy1905Reply.getGoodsListResult().getGoods().getGood();
-				goodsService.deleteByCinemaCode(userCinema.getCinemaCode());
+				goodsService.deleteByCinemaCode(userCinema.getUserId(),userCinema.getCinemaCode());
 				for(GoodBean dy1905good : dy1905goodList){
 					Goods goods = new Goods();
 					goods.setCinemaCode(userCinema.getCinemaCode());

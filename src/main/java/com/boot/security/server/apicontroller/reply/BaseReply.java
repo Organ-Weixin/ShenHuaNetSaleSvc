@@ -1,5 +1,6 @@
 package com.boot.security.server.apicontroller.reply;
 
+import com.boot.security.server.api.ctms.reply.CTMSBaseReply;
 import com.boot.security.server.model.ErrorCodeEnum;
 import com.boot.security.server.model.StatusEnum;
 

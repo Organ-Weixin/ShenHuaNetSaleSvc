@@ -6,6 +6,7 @@ import java.util.Date;
 
 import com.boot.security.server.api.ctms.reply.CxQueryPlanInfoByDatePeriodResult.ResBean.CinemaPlansBean.CinemaPlanBean.FilmsBean.FilmBean;
 import com.boot.security.server.model.Filminfo;
+import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
 import com.boot.security.server.model.Sessioninfo;
@@ -78,5 +79,21 @@ public class CxModelMapper {
         entity.setAddFee(model.getPrice().getServiceAddFee());
         entity.setCinemaAllowance(model.getPrice().getCinemaAllowance());
         return entity;
+    }
+    
+    public static Goods MapToEntity(CxQueryMerchandiseResult.ResBean.MersBean.MerBean model,Goods entity){
+    	entity.setGoodsCode(model.getMerUid());
+    	entity.setGoodsName(model.getMerName());
+    	entity.setGoodsType(model.getMerTypeId());
+    	entity.setStandardPrice(model.getListingPrice().doubleValue());
+    	entity.setSettlePrice(model.getSettlePrice().doubleValue());
+    	entity.setStockCount(9999);
+    	entity.setGoodsDesc(model.getMerDesc());
+    	entity.setShowSeqNo(model.getShowSeqNo());
+    	entity.setIsDiscount(0);
+    	entity.setGoodsStatus(0);
+    	entity.setIsRecommand(0);
+    	entity.setIsPackage(0);
+    	return entity;
     }
 }

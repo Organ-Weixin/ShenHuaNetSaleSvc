@@ -1556,7 +1556,7 @@ public class YkInterface implements ICTMSInterface {
 					goodslist.add(newGoods);
 				}
 				//删除旧的
-				goodsService.deleteByCinemaCode(userCinema.getCinemaCode());
+				goodsService.deleteByCinemaCode(userCinema.getUserId(),userCinema.getCinemaCode());
 				//插入新的
 				for(Goods goodsinfo : goodslist){
 					goodsService.save(goodsinfo);	

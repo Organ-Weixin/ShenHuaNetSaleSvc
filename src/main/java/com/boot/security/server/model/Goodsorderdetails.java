@@ -18,6 +18,7 @@ public class Goodsorderdetails extends BaseEntity<Long> {
 	private Date Updated;
 	private Integer IsPackage;
 	private String GoodsDetail;
+	private Integer ShowSeqNo;
 
 	public Long getId() {
 		return Id;
@@ -104,5 +105,12 @@ public class Goodsorderdetails extends BaseEntity<Long> {
 	public void setGoodsDetail(String GoodsDetail) {
 		this.GoodsDetail = GoodsDetail;
 	}
+	public Integer getShowSeqNo() {
+		return ShowSeqNo;
+	}
+	public void setShowSeqNo(Integer showSeqNo) {
+		ShowSeqNo = showSeqNo;
+	}
+	
 
 }

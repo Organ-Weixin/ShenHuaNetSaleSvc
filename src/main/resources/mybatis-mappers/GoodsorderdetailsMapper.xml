@@ -105,7 +105,9 @@
 			<if test="GoodsDetail != null">
 				GoodsDetail = #{GoodsDetail}, 
 			</if>
-
+            <if test="ShowSeqNo != null">
+				ShowSeqNo = #{ShowSeqNo},
+			</if>
 		</set>
 
 		where t.id = #{id}

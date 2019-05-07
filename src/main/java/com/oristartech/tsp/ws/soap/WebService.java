@@ -3,8 +3,12 @@ package com.oristartech.tsp.ws.soap;
 import com.boot.security.server.api.ctms.reply.CxApplyFetchTicketParameter;
 import com.boot.security.server.api.ctms.reply.CxApplyFetchTicketParameter.CxApplyFetchTicketXmlTickets;
 import com.boot.security.server.api.ctms.reply.CxApplyFetchTicketParameter.CxApplyFetchTicketXmlTickets.CxApplyFetchTicketXmlTicket;
+import com.boot.security.server.api.ctms.reply.CxCreateMerOrderParameter.CxCreateMerOrderXmlSaleMerInfos;
+import com.boot.security.server.api.ctms.reply.CxCreateMerOrderParameter.CxCreateMerOrderXmlSaleMerInfos.CxCreateMerOrderXmlSaleMerInfo;
+import com.boot.security.server.api.ctms.reply.CxCreateMerOrderResult;
 import com.boot.security.server.api.ctms.reply.CxApplyFetchTicketResult;
 import com.boot.security.server.api.ctms.reply.CxCancelOrderResult;
+import com.boot.security.server.api.ctms.reply.CxCreateMerOrderParameter;
 import com.boot.security.server.api.ctms.reply.CxFetchTicketParameter;
 import com.boot.security.server.api.ctms.reply.CxFetchTicketParameter.CxFetchTicketXmlTickets;
 import com.boot.security.server.api.ctms.reply.CxFetchTicketParameter.CxFetchTicketXmlTickets.CxFetchTicketXmlTicket;
@@ -27,6 +31,8 @@ import com.boot.security.server.api.ctms.reply.CxQueryFilmInfoResult;
 import com.boot.security.server.api.ctms.reply.CxQueryMemberFlowInfoResult;
 import com.boot.security.server.api.ctms.reply.CxQueryMemberInfoResult;
 import com.boot.security.server.api.ctms.reply.CxQueryMemberLevelResult;
+import com.boot.security.server.api.ctms.reply.CxQueryMerchandiseResult;
+import com.boot.security.server.api.ctms.reply.CxQueryOrderDetailResult;
 import com.boot.security.server.api.ctms.reply.CxQueryOrderStatusResult;
 import com.boot.security.server.api.ctms.reply.CxQueryPlanInfoByDatePeriodResult;
 import com.boot.security.server.api.ctms.reply.CxQueryPlanSeatResult;
@@ -37,13 +43,19 @@ import com.boot.security.server.api.ctms.reply.CxQueryTicketInfoParameter.CxQuer
 import com.boot.security.server.api.ctms.reply.CxQueryTicketInfoResult;
 import com.boot.security.server.api.ctms.reply.CxReleaseSeatParameter;
 import com.boot.security.server.api.ctms.reply.CxReleaseSeatParameter.CxReleaseSeatXmlSeatInfos;
+import com.boot.security.server.api.ctms.reply.CxSubmitMerOrderParameter.CxSubmitMerOrderXmlSaleMerInfos;
+import com.boot.security.server.api.ctms.reply.CxSubmitMerOrderParameter.CxSubmitMerOrderXmlSaleMerInfos.CxSubmitMerOrderXmlSaleMerInfo;
 import com.boot.security.server.api.ctms.reply.CxReleaseSeatResult;
+import com.boot.security.server.api.ctms.reply.CxSubmitMerOrderParameter;
+import com.boot.security.server.api.ctms.reply.CxSubmitMerOrderResult;
 import com.boot.security.server.api.ctms.reply.CxSubmitOrderParameter;
 import com.boot.security.server.api.ctms.reply.CxSubmitOrderParameter.CxSubmitOrderXmlSeatInfos;
 import com.boot.security.server.api.ctms.reply.CxSubmitOrderParameter.CxSubmitOrderXmlSeatInfos.CxSubmitOrderXmlSeatInfo;
 import com.boot.security.server.api.ctms.reply.CxSubmitOrderResult;
 import com.boot.security.server.api.ctms.reply.CxVerifyMemberLoginResult;
 import com.boot.security.server.model.CardChargeTypeEnum;
+import com.boot.security.server.model.GoodsOrderView;
+import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Usercinemaview;
@@ -650,7 +662,7 @@ public class WebService {
 	}
 	//endregion
 
-	//region 登录会员卡
+	//region 登录会员卡(完成)
 	public static CxVerifyMemberLoginResult  VerifyMemberLogin(Usercinemaview userCinema,String pLoginNum,String pLmsPassword){
 		try{
 			Map<String,String> param = new LinkedHashMap();
@@ -672,7 +684,7 @@ public class WebService {
 	}
 	//endregion
 	
-	//region 查询会员卡
+	//region 查询会员卡(完成)
 	public static CxQueryMemberInfoResult  QueryMemberInfo(Usercinemaview userCinema,String pLoginNum,String pLmsPassword){
 		try{
 			String RealPassword = MD5Util.MD5Encode(pLmsPassword, "UTF-8");
@@ -695,7 +707,7 @@ public class WebService {
 	}
 	//endregion
 	
-	//region 查询会员卡折扣
+	//region 查询会员卡折扣(完成)
 	public static CxQueryDiscountActivityResult QueryDiscountActivity(Usercinemaview userCinema,String TicketCount,String CardNo,String CardPassword,String LevelCode,String SessionCode,String SessionTime,String FilmCode,String ScreenType,String ListingPrice,String LowestPrice){
 		try {
 			// 用来生成验证码
@@ -731,28 +743,30 @@ public class WebService {
 	}
 	//endregion
 	
-	//region 会员卡支付
+	//region 会员卡支付（完成）
 	public static CxMemberConsumeResult  MemberConsume(Usercinemaview userCinema,String pLoginNum, String pLmsPassword, float pAmount, String SessionCode, String FilmCode, String TicketNum,String pTransactionNo){
 		try{
 			//DecimalFormat df = new DecimalFormat("0.00");df.format(disprice)
 			String pOrderCode=UUID.randomUUID().toString().replace("-","");
+			String realLmsPassword=MD5Util.MD5Encode(pLmsPassword,"UTF-8");
 			Map<String,Object> param = new LinkedHashMap();
+			String strAmount=new DecimalFormat("0.00").format(pAmount);
 			param.put("pAppCode", userCinema.getRealUserName());
 			param.put("pCinemaCode",userCinema.getCinemaCode());
 			param.put("pLoginNum", pLoginNum);
-			param.put("pLmsPassword",MD5Util.MD5Encode(pLmsPassword,"UTF-8"));
+			param.put("pLmsPassword",realLmsPassword);
 			param.put("pChannelType", "手机APP");
-			param.put("pAmount",pAmount);
+			param.put("pAmount",strAmount);
 			param.put("pOrderCode",pOrderCode);
 			param.put("pTransactionNo",pTransactionNo);
-			param.put("pTicketAmount", "");
-			param.put("pGoodsAmount", "");
-			param.put("pIntegralAmount", "");
-			param.put("pIntegralMultiple", "");
-			param.put("pGoods", "");
+			param.put("pTicketAmount", "0.00");
+			param.put("pGoodsAmount", "0.00");
+			param.put("pIntegralAmount",strAmount);
+			param.put("pIntegralMultiple", "0.00");
+			//param.put("pGoods", "");
 			param.put("pCompress", "0");
 			log.info(param.toString());
-			String result = WebService.cinemaTss(userCinema.getUrl()).memberConsume(userCinema.getRealUserName(),userCinema.getCinemaCode(),pLoginNum,pLmsPassword,"手机APP",pAmount,pOrderCode,pTransactionNo,null, null,null, null, null,"0",MD5Util.getCxSign(param,userCinema.getRealPassword()));
+			String result = WebService.cinemaTss(userCinema.getUrl()).memberConsume(userCinema.getRealUserName(),userCinema.getCinemaCode(),pLoginNum,realLmsPassword,"手机APP",pAmount,pOrderCode,pTransactionNo,0f, 0f,pAmount, 0f,null,"0",MD5Util.getCxSign(param,userCinema.getRealPassword()));
 			Gson gson = new Gson();
 			log.info(result);
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result,"MemberConsumeResult"),CxMemberConsumeResult.class);
@@ -763,7 +777,7 @@ public class WebService {
 	}
 	//endregion
 	
-	//region 会员交易撤销
+	//region 会员交易撤销（完成）
 	public static CxMemberTransactionCancelResult  MemberTransactionCancel(Usercinemaview userCinema,String CardNo, String CardPassword,String pOldTransactionNo,float PayBackAmount,String pTransactionNo){
 		try{
 			Map<String,Object> param = new LinkedHashMap();
@@ -783,7 +797,7 @@ public class WebService {
 	}
 	//endregion
 	
-	//region 查询会员卡交易记录
+	//region 查询会员卡交易记录（完成）
 	public static CxQueryMemberFlowInfoResult QueryMemberFlowInfo(Usercinemaview userCinema,String CardNo,String CardPassword,String pStartDate,String pEndDate,String pPageSize,String pPageNum){
 		try{
 			Map<String,Object> param = new LinkedHashMap();
@@ -805,7 +819,7 @@ public class WebService {
 	}
 	//endregion
 	
-	//region 会员卡充值
+	//region 会员卡充值（完成）
 	public static CxMemberChargeResult  MemberCharge(Usercinemaview userCinema,String CardNo, String CardPassword,CardChargeTypeEnum ChargeType, float ChargeAmount){
 		try{
 			String pOrderCode=UUID.randomUUID().toString().replace("-","");
@@ -818,14 +832,14 @@ public class WebService {
 			param.put("pChargeTypeName",ChargeType.getTypeName());
 			param.put("pChannelType", "手机APP");
 			param.put("pAccountType", "0");
-			param.put("pChargeAmount",ChargeAmount);
-			param.put("pChargeActivityId","");
-			param.put("pChargeClass", "0");
+			param.put("pChargeAmount",new DecimalFormat("0.00").format(ChargeAmount));
+			//param.put("pChargeActivityId","");
+			//param.put("pChargeClass", "0");
 			param.put("pOrderCode",pOrderCode);
 			param.put("pTransactionNo",pTransactionNo);
 			param.put("pCompress", "0");
 			log.info(param.toString());
-			String result = WebService.cinemaTss(userCinema.getUrl()).memberCharge(userCinema.getRealUserName(),userCinema.getCinemaCode(),CardNo,String.valueOf(ChargeType.getTypeCode()),ChargeType.getTypeName(), "手机APP", "0",ChargeAmount,"", "0",pOrderCode,pTransactionNo, "0", MD5Util.getCxSign(param,userCinema.getRealPassword()));
+			String result = WebService.cinemaTss(userCinema.getUrl()).memberCharge(userCinema.getRealUserName(),userCinema.getCinemaCode(),CardNo,String.valueOf(ChargeType.getTypeCode()),ChargeType.getTypeName(), "手机APP", "0",ChargeAmount,null,null,pOrderCode,pTransactionNo, "0", MD5Util.getCxSign(param,userCinema.getRealPassword()));
 			Gson gson = new Gson();
 			log.info(result);
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result,"MemberChargeResult"),CxMemberChargeResult.class);
@@ -836,7 +850,7 @@ public class WebService {
 	}
 	//endregion
 	
-	//region 查询会员卡等级
+	//region 查询会员卡等级（完成）
 	public static CxQueryMemberLevelResult QueryMemberLevel(Usercinemaview userCinema){
 		try{
 			Map<String,Object> param = new LinkedHashMap();
@@ -854,7 +868,7 @@ public class WebService {
 	}
 	//endregion
 	
-	//region 会员卡注册
+	//region 会员卡注册（完成）
 	public static CxPhoneNumRegResult  PhoneNumReg(Usercinemaview userCinema,String pLmsPassword, String LevelCode, String InitialAmount, String pName, String pMobileNum, String pCreditNum, String pSex){
 		try{
 			String RealPassword = MD5Util.MD5Encode(pLmsPassword, "UTF-8");
@@ -883,6 +897,169 @@ public class WebService {
 	}
 	//endregion
 	
+	//region 查询卖品信息（完成）
+	public static CxQueryMerchandiseResult  QueryMerchandise(Usercinemaview userCinema){
+		try{
+			Map<String,String> param = new LinkedHashMap();
+			param.put("pAppCode",userCinema.getRealUserName());
+			param.put("pCinemaCode",userCinema.getCinemaCode());
+			param.put("pPageSize","9999");
+			param.put("pPageNum","1");
+			param.put("pCompress", "0");
+			log.info(param.toString());
+			String result = WebService.cinemaTss(userCinema.getUrl()).queryMerchandise(userCinema.getRealUserName(),userCinema.getCinemaCode(),"9999","1","0",MD5Util.getCxSign(param,userCinema.getRealPassword()));
+			Gson gson = new Gson();
+			log.info("影院编码："+userCinema.getCinemaCode()+"-----"+result);
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result,"QueryMerchandiseResult"),CxQueryMerchandiseResult.class);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+	//endregion
+	
+	//region 创建卖品订单（完成）
+	public static CxCreateMerOrderResult CreateMerOrder(Usercinemaview userCinema, GoodsOrderView orderview){
+		try{
+			// 用来生成验证码
+			Map<String, String> map = new LinkedHashMap();
+			map.put("AppCode", userCinema.getRealUserName());
+			map.put("CinemaCode", userCinema.getCinemaCode());
+			StringBuffer SaleMerInfos = new StringBuffer();
+			orderview.getOrderGoodsDetails()
+					.forEach(n -> SaleMerInfos.append(n.getGoodsCode())// 商品编码
+							.append(n.getGoodsName())//商品名称
+							.append(new DecimalFormat("#0.00").format(n.getStandardPrice()))// 销售价
+							.append(n.getGoodsCount())//商品数量
+							.append("{}")//商品详情扩展信息（JSON格式）
+							.append(n.getShowSeqNo()));
+			map.put("SaleMerInfos", SaleMerInfos.toString());
+			map.put("Compress", "0");
+			log.info("==========================");
+			log.info(new Gson().toJson(map));
+			log.info("==========================");
+			
+			// 最后的请求参数
+			CxCreateMerOrderParameter param = new CxCreateMerOrderParameter();
+			param.setAppCode(userCinema.getRealUserName());
+			param.setCinemaCode(userCinema.getCinemaCode());
+			
+			CxCreateMerOrderXmlSaleMerInfos saleMerInfos = new CxCreateMerOrderParameter.CxCreateMerOrderXmlSaleMerInfos();
+			List<CxCreateMerOrderXmlSaleMerInfo> saleMerInfo = new ArrayList<CxCreateMerOrderXmlSaleMerInfo>();
+			for (Goodsorderdetails orderdetail : orderview.getOrderGoodsDetails()) {
+				CxCreateMerOrderXmlSaleMerInfo saleMer = new CxCreateMerOrderXmlSaleMerInfo();
+				saleMer.setMerCode(orderdetail.getGoodsCode());
+				saleMer.setMerName(orderdetail.getGoodsName());
+				saleMer.setMerPrice(new DecimalFormat("#0.00").format(orderdetail.getStandardPrice()));
+				saleMer.setSaleAmount(orderdetail.getGoodsCount());
+				saleMer.setMerExtend("{}");
+				saleMer.setSeqNo(orderdetail.getShowSeqNo().toString());
+				saleMerInfo.add(saleMer);
+			}
+			saleMerInfos.setSaleMerInfo(saleMerInfo);
+			param.setSaleMerInfos(saleMerInfos);
+			param.setCompress("0");
+			String VerifyInfo = MD5Util.getCxSign(map, userCinema.getRealPassword());
+			param.setVerifyInfo(VerifyInfo);
+			
+			// 把请求参数转成XML
+			String CreateMerOrderXml = JaxbXmlUtil.convertToXml(param);
+			String result = WebService.cinemaTss(userCinema.getUrl()).createMerOrder(CreateMerOrderXml);
+			log.info(result);
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss")
+					.registerTypeAdapter(Integer.class, new IntegerDefaultAdapter())
+					.registerTypeAdapter(Double.class, new DoubleDefaultAdapter()).create();
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "CreateMerOrderResult"), CxCreateMerOrderResult.class);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	//endregion
+	
+	//region 确认卖品订单（完成）
+	public static CxSubmitMerOrderResult SubmitMerOrder(Usercinemaview userCinema, GoodsOrderView orderview){
+		try{
+			// 用来生成验证码
+			Map<String, String> map = new LinkedHashMap();
+			map.put("AppCode", userCinema.getRealUserName());
+			map.put("CinemaCode", userCinema.getCinemaCode());
+			map.put("OrderCode",orderview.getOrderBaseInfo().getLocalOrderCode());
+			map.put("MobilePhone",orderview.getOrderBaseInfo().getMobilePhone());
+			StringBuffer SaleMerInfos = new StringBuffer();
+			orderview.getOrderGoodsDetails()
+					.forEach(n -> SaleMerInfos.append(n.getGoodsCode())// 商品编码
+							.append(n.getGoodsName())//商品名称
+							.append(new DecimalFormat("#0.00").format(n.getStandardPrice()))// 销售价
+							.append(n.getGoodsCount())//商品数量
+							.append("{}")//商品详情扩展信息（JSON格式）
+							.append(n.getShowSeqNo()));
+			map.put("SaleMerInfos", SaleMerInfos.toString());
+			map.put("Compress", "0");
+			log.info("==========================");
+			log.info(SaleMerInfos.toString());
+			log.info("==========================");
+			
+			// 最后的请求参数
+			CxSubmitMerOrderParameter param = new CxSubmitMerOrderParameter();
+			param.setAppCode(userCinema.getRealUserName());
+			param.setCinemaCode(userCinema.getCinemaCode());
+			param.setOrderCode(orderview.getOrderBaseInfo().getLocalOrderCode());
+			param.setMobilePhone(orderview.getOrderBaseInfo().getMobilePhone());
+
+			CxSubmitMerOrderXmlSaleMerInfos saleMerInfos = new CxSubmitMerOrderParameter.CxSubmitMerOrderXmlSaleMerInfos();
+			List<CxSubmitMerOrderXmlSaleMerInfo> saleMerInfo = new ArrayList<CxSubmitMerOrderXmlSaleMerInfo>();
+			for (Goodsorderdetails orderdetail : orderview.getOrderGoodsDetails()) {
+				CxSubmitMerOrderXmlSaleMerInfo saleMer = new CxSubmitMerOrderXmlSaleMerInfo();
+				saleMer.setMerCode(orderdetail.getGoodsCode());
+				saleMer.setMerName(orderdetail.getGoodsName());
+				saleMer.setMerPrice(new DecimalFormat("#0.00").format(orderdetail.getStandardPrice()));
+				saleMer.setSaleAmount(orderdetail.getGoodsCount());
+				saleMer.setMerExtend("{}");
+				saleMer.setSeqNo(orderdetail.getShowSeqNo().toString());
+				saleMerInfo.add(saleMer);
+			}
+			saleMerInfos.setSaleMerInfo(saleMerInfo);
+			param.setSaleMerInfos(saleMerInfos);
+			param.setCompress("0");
+			String VerifyInfo = MD5Util.getCxSign(map, userCinema.getRealPassword());
+			param.setVerifyInfo(VerifyInfo);
+			
+			// 把请求参数转成XML
+			String SubmitMerOrderXml = JaxbXmlUtil.convertToXml(param);
+			String result = WebService.cinemaTss(userCinema.getUrl()).submitMerOrder(SubmitMerOrderXml);
+			log.info(result);
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss")
+					.registerTypeAdapter(Integer.class, new IntegerDefaultAdapter())
+					.registerTypeAdapter(Double.class, new DoubleDefaultAdapter()).create();
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "SubmitMerOrderResult"),CxSubmitMerOrderResult.class);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	//endregion
+	
+	//region 查询卖品订单（完成）
+	public static CxQueryOrderDetailResult QueryOrderDetail(Usercinemaview userCinema, GoodsOrderView orderview){
+		try{
+			Map<String,String> param = new LinkedHashMap();
+			param.put("pAppCode",userCinema.getRealUserName());
+			param.put("pCinemaCode",userCinema.getCinemaCode());
+			param.put("pOrderCode",orderview.getOrderBaseInfo().getOrderCode());
+			param.put("pCompress", "0");
+//			log.info(MD5Util.getCxSign(param, PayConstant.signkey));
+			String result = WebService.cinemaTss(userCinema.getUrl()).queryOrderDetail(userCinema.getRealUserName(),userCinema.getCinemaCode(),orderview.getOrderBaseInfo().getOrderCode(),"0",MD5Util.getCxSign(param,userCinema.getRealPassword()));
+			Gson gson = new Gson();
+			log.info("影院编码："+userCinema.getCinemaCode()+"-----"+result);
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result,"QueryOrderDetailResult"),CxQueryOrderDetailResult.class);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+	//endregion
+	
 	public static void main(String args[]) {
 		try {
 			Usercinemaview userCinema = new Usercinemaview();
@@ -890,8 +1067,8 @@ public class WebService {
 			userCinema.setRealPassword("e10adc3949ba59abbe56e057f20f883e");
 			userCinema.setUrl("http://121.32.27.26:18080/tsp-ws/services/tsp/cinema");
 			userCinema.setCinemaCode("62549174");
-			QueryMemberLevel(userCinema);
-			/*System.out.println(PhoneNumReg(userCinema, "mima123", "26", "200", "刘钰栋", "15268553143", "41061119971208453X", "1"));*/
+			CxQueryCinemaListResult result = queryCinemaList(userCinema);
+			System.out.println(new Gson().toJson(result));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -8,71 +8,68 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-
 //设置生成的xml的根节点的名称
 @XmlRootElement(name="SubmitOrderParameter")
-//设置根据字段还是方法生成
-@XmlAccessorType(XmlAccessType.FIELD)
-public class CxSubmitOrderParameter implements Serializable {
-	//xml节点的名称
-    @XmlElement(name="AppCode")
+public class CxSubmitOrderParameter{
     private String AppCode;
-    @XmlElement(name="CinemaCode")
     private String CinemaCode;
-    @XmlElement(name="OrderCode")
     private String OrderCode;
-    @XmlElement(name="FeatureAppNo")
     private String FeatureAppNo;
-    @XmlElement(name="MobilePhone")
     private String MobilePhone;
-    @XmlElement(name="SeatInfos")
 	private CxSubmitOrderXmlSeatInfos SeatInfos;
-    @XmlElement(name="Compress")
     private String Compress;
-    @XmlElement(name="VerifyInfo")
     private String VerifyInfo;
+    
+    @XmlElement(name="AppCode")
 	public String getAppCode() {
 		return AppCode;
 	}
 	public void setAppCode(String appCode) {
 		AppCode = appCode;
 	}
+	@XmlElement(name="CinemaCode")
 	public String getCinemaCode() {
 		return CinemaCode;
 	}
 	public void setCinemaCode(String cinemaCode) {
 		CinemaCode = cinemaCode;
 	}
+	@XmlElement(name="OrderCode")
 	public String getOrderCode() {
 		return OrderCode;
 	}
 	public void setOrderCode(String orderCode) {
 		OrderCode = orderCode;
 	}
+	@XmlElement(name="FeatureAppNo")
 	public String getFeatureAppNo() {
 		return FeatureAppNo;
 	}
 	public void setFeatureAppNo(String featureAppNo) {
 		FeatureAppNo = featureAppNo;
 	}
+	@XmlElement(name="MobilePhone")
 	public String getMobilePhone() {
 		return MobilePhone;
 	}
 	public void setMobilePhone(String mobilePhone) {
 		MobilePhone = mobilePhone;
 	}
+	@XmlElement(name="SeatInfos")
 	public CxSubmitOrderXmlSeatInfos getSeatInfos() {
 		return SeatInfos;
 	}
 	public void setSeatInfos(CxSubmitOrderXmlSeatInfos seatInfos) {
 		SeatInfos = seatInfos;
 	}
+	@XmlElement(name="Compress")
 	public String getCompress() {
 		return Compress;
 	}
 	public void setCompress(String compress) {
 		Compress = compress;
 	}
+	@XmlElement(name="VerifyInfo")
 	public String getVerifyInfo() {
 		return VerifyInfo;
 	}

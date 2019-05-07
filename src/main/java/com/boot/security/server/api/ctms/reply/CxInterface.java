@@ -18,6 +18,7 @@ import com.boot.security.server.api.ctms.reply.CxQueryCinemaInfoResult.ResBean.C
 import com.boot.security.server.api.ctms.reply.CxQueryFilmInfoByDatePeriodResult.ResBean.FilmInfoVOsBean.FilmInfoVOBean;
 import com.boot.security.server.api.ctms.reply.CxQueryMemberFlowInfoResult.ResBean.TransFlowVOsBean.TransFlowVOBean;
 import com.boot.security.server.api.ctms.reply.CxQueryMemberLevelResult.ResBean.MemberLevelsBean.MemberLevelBean;
+import com.boot.security.server.api.ctms.reply.CxQueryMerchandiseResult.ResBean.MersBean.MerBean;
 import com.boot.security.server.api.ctms.reply.CxQueryPlanInfoByDatePeriodResult.ResBean.CinemaPlansBean.CinemaPlanBean;
 import com.boot.security.server.api.ctms.reply.CxQueryPlanSeatResult.ResBean.PlanSiteStatesBean.PlanSiteStateBean;
 import com.boot.security.server.api.ctms.reply.CxQuerySeatInfoResult.ResBean.ScreenSitesBean.ScreenSiteBean;
@@ -28,6 +29,8 @@ import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
+import com.boot.security.server.model.Goods;
+import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.LoveFlagEnum;
 import com.boot.security.server.model.Membercard;
@@ -39,6 +42,7 @@ import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.YesOrNoEnum;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
+import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
@@ -46,6 +50,7 @@ import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.utils.MD5Util;
 import com.boot.security.server.utils.SpringUtil;
+import com.google.gson.Gson;
 import com.oristartech.tsp.ws.soap.WebService;
 
 import ch.qos.logback.core.net.SyslogOutputStream;
@@ -66,6 +71,7 @@ public class CxInterface implements ICTMSInterface {
 	SessioninfoServiceImpl _sessioninfoService = SpringUtil.getBean(SessioninfoServiceImpl.class);
 	MemberCardServiceImpl _membercardService = SpringUtil.getBean(MemberCardServiceImpl.class);
 	MemberCardLevelServiceImpl _membercardlevelService = SpringUtil.getBean(MemberCardLevelServiceImpl.class);
+	GoodsServiceImpl _goodsService=SpringUtil.getBean(GoodsServiceImpl.class);
 	private static final String pCompress = "0";
 
 	protected static Logger log = LoggerFactory.getLogger(CxInterface.class);
@@ -499,7 +505,7 @@ public class CxInterface implements ICTMSInterface {
 	}
 	// endregion
 
-	// region 登录会员卡
+	// region 登录会员卡(完成)
 	public CTMSLoginCardReply LoginCard(Usercinemaview userCinema, String CardNo, String CardPassword) {
 		CTMSLoginCardReply reply = new CTMSLoginCardReply();
 		String realPassword = MD5Util.MD5Encode(CardPassword, "UTF-8");
@@ -529,7 +535,7 @@ public class CxInterface implements ICTMSInterface {
 	}
 	// endregion
 
-	// region 查询会员卡
+	// region 查询会员卡(完成)
 	public CTMSQueryCardReply QueryCard(Usercinemaview userCinema, String CardNo, String CardPassword)
 			throws ParseException {
 		CTMSQueryCardReply reply = new CTMSQueryCardReply();
@@ -584,7 +590,7 @@ public class CxInterface implements ICTMSInterface {
 	}
 	// endregion
 
-	// region 查询会员卡折扣
+	// region 查询会员卡折扣（完成）
 	public CTMSQueryDiscountReply QueryDiscount(Usercinemaview userCinema, String TicketCount, String CardNo,
 			String CardPassword, String LevelCode, String SessionCode, String SessionTime, String FilmCode,
 			String ScreenType, String ListingPrice, String LowestPrice) {
@@ -595,10 +601,17 @@ public class CxInterface implements ICTMSInterface {
 			reply.setCinemaCode(userCinema.getCinemaCode());
 			reply.setDiscountType(1);// 辰星默认固定票价
 			if (cxReply.getQueryDiscountActivityResult().getRule() != null) {
-				reply.setPrice(
-						cxReply.getQueryDiscountActivityResult().getRule().getResults().getResult().get(0).getPrice());
-				reply.setCinemaPayAmount(cxReply.getQueryDiscountActivityResult().getRule().getResults().getResult()
-						.get(0).getCinemaPayAmount());
+				log.info("======"+cxReply.getQueryDiscountActivityResult().getRule()+"====");
+				//处理rule
+				CxQueryDiscountActivityResultRule rule=new Gson().fromJson(cxReply.getQueryDiscountActivityResult().getRule(),CxQueryDiscountActivityResultRule.class);
+				if(rule!=null&&rule.getResults().size()>0){
+					reply.setPrice(rule.getResults().get(0).getPrice());
+					reply.setCinemaPayAmount(rule.getResults().get(0).getCinemaPayAmount());
+				}else
+				{
+					reply.setPrice(0F);
+					reply.setCinemaPayAmount(0F);
+				}
 			} else {
 				reply.setPrice(0F);
 				reply.setCinemaPayAmount(0F);
@@ -615,7 +628,7 @@ public class CxInterface implements ICTMSInterface {
 	}
 	// endregion
 
-	// region 会员卡支付
+	// region 会员卡支付（完成）
 	public CTMSCardPayReply CardPay(Usercinemaview userCinema, String CardNo, String CardPassword, float PayAmount,
 			String SessionCode, String FilmCode, String TicketNum) {
 		CTMSCardPayReply reply = new CTMSCardPayReply();
@@ -638,7 +651,7 @@ public class CxInterface implements ICTMSInterface {
 	}
 	// endregion
 
-	// region 会员卡支付撤销
+	// region 会员卡支付撤销（完成）
 	public CTMSCardPayBackReply CardPayBack(Usercinemaview userCinema, String CardNo, String CardPassword,
 			String TradeNo, float PayBackAmount) {
 		CTMSCardPayBackReply reply = new CTMSCardPayBackReply();
@@ -659,7 +672,7 @@ public class CxInterface implements ICTMSInterface {
 	}
 	// endregion
 
-	// region 查询会员卡交易记录
+	// region 查询会员卡交易记录（完成）
 	public CTMSQueryCardTradeRecordReply QueryCardTradeRecord(Usercinemaview userCinema, String CardNo,
 			String CardPassword, String StartDate, String EndDate, String PageSize, String PageNum)
 			throws ParseException {
@@ -668,15 +681,18 @@ public class CxInterface implements ICTMSInterface {
 				EndDate, PageSize, PageNum);
 		if (cxReply.getQueryMemberFlowInfoResult().getResultCode().equals("0")) {
 			List<CardTradeRecord> CardTradeRecords = new ArrayList<CardTradeRecord>();
-			for (TransFlowVOBean transflow : cxReply.getQueryMemberFlowInfoResult().getTransFlowVOs()
-					.getTransFlowVO()) {
-				CardTradeRecord record = new CardTradeRecord();
-				record.setTradeNo(transflow.getFlowNum());
-				record.setTradeType(transflow.getFlowType());
-				record.setTradeTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(transflow.getTransactionTime()));
-				record.setTradePrice(transflow.getTransactionAmount());
-				record.setCinemaName(transflow.getMerchantName());
-				CardTradeRecords.add(record);
+			if(cxReply.getQueryMemberFlowInfoResult().getTransFlowVOs()
+					.getTransFlowVO().size()>0){
+				for (TransFlowVOBean transflow : cxReply.getQueryMemberFlowInfoResult().getTransFlowVOs()
+						.getTransFlowVO()) {
+					CardTradeRecord record = new CardTradeRecord();
+					record.setTradeNo(transflow.getFlowNum());
+					record.setTradeType(transflow.getFlowType());
+					record.setTradeTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(transflow.getTransactionTime()));
+					record.setTradePrice(transflow.getTransactionAmount());
+					record.setCinemaName(transflow.getMerchantName());
+					CardTradeRecords.add(record);
+				}
 			}
 			reply.setCardTradeRecords(CardTradeRecords);
 			reply.Status = StatusEnum.Success;
@@ -690,7 +706,7 @@ public class CxInterface implements ICTMSInterface {
 	}
 	// endregion
 
-	// region 会员卡充值
+	// region 会员卡充值（完成）
 	public CTMSCardChargeReply CardCharge(Usercinemaview userCinema, String CardNo, String CardPassword,
 			CardChargeTypeEnum ChargeType, float ChargeAmount) {
 		CTMSCardChargeReply reply = new CTMSCardChargeReply();
@@ -709,7 +725,7 @@ public class CxInterface implements ICTMSInterface {
 	}
 	// endregion
 
-	// region 查询会员卡等级
+	// region 查询会员卡等级(完成)
 	public CTMSQueryCardLevelReply QueryCardLevel(Usercinemaview userCinema){
         CTMSQueryCardLevelReply reply = new CTMSQueryCardLevelReply();
         CxQueryMemberLevelResult cxReply=cxService.QueryMemberLevel(userCinema);
@@ -744,7 +760,7 @@ public class CxInterface implements ICTMSInterface {
 	}
 	// endregion
 	
-	//region 注册会员卡
+	//region 注册会员卡（完成）
 	public CTMSCardRegisterReply CardRegister(Usercinemaview userCinema, String CardPassword, String LevelCode, String InitialAmount, String CardUserName, String MobilePhone, String IDNumber, String Sex){
 		CTMSCardRegisterReply reply = new CTMSCardRegisterReply();
 		CxPhoneNumRegResult cxReply=cxService.PhoneNumReg(userCinema, CardPassword, LevelCode, InitialAmount, CardUserName, MobilePhone, IDNumber, Sex);
@@ -764,44 +780,117 @@ public class CxInterface implements ICTMSInterface {
 	}
 	//endregion
 
-	private static Date GetNextDate(Date nowDate) {
-		Calendar calendar = new GregorianCalendar();
-		Date nextDay = nowDate;
-		calendar.setTime(nextDay);
-		calendar.add(calendar.DATE, 1);
-		nextDay = calendar.getTime();
-		return nextDay;
-	}
-
+	//region 查询影院卖品（完成）
 	@Override
 	public CTMSQueryGoodsReply QueryGoods(Usercinemaview userCinema) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSQueryGoodsReply reply=new CTMSQueryGoodsReply();
+		CxQueryMerchandiseResult cxReply=cxService.QueryMerchandise(userCinema);
+		if(cxReply.getQueryMerchandiseResult().getResultCode().equals("0")){
+			List<MerBean> Mers=cxReply.getQueryMerchandiseResult().getMers().getMer();
+			if(Mers.size()>0){
+				List<Goods> goodsList=new ArrayList<Goods>();
+				for(MerBean Mer:Mers){
+					Goods goods=new Goods();
+					CxModelMapper.MapToEntity(Mer, goods);
+					goods.setCinemaCode(userCinema.getCinemaCode());
+					goods.setUserId(userCinema.getUserId());
+					goodsList.add(goods);
+				}
+				//先删除旧的卖品
+				_goodsService.deleteByCinemaCode(userCinema.getUserId(),userCinema.getCinemaCode());
+				// 插入卖品信息
+				for (Goods goods : goodsList) {
+					_goodsService.save(goods);
+				}
+				reply.Status = StatusEnum.Success;
+			}
+		}else {
+			reply.Status = StatusEnum.Failure;
+		}
+		reply.ErrorCode = cxReply.getQueryMerchandiseResult().getResultCode();
+		reply.ErrorMessage = cxReply.getQueryMerchandiseResult().getMessage();
+		return reply;
 	}
-
+	//endregion
+	
+	//region 创建卖品订单（完成）
 	@Override
 	public CTMSCreateGoodsOrderReply CreateGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSCreateGoodsOrderReply reply=new CTMSCreateGoodsOrderReply();
+		CxCreateMerOrderResult cxReply=cxService.CreateMerOrder(userCinema, order);
+		if(cxReply.getCreateMerOrderResult().getResultCode().equals("0")){
+			order.getOrderBaseInfo().setLocalOrderCode(cxReply.getCreateMerOrderResult().getOrderCode());
+			order.getOrderBaseInfo().setCreated(new Date());
+			order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Created.getStatusCode());
+			reply.setOrderCode(cxReply.getCreateMerOrderResult().getOrderCode());
+			reply.Status = StatusEnum.Success;
+		}else {
+			order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.CreatFail.getStatusCode());
+			order.getOrderBaseInfo().setErrorMessage(cxReply.getCreateMerOrderResult().getMessage());
+			reply.Status = StatusEnum.Failure;
+		}
+		reply.ErrorCode = cxReply.getCreateMerOrderResult().getResultCode();
+		reply.ErrorMessage = cxReply.getCreateMerOrderResult().getMessage();
+		return reply;
 	}
+	//endregion
 
+	//region 确认卖品订单（完成）
 	@Override
 	public CTMSSubmitGoodsOrderReply SubmitGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSSubmitGoodsOrderReply reply=new CTMSSubmitGoodsOrderReply();
+		CxSubmitMerOrderResult cxReply=cxService.SubmitMerOrder(userCinema, order);
+		if(cxReply.getSubmitMerOrderResult().getResultCode().equals("0")){
+			order.getOrderBaseInfo().setOrderCode(cxReply.getSubmitMerOrderResult().getOrderCode());
+			order.getOrderBaseInfo().setPickUpCode(cxReply.getSubmitMerOrderResult().getPrintNo());
+			order.getOrderBaseInfo().setVerifyCode(cxReply.getSubmitMerOrderResult().getVerifyCode());
+			order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
+			order.getOrderBaseInfo().setSubmitTime(new Date());
+			reply.Status = StatusEnum.Success;
+		}else {
+			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.SubmitFail.getStatusCode());
+			order.getOrderBaseInfo().setErrorMessage(cxReply.getSubmitMerOrderResult().getMessage());
+			reply.Status = StatusEnum.Failure;
+		}
+		reply.ErrorCode = cxReply.getSubmitMerOrderResult().getResultCode();
+		reply.ErrorMessage = cxReply.getSubmitMerOrderResult().getMessage();
+		return reply;
 	}
-
+    //endregion
+	
+	//region 查询卖品订单（完成）
 	@Override
 	public CTMSQueryGoodsOrderReply QueryGoodsOrder(Usercinemaview userCinema, GoodsOrderView order) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSQueryGoodsOrderReply reply=new CTMSQueryGoodsOrderReply();
+		CxQueryOrderDetailResult cxReply=cxService.QueryOrderDetail(userCinema, order);
+		if(cxReply.getQueryOrderDetailResult().getResultCode().equals("0") && !cxReply.getQueryOrderDetailResult().getOrderStatus().equals("1")){
+			if (cxReply.getQueryOrderDetailResult().getOrderStatus().equals("2")) {
+				order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Refund.getStatusCode());
+				order.getOrderBaseInfo().setRefundTime(order.getOrderBaseInfo().getRefundTime() == null ? new Date()
+						: order.getOrderBaseInfo().getRefundTime());
+			}
+			reply.Status = StatusEnum.Success;
+		}else if (cxReply.getQueryOrderDetailResult().getOrderStatus().equals("1")) {
+			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = "-1";
+			reply.ErrorMessage = "订单交易状态：提交失败！";
+		}else {
+			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = cxReply.getQueryOrderDetailResult().getResultCode();
+			reply.ErrorMessage = cxReply.getQueryOrderDetailResult().getMessage();
+		}
+		return reply;
 	}
+	//endregion
 
+	//region 退订卖品（完成）
 	@Override
 	public CTMSRefundGoodsReply RefundGoods(Usercinemaview userCinema, GoodsOrderView order) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSRefundGoodsReply reply=new CTMSRefundGoodsReply();
+		reply.Status=StatusEnum.Success;
+		return reply;
 	}
+	//endregion
 }

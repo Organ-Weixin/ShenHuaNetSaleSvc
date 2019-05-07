@@ -24,6 +24,7 @@ import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
+import com.google.gson.Gson;
 
 import io.swagger.annotations.ApiOperation;
 

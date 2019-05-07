@@ -16,5 +16,5 @@ public interface GoodsService {
 	
 	Goods getByGoodsCode(String goodscode);
 	
-	int deleteByCinemaCode(String cinemacode);
+	int deleteByCinemaCode(Long userid,String cinemacode);
 }

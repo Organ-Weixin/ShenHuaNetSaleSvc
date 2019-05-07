@@ -30,9 +30,9 @@ public interface GoodsDao {
     @Delete("delete from goods where id = #{id}")
     int delete(Long id);
     
-    @Delete("delete from goods where cinemacode = #{cinemacode}")
-    int deleteByCinemaCode(String cinemacode);
-    
+    @Delete("delete from goods where userid = #{userid} and cinemacode=#{cinemacode}")
+    int deleteByCinemaCode(@Param("userid") Long userid,@Param("cinemacode") String cinemacode);
+
     int update(Goods goods);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")

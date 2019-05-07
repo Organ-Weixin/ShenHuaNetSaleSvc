@@ -10,11 +10,16 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import com.boot.security.server.api.core.CreateGoodsOrderQueryXml.CreateGoodsOrderQueryXmlGoodsList.CreateGoodsOrderQueryXmlGoods;
 import com.boot.security.server.api.core.CreateGoodsOrderReply.CreateGoodsOrderReplyOrder;
+import com.boot.security.server.api.core.LockSeatQueryXml.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat;
 import com.boot.security.server.api.core.LockSeatReply.LockSeatReplyOrder.LockSeatReplySeat;
+import com.boot.security.server.api.core.LoginCardReply.LoginCardReplyCard;
+import com.boot.security.server.api.core.QueryCardLevelReply.QueryCardLevelReplyLevels;
 import com.boot.security.server.api.core.QueryCardLevelReply.QueryCardLevelReplyLevels.QueryCardLevelReplyLevel;
+import com.boot.security.server.api.core.QueryCardReply.QueryCardReplyCard;
 import com.boot.security.server.api.core.QueryCardTradeRecordReply.QueryCardTradeRecordReplyTradeRecord.QueryCardTradeRecordReplyRecord;
 import com.boot.security.server.api.core.QueryCinemaListReply.QueryCinemaListReplyCinemas.QueryCinemaListReplyCinema;
 import com.boot.security.server.api.core.QueryCinemaReply.QueryCinemaReplyCinema.QueryCinemaReplyScreen;
@@ -36,6 +41,7 @@ import com.boot.security.server.api.core.RefundGoodsReply.RefundGoodsReplyOrder;
 import com.boot.security.server.api.core.ReleaseSeatReply.ReleaseSeatReplyOrder.ReleaseSeatReplySeat;
 import com.boot.security.server.api.core.SubmitGoodsOrderQueryXml.SubmitGoodsOrderQueryXmlGoodsList.SubmitGoodsOrderQueryXmlGoods;
 import com.boot.security.server.api.core.SubmitGoodsOrderReply.SubmitGoodsOrderReplyOrder;
+import com.boot.security.server.api.core.SubmitOrderQueryXml.SubmitOrderQueryXmlOrder.SubmitOrderQueryXmlSeat;
 import com.boot.security.server.api.core.SubmitOrderReply.SubmitOrderReplyOrder.SubmitOrderReplySeat;
 import com.boot.security.server.api.ctms.reply.CTMSCardChargeReply;
 import com.boot.security.server.api.ctms.reply.CTMSCardPayBackReply;
@@ -65,6 +71,7 @@ import com.boot.security.server.api.ctms.reply.CTMSRefundTicketReply;
 import com.boot.security.server.api.ctms.reply.CTMSReleaseSeatReply;
 import com.boot.security.server.api.ctms.reply.CTMSSubmitGoodsOrderReply;
 import com.boot.security.server.api.ctms.reply.CTMSSubmitOrderReply;
+import com.boot.security.server.api.ctms.reply.CxInterface;
 import com.boot.security.server.api.ctms.reply.ICTMSInterface;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
@@ -89,6 +96,7 @@ import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
+import com.boot.security.server.model.YesOrNoEnum;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
@@ -101,6 +109,8 @@ import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.JaxbXmlUtil;
 import com.boot.security.server.utils.SpringUtil;
+import com.boot.security.server.utils.XmlToJsonUtil;
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 public class NetSaleSvcCore { 
@@ -1177,7 +1187,7 @@ public class NetSaleSvcCore {
     }
 	//endregion
 	
-	//region 登录会员卡
+	//region 登录会员卡(完成)
 	public LoginCardReply LoginCard(String Username, String Password, String CinemaCode, String CardNo, String CardPassword)
     {
         LoginCardReply loginCardReply = new LoginCardReply();
@@ -1235,7 +1245,7 @@ public class NetSaleSvcCore {
     }
 	//endregion
 	
-	//region 查询会员卡
+	//region 查询会员卡(完成)
 	public QueryCardReply QueryCard(String Username, String Password, String CinemaCode, String CardNo, String CardPassword)
     {
         QueryCardReply queryCardReply = new QueryCardReply();
@@ -1303,7 +1313,7 @@ public class NetSaleSvcCore {
     }
 	//endregion
 	
-	//region 得到会员卡折扣
+	//region 得到会员卡折扣（完成）
 	public QueryDiscountReply QueryDiscount(String Username, String Password,String CinemaCode, String TicketCount, String CardNo,
 			String CardPassword, String LevelCode, String SessionCode, String SessionTime, String FilmCode,
 			String ScreenType, String ListingPrice, String LowestPrice)
@@ -1373,7 +1383,7 @@ ScreenType,ListingPrice,LowestPrice))
     }
 	//endregion
 	
-	//region 会员卡支付
+	//region 会员卡支付（完成）
 	public CardPayReply CardPay(String Username, String Password,String CinemaCode, String CardNo, String CardPassword, String PayAmount, String SessionCode, String FilmCode, String TicketNum)
     {
         CardPayReply cardPayReply = new CardPayReply();
@@ -1439,7 +1449,7 @@ ScreenType,ListingPrice,LowestPrice))
     }
 	//endregion
 	
-	//region 会员卡支付撤销
+	//region 会员卡支付撤销(完成)
 	public CardPayBackReply CardPayBack(String Username, String Password, String CinemaCode, String CardNo, String CardPassword, String TradeNo, String PayBackAmount)
     {
         CardPayBackReply cardPayBackReply = new CardPayBackReply();
@@ -1493,7 +1503,7 @@ ScreenType,ListingPrice,LowestPrice))
     }
 	//endregion
 	
-	//region 查询会员卡交易记录
+	//region 查询会员卡交易记录(完成)
 	public QueryCardTradeRecordReply QueryCardTradeRecord(String Username, String Password, String CinemaCode, String CardNo, String CardPassword, String StartDate, String EndDate, String PageSize, String PageNum) throws ParseException
     {
         QueryCardTradeRecordReply queryCardTradeRecordReply = new QueryCardTradeRecordReply();
@@ -1578,7 +1588,7 @@ ScreenType,ListingPrice,LowestPrice))
     }
 	//endregion
 	
-	//region 会员卡充值
+	//region 会员卡充值(完成)
 	public CardChargeReply CardCharge(String Username, String Password, String CinemaCode, String CardNo, String CardPassword, String ChargeType, String ChargeAmount)
     {
         CardChargeReply cardChargeReply = new CardChargeReply();
@@ -1638,7 +1648,7 @@ ScreenType,ListingPrice,LowestPrice))
     }
 	//endregion
 	
-	//region 会员卡等级
+	//region 会员卡等级（完成）
 	public QueryCardLevelReply QueryCardLevel(String Username, String Password, String CinemaCode)
     {
         QueryCardLevelReply queryCardLevelReply = new QueryCardLevelReply();
@@ -1699,7 +1709,7 @@ ScreenType,ListingPrice,LowestPrice))
     }
 	//endregion
 	
-	//region 会员卡注册
+	//region 会员卡注册（完成）
 	public CardRegisterReply CardRegister(String Username, String Password, String CinemaCode, String CardPassword, String LevelCode, String InitialAmount, String CardUserName, String MobilePhone, String IDNumber, String Sex)
     {
         CardRegisterReply cardRegisterReply = new CardRegisterReply();
@@ -1746,7 +1756,8 @@ ScreenType,ListingPrice,LowestPrice))
             reply.setCardNo(CTMSReply.getCardNo());
             reply.setBalance(CTMSReply.getBalance());
             reply.setExpireDate(CTMSReply.getExpireDate());
-            reply.setCreateTime(CTMSReply.getCreateTime());
+            //reply.setCreateTime(CTMSReply.getCreateTime());
+            reply.setCreateTime(new Date());
             reply.SetSuccessReply();
         }
         else
@@ -1757,7 +1768,7 @@ ScreenType,ListingPrice,LowestPrice))
     }
 	//endregion
 	
-	//region 查询影院卖品
+	//region 查询影院卖品(完成)
 	public QueryGoodsReply QueryGoods(String Username, String Password, String CinemaCode){
 		QueryGoodsReply queryGoodsReply=new QueryGoodsReply();
 		if (!ReplyExtension.RequestInfoGuard(queryGoodsReply,Username, Password, CinemaCode))
@@ -1811,7 +1822,7 @@ ScreenType,ListingPrice,LowestPrice))
 	}
 	//endregion
 	
-	//region 创建卖品订单
+	//region 创建卖品订单(完成)
 	public CreateGoodsOrderReply CreateGoodsOrder(String Username, String Password, String QueryXml) throws JsonSyntaxException, Exception{
 		CreateGoodsOrderReply createGoodsOrderReply=new CreateGoodsOrderReply();
 		if (!ReplyExtension.RequestInfoGuard(createGoodsOrderReply, Username, Password, QueryXml)) {
@@ -1861,6 +1872,7 @@ ScreenType,ListingPrice,LowestPrice))
 			goods.setCreated(new Date());
 			goods.setIsPackage(localGoods.getIsPackage());
 			goods.setGoodsDetail(localGoods.getGoodsDesc());
+			goods.setShowSeqNo(localGoods.getShowSeqNo());
 			goodsDetails.add(goods);
 		}
 		order.setOrderGoodsDetails(goodsDetails);
@@ -1893,7 +1905,7 @@ ScreenType,ListingPrice,LowestPrice))
 	}
 	//endregion
 	
-	//region 确认卖品订单
+	//region 确认卖品订单（完成）
 	public SubmitGoodsOrderReply SubmitGoodsOrder(String Username, String Password, String QueryXml) throws JsonSyntaxException, Exception{
 		SubmitGoodsOrderReply submitGoodsOrderReply=new SubmitGoodsOrderReply();
 		if (!ReplyExtension.RequestInfoGuard(submitGoodsOrderReply, Username, Password, QueryXml)) {
@@ -1987,7 +1999,7 @@ ScreenType,ListingPrice,LowestPrice))
 	}
 	//endregion
 	
-	//region 查询卖品订单
+	//region 查询卖品订单(完成)
 	public QueryGoodsOrderReply QueryGoodsOrder(String Username, String Password, String CinemaCode, String OrderCode){
 		QueryGoodsOrderReply queryGoodsOrderReply=new QueryGoodsOrderReply();
 		if (!ReplyExtension.RequestInfoGuard(queryGoodsOrderReply, Username, Password, CinemaCode, OrderCode)) {
@@ -2055,7 +2067,7 @@ ScreenType,ListingPrice,LowestPrice))
 	}
 	//endregion
 	
-	//region 退订卖品
+	//region 退订卖品(完成)
 	public RefundGoodsReply RefundGoods(String Username, String Password, String CinemaCode, String OrderCode,String PaySeqNo){
 		RefundGoodsReply refundGoodsReply=new RefundGoodsReply();
 		if (!ReplyExtension.RequestInfoGuard(refundGoodsReply, Username, Password, CinemaCode, OrderCode, PaySeqNo)) {

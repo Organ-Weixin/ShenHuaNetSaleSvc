@@ -49,9 +49,9 @@ public class GoodsServiceImpl implements GoodsService {
 	}
 
 	@Override
-	public int deleteByCinemaCode(String cinemacode) {
+	public int deleteByCinemaCode(Long userid, String cinemacode) {
 		// TODO Auto-generated method stub
-		return goodsDao.deleteByCinemaCode(cinemacode);
+		return goodsDao.deleteByCinemaCode(userid, cinemacode);
 	}
 
 }
