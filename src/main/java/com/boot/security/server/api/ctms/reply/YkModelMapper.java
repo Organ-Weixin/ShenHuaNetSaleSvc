@@ -5,11 +5,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.boot.security.server.api.ctms.reply.YkGetGoodsResult.DataBean.GoodsBean.GoodsResult;
+import com.boot.security.server.apicontroller.reply.UserWXResult;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
 import com.boot.security.server.model.Sessioninfo;
+import com.boot.security.server.model.Ticketusers;
 
 public class YkModelMapper {
 
@@ -117,6 +119,19 @@ public class YkModelMapper {
 		} else {
 			entity.setIsPackage(0);
 		}
+		return entity;
+	}
+	
+	//用户登陆信息转为entity
+	public static Ticketusers MapToEntity(UserWXResult model,Ticketusers entity){
+		entity.setNickName(model.getNickName());
+		entity.setSex(model.getGender());
+		entity.setCountry(model.getCountry());
+		entity.setProvince(model.getProvince());
+		entity.setCity(model.getCity());
+		entity.setHeadImgUrl(model.getAvatarUrl());
+		entity.setCreated(new Date());
+		
 		return entity;
 	}
 		

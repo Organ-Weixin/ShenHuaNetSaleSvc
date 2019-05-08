@@ -21,7 +21,11 @@ public enum ErrorCodeEnum {
 	CardChargeTypeInvalid("会员卡充值类型不合法！合法取值包括：Cash，UnionCardPay，UnionOnlinePay，AliPay，WxPay","10000016"),
 	CardLevelInvalid("会员卡等级不存在！","10000017"),
 	FilmCodeNotExist("影片编码不存在或不合法！","10000018"),
-	GoodsCountInvalid("卖品数量不匹配/不合法","10000019");
+	GoodsCountInvalid("卖品数量不匹配/不合法","10000019"),
+	CinemaMiniProgramAccountNotExist("影院小程序APPID不存在或不合法!","10000020"),
+	OpenIDNotExist("用户OpenID不存在或不合法!","10000021"),
+	VerifyCodeNotMatch("用户手机验证码不匹配！","10000022"),
+	SentMessageFailure("短信发送失败！","10000023");
 	
 	private String Message;
 	private String Code;

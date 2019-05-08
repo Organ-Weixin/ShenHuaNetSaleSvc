@@ -37,7 +37,6 @@ import com.boot.security.server.service.impl.CinemapaymentsettingsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
-import com.boot.security.server.utils.WxPayUtil;
 
 import io.swagger.annotations.ApiOperation;
 

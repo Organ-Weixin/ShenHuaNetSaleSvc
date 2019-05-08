@@ -1,6 +1,5 @@
 package com.boot.security.server.apicontroller.reply;
 
-import com.boot.security.server.api.ctms.reply.CTMSBaseReply;
 import com.boot.security.server.model.ErrorCodeEnum;
 import com.boot.security.server.model.StatusEnum;
 
@@ -202,7 +201,43 @@ public class BaseReply {
         ErrorCode = ErrorCodeEnum.FilmCodeNotExist.getCode();
         ErrorMessage = ErrorCodeEnum.FilmCodeNotExist.getMessage();
     }
-	
+    /// <summary>
+    /// 影院小程序APPID不存在或不合法
+    /// </summary>
+    public void SetCinemaMiniProgramAccountNotExistReply()
+    {
+        Status = StatusEnum.Failure.getStatusCode();
+        ErrorCode = ErrorCodeEnum.CinemaMiniProgramAccountNotExist.getCode();
+        ErrorMessage = ErrorCodeEnum.CinemaMiniProgramAccountNotExist.getMessage();
+    }
+    /// <summary>
+    /// 用户OpenID不存在或不合法
+    /// </summary>
+    public void SetOpenIDNotExistReply()
+    {
+        Status = StatusEnum.Failure.getStatusCode();
+        ErrorCode = ErrorCodeEnum.OpenIDNotExist.getCode();
+        ErrorMessage = ErrorCodeEnum.OpenIDNotExist.getMessage();
+    }
+    /// <summary>
+    /// 用户手机验证码不匹配
+    /// </summary>
+    public void SetVerifyCodeNotMatchReply()
+    {
+        Status = StatusEnum.Failure.getStatusCode();
+        ErrorCode = ErrorCodeEnum.VerifyCodeNotMatch.getCode();
+        ErrorMessage = ErrorCodeEnum.VerifyCodeNotMatch.getMessage();
+    }
+    /// <summary>
+    /// 短信发送失败
+    /// </summary>
+    public void SetSentMessageFailureReply()
+    {
+        Status = StatusEnum.Failure.getStatusCode();
+        ErrorCode = ErrorCodeEnum.SentMessageFailure.getCode();
+        ErrorMessage = ErrorCodeEnum.SentMessageFailure.getMessage();
+    }
+    
     public String Status;
 
     public String ErrorCode;

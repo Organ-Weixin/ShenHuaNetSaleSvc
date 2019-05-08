@@ -21,4 +21,9 @@ public class CinemaMiniProgramAccountsServiceImpl implements CinemaMiniProgramAc
 		return cinemaMiniProgramAccountsDao.getByAppId(appid);
 	}
 
+	@Override
+	public CinemaMiniProgramAccounts getByCinemaCode(String cinemacode) {
+		return cinemaMiniProgramAccountsDao.getByCinemaCode(cinemacode);
+	}
+
 }

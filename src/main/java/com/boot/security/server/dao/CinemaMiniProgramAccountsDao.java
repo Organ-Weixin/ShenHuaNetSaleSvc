@@ -25,4 +25,7 @@ public interface CinemaMiniProgramAccountsDao {
     
     @Select("select * from CinemaMiniProgramAccounts where AppId=#{AppId} and IsDel=0")
     List<CinemaMiniProgramAccounts> getByAppId(String AppId);
+    
+    @Select("select * from CinemaMiniProgramAccounts where CinemaCode=#{cinemacode} and IsDel=0")
+    CinemaMiniProgramAccounts getByCinemaCode(String cinemacode);
 }

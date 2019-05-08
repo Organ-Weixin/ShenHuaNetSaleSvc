@@ -7,4 +7,6 @@ import com.boot.security.server.model.CinemaMiniProgramAccounts;
 public interface CinemaMiniProgramAccountsService {
 
 	List<CinemaMiniProgramAccounts> getByAppId(String appid);
+	
+	CinemaMiniProgramAccounts getByCinemaCode(String cinemacode);
 }
