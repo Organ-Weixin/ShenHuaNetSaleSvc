@@ -9,10 +9,10 @@ public class Ticketusers {
 	private String MobilePhone;
 	private String OpenID;
 	private String VerifyCode;
-	private Integer IsActive;
+	private int IsActive;
 	private Date Created;
 	private String NickName;
-	private Integer Sex;
+	private int Sex;
 	private String Country;
 	private String Province;
 	private String City;
@@ -50,10 +50,10 @@ public class Ticketusers {
 	public void setVerifyCode(String VerifyCode) {
 		this.VerifyCode = VerifyCode;
 	}
-	public Integer getIsActive() {
+	public int getIsActive() {
 		return IsActive;
 	}
-	public void setIsActive(Integer IsActive) {
+	public void setIsActive(int IsActive) {
 		this.IsActive = IsActive;
 	}
 	public Date getCreated() {
@@ -68,10 +68,10 @@ public class Ticketusers {
 	public void setNickName(String NickName) {
 		this.NickName = NickName;
 	}
-	public Integer getSex() {
+	public int getSex() {
 		return Sex;
 	}
-	public void setSex(Integer Sex) {
+	public void setSex(int Sex) {
 		this.Sex = Sex;
 	}
 	public String getCountry() {

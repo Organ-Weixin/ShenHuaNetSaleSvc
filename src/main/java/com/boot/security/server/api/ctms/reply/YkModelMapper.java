@@ -130,7 +130,13 @@ public class YkModelMapper {
 		entity.setProvince(model.getProvince());
 		entity.setCity(model.getCity());
 		entity.setHeadImgUrl(model.getAvatarUrl());
-		entity.setCreated(new Date());
+		entity.setLanguage(model.getLanguage());
+		if(model.getOpenId() == null ){
+			entity.setIsActive(0);
+		} else {
+			entity.setIsActive(1);
+			entity.setCreated(new Date());
+		}
 		
 		return entity;
 	}

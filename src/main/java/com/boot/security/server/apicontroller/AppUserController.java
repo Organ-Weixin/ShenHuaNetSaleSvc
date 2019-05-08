@@ -26,6 +26,7 @@ import com.boot.security.server.apicontroller.reply.UserLoginReply.UserLoginResu
 import com.boot.security.server.apicontroller.reply.UserPhoneInput;
 import com.boot.security.server.apicontroller.reply.UserWXResult;
 import com.boot.security.server.model.CinemaMiniProgramAccounts;
+import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
@@ -80,9 +81,7 @@ public class AppUserController {
 			userReply.SetCinemaMiniProgramAccountNotExistReply();
 			return userReply;
 		}
-		//获取sessionKey
-//        String url = "https://api.weixin.qq.com/sns/jscode2session?appid="+miniProgramAccount.getAppId()+"&secret="+miniProgramAccount.getAppSecret()+"&js_code="+userinput.getCode()+"&grant_type=authorization_code";
-//        String returnStr = HttpHelper.httpClientGet(url,null,"UTF-8");
+		//获取sessionKey和openid
         Map<String,Object> param = new LinkedHashMap<String,Object>();
 		param.put("appid", miniProgramAccount.getAppId());
 		param.put("secret", miniProgramAccount.getAppSecret());
@@ -93,31 +92,18 @@ public class AppUserController {
 		String returnStr = HttpHelper.sendPostByUrlConnection(url, param, "UTF-8");
         System.out.println("用户登陆返回："+returnStr);
         Jscode2sessionReply jscode2sessionReply = new Gson().fromJson(returnStr, Jscode2sessionReply.class);
-        
+        if(jscode2sessionReply.getSession_key() == null){
+        	userReply.Status = StatusEnum.Failure.getStatusCode();
+        	userReply.ErrorCode = jscode2sessionReply.getErrcode();
+        	userReply.ErrorMessage = jscode2sessionReply.getErrmsg();
+        	return userReply;
+        }
         //解密微信小程序的登陆加密数据
-//        String wxuserStr = AESHelper.AesDecrypt(userinput.getEncryptedData(), jscode2sessionReply.getSession_key(), userinput.getIv());
-        String Session_key = "qG/ifbssMqCrhkmJy3DQzg==";
-        String wxuserStr = AESHelper.AesDecrypt(userinput.getEncryptedData(), Session_key, userinput.getIv());
+        String wxuserStr = AESHelper.AesDecrypt(userinput.getEncryptedData(), jscode2sessionReply.getSession_key(), userinput.getIv());
         System.out.println("解密------"+wxuserStr);
         UserWXResult wxuser = new Gson().fromJson(wxuserStr, UserWXResult.class);
         
-        UserLoginResult data = new UserLoginResult();
-        data.setCinemaCode(userinput.getCinemaCode());
-//        data.setMobilePhone();
-        data.setOpenID(jscode2sessionReply.getOpenid());
-        data.setNickName(wxuser.getNickName());
-        data.setSex(String.valueOf(wxuser.getGender()));
-        data.setCountry(wxuser.getCountry());
-        data.setProvince(wxuser.getProvince());
-        data.setCity(wxuser.getCity());
-//        data.setHeadlmgUrl();
-//        data.setLanguage();
-//        data.setTotalScore();
-//        data.setCreated(new Date());
-        data.setIsActive("是");
-        userReply.setData(data);
-        userReply.SetSuccessReply();
-        
+        //更新到数据库
         Ticketusers ticketuser = _ticketusersService.getByOpenIdAndCode(jscode2sessionReply.getOpenid(),userinput.getCinemaCode());
         if(ticketuser == null){
         	ticketuser = new Ticketusers();
@@ -126,9 +112,28 @@ public class AppUserController {
         	YkModelMapper.MapToEntity(wxuser, ticketuser);
         	_ticketusersService.save(ticketuser);
         } else {
+        	YkModelMapper.MapToEntity(wxuser, ticketuser);
         	_ticketusersService.update(ticketuser);
         }
+        //返回
+        UserLoginResult data = new UserLoginResult();
+        data.setTicketUserId(ticketuser.getId());
+        data.setCinemaCode(ticketuser.getCinemaCode());
+        data.setMobilePhone(ticketuser.getMobilePhone());
+        data.setOpenID(ticketuser.getOpenID());
+        data.setNickName(ticketuser.getNickName());
+        data.setSex(String.valueOf(ticketuser.getSex()));
+        data.setCountry(ticketuser.getCountry());
+        data.setProvince(ticketuser.getProvince());
+        data.setCity(ticketuser.getCity());
+        data.setHeadlmgUrl(ticketuser.getHeadImgUrl());
+        data.setLanguage(ticketuser.getLanguage());
+        data.setTotalScore(ticketuser.getTotalScore());
+        data.setIsActive(String.valueOf(ticketuser.getIsActive()));
+        data.setCreated(ticketuser.getCreated()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ticketuser.getCreated()));
         
+        userReply.setData(data);
+        userReply.SetSuccessReply();
 		return userReply;
 	}
 	
@@ -158,7 +163,9 @@ public class AppUserController {
 			userReply.SetOpenIDNotExistReply();
 			return userReply;
 		}
+		//返回
 		UserLoginResult data = new UserLoginResult();
+		data.setTicketUserId(ticketuser.getId());
         data.setCinemaCode(ticketuser.getCinemaCode());
         data.setMobilePhone(ticketuser.getMobilePhone());
         data.setOpenID(ticketuser.getOpenID());
@@ -170,8 +177,8 @@ public class AppUserController {
         data.setHeadlmgUrl(ticketuser.getHeadImgUrl());
         data.setLanguage(ticketuser.getLanguage());
         data.setTotalScore(ticketuser.getTotalScore());
+        data.setIsActive(String.valueOf(ticketuser.getIsActive()));
         data.setCreated(ticketuser.getCreated()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ticketuser.getCreated()));
-        data.setIsActive(ticketuser.getIsActive().toString());
         
         userReply.setData(data);
         userReply.SetSuccessReply();

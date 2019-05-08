@@ -9,7 +9,7 @@ public class UserWXResult {
 	private String province;
 	private String country;
 	private String avatarUrl;
-	private String unionId;
+	private String language;
 	private Watermark watermark;
 	
 	public String getOpenId() {
@@ -54,11 +54,11 @@ public class UserWXResult {
 	public void setAvatarUrl(String avatarUrl) {
 		this.avatarUrl = avatarUrl;
 	}
-	public String getUnionId() {
-		return unionId;
+	public String getLanguage() {
+		return language;
 	}
-	public void setUnionId(String unionId) {
-		this.unionId = unionId;
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 	public Watermark getWatermark() {
 		return watermark;
