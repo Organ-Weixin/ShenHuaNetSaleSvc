@@ -28,4 +28,15 @@ public class TicketusersServiceImpl implements TicketusersService{
 		return ticketusersDao.getByOpenId(openid, cinemacode);
 	}
 
+	@Override
+	public Ticketusers getByCinemaCode(String cinemacode) {
+		return ticketusersDao.getByCinemaCode(cinemacode);
+	}
+
+	@Override
+	public Ticketusers getByopenids(String openid) {
+		return ticketusersDao.getByopenids(openid);
+	}
+
+
 }

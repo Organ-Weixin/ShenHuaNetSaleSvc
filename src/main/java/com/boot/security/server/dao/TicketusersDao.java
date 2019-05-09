@@ -20,4 +20,9 @@ public interface TicketusersDao {
     @Select("select * from Ticketusers where CinemaCode=#{cinemacode} and OpenID = #{openid}")
     Ticketusers getByOpenId(@Param("openid") String openid,@Param("cinemacode") String cinemacode);
     
+    @Select("select * from ticketusers t where t.cinemacode = #{cinemacode}")
+    Ticketusers getByCinemaCode(String cinemacode);
+    
+    @Select("select * from ticketusers t where t.openid = #{openid}")
+    Ticketusers getByopenids(String openid);
 }
