@@ -17,6 +17,9 @@ public interface CouponsDao {
 
     @Select("select * from coupons t where t.id = #{id}")
     Coupons getById(Long id);
+    
+    @Select("select * from coupons t where t.couponscode = #{couponscode}")
+    Coupons getByCouponsCode(String couponscode);
 
     @Delete("delete from coupons where id = #{id}")
     int delete(Long id);

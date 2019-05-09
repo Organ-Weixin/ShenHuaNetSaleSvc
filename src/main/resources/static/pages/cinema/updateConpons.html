@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<input type="text" id="Id" name="id" hidden>
+			<input type="text" id="userId" hidden>
+			<input type="text" id="roleId" hidden>
+			<input type="text" id="GroupCode" hidden>
+			<input type="text" id="CinemaCode" hidden>
+			<input type="text" id="TypeCode" hidden>
+			<!-- <input type="text" id="SnackCode" hidden> -->
+			<input type="text" id="Status" hidden>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院编码<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					 <select class="form-control" id="cinemaName" name="cinemaCode">
+					 	<option value="">请选择...</option>
+					 </select>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>上级优惠卷类型</label>
+				<input type="text" id="conpontype" name="typeName" hidden>
+				<div class='col-md-10'>
+					<select class="form-control" id="typename" name="typeCode">
+					 	<option value="">请选择...</option>
+					 </select>
+				</div>
+			</div>
+			<div class='form-group' id="types">
+				<input type="text"  name="snackCode" id="snackList" hidden>
+				<label class='col-md-2 control-label'>影片/套餐</label>
+				<div class='col-md-10' style="float:left;width:800px;">
+					<select name="goods" class="form-control" id="Snacks">
+						<option value="">请选择...</option>
+					 </select>
+				</div>
+				<button style="margin-left:20px;margin-top:3px" id="addType">+</button>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>优惠券名称</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='优惠券名称' type='text' name='title' id='Title' data-bv-notempty='true' data-bv-notempty-message='Title 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>优惠金额</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='优惠金额' type='text' name='price' id='Price' >
+				</div>
+			</div>
+			<!-- <div class='form-group'>
+				<label class='col-md-2 control-label'>SnackCode</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='SnackCode' type='text' name='SnackCode' id='SnackCode' data-bv-notempty='true' data-bv-notempty-message='SnackCode 不能为空'>
+				</div>
+			</div> -->
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>有效期</label>
+				<div class='col-md-10'>
+					<input type="text" class="form-control" placeholder="有效时间" id="ValidityDate" name="validityDate">
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>是否使用</label>
+				<div class='col-md-10'>
+					<select class="form-control" id="StatusSelect" name="status">
+						<option value="0">非法状态</option>
+						<option value="1">全部</option>
+						<option value="2">已使用</option>
+						<option value="3">未使用</option>
+						<option value="4">已领取</option>
+					</select>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>使用时间</label>
+				<div class='col-md-10'>
+					<input type="text" class="form-control" placeholder="使用时间" id="UseDate" name="useDate">
+				</div>
+			</div>
+
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" id="goback">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="getGoodList()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+	
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript">
+	window.onload=function(){
+		//获取影院列表
+		getCinema();
+		function getCinema(){
+			$.ajax({
+				url:'/users/getCinemaName',
+				data:{"id":$("#userId").val(),"roleId":$("#roleId").val()},
+				type:'post',
+				success:function(data){
+					for(var i=0; i<data.length; i++){
+						var option = "<option value="+data[i].cinemaCode+">"+data[i].cinemaName+"</option>";
+						$("#cinemaName").append(option);
+					}
+					$("#cinemaName").val($("#CinemaCode").val());
+				}
+			});
+		}
+		
+		//获取小吃列表
+		getSnacks();
+		function getSnacks(){
+			$.ajax({
+				url:'/snackss/getByCinemaCode?cinemacode='+$("#CinemaCode").val(),
+				type:'post',
+				success:function(data){
+					for(var i=0; i<data.length; i++){
+						var option = "<option value="+data[i].snackCode+">"+data[i].snackName+"</option>";
+						$("#Snacks").append(option);
+					}
+					var snackArray = new Array();
+					snackArray = $("#snackList").val().split(',');
+					var select = "<div class = 'col-md-10 ss' style='float:left;width:1000px;margin-left:231px;margin-top:10px'>";
+					select = select +"<select name='goods' class='form-control' style='width:775px;float:left;'>";
+					select = select +""+$("#Snacks").html()+"";
+					select = select +"</select>";
+					select = select +"<button style='margin-left:35px;margin-top:5px;float:left' class='delType'>x</button>";
+					select = select +"</div>";
+					for(var i=0; i<snackArray.length-1;i++){
+						$("#types").append(select);
+					}
+					for(var i=0;i<snackArray.length;i++){
+						$("select[name=goods]").eq(i).val(snackArray[i]);
+					}
+				}
+			});
+		} 
+		//获取影片列表
+		getFilms();
+		function getFilms(){
+			$.ajax({
+				url:'/sessioninfos/getFilmsByCinemaCode?cinemacode='+$("#CinemaCode").val(),
+				type:'post',
+				success:function(data){
+					for(var i=0; i<data.length; i++){
+						var option = "<option value="+data[i].filmCode+">"+data[i].filmName+"</option>";
+						$("#Snacks").append(option); 
+					}
+					var snackArray = new Array();
+					snackArray = $("#snackList").val().split(',');
+					var select = "<div class = 'col-md-10 ss' style='float:left;width:1000px;margin-left:231px;margin-top:10px'>";
+					select = select +"<select name='goods' class='form-control' style='width:775px;float:left;'>";
+					select = select +""+$("#Snacks").html()+"";
+					select = select +"</select>";
+					select = select +"<button style='margin-left:35px;margin-top:5px;float:left' class='delType'>x</button>";
+					select = select +"</div>";
+					for(var i=0; i<snackArray.length-1;i++){
+						$("#types").append(select);
+					}
+					for(var i=0;i<snackArray.length;i++){
+						$("select[name=goods]").eq(i).val(snackArray[i]);
+					}
+				}
+			});
+		}
+		
+		$("#StatusSelect").val($("#Status").val());
+		
+			$("#typename").blur(function(){
+				$("#conpontype").val($(this).find("option:selected").text());
+				if($("#typename").val()=="05"||$("#typename").val()=="06"){
+					$("select[name=goods]").val("");
+					$("#types").css("display","none");
+				}
+				if($("#typename").val()=="04"){
+					$("#types").css("display","block");
+					for(var i=0;i<$("select[name=goods]").length;i++){
+						$("select[name=goods]").eq(i+1).remove();
+						$(".delType").eq(i).remove();
+					} 
+					$("#Snacks").html('"<option value="">请选择...</option>"');
+					$("#Snacks").val("");
+					$("#snackList").val("");
+					getFilms();
+				}
+				if($("#typename").val()=="07"){
+					$("#types").css("display","block");
+					for(var i=0;i<$("select[name=goods]").length;i++){
+						$("select[name=goods]").eq(i+1).remove();
+						$(".delType").eq(i).remove();
+					} 
+					$("#Snacks").html('"<option value="">请选择...</option>"');
+					$("#Snacks").val("");
+					$("#snackList").val("");
+					getSnacks();
+				}
+			});
+			
+	}
+//////////////////	window.onload
+	
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		    var laydate = layui.laydate;
+		    laydate.render({
+		       elem: '#ValidityDate',
+		       type: 'datetime',
+		       min: 'nowTime',
+		    });
+		    laydate.render({
+			   elem: '#UseDate',
+			   type: 'datetime',
+			});
+		});
+		
+		
+		function getGoodList(){
+			var goodCodes = "";
+			for(var i=0;i<$("select[name=goods]").length;i++){
+				goodCodes += $("select[name=goods]").eq(i).val()+",";
+			}
+			var goodList = goodCodes.substring(0,goodCodes.length-1).split(',');
+			var new_arr=[];
+			for(var i=0;i<goodList.length;i++){
+				var items=goodList[i];
+				if($.inArray(items,new_arr)==-1) {
+				　　　　new_arr.push(items);
+				　　}
+			}
+			$("#snackList").val(new_arr);
+			if($("#snackList").val()!=null&&$("#snackList").val()!=""&&$("#typename").val()!=null&&$("#typename").val()!=""
+					&&$("#cinemaName").val()!=null&&$("#cinemaName").val()!=""){
+				update();
+			}else{
+				alert("信息未完善！");
+			}
+		}
+		
+		$("#goback").click(function(){
+			window.location.href="conponsList.html?groupCode="+$("#GroupCode").val();
+		});
+		
+		
+		initUser();
+		function initUser(){
+			$.ajax({
+				type : 'get',
+				url : '/users/current',
+				async : false,
+				success : function(data) {
+					$("#userId").val(data.id);
+					$("#roleId").val(data.roleId);
+				}
+			});
+		} 
+		
+		//上级优惠券类型
+		getConponsType();
+		function getConponsType(){
+			$.ajax({
+				url:'/conpontypes/getConponsType',
+				type:'post',
+				success:function(data){
+					for(var i=0; i<data.length;i++){
+						var option = "<option value="+data[i].typeCode+">"+data[i].typeName+"</option>";
+						$("#typename").append(option);
+					}
+					$("#typename").val($("#TypeCode").val());
+				}
+			});
+		}
+		 $("#addType").click(function(){
+			var select = "<div class = 'col-md-10 ss' style='float:left;width:1000px;margin-left:231px;margin-top:10px'>";
+			select = select +"<select name='goods' class='form-control' style='width:775px;float:left;'>";
+			select = select +""+$("#Snacks").html()+"";
+			select = select +"</select>";
+			select = select +"<button style='margin-left:35px;margin-top:5px;float:left' class='delType'>x</button>";
+			select = select +"</div>";
+			$("#types").append(select);
+		}); 
+		
+		 $("#types").on('click','.col-md-10 .delType',function(){
+			 $(this).parent().remove();
+		 });
+		
+		 
+		initData();
+		
+		function initData(){
+			var id = getUrlParam("id");
+			if(id != ""){
+				$.ajax({
+					type : 'get',
+					url : '/conponss/'+id,
+					async : false,
+					success : function(data) {
+						$('#Id').val(data.id);
+						$('#TypeCode').val(data.typeCode);
+						$('#conpontype').val(data.typeName);
+						$('#CinemaCode').val(data.cinemaCode);
+						$('#GroupCode').val(data.groupCode);
+						$('#OpenID').val(data.openID);
+						$('#Price').val(data.price);
+						$('#ConponCode').val(data.conponCode);
+						$('#snackList').val(data.snackCode);
+						$('#ValidityDate').val(data.validityDate);
+						$('#ReceivedDate').val(data.receivedDate);
+						$('#Status').val(data.status);
+						$('#UseDate').val(data.useDate);
+						$('#Created').val(data.created);
+						$('#Updated').val(data.updated);
+						$('#Deleted').val(data.deleted);
+						$('#Title').val(data.title);
+						$('#Remark').val(data.remark);
+						
+					}
+				});
+			}
+		}
+
+		function update() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var formdata = $("#form").serializeObject();
+
+			$.ajax({
+				type : 'put',
+				url : '/conponss',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("修改成功", {shift: -1, time: 1000}, function(){
+                        location.href = "conponsList.html?groupCode="+$("#GroupCode").val();
+                    });
+				}
+			});
+		}
+		
+	</script>
+</body>
+</html>

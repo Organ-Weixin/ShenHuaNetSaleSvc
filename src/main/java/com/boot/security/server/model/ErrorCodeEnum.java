@@ -25,7 +25,9 @@ public enum ErrorCodeEnum {
 	CinemaMiniProgramAccountNotExist("影院小程序APPID不存在或不合法!","10000020"),
 	OpenIDNotExist("用户OpenID不存在或不合法!","10000021"),
 	VerifyCodeNotMatch("用户手机验证码不匹配！","10000022"),
-	SentMessageFailure("短信发送失败！","10000023");
+	SentMessageFailure("短信发送失败！","10000023"),
+	CinemaPaySettingInvalid("影院支付配置不存在或不合法！","10000024"),
+	CouponsNotExistOrUsed("优惠券不存在或已使用","10000025");
 	
 	private String Message;
 	private String Code;

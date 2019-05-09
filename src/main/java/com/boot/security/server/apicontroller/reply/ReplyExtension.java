@@ -1,6 +1,9 @@
 package com.boot.security.server.apicontroller.reply;
 
+import java.util.List;
+
 import com.boot.security.server.api.ctms.reply.Dy1905GetMemberCardByMobileReply;
+import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson.PrePayOrderQueryJsonSeat;
 
 public class ReplyExtension {
 	
@@ -523,6 +526,31 @@ public class ReplyExtension {
 			}
 			if (Status==null || "".equals(Status)) {
 				reply.SetNecessaryParamMissReply("Status");
+				return false;
+			}
+			return true;
+		}
+		
+		public static boolean RequestInfoGuard(PrePayParametersReply reply, String Username, String Password,
+				String CinemaCode, String OrderCode, List<PrePayOrderQueryJsonSeat> Seats) {
+			if (Username==null||"".equals(Username)) {
+				reply.SetNecessaryParamMissReply("Username");
+				return false;
+			}
+			if (Password==null||"".equals(Password)) {
+				reply.SetNecessaryParamMissReply("Password");
+				return false;
+			}
+			if (CinemaCode==null||"".equals(CinemaCode)) {
+				reply.SetNecessaryParamMissReply("CinemaCode");
+				return false;
+			}
+			if (OrderCode==null||"".equals(OrderCode)) {
+				reply.SetNecessaryParamMissReply("OrderCode");
+				return false;
+			}
+			if (Seats.size() <= 0) {
+				reply.SetNecessaryParamMissReply("Seats");
 				return false;
 			}
 			return true;

@@ -132,4 +132,12 @@ public class OrderServiceImpl implements OrderService{
 		return ordersDao.getOrdersByCreated(userid, cinemaCode, startDate, endDate);
 	}
 
+	@Override
+	public OrderView getOrderWidthId(Long id) {
+		OrderView orderview=new OrderView();
+		orderview.setOrderBaseInfo(ordersDao.getById(id));
+		orderview.setOrderSeatDetails(orderseatdetailssDao.getByOrderId(orderview.getOrderBaseInfo().getId()));
+		return orderview;
+	}
+
 }

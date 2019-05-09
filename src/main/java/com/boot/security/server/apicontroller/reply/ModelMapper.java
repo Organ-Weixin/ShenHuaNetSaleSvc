@@ -3,9 +3,15 @@ package com.boot.security.server.apicontroller.reply;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import com.boot.security.server.api.core.LockSeatQueryXml.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat;
+import com.boot.security.server.api.core.SubmitOrderQueryXml.SubmitOrderQueryXmlOrder.SubmitOrderQueryXmlSeat;
+import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson.PrePayOrderQueryJsonSeat;
 import com.boot.security.server.apicontroller.reply.QueryFilmReply.QueryFilmReplyFilm;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.QueryMemberCardByPhoneReplyMemberCardByPhone;
+import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.QueryMemberCardByPhoneReplyMemberCardByPhone.QueryMemberCardByPhoneReplyPhone;
 import com.boot.security.server.apicontroller.reply.QueryScreenInfoReply.QueryScreensReplyScreenInfo;
 import com.boot.security.server.apicontroller.reply.QueryScreenSeatsReply.QueryScreenSeatsReplyScreenSeats;
 import com.boot.security.server.apicontroller.reply.QueryScreensReply.QueryScreensReplyScreens.QueryScreensReplyScreen;
@@ -14,6 +20,8 @@ import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.Filmcomments;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Membercard;
+import com.boot.security.server.model.OrderView;
+import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
 import com.boot.security.server.model.Sessioninfo;
@@ -162,6 +170,7 @@ public class ModelMapper {
 		orderSession.setScreenType(entity.getDimensional());
 		return orderSession;
 	}
+	
 	public static QueryFilmCommentsReply.QueryFilmCommentsBean.QueryFilmCommentBean MapForm(QueryFilmCommentsReply.QueryFilmCommentsBean.QueryFilmCommentBean filmcomment,Filmcomments entity){
 		filmcomment.setCommentId(entity.getId());
 		filmcomment.setFilmCode(entity.getFilmCode());
@@ -185,4 +194,18 @@ public class ModelMapper {
 		return userConpons;
 	}
 	
+	public static OrderView MapFrom(OrderView order, PrePayOrderQueryJson QueryJson)
+    {
+        order.getOrderBaseInfo().setTotalConponPrice(QueryJson.getSeats().stream().mapToDouble(PrePayOrderQueryJsonSeat::getReductionPrice).sum());
+        for(Orderseatdetails seat:order.getOrderSeatDetails()){
+        	List<PrePayOrderQueryJsonSeat> seatinfo = QueryJson.getSeats().stream()
+					.filter((PrePayOrderQueryJsonSeat s) -> seat.getSeatCode().equals(s.getSeatCode()))
+					.collect(Collectors.toList());
+        	if(seatinfo!=null){
+        		seat.setConponCode(seatinfo.get(0).getCouponsCode());
+        		seat.setConponPrice(seatinfo.get(0).getReductionPrice());
+        	}
+        }
+        return order;
+    }
 }

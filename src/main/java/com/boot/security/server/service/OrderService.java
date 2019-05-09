@@ -49,4 +49,6 @@ public interface OrderService {
 	int Update(OrderView orderview);
 	@Transactional(propagation = Propagation.REQUIRED)
 	OrderView getOrderWidthPrintNo(String cinemacode,String printno,String verifycode);
+	@Transactional(propagation = Propagation.REQUIRED)
+	OrderView getOrderWidthId(Long id);
 }	

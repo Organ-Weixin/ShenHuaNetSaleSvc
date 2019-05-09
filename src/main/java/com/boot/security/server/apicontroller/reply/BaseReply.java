@@ -1,5 +1,6 @@
 package com.boot.security.server.apicontroller.reply;
 
+import com.boot.security.server.api.ctms.reply.CTMSBaseReply;
 import com.boot.security.server.model.ErrorCodeEnum;
 import com.boot.security.server.model.StatusEnum;
 
@@ -201,7 +202,19 @@ public class BaseReply {
         ErrorCode = ErrorCodeEnum.FilmCodeNotExist.getCode();
         ErrorMessage = ErrorCodeEnum.FilmCodeNotExist.getMessage();
     }
-    /// <summary>
+    public void SetCinemaPaySettingInvalidReply()
+    {
+        Status = StatusEnum.Failure.getStatusCode();
+        ErrorCode = ErrorCodeEnum.CinemaPaySettingInvalid.getCode();
+        ErrorMessage = ErrorCodeEnum.CinemaPaySettingInvalid.getMessage();
+    }
+    public void SetCouponsNotExistOrUsedReply()
+    {
+        Status = StatusEnum.Failure.getStatusCode();
+        ErrorCode = ErrorCodeEnum.CouponsNotExistOrUsed.getCode();
+        ErrorMessage = ErrorCodeEnum.CouponsNotExistOrUsed.getMessage();
+    }
+  /// <summary>
     /// 影院小程序APPID不存在或不合法
     /// </summary>
     public void SetCinemaMiniProgramAccountNotExistReply()
