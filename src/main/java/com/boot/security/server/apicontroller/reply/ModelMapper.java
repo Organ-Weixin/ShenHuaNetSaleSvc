@@ -6,11 +6,12 @@ import java.util.ArrayList;
 
 import com.boot.security.server.apicontroller.reply.QueryFilmReply.QueryFilmReplyFilm;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.QueryMemberCardByPhoneReplyMemberCardByPhone;
-import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.QueryMemberCardByPhoneReplyMemberCardByPhone.QueryMemberCardByPhoneReplyPhone;
 import com.boot.security.server.apicontroller.reply.QueryScreenInfoReply.QueryScreensReplyScreenInfo;
 import com.boot.security.server.apicontroller.reply.QueryScreenSeatsReply.QueryScreenSeatsReplyScreenSeats;
 import com.boot.security.server.apicontroller.reply.QueryScreensReply.QueryScreensReplyScreens.QueryScreensReplyScreen;
 import com.boot.security.server.apicontroller.reply.QuerySessionsReply.QuerySessionsReplySessions.QuerySessionsReplySession.QuerySessionsReplyFilms.QuerySessionsReplyFilm;
+import com.boot.security.server.model.Coupons;
+import com.boot.security.server.model.Filmcomments;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Screeninfo;
@@ -161,4 +162,27 @@ public class ModelMapper {
 		orderSession.setScreenType(entity.getDimensional());
 		return orderSession;
 	}
+	public static QueryFilmCommentsReply.QueryFilmCommentsBean.QueryFilmCommentBean MapForm(QueryFilmCommentsReply.QueryFilmCommentsBean.QueryFilmCommentBean filmcomment,Filmcomments entity){
+		filmcomment.setCommentId(entity.getId());
+		filmcomment.setFilmCode(entity.getFilmCode());
+		filmcomment.setFilmName(entity.getFilmName());
+		filmcomment.setScore(entity.getScore());
+		filmcomment.setCommentContent(entity.getCommentContent());
+		filmcomment.setOpenID(entity.getOpenID());;
+		filmcomment.setCreated(entity.getCreated());
+		return filmcomment;
+		
+	}
+	public static QueryUserConponsPagedReply.QueryUserConponsPagedBeans.QueryUserConponsPagedBean MapForm(QueryUserConponsPagedReply.QueryUserConponsPagedBeans.QueryUserConponsPagedBean userConpons,Coupons entity){
+		userConpons.setConponId(entity.getId());
+		userConpons.setGroupCode(entity.getGroupCode());
+		userConpons.setOpenID(entity.getOpenID());
+		userConpons.setConponCode(entity.getCouponsCode());
+		userConpons.setValidityDate(String.valueOf(entity.getExpireDate()));
+		userConpons.setStatus(String.valueOf(entity.getStatus()));
+		userConpons.setUseDate(String.valueOf(entity.getUsedDate()));
+		userConpons.setReceivedDate(String.valueOf(entity.getReceiveDate()));
+		return userConpons;
+	}
+	
 }

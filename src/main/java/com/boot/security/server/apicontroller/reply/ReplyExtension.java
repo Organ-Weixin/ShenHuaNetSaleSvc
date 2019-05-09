@@ -371,7 +371,7 @@ public class ReplyExtension {
 		return true;
 		
 	}
-	//
+	//获取订单场次信息
 	public static boolean RequestInfoGuard(QueryOrderSessionReply reply, String Username, String Password, String CinemaCode,String SessionCode)
     {
         if (Username == null || "".equals(Username))
@@ -451,4 +451,80 @@ public class ReplyExtension {
         }
         return true;
     }	
+	//region获取影片评论信息 QueryFilmCommentsReply
+	public static boolean RequestInfoGuard(QueryFilmCommentsReply reply, String Username, String Password,String CinemaCode, String FilmCode) {
+		if (Username==null || "".equals(Username)) {
+			reply.SetNecessaryParamMissReply("UserName");
+			return false;
+		}
+		if (Password==null || "".equals(Password)) {
+			reply.SetNecessaryParamMissReply("Password");
+			return false;
+		}
+		if (CinemaCode==null || "".equals(CinemaCode)) {
+			reply.SetNecessaryParamMissReply("CinemaCode");
+			return false;
+		}
+		if (FilmCode==null || "".equals(FilmCode)) {
+			reply.SetNecessaryParamMissReply("FilmCode");
+			return false;
+		}
+		return true;
+	}
+	//region   提交影片评论       SubmitFilmCommentReply
+	public static boolean RequestInfoGuard(SubmitFilmCommentReply reply,String Username, String Password, String FilmCode,String FilmName,Double Score,String CommentContent,String OpenID){
+		if (Username==null || "".equals(Username)) {
+			reply.SetNecessaryParamMissReply("UserName");
+			return false;
+		}
+		if (Password==null || "".equals(Password)) {
+			reply.SetNecessaryParamMissReply("Password");
+			return false;
+		}
+		if (FilmCode==null || "".equals(FilmCode)) {
+			reply.SetNecessaryParamMissReply("FilmCode");
+			return false;
+		}
+		if (OpenID==null || "".equals(OpenID)) {
+			reply.SetNecessaryParamMissReply("OpenID");
+			return false;
+		}
+		if (Score==null || "".equals(Score)) {
+			reply.SetNecessaryParamMissReply("Score");
+			return false;
+		}
+		if (CommentContent==null || "".equals(CommentContent)) {
+			reply.SetNecessaryParamMissReply("CommentContent");
+			return false;
+		}
+		if (FilmName==null || "".equals(FilmName)) {
+			reply.SetNecessaryParamMissReply("FilmName");
+			return false;
+		}
+		return true;
+	}
+	//region   获取用户优惠券(分页)       SubmitFilmCommentReply 
+		public static boolean RequestInfoGuard(QueryUserConponsPagedReply reply,String Username,String Password,String CinemaCode,String OpenID,String Status){
+			if (Username==null || "".equals(Username)) {
+				reply.SetNecessaryParamMissReply("UserName");
+				return false;
+			}
+			if (Password==null || "".equals(Password)) {
+				reply.SetNecessaryParamMissReply("Password");
+				return false;
+			}
+			if (CinemaCode==null || "".equals(CinemaCode)) {
+				reply.SetNecessaryParamMissReply("CinemaCode");
+				return false;
+			}
+			if (OpenID==null || "".equals(OpenID)) {
+				reply.SetNecessaryParamMissReply("OpenID");
+				return false;
+			}
+			if (Status==null || "".equals(Status)) {
+				reply.SetNecessaryParamMissReply("Status");
+				return false;
+			}
+			return true;
+		}
 }
