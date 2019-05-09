@@ -1541,7 +1541,7 @@ public class YkInterface implements ICTMSInterface {
 		String sign = createSign(userCinema.getDefaultPassword(), param);
 		String getGoodsResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
 				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
-		System.out.println("查询卖品返回："+getGoodsResult);
+//		System.out.println("查询卖品返回："+getGoodsResult);
 		
 		Gson gson = new Gson();
 		YkGetGoodsResult ykResult = gson.fromJson(getGoodsResult, YkGetGoodsResult.class);
@@ -1552,6 +1552,10 @@ public class YkInterface implements ICTMSInterface {
 					Goods newGoods = new Goods();
 					newGoods.setCinemaCode(userCinema.getCinemaCode());
 					newGoods.setUserId(userCinema.getUserId());
+					newGoods.setIsRecommand(0); 	//接口无返回，默认0
+					newGoods.setStockCount(0);		//接口无返回，默认0
+					newGoods.setShowSeqNo(0);		//接口无返回，默认0
+					newGoods.setGoodsStatus(0); 	//接口无返回，默认0
 					YkModelMapper.MapToEntity(goods, newGoods);
 					goodslist.add(newGoods);
 				}
@@ -1641,7 +1645,7 @@ public class YkInterface implements ICTMSInterface {
 		String sign = createSign(userCinema.getDefaultPassword(), param);
 		String confirmGoodsOrderResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
 				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
-		System.out.println("确认卖品订单返回："+confirmGoodsOrderResult);
+//		System.out.println("确认卖品订单返回："+confirmGoodsOrderResult);
 		
 		Gson gson = new Gson();
 		YkConfirmGoodsOrderResult ykResult = gson.fromJson(confirmGoodsOrderResult, YkConfirmGoodsOrderResult.class);
@@ -1686,7 +1690,7 @@ public class YkInterface implements ICTMSInterface {
 		String sign = createSign(userCinema.getDefaultPassword(), param);
 		String getGoodsOrderInfoResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
 				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
-		System.out.println("查询卖品订单返回："+getGoodsOrderInfoResult);
+//		System.out.println("查询卖品订单返回："+getGoodsOrderInfoResult);
 		
 		Gson gson = new Gson();
 		YkGetGoodsOrderInfoResult ykResult = gson.fromJson(getGoodsOrderInfoResult, YkGetGoodsOrderInfoResult.class);
@@ -1730,7 +1734,7 @@ public class YkInterface implements ICTMSInterface {
 		String sign = createSign(userCinema.getDefaultPassword(), param);
 		String refundGoodsOrderResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
 				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
-		System.out.println("退卖品订单返回："+refundGoodsOrderResult);
+//		System.out.println("退卖品订单返回："+refundGoodsOrderResult);
 		
 		Gson gson = new Gson();
 		YkRefundGoodsOrderResult ykResult = gson.fromJson(refundGoodsOrderResult, YkRefundGoodsOrderResult.class);

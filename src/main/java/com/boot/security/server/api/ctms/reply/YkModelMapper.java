@@ -105,9 +105,6 @@ public class YkModelMapper {
 		entity.setSettlePrice(new Double(model.getSettlePrice()));
 		entity.setGoodsPic(model.getGoodsPicUrl());
 		entity.setGoodsDesc(model.getDesc());
-		entity.setIsRecommand(0); 	//接口无返回，默认0
-		entity.setStockCount(0);	//接口无返回，默认0
-		entity.setShowSeqNo(0);		//接口无返回，默认0
 		if("Y".equals(model.getIsDiscount())){	//是否享受会员卡优惠
 			entity.setIsDiscount(1);
 		} else {

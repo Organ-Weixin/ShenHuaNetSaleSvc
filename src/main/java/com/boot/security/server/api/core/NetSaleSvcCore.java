@@ -2020,7 +2020,7 @@ ScreenType,ListingPrice,LowestPrice))
 		}
 		// 验证订单是否存在
 		GoodsOrderView order = _goodsOrderService.getWithOrderCode(CinemaCode, OrderCode);
-		if (order == null) {
+		if (order.getOrderBaseInfo() == null) {
 			queryGoodsOrderReply.SetOrderNotExistReply();
 			return queryGoodsOrderReply;
 		}
@@ -2104,7 +2104,7 @@ ScreenType,ListingPrice,LowestPrice))
 			if (StatusEnum.Success.equals(CTMSReply.Status)) {
 				reply.setOrder(new RefundGoodsReplyOrder());
 				reply.getOrder().setOrderCode(order.getOrderBaseInfo().getOrderCode());
-				reply.getOrder().setRefundStatus(order.getOrderBaseInfo().getOrderStatus() == 7? "Yes" : "No");
+				reply.getOrder().setRefundStatus(order.getOrderBaseInfo().getOrderStatus() == 8? "Yes" : "No");
 				reply.getOrder().setRefundTime(reply.getOrder().getRefundStatus() == "Yes"
 						? order.getOrderBaseInfo().getRefundTime() == null ? ""
 								: new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
