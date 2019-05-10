@@ -17,8 +17,10 @@ import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
+import com.boot.security.server.utils.UserUtil;
 import com.boot.security.server.dao.CinemaDao;
 import com.boot.security.server.model.Cinema;
+import com.boot.security.server.model.SysUser;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -76,9 +78,11 @@ public class CinemaController {
     }
     
     @GetMapping("/getCinemas")
-    @ApiOperation(value = "获取未删除影院")
+    @ApiOperation(value = "获取登陆用户影院")
     public List<Cinema> getCinemas() {
+    	//获取当前登陆人信息
+    	SysUser sysuser = UserUtil.getLoginUser();
     	
-    	return cinemaDao.getCinemas();
+    	return cinemaDao.getCinemasByUser(sysuser.getRoleId(),sysuser.getUsername());
     }
 }

@@ -37,7 +37,6 @@ public interface CinemaDao {
 
     List<Cinema> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
     
-    //获取未删除的影院
-    @Select("select * from cinema t where t.IsDel= 0")
-    List<Cinema> getCinemas();
+    //获取当前登陆用户的影院
+    List<Cinema> getCinemasByUser(@Param("roleId") Long roleId, @Param("username") String username);
 }

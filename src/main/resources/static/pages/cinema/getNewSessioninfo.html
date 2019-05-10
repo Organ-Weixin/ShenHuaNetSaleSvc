@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<div class="box-header with-border">
+                <h3 class="box-title">基础信息</h3>
+            </div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院编码：</label>
+				<div class='col-md-10'>
+					<select class="form-control" name='cinemaCode' id='CinemaCode' data-bv-notempty='true' data-bv-notempty-message='影院 不能为空'>
+						<option value="">请选择影院...</option>
+					</select>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>开始时间：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='beginDate' id='BeginDate' data-bv-notempty='true' data-bv-notempty-message='开始时间不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>结束时间：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='endDate' id='EndDate' data-bv-notempty='true' data-bv-notempty-message='结束时间不能为空'>
+				</div>
+			</div>
+
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+						<button class="btn btn-primary" type="submit" onclick="QuerySession()">
+							<i class="fa fa-save"></i> 重新获取
+						</button>
+						<button class="btn btn-primary" onclick="location.href='sessioninfoList.html'">返回</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		    var laydate = layui.laydate;
+		    laydate.render({
+		       elem: '#BeginDate'
+		    });
+		    laydate.render({
+		       elem: '#EndDate'
+		    });
+		});
+		
+		function QuerySession() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var formdata = $("#form").serializeObject();
+			alert(JSON.stringify(formdata));
+			$.ajax({
+				type : 'post',
+				url : '/sessioninfoviews/getNewSession',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					if("Success" == data.Status){
+						layer.msg("获取成功", {shift: -1, time: 1000}, function(){
+	                        location.href = "sessioninfoList.html";
+	                    });
+					} else {
+						alert(data.ErrorMessage);
+					}
+					
+				}
+			});
+		}
+		
+		//获取影院
+		getCinema();
+		function getCinema(){
+			$.ajax({
+		        type:"get",
+		        url:"/cinemas/getCinemas",
+		        success:function(data){
+					for(var i=0; i<data.length;i++){
+						var option = "<option value="+data[i].code+">"+data[i].name+"</option>";
+						$("#CinemaCode").append(option);
+					}
+		        },
+		        error:function(){
+		            J.alert('Error');
+		        }
+		    })
+		}
+		
+	</script>
+</body>
+</html>

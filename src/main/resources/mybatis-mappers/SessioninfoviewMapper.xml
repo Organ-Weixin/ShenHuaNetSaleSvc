@@ -11,9 +11,6 @@
 			<if test="params.CCode != null and params.CCode != ''">
 				and CinemaCode = #{params.CCode} 
 			</if>
-			<if test="params.ScreenCode != null and params.ScreenCode != ''">
-				and ScreenCode = #{params.ScreenCode} 
-			</if>
 			<if test="params.Name != null and params.Name != ''">
 				and CinemaName = #{params.Name} 
 			</if>
@@ -23,9 +20,6 @@
 			<if test="params.FilmName != null and params.FilmName != ''">
 				and FilmName like concat('%', #{params.FilmName}, '%')  
 			</if>
-			<if test="params.SName != null and params.SName != ''">
-				and SName = #{params.SName} 
-			</if>
 			<if test="params.StartTime != null and params.StartTime != ''">
 				and StartTime like concat('%', #{params.StartTime}, '%') 
 			</if>
@@ -34,17 +28,26 @@
 	</sql>
 
 	<select id="count" resultType="int">
-		select count(1) from sessioninfoview t
+		select count(1) from (SELECT * FROM sessioninfoview <include refid="whereByroleId" />) t
 		<include refid="where" />
 	</select>
 
 	<select id="list" resultType="Sessioninfoview">
-		SELECT * FROM sessioninfoview t 
+		SELECT * FROM (SELECT * FROM sessioninfoview <include refid="whereByroleId" />)t
 		<include refid="where" />
 		${params.orderBy} 
 		limit #{offset}, #{limit}
 	</select>
-
+	
+	<sql id="whereByroleId">
+		<where>
+			<if test="params.roleId == 4 ">
+				CinemaCode in (select CinemaCode from sys_user sy,(select id from sys_user where username = #{params.username})s
+											where  sy.roleId=4 and (sy.username = #{params.username}  or  sy.createUserId = s.id)) 
+			</if>
+		</where>
+	</sql>
+			
 	<update id="update">
 		update sessioninfoview t
 		<set>
