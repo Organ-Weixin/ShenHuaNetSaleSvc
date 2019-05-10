@@ -1,5 +1,7 @@
 package com.boot.security.server.service.impl;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +32,22 @@ public class CouponsServiceImpl implements CouponsService{
 
 	@Override
 	public int deleteByGroupCode(String groupcode) {
-		// TODO Auto-generated method stub
 		return couponsdao.deleteByGroupCode(groupcode);
+	}
+
+	@Override
+	public Coupons getById(Long id) {
+		return couponsdao.getById(id);
+	}
+
+	@Override
+	public List<Coupons> getByOpenID(String openid) {
+		return couponsdao.getByOpenID(openid);
+	}
+
+	@Override
+	public Coupons getByGroupCode(String groupcode) {
+		return couponsdao.getByCouponsCode(groupcode);
 	}
 
 }

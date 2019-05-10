@@ -182,17 +182,7 @@ public class ModelMapper {
 		return filmcomment;
 		
 	}
-	public static QueryUserConponsPagedReply.QueryUserConponsPagedBeans.QueryUserConponsPagedBean MapForm(QueryUserConponsPagedReply.QueryUserConponsPagedBeans.QueryUserConponsPagedBean userConpons,Coupons entity){
-		userConpons.setConponId(entity.getId());
-		userConpons.setGroupCode(entity.getGroupCode());
-		userConpons.setOpenID(entity.getOpenID());
-		userConpons.setConponCode(entity.getCouponsCode());
-		userConpons.setValidityDate(String.valueOf(entity.getExpireDate()));
-		userConpons.setStatus(String.valueOf(entity.getStatus()));
-		userConpons.setUseDate(String.valueOf(entity.getUsedDate()));
-		userConpons.setReceivedDate(String.valueOf(entity.getReceiveDate()));
-		return userConpons;
-	}
+
 	
 	public static OrderView MapFrom(OrderView order, PrePayOrderQueryJson QueryJson)
     {
@@ -208,4 +198,16 @@ public class ModelMapper {
         }
         return order;
     }
+	public static QueryUserConponsReply.QueryUserConponsBeans.QueryUserConponsBean MapForm(QueryUserConponsReply.QueryUserConponsBeans.QueryUserConponsBean userConpon,Coupons entity){
+		userConpon.setConponId(entity.getId());
+		userConpon.setGroupCode(entity.getGroupCode());
+		userConpon.setOpenID(entity.getOpenID());
+		userConpon.setConponCode(entity.getCouponsCode());
+		userConpon.setValidityDate(String.valueOf(entity.getExpireDate()));
+		userConpon.setStatus(String.valueOf(entity.getStatus()));
+		userConpon.setUseDate(String.valueOf(entity.getUsedDate()));
+		userConpon.setReceivedDate(String.valueOf(entity.getReceiveDate()));
+		return userConpon;
+		
+	}
 }

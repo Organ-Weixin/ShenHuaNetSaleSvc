@@ -506,30 +506,6 @@ public class ReplyExtension {
 		}
 		return true;
 	}
-	//region   获取用户优惠券(分页)       SubmitFilmCommentReply 
-		public static boolean RequestInfoGuard(QueryUserConponsPagedReply reply,String Username,String Password,String CinemaCode,String OpenID,String Status){
-			if (Username==null || "".equals(Username)) {
-				reply.SetNecessaryParamMissReply("UserName");
-				return false;
-			}
-			if (Password==null || "".equals(Password)) {
-				reply.SetNecessaryParamMissReply("Password");
-				return false;
-			}
-			if (CinemaCode==null || "".equals(CinemaCode)) {
-				reply.SetNecessaryParamMissReply("CinemaCode");
-				return false;
-			}
-			if (OpenID==null || "".equals(OpenID)) {
-				reply.SetNecessaryParamMissReply("OpenID");
-				return false;
-			}
-			if (Status==null || "".equals(Status)) {
-				reply.SetNecessaryParamMissReply("Status");
-				return false;
-			}
-			return true;
-		}
 		
 		public static boolean RequestInfoGuard(PrePayParametersReply reply, String Username, String Password,
 				String CinemaCode, String OrderCode, List<PrePayOrderQueryJsonSeat> Seats) {
@@ -551,6 +527,30 @@ public class ReplyExtension {
 			}
 			if (Seats.size() <= 0) {
 				reply.SetNecessaryParamMissReply("Seats");
+				return false;
+			}
+			return true;
+		}
+		//region   获取用户优惠券(不分页)       QueryUserConponsReply 
+		public static boolean RequestInfoGuard(QueryUserConponsReply reply,String Username,String Password,String CinemaCode,String OpenID,String Status){
+			if (Username==null || "".equals(Username)) {
+				reply.SetNecessaryParamMissReply("UserName");
+				return false;
+			}
+			if (Password==null || "".equals(Password)) {
+				reply.SetNecessaryParamMissReply("Password");
+				return false;
+			}
+			if (CinemaCode==null || "".equals(CinemaCode)) {
+				reply.SetNecessaryParamMissReply("CinemaCode");
+				return false;
+			}
+			if (OpenID==null || "".equals(OpenID)) {
+				reply.SetNecessaryParamMissReply("OpenID");
+				return false;
+			}
+			if (Status==null || "".equals(Status)) {
+				reply.SetNecessaryParamMissReply("Status");
 				return false;
 			}
 			return true;

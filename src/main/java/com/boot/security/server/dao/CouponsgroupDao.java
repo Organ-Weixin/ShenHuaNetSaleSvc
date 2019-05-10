@@ -34,4 +34,11 @@ public interface CouponsgroupDao {
     int count(@Param("params") Map<String, Object> params);
 
     List<Couponsgroup> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+
+    @Select("select * from couponsgroup where find_in_set(#{cinemacodes},cinemacodes)")
+    List<Couponsgroup> getByCinemaCodes(String  cinemacodes);
+    
+    
+    @Select("select * from couponsgroup t where t.groupcode = #{groupcode}")
+    Couponsgroup getByGroupCode(String  groupcode);
 }
