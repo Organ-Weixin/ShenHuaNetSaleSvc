@@ -1,7 +1,12 @@
 package com.boot.security.server.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,7 +23,6 @@ import com.boot.security.server.page.table.PageTableRequest;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
-import com.google.gson.Gson;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.dao.SessioninfoDao;
@@ -30,7 +34,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/sessioninfos")
-public class SessioninfoController {
+public class SessioninfoController{
 
     @Autowired
     private SessioninfoDao sessioninfoDao;
@@ -106,7 +110,7 @@ public class SessioninfoController {
     }
     
     @RequestMapping("/getFilmsByCinemaCode")
-    public List<Sessioninfo> getFilmsByCinemaCode(@RequestParam("cinemacode") String cinemacode){
-    	return sessioninfoService.getFilmsByCinemaCode(cinemacode);
+    public List<Sessioninfo> getFilmsByCinemaCode(@RequestParam("id") Long id,@RequestParam("roleId") Long roleId){
+    	return sessioninfoService.getFilmsByCinemaCode(id,roleId);
     }
 }

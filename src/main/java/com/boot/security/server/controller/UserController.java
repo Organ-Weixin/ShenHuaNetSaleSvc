@@ -42,7 +42,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class UserController{
 
 	private static final Logger log = LoggerFactory.getLogger("adminLogger");
 
@@ -129,7 +129,6 @@ public class UserController {
 	@RequestMapping(value="/getCinemaName",method=RequestMethod.POST)
 	@PreAuthorize("hasAuthority('sys:user:query')")
     public List<SysUser> getCinemaName(@RequestParam(value = "id") Long id,@RequestParam(value = "roleId") Long roleId){
-    	List<SysUser> list = userService.getCinemaName(id,roleId);
-    	return list;
+    	return userService.getCinemaName(id,roleId);
     }
 }

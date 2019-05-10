@@ -100,9 +100,9 @@ public class RoleController {
 		roleService.deleteRole(id);
 	}
 	
-	@GetMapping("/getRole{roleId}")
+	@GetMapping("/getRole/{roleId}")
 	@PreAuthorize("hasAnyAuthority('sys:user:query','sys:role:query')")
-	public List<Role> getRole(Long roleId){
+	public List<Role> getRole(@PathVariable Long roleId){
 		if(roleId!=1){
 			return roleDao.getRoleById(roleId);
 		}else{

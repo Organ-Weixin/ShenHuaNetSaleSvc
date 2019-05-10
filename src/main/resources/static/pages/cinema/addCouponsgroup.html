@@ -3,9 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="../../css/select-addl.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../css/select-krajee.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../css/select.min.css"/>
 </head>
 <body>
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<input type="hidden" id="userId">
+	<input type="hidden" id="roleId">
+	<input type="hidden" id="CinemaCodes">
 	<form class="form-horizontal" onsubmit="return false" id="form">
 		<fieldset>
 			<!-- <div class='form-group'>
@@ -17,27 +23,30 @@
 			<div class='form-group' style="margin-top:3%">
 				<label class='col-md-2 control-label'>优惠券名称</label>
 				<div class='col-md-10'>
-					<input class='form-control' type='text' name='CouponsName' id='CouponsName' data-bv-notempty='true' data-bv-notempty-message='优惠券名称不能为空' style="width:30%">
+					<input class='form-control' type='text' name='couponsName' id='CouponsName' data-bv-notempty='true' data-bv-notempty-message='优惠券名称不能为空' style="width:30%">
 				</div>
 			</div>
 			<div class='form-group' style="margin-top:3%">
 				<label class='col-md-2 control-label'>有效期</label>
 				<div class='col-md-10' style="font-size:15px">
 					<div>
-						<input type="radio" name="ValidityType" value="1"> 固定日期
-						<input type="text" id="validityDateStart" value="请选择日期">
+						<input type="hidden" id="validityType" name="validityType">
+						<input type="radio" name="ValidityTypeRadio" value="1"> 固定日期
+						<input type="text" id="effectiveDate" placeholder="请选择日期" name="effectiveDate">
 						至
-						<input type="text" id="validityDateEnd" value="请选择日期">
+						<input type="text" id="expireDate" placeholder="请选择日期" name="expireDate">
 					</div>
 					<div style="margin-top:2%">
-						<input type="radio" name="ValidityType" value="2"> 领取后,
-						<select id="">
+						<input type="radio" name="ValidityTypeRadio" value="2"> 领取后,
+						<select id="effectiveDays" name="effectiveDays">
+							<option value="">请选择</option>
 							<option value="0">当天</option>
 							<option value="1">次日</option>
 							<option value="6">一周后</option>
 						</select>
 						生效，有效天数
-						<select id="">
+						<select id="validityDays" name="validityDays">
+							<option value="">请选择</option>
 							<option value="7">一周</option>
 							<option value="30">30天</option>
 							<option value="180">180天</option>
@@ -45,88 +54,58 @@
 					</div>
 				</div>
 			</div>
-			<!-- <div class='form-group'>
-				<label class='col-md-2 control-label'>有效期类型</label>
-				<div class='col-md-10'>
-					<input class='form-control' placeholder='ValidityType' type='text' name='ValidityType' id='ValidityType' data-bv-notempty='true' data-bv-notempty-message='ValidityType 不能为空'>
-				</div>
-			</div>
-			<div class='form-group'>
-				<label class='col-md-2 control-label'>EffectiveDays</label>
-				<div class='col-md-10'>
-					<input class='form-control' placeholder='EffectiveDays' type='text' name='EffectiveDays' id='EffectiveDays' data-bv-notempty='true' data-bv-notempty-message='EffectiveDays 不能为空'>
-				</div>
-			</div>
-			<div class='form-group'>
-				<label class='col-md-2 control-label'>ValidityDays</label>
-				<div class='col-md-10'>
-					<input class='form-control' placeholder='ValidityDays' type='text' name='ValidityDays' id='ValidityDays' data-bv-notempty='true' data-bv-notempty-message='ValidityDays 不能为空'>
-				</div>
-			</div> -->
-			
 			<div class='form-group' style="margin-top:2%">
 				<label class='col-md-2 control-label'>可用时段</label>
 				<div class='col-md-10' style="font-size:15px">
+					<input type="hidden" id="canUsePeriodType" name="canUsePeriodType">
 					<div>
-						<input type="radio" name="CanUsePeriodType" value="1">
+						<input type="radio" name="CanUsePeriodTypeRadio" value="1">
 						全部时段
 					</div>
 					<div style="margin-top:2%">
 						<div>
-							<input type="radio" name="CanUsePeriodType" value="2">
+							<input type="radio" name="CanUsePeriodTypeRadio" value="2">
 							部分时段
 						</div>
 						<div id="checkCanUseDate" style="display:none">
 							<div style="margin-top:1%">
-								日期:
-									<input type="checkbox" name="checkWeek" style="margin-left:2%">周一
-									<input type="checkbox" name="checkWeek" style="margin-left:2%">周二
-									<input type="checkbox" name="checkWeek" style="margin-left:2%">周三
-									<input type="checkbox" name="checkWeek" style="margin-left:2%">周四
-									<input type="checkbox" name="checkWeek" style="margin-left:2%">周五
-									<input type="checkbox" name="checkWeek" style="margin-left:2%">周六
-									<input type="checkbox" name="checkWeek" style="margin-left:2%">周日
+							<input type="hidden" id="weekDays" name="weekDays">
+								日期：
+									<input type="checkbox" class="checkWeek" style="margin-left:2%" value="1">周一
+									<input type="checkbox" class="checkWeek" style="margin-left:2%" value="2">周二
+									<input type="checkbox" class="checkWeek" style="margin-left:2%" value="3">周三
+									<input type="checkbox" class="checkWeek" style="margin-left:2%" value="4">周四
+									<input type="checkbox" class="checkWeek" style="margin-left:2%" value="5">周五
+									<input type="checkbox" class="checkWeek" style="margin-left:2%" value="6">周六
+									<input type="checkbox" class="checkWeek" style="margin-left:2%" value="0">周日
 								<br>
 							</div>
 							<div style="margin-top:1%">
-							其他日期:
-								<input type="text" id="canUseDateStart">
-								至
-								<input type="text" id="canUseDateEnd">
-								<span style="margin-left:2%">添加时段</span>
-								<span style="margin-left:2%">删除时段</span>
+								<div style="float:left">
+									<input type="hidden" id="timePeriod" name="timePeriod">
+									其他日期：
+								</div>
+								<div id="canUseDate" style="float:left;width:50%;margin-left:2%">
+									<input type="text" class="canUseDateStart">
+									至
+									<input type="text" class="canUseDateEnd">
+									<span style="margin-left:2%" id="addTime">添加时段</span>
+								</div>
 							</div>
-								<font style="margin-left:8%;color:gray;font-size:15px">
-									请使用24小时制输入时间，格式如11:00至14:30
+							<div style="width:30%;margin-top:5%;margin-left:10%">
+								<font style="color:gray;font-size:15px">
+								请使用24小时制输入时间，格式如11:00至14:30
 								</font>
+							</div>	
 						</div>
 					</div>
 				</div>
 			</div>
-			
-			<!-- <div class='form-group'>
-				<label class='col-md-2 control-label'>可用时段类型</label>
-				<div class='col-md-10'>
-					<input class='form-control' placeholder='CanUsePeriodType' type='text' name='CanUsePeriodType' id='CanUsePeriodType' data-bv-notempty='true' data-bv-notempty-message='CanUsePeriodType 不能为空'>
-				</div>
-			</div>
-			<div class='form-group'>
-				<label class='col-md-2 control-label'>星期</label>
-				<div class='col-md-10'>
-					<input class='form-control' placeholder='WeekDays' type='text' name='WeekDays' id='WeekDays' data-bv-notempty='true' data-bv-notempty-message='WeekDays 不能为空'>
-				</div>
-			</div>
-			<div class='form-group'>
-				<label class='col-md-2 control-label'>时间段</label>
-				<div class='col-md-10'>
-					<input class='form-control' placeholder='TimePeriod' type='text' name='TimePeriod' id='TimePeriod' data-bv-notempty='true' data-bv-notempty-message='TimePeriod 不能为空'>
-				</div>
-			</div> -->
 			<div class='form-group' style="margin-top:5%" style="margin-top:3%">
 				<label class='col-md-2 control-label'>领券限制</label>
 				<div class='col-md-10'>
 					<div>
-						<input class='form-control' value="1" type='text' name='LimitNum' id='LimitNum' style="width:20%;float:left">
+						<input class='form-control' value="1" type='text' name='limitNum' id='LimitNum' style="width:20%;float:left">
 						<font style="font-size:18px;margin-left:5px">张</font>
 					</div>
 					<div style="margin-top:1%">
@@ -138,105 +117,78 @@
 			</div>
 			<div class='form-group' style="margin-top:3%">
 				<label class='col-md-2 control-label'>减免金额</label>
+				<input type="hidden" id="reductionType" name="reductionType">
+				<input type="hidden" id="reductionPrice" name="reductionPrice">
 				<div class='col-md-10' style="font-size:15px">
 					<div style="margin-top:2%">
-						<input type="radio" name="reductionType">影片&nbsp;&nbsp;减&nbsp;<input type="text" style="width:10%">&nbsp;金额
-						<input type="radio" style="margin-left:3%" id="checkFilms">指定影片可用
-						<div>
-							
+						<input type="radio" name="reductionTypeRadio" value="1">影片&nbsp;&nbsp;减&nbsp;
+						<input type="text" style="width:10%" id="filmReductionPrice">&nbsp;金额
+						<div id="Films" style="margin-top:2%;display:none">
+						<input type="radio" style="margin-left:3%" id="checkFilms" name="FilmOrGoodRadio">指定影片可用
 						</div>
+						<div id="filmsDiv" style="margin-top:2%;display:none">
+							<input type="hidden" id="filmCodes" name="filmCodes">
+							<select id="FilmsSelect" class="form-control" multiple data-s2-options="s2options" data-krajee-select2="selectfilm">
+							</select>
+						</div> 
 					</div>
 					<div style="margin-top:2%">
-						<input type="radio" name="reductionType">卖品&nbsp;&nbsp;减&nbsp;<input type="text" style="width:10%">&nbsp;金额
-						<input type="radio" style="margin-left:3%" id="checkGoods">指定卖品可用
-						<div>
-							
+						<input type="radio" name="reductionTypeRadio" value="2">卖品&nbsp;&nbsp;减&nbsp;
+						<input type="text" style="width:10%" id="goodReductionPrice">&nbsp;金额
+						<div id="Goods" style="margin-top:2%;display:none">
+						<input type="radio" style="margin-left:3%" id='checkGoods' name="FilmOrGoodRadio">指定卖品可用
+						</div>
+						<div id="goodsDiv" style="margin-top:2%;display:none">
+							<input type="hidden" id="goodsCodes" name="goodsCodes">
+							<select id="GoodsSelect" class="form-control" multiple data-s2-options="s2options" data-krajee-select2="selectgood">
+						</select> 
 						</div>
 					</div>
 					<div style="margin-top:2%">
 						优惠共享
-						<select>
+						<select id="isShare" name="isShare"> 
 							<option value="1">可共享</option>
 							<option value="0">不可共享</option>
 						</select>
 					</div>
 				</div>
 			</div>			
-			<!-- <div class='form-group'>
-				<label class='col-md-2 control-label'>减免类型</label>
-				<div class='col-md-10'>
-					<input class='form-control' placeholder='ReductionType' type='text' name='ReductionType' id='ReductionType' data-bv-notempty='true' data-bv-notempty-message='ReductionType 不能为空'>
-				</div>
-			</div>
-			<div class='form-group'>
-				<label class='col-md-2 control-label'>减免金额</label>
-				<div class='col-md-10'>
-					<input class='form-control' placeholder='ReductionPrice' type='text' name='ReductionPrice' id='ReductionPrice' data-bv-notempty='true' data-bv-notempty-message='ReductionPrice 不能为空'>
-				</div>
-			</div>
-			<div class='form-group'>
-				<label class='col-md-2 control-label'>影片编码</label>
-				<div class='col-md-10'>
-					<input class='form-control' placeholder='FilmCodes' type='text' name='FilmCodes' id='FilmCodes' data-bv-notempty='true' data-bv-notempty-message='FilmCodes 不能为空'>
-				</div>
-			</div>
-			<div class='form-group'>
-				<label class='col-md-2 control-label'>卖品编码</label>
-				<div class='col-md-10'>
-					<input class='form-control' placeholder='GoodsCodes' type='text' name='GoodsCodes' id='GoodsCodes' data-bv-notempty='true' data-bv-notempty-message='GoodsCodes 不能为空'>
-				</div>
-			</div>
-			<div class='form-group'>
-				<label class='col-md-2 control-label'>是否优惠共享</label>
-				<div class='col-md-10'>
-					<input class='form-control' placeholder='IsShare' type='text' name='IsShare' id='IsShare' data-bv-notempty='true' data-bv-notempty-message='IsShare 不能为空'>
-				</div>
-			</div> -->
 			<div class='form-group' style="margin-top:3%">
 				<label class='col-md-2 control-label'>使用须知</label>
 				<div class='col-md-10'>
-					<textarea style="width:70%;height:100px"></textarea>
-					<!-- <input class='form-control' placeholder='Remark' type='text' name='Remark' id='Remark' data-bv-notempty='true' data-bv-notempty-message='Remark 不能为空'>
-			 -->	</div>
+					<textarea style="width:70%;height:100px" name="remark"></textarea>
+				</div>
 			</div>
 			<div class='form-group' style="margin-top:3%">
 				<label class='col-md-2 control-label'>库存</label>
 				<div class='col-md-10'>
-					<input class='form-control' type='text' name='CouponsNumber' id='CouponsNumber' data-bv-notempty='true' data-bv-notempty-message='库存不能为空' style="width:20%;float:left">
+					<input class='form-control' type='text' name='couponsNumber' id='CouponsNumber' data-bv-notempty='true' data-bv-notempty-message='库存不能为空' style="width:20%;float:left">
 					<font style="font-size:18px;margin-left:5px">份，自动生成相应券码（可在优惠券管理&nbsp;<font style="color:blur">券码</font>&nbsp;处下载）</font>
 				</div>
 			</div>
 			<div class='form-group' style="margin-top:3%">
 				<label class='col-md-2 control-label'>适用门店</label>
 				<div class='col-md-10' style="font-size:15px">
+					<input type="hidden" id="canUseCinemaType" name="canUseCinemaType">
 					<div>
-						<input type="radio" name="CanUseCinemaType" value="1"> 全部门店使用
+						<input type="radio" name="CanUseCinemaTypeRadio" value="1"> 全部门店使用
 					</div>
 					<div style="margin-top:2%">
-						<input type="radio" name="CanUseCinemaType" value="2"> 指定门店
-						<div id="Cinemas">
+						<input type="radio" name="CanUseCinemaTypeRadio" value="2"> 指定门店
+						<div id="Cinemas" style="margin-top:2%;display:none">
+							<input type="hidden" id="cinemaCodes" name="cinemaCodes">
+							<select id="CinemasSelect" class="form-control" multiple data-s2-options="s2options" data-krajee-select2="selectcinema">
+							</select>
 						</div>
 					</div>
 				</div>
 			</div>
-			<!-- <div class='form-group'>
-				<label class='col-md-2 control-label'>使用门店类型</label>
-				<div class='col-md-10'>
-					<input class='form-control' placeholder='CanUseCinemaType' type='text' name='CanUseCinemaType' id='CanUseCinemaType' data-bv-notempty='true' data-bv-notempty-message='CanUseCinemaType 不能为空'>
-				</div>
-			</div>
-			<div class='form-group'>
-				<label class='col-md-2 control-label'>指定门店</label>
-				<div class='col-md-10'>
-					<input class='form-control' placeholder='CinemaCodes' type='text' name='CinemaCodes' id='CinemaCodes' data-bv-notempty='true' data-bv-notempty-message='CinemaCodes 不能为空'>
-				</div>
-			</div> -->
 
 			<div class="form-actions">
 				<div class="row" align="center">
 					<div class="col-md-12">
 					    <button class="btn btn-primary" onclick="location.href='couponsgroupList.html'">取消</button>
-						<button class="btn btn-primary" type="submit" onclick="add()">
+						<button class="btn btn-primary" type="submit" onclick="checkParams()">
 							<i class="fa fa-save"></i> 创建	
 						</button>
 					</div>
@@ -251,52 +203,270 @@
 	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
 	<script type="text/javascript" src="../../js/common.js"></script>
 	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript" src="../../js/select2.full.min.js"></script>
+	<script type="text/javascript" src="../../js/select2-krajee.min.js"></script>
 	<script type="text/javascript">
+	//影片下拉多选
+	var filmoptions = {"doReset":true,"doToggle":true,"doOrder":false};
+	window.filmoptions = {"theme":"krajee","width":"50%","placeholder":"请选择影片","language":"zh-CN"};
+	if (jQuery('#FilmsSelect').data('selectfilm')){
+		jQuery('#FilmsSelect').select2('destroy');
+	}
+	jQuery.when(jQuery('#FilmsSelect').select2(filmoptions)).done(initS2Loading('FilmsSelect','filmoptions'));
+	
+	//卖品下拉多选
+	var goodoptions = {"doReset":true,"doToggle":true,"doOrder":false};
+	window.goodoptions = {"theme":"krajee","width":"50%","placeholder":"请选择卖品","language":"zh-CN"};
+	if (jQuery('#GoodsSelect').data('selectgood')){
+		jQuery('#GoodsSelect').select2('destroy');
+	}
+	jQuery.when(jQuery('#GoodsSelect').select2(goodoptions)).done(initS2Loading('GoodsSelect','goodoptions'));
+	
+	//影院下拉多选
+	var cinemaoptions = {"doReset":true,"doToggle":true,"doOrder":false};
+	window.cinemaoptions = {"theme":"krajee","width":"50%","placeholder":"请选择影院","language":"zh-CN"};
+	if (jQuery('#CinemasSelect').data('selectcinema')){
+		jQuery('#CinemasSelect').select2('destroy');
+	}
+	jQuery.when(jQuery('#CinemasSelect').select2(cinemaoptions)).done(initS2Loading('GoodsSelect','cinemaoptions'));
+	
+	window.onload=function(){
+		//获取影院列表
+		getCinema();
+		function getCinema(){
+			$.ajax({
+				url:'/users/getCinemaName',
+				data:{"id":$("#userId").val(),"roleId":$("#roleId").val()},
+				type:'post',
+				success:function(data){
+					for(var i=0; i<data.length; i++){
+						var option = "<option value='"+data[i].cinemaCode+"'>"+data[i].cinemaName+"</option>";
+						$("#CinemasSelect").append(option);
+					}
+				}
+			});
+		}
+		//获取影片列表
+		getFilms();
+		function getFilms(){
+			$.ajax({
+				url:'/sessioninfos/getFilmsByCinemaCode',
+				data:{"id":$("#userId").val(),"roleId":$("#roleId").val()},
+				type:'post',
+				success:function(data){
+					for(var i=0;i<data.length;i++){
+						var option = "<option value='"+data[i].filmCode+"'>"+data[i].filmName+"</option>";
+						$("#FilmsSelect").append(option); 
+					}
+				}
+			});
+		}
+		//获取卖品列表
+		getGoods();
+		function getGoods(){
+			$.ajax({
+				url:'/goodss/getGoodsByCinemaCode',
+				data:{"id":$("#userId").val(),"roleId":$("#roleId").val()},
+				type:'post',
+				success:function(data){
+					for(var i=0;i<data.length;i++){
+						var option = "<option value='"+data[i].goodsCode+"'>"+data[i].goodsName+"</option>";
+						$("#GoodsSelect").append(option); 
+					}
+				}
+			});
+		}
+///////////////////////////////////////////////////////////////
+	}
 		layui.use(['layer','laydate'], function(){
 		    var layer = layui.layer;
 		    var laydate = layui.laydate;
 		    laydate.render({
-		       elem: '#validityDateStart',
-		       type: 'date',
-		       min: 'nowTime',
+		       elem: '#effectiveDate',
+		       type: 'datetime',
+		       format: 'yyyy-MM-dd',
+		       min: 'nowTime'
 		    });
 		    laydate.render({
-			   elem: '#validityDateEnd',
-			   type: 'date'
-			});
-		    laydate.render({
-			   elem: '#canUseDateStart',
-			   type: 'time'
-			});
-		    laydate.render({
-			   elem: '#canUseDateEnd',
-			   type: 'time'
+			   elem: '#expireDate',
+			   type: 'datetime',
+			   format: 'yyyy-MM-dd'
 			});
 		});
 		
+		//获取登陆人信息
+		initUser();
+		function initUser(){
+			$.ajax({
+				type : 'get',
+				url : '/users/current',
+				async : false,
+				success : function(data) {
+					$("#userId").val(data.id);
+					$("#roleId").val(data.roleId);
+				}
+			});
+		}
+		
 		//有效期选择
-		$("input[name='ValidityType']").click(function(){
+		$("input:radio[name='ValidityTypeRadio']").click(function(){
 			if($(this).css("checked",true).val()==1){
-				
+				$("#effectiveDays").val(null);
+				$("#validityDays").val(null);
 			}
 			if($(this).css("checked",true).val()==2){
+				$("#effectiveDate").val(null);
+				$("#expireDate").val(null);
 			}
 		});
 		//可用时段选择
-		$("input[name='CanUsePeriodType']").click(function(){
+		$("input:radio[name='CanUsePeriodTypeRadio']").click(function(){
 			if($(this).css("checked",true).val()==1){
 				$("#checkCanUseDate").css("display","none");
-				$("input[name='checkWeek']").removeAttr("checked");
+				$("input[class='checkWeek']").removeAttr("checked");
 				$("#canUseDateStart").val("");
 				$("#canUseDateEnd").val("");
 			}
 			if($(this).css("checked",true).val()==2){
 				$("#checkCanUseDate").css("display","block");
-				$("input[name='checkWeek']").removeAttr("checked");
+				$("input[class='checkWeek']").removeAttr("checked");
 				$("#canUseDateStart").val("");
 				$("#canUseDateEnd").val("");
 			}
 		});
+		//添加可用时段
+		$("#addTime").click(function(){
+			var canUserDate = "<span class ='aa'><input style='margin-top:1%' type='text' class='canUseDateStart'>&nbsp;至&nbsp;";
+			canUserDate = canUserDate + "<input style='margin-top:1%' type='text' class='canUseDateEnd'>";
+			canUserDate = canUserDate + "<font style='margin-left:3%' class='delTime'>删除</font></span><br>";
+			$("#canUseDate").append(canUserDate);
+		});
+		//删除可用时段
+		$("#canUseDate").on('click','.delTime',function(){
+			$(this).parent().remove();
+		})
+		//适用门店选择
+		$("input:radio[name='CanUseCinemaTypeRadio']").click(function(){
+			if($(this).css("checked",true).val()==1){
+				$("#Cinemas").css("display","none");
+				$("input[class='checkCinemas']").removeAttr("checked");
+			}
+			if($(this).css("checked",true).val()==2){
+				$("#Cinemas").css("display","block");
+				$("input[class='checkCinemas']").removeAttr("checked");
+			}
+		});
+		//减免金额选择
+		$("input:radio[name='reductionTypeRadio']").click(function(){
+			if($(this).css("checked",true).val()==1){
+				$("#Goods").css("display","none");
+				$("#Films").css("display","block");
+				$("#goodsDiv").css("display","none");
+				$("#GoodsSelect").val(null);
+			}
+			if($(this).css("checked",true).val()==2){
+				$("#Films").css("display","none");
+				$("#Goods").css("display","block");
+				$("#filmsDiv").css("display","none");
+				$("#FilmsSelect").val(null);
+			}
+		}); 
+		//减免金额选择影片
+		$("#checkFilms").click(function(){
+			$("#Films").css("display","block");
+			$("#goodsDiv").css("display","none");
+		});
+		$("#Films").click(function(){
+			$("#filmsDiv").css("display","block");
+			$("#goodsDiv").css("display","none");
+		});
+		//减免金额选择卖品
+		$("#checkGoods").click(function(){
+			$("#Goods").css("display","block");
+			$("#filmsDiv").css("display","none");
+		});
+		$("#Goods").click(function(){
+			$("#goodsDiv").css("display","block");
+			$("#filmsDiv").css("display","none");
+		});
+		//提交前验证所有内容
+		function checkParams(){
+			if($("#FilmsSelect").val()!=null&&$("#FilmsSelect").val()!=""){
+				$("#filmCodes").val($("#FilmsSelect").val().toString());
+			}else{
+				$("#filmCodes").val(null);
+			}
+			if($("#GoodsSelect").val()!=null&&$("#GoodsSelect").val()!=""){
+				$("#goodsCodes").val($("#GoodsSelect").val().toString());
+			}else{
+				$("#goodsCodes").val(null);
+			}
+			if($("#CinemasSelect").val()!=null&&$("#CinemasSelect").val()!=""){
+				$("#cinemaCodes").val($("#CinemasSelect").val().toString());
+			}else{
+				$("#cinemaCodes").val(null);
+			}
+			$("#validityType").val($('input:radio[name="ValidityTypeRadio"]:checked').val());
+			$("#canUsePeriodType").val($('input:radio[name="CanUsePeriodTypeRadio"]:checked').val());
+			var weekDays = "";
+			for(var i=0;i<$('input[class="checkWeek"]:checked').length;i++){
+				weekDays +=$('input[class="checkWeek"]:checked').eq(i).val()+",";
+			}
+			$("#weekDays").val(weekDays.substring(0,weekDays.length-1));
+			if($(".canUseDateStart").val()!=""&&$(".canUseDateStart").val()!=null&&$(".canUseDateEnd").val()!=""&&$(".canUseDateEnd").val()!=null){
+				var timePeriod = "";
+				for(var i=0; i<$(".canUseDateStart").length; i++){
+					timePeriod += $(".canUseDateStart").eq(i).val()+"-"+$(".canUseDateEnd").eq(i).val()+",";
+				}
+				$("#timePeriod").val(timePeriod.substring(0,timePeriod.length-1));
+			}else{
+				$("#timePeriod").val(null);
+			}
+			$("#reductionType").val($('input:radio[name="reductionTypeRadio"]:checked').val());
+			if($("input:radio[name='reductionTypeRadio']:checked").val()==1){
+				$("#goodReductionPrice").val(null);
+			}
+			if($("input:radio[name='reductionTypeRadio']:checked").val()==2){
+				$("#filmReductionPrice").val(null);
+			}
+			$("#reductionPrice").val($("#filmReductionPrice").val()+$("#goodReductionPrice").val());
+			$("#canUseCinemaType").val($('input:radio[name="CanUseCinemaTypeRadio"]:checked').val());
+			//提交之前非空判断
+			if($("input:radio[name='ValidityTypeRadio']:checked").length<=0){
+				alert("请选择有效期类型！");
+			}
+			 if($("input:radio[name='ValidityTypeRadio']:checked").val()==1
+					&&($("#effectiveDate").val()==null||$("#effectiveDate").val()=="")
+					&&($("#expireDate").val()==null||$("#expireDate").val()=="")){
+				alert("请选择有效期！");
+			}
+			if($("input:radio[name='ValidityTypeRadio']:checked").val()==2
+					&&($("#effectiveDays").val()==null||$("#effectiveDays").val()=="")
+					&&($("#validityDays").val()==null||$("#validityDays").val()=="")){
+				alert("请选择有效时间！");
+			}
+			if($("input:radio[name='canUsePeriodType']:checked").length<=0){
+				alert("请选择可用时段类型！");
+			}
+			if($("input:radio[name='canUsePeriodType']:checked").val()==2&&$("input[class='checkWeek']:checked").length<=0){
+				alert("请选择可用时间！");
+			}
+			if($("input:radio[name='reductionTypeRadio']:checked").length<=0){
+				alert("请选择减免金额类型！");
+			}
+			if($("input:radio[name='reductionTypeRadio']:checked").length>0&&($("#reductionPrice").val()==null||$("#reductionPrice").val()=="")){
+				alert("请输入减免金额！");
+			}
+			if($("input:radio[name='CanUseCinemaTypeRadio']:checked").length<=0){
+				alert("请选择使用门店类型！");
+			}
+			if($("input:radio[name='CanUseCinemaTypeRadio']:checked").val()==2&&($("#cinemaCodes").val()==null||$("#cinemaCodes").val()=="")){
+				alert("请选择适用门店！");
+			}else{
+				add();
+			} 
+		}
+		
 		
 		function add() {
 			$('#form').bootstrapValidator();

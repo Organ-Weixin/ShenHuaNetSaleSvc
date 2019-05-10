@@ -23,11 +23,14 @@ public interface CouponsDao {
 
     @Delete("delete from coupons where id = #{id}")
     int delete(Long id);
+    
+    @Delete("delete from coupons where groupcode = #{groupcode}")
+    int deleteByGroupCode(String groupcode);
 
     int update(Coupons coupons);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into coupons(Id, CouponsCode, CouponsName, EffectiveDate, ExpireDate, GroupCode, Status, OpenID, CreateDate, ReceiveDate, UsedDate) values(#{Id}, #{CouponsCode}, #{CouponsName}, #{EffectiveDate}, #{ExpireDate}, #{GroupCode}, #{Status}, #{OpenID}, #{CreateDate}, #{ReceiveDate}, #{UsedDate})")
+    @Insert("insert into coupons(CouponsCode, CouponsName, EffectiveDate, ExpireDate, GroupCode, Status, OpenID, CreateDate, ReceiveDate, UsedDate) values(#{CouponsCode}, #{CouponsName}, #{EffectiveDate}, #{ExpireDate}, #{GroupCode}, #{Status}, #{OpenID}, Now(), #{ReceiveDate}, #{UsedDate})")
     int save(Coupons coupons);
     
     int count(@Param("params") Map<String, Object> params);

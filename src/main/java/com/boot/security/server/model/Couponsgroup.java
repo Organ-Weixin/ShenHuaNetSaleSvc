@@ -10,6 +10,8 @@ public class Couponsgroup extends BaseEntity<Long> {
 	private Integer CouponsType;
 	private String CouponsName;
 	private Integer ValidityType;
+	private Date EffectiveDate;
+	private Date ExpireDate;
 	private Integer EffectiveDays;
 	private Integer ValidityDays;
 	private Integer CanUsePeriodType;
@@ -61,6 +63,18 @@ public class Couponsgroup extends BaseEntity<Long> {
 	}
 	public void setValidityType(Integer ValidityType) {
 		this.ValidityType = ValidityType;
+	}
+	public Date getEffectiveDate() {
+		return EffectiveDate;
+	}
+	public void setEffectiveDate(Date effectiveDate) {
+		EffectiveDate = effectiveDate;
+	}
+	public Date getExpireDate() {
+		return ExpireDate;
+	}
+	public void setExpireDate(Date expireDate) {
+		ExpireDate = expireDate;
 	}
 	public Integer getEffectiveDays() {
 		return EffectiveDays;

@@ -112,6 +112,13 @@
 			</if>
 		</where>
 	</sql>
+	<sql id="getId">
+		<where>
+			<if test="id !=null and id !='' ">
+				and id = #{id}
+			</if>
+		</where>
+	</sql>
 
 	<select id="count" resultType="int">
 		select count(1) from sessioninfo t
@@ -139,6 +146,19 @@
 		<include refid="where" />
 		${params.orderBy}
 		limit #{offset}, #{limit}
+	</select>
+	
+	<select id="getFilmsByCinemaCode" resultType="Sessioninfo">
+		 select DISTINCT(t.filmcode),t.filmname from sessioninfo t where t.ccode in (
+		 select ss.cinemacode from sys_user ss,(select id,cinemacode,cinemaname from sys_user where roleid = 4 and status = 1) s
+		 <if test='roleId!=1'>
+			,(select id from sys_user <include refid="getId"/> ) sss
+		 </if>
+			where ss.id = s.id
+		 <if test='roleId!=1'>
+			and (ss.createuserid = sss.id or ss.id = sss.id)
+		 </if>
+		 ) and t.StartTime >= NOW()
 	</select>
 	
 	<delete id="deleteByCinemaCode">

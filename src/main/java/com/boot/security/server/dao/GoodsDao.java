@@ -42,4 +42,6 @@ public interface GoodsDao {
     int count(@Param("params") Map<String, Object> params);
 
     List<Goods> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    
+    List<Goods> getGoodsByCinemaCode(@Param("id")Long id,@Param("roleId")Long roleId);
 }

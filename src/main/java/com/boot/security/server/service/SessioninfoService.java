@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.boot.security.server.model.Sessioninfo;
 
 public interface SessioninfoService {
@@ -26,7 +28,7 @@ public interface SessioninfoService {
 	
 	List<Sessioninfo> getByCCodeGroupByFilm(Long userid,String cinemacode,Date StartDate,Date EndDate);
 	
-	List<Sessioninfo> getFilmsByCinemaCode(String cinemacode);
+	List<Sessioninfo> getFilmsByCinemaCode(Long id,Long roleId);
 	
 	   List<Sessioninfo> getByCinemaStartDateEndDate(String cinemacode,String StartDate,String EndDate);
 

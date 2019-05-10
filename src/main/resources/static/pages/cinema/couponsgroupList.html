@@ -42,34 +42,19 @@
                                 </tr>                       
                                 <tr>
 									<th>Id</th>
-									<th>GroupCode</th>
-									<th>CinemaCode</th>
-									<th>CouponsType</th>
-									<th>CouponsName</th>
-									<th>ValidityType</th>
-									<th>EffectiveDays</th>
-									<th>ValidityDays</th>
-									<th>CanUsePeriodType</th>
-									<th>WeekDays</th>
-									<th>TimePeriod</th>
-									<th>LimitNum</th>
-									<th>ReductionType</th>
-									<th>ReductionPrice</th>
-									<th>FilmCodes</th>
-									<th>GoodsCodes</th>
-									<th>IsShare</th>
-									<th>Remark</th>
-									<th>CanUseCinemaType</th>
-									<th>CinemaCodes</th>
-									<th>Status</th>
-									<th>CouponsNumber</th>
-									<th>FetchNumber</th>
-									<th>RemainingNumber</th>
-									<th>UsedNumber</th>
+									<th>卡券类型</th>
+									<th>卡券名称</th>
+									<th>有效期</th>
+									<th>状态</th>
+									<th>价格</th>
+									<th>总投放</th>
+									<th>已领取</th>
+									<th>库存</th>
+									<th>已使用</th>
 									<th>操作</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="tbody">
                             </tbody>
                         </table>
                     </div>
@@ -86,8 +71,11 @@
 <script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="../../layui/layui.js"></script>
 <script type="text/javascript" src="../../js/my/permission.js"></script>
+<script type="text/javascript" src="../../js/dict.js"></script>
 <script type="text/javascript">
 var pers = checkPermission();
+var CouponsType = showDictSelect("couponsType", "CouponsType", true);
+var CGroupStatus = showDictSelect("status", "CGroupStatus", true);
 
 var example;
 function init(){
@@ -108,41 +96,104 @@ function init(){
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
             "columns": [
-				{"data" : "id", "defaultContent" : ""},
-				{"data" : "groupCode", "defaultContent" : ""},
-				{"data" : "cinemaCode", "defaultContent" : ""},
-				{"data" : "couponsType", "defaultContent" : ""},
+            	{"data" : null, "defaultContent" : "","orderable":false,
+					"render" : function(data, type, full, meta){
+						return meta.row + 1 + meta.settings._iDisplayStart;
+						}
+				},
+				{"data" : "couponsType", "defaultContent" : "",
+					"render": function (data, type, row) {
+                    	return CouponsType[data];
+                  	}						
+				},
 				{"data" : "couponsName", "defaultContent" : ""},
-				{"data" : "validityType", "defaultContent" : ""},
-				{"data" : "effectiveDays", "defaultContent" : ""},
-				{"data" : "validityDays", "defaultContent" : ""},
-				{"data" : "canUsePeriodType", "defaultContent" : ""},
-				{"data" : "weekDays", "defaultContent" : ""},
-				{"data" : "timePeriod", "defaultContent" : ""},
-				{"data" : "limitNum", "defaultContent" : ""},
-				{"data" : "reductionType", "defaultContent" : ""},
-				{"data" : "reductionPrice", "defaultContent" : ""},
-				{"data" : "filmCodes", "defaultContent" : ""},
-				{"data" : "goodsCodes", "defaultContent" : ""},
-				{"data" : "isShare", "defaultContent" : ""},
-				{"data" : "remark", "defaultContent" : ""},
-				{"data" : "canUseCinemaType", "defaultContent" : ""},
-				{"data" : "cinemaCodes", "defaultContent" : ""},
-				{"data" : "status", "defaultContent" : ""},
+				{"data" : "", "defaultContent" : "",
+					"render":function(data,type,row){
+						var effectiveDate = row['effectiveDate'];
+						var expireDate = row['expireDate'];
+						var effectiveDays = row['effectiveDays'];
+						var validityDays = row['validityDays'];
+						if(effectiveDate!=null&&expireDate!=null){
+							return effectiveDate.substr(0,10) + "至" + expireDate.substr(0,10);
+						}else{
+							return "领取后"+(effectiveDays+validityDays)+"天有效";
+						}
+						
+					}
+				},
+				{"data" : "status", "defaultContent" : "",
+					"render": function (data, type, row) {
+                    	return CGroupStatus[data];
+                  	}
+				},
+				{"data" : "reductionPrice", "defaultContent" : "",
+					"render":function(data,type,row){
+						var reductionPrice = row['reductionPrice'];
+						if(reductionPrice!=null){
+							return reductionPrice;
+						}else{
+							return 0;
+						}
+					}						
+				},
 				{"data" : "couponsNumber", "defaultContent" : ""},
-				{"data" : "fetchNumber", "defaultContent" : ""},
-				{"data" : "remainingNumber", "defaultContent" : ""},
-				{"data" : "usedNumber", "defaultContent" : ""},
+				{"data" : "fetchNumber", "defaultContent" : "",
+					"render" : function(data, type, row){
+						var fetchNumber = row['fetchNumber'];
+						if(fetchNumber!=null){
+							return fetchNumber;
+						}else{
+							return 0;
+						}
+					}					
+				},
+				{"data" : "remainingNumber", "defaultContent" : "",
+					"render" : function(data, type, row){
+						var remainingNumber = row['remainingNumber'];
+						if(remainingNumber!=null){
+							return remainingNumber;
+						}else{
+							return 0;
+						}
+					}						
+				},
+				{"data" : "usedNumber", "defaultContent" : "",
+					"render" : function(data, type, row){
+						var usedNumber = row['usedNumber'];
+						if(usedNumber!=null){
+							return usedNumber;
+						}else{
+							return 0;
+						}
+					}					
+				},
 				{ 
 								"data": "", 
 								"defaultContent": "",
 								"orderable":false,
 						        "render": function (data, type, row) {
                 		           var id = row['id'];
+                		           var status = row['status'];
+                		           var groupCode = row['groupCode'];
+                		           var price = row['reductionPrice'];
+                		           var change = "";
+                		           if(status==1){
+                		        	   change = "停用";
+                		           }
+                		           else{
+                		        	   status == 0;
+                		        	   change = "启用";
+                		           }
                 		           var href = "updateCouponsgroup.html?id=" + id;
+                		           var upda = "<button class='change' title='"+status+"' value='"+id+"' style='margin-right:5%'>"+change+"</button>";
+                		           var coupons = "<button class='coupons' value='"+price+"' title='"+groupCode+"' style='margin-right:5%'>券码</button>";
                                    var edit = buttonEdit(href, "", pers);
                 		           var del = buttonDel(id, "", pers);
-                                   return edit + del;
+                		           if(status == 2){
+                                  	 return coupons + edit + del;
+                		           }else{
+                		        	 return upda + coupons + edit + del;
+                		           }
                   	            }		
 							},
                 
@@ -171,6 +222,28 @@ function del(id){
         layer.close(1);
     });
 }
+
+$("#tbody").on('click','.change',function(){
+	var status = "";
+	if($(this).attr('title')==1){
+		status = 0;
+	}else{
+		status = 1;
+	}
+	$.ajax({
+		url:'/couponsgroups/changeStatus',
+		data:{"status":status,"id":$(this).val()},
+		type:'post',
+		success:function(data){
+			window.location.href="couponsgroupList.html";
+		}
+	}); 
+});
+
+$("#tbody").on('click','.coupons',function(){
+	window.location.href="couponsList.html?groupCode="+$(this).attr('title')+"&reductionPrice="+$(this).val();
+});
+
 
 $("#searchBt").click(function(){
 	example.ajax.reload();

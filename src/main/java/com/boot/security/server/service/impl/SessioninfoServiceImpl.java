@@ -81,9 +81,9 @@ public class SessioninfoServiceImpl implements SessioninfoService{
 	}
 
 	@Override
-	public List<Sessioninfo> getFilmsByCinemaCode(String cinemacode) {
+	public List<Sessioninfo> getFilmsByCinemaCode(Long id,Long roleId) {
 		// TODO Auto-generated method stub
-		return sessioninfoDao.getFilmsByCinemaCode(cinemacode);
+		return sessioninfoDao.getFilmsByCinemaCode(id,roleId);
 	}
 
 	

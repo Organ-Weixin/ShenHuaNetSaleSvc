@@ -89,21 +89,6 @@
 	showDictSelect("sex", "sex");
 	var userStatus = showDictSelect("status", "userStatus");
 	
-	//选择角色
-	getRole();
-	function getRole(){
-		$.ajax({
-			url:'/users/getRole',
-			dataType:'json',
-			type:'post',
-			success:function(data){
-				for(var i =0;i <data.length;i++){
-					var role = "<input type='radio' class='role' name='radio' title='"+data[i].name+"' value='"+data[i].id+"' style='margin-left:30px;margin-right:5px' >"+data[i].name+"";
-					$("#role").append(role);
-				}
-			}
-		});
-	}
 	$("#role").on('click','.role',function(){
 		$("#roleId").val($(this).val());
 		$("#roleName").val($(this).attr('title'));
@@ -140,11 +125,26 @@
 					$("#roleId").val(data.roleId);
 					$("#roleName").val(data.roleName);
 					$("#status").val(data.status);
+					getRole(data.roleId);
 				}
 			});
 			
 			initRoleDatas(id);
 		}
+	}
+	
+	//选择角色
+	function getRole(roleId){
+		$.ajax({
+			url:'/roles/getRole/'+roleId,
+			type:'Get',
+			success:function(data){
+				for(var i =0;i <data.length;i++){
+					var role = "<input type='radio' class='role' name='radio' title='"+data[i].name+"' value='"+data[i].id+"' style='margin-left:30px;margin-right:5px' >"+data[i].name+"";
+					$("#role").append(role);
+				}
+			}
+		});
 	}
 	
 		$('#form').bootstrapValidator();

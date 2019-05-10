@@ -28,4 +28,10 @@ public class CouponsServiceImpl implements CouponsService{
 		return couponsdao.update(coupons);
 	}
 
+	@Override
+	public int deleteByGroupCode(String groupcode) {
+		// TODO Auto-generated method stub
+		return couponsdao.deleteByGroupCode(groupcode);
+	}
+
 }

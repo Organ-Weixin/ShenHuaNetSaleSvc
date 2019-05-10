@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.boot.security.server.dao.GoodsDao;
 import com.boot.security.server.model.Goods;
@@ -52,6 +53,12 @@ public class GoodsServiceImpl implements GoodsService {
 	public int deleteByCinemaCode(Long userid, String cinemacode) {
 		// TODO Auto-generated method stub
 		return goodsDao.deleteByCinemaCode(userid, cinemacode);
+	}
+
+	@Override
+	public List<Goods> getGoodsByCinemaCode(Long id,Long roleId) {
+		// TODO Auto-generated method stub
+		return goodsDao.getGoodsByCinemaCode(id,roleId);
 	}
 
 }

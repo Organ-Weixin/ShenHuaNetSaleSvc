@@ -8,9 +8,6 @@
 			<if test="params.Id != null and params.Id != ''">
 				and Id = #{params.Id} 
 			</if>
-			<if test="params.GroupCode != null and params.GroupCode != ''">
-				and GroupCode = #{params.GroupCode} 
-			</if>
 			<if test="params.CouponsType != null and params.CouponsType != ''">
 				and CouponsType = #{params.CouponsType} 
 			</if>
@@ -19,6 +16,12 @@
 			</if>
 			<if test="params.ValidityType != null and params.ValidityType != ''">
 				and ValidityType = #{params.ValidityType} 
+			</if>
+			<if test="params.EffectiveDate != null and params.EffectiveDate != ''">
+				and EffectiveDate = #{params.EffectiveDate} 
+			</if>
+			<if test="params.ExpireDate != null and params.ExpireDate != ''">
+				and ExpireDate = #{params.ExpireDate} 
 			</if>
 			<if test="params.EffectiveDays != null and params.EffectiveDays != ''">
 				and EffectiveDays = #{params.EffectiveDays} 
@@ -116,6 +119,12 @@
 			</if>
 			<if test="ValidityType != null">
 				ValidityType = #{ValidityType}, 
+			</if>
+			<if test="EffectiveDate != null">
+				EffectiveDate = #{EffectiveDate}, 
+			</if>
+			<if test="ExpireDate != null">
+				ExpireDate = #{ExpireDate}, 
 			</if>
 			<if test="EffectiveDays != null">
 				EffectiveDays = #{EffectiveDays}, 

@@ -85,10 +85,7 @@
 		getRole();
 		function getRole(){
 			$.ajax({
-				url:'/roles/getRole',
-				data:{"roleId":$("#id").val()},
-				dataType:'json',
-				type:'get',
+				url:'/roles/getRole/'+$("#id").val(),
 				success:function(data){
 					for(var i =0;i <data.length;i++){
 						var role = "<input type='radio' class='role' name='radio' title='"+data[i].name+"' value='"+data[i].id+"' style='margin-left:30px;margin-right:5px' >"+data[i].name+"";

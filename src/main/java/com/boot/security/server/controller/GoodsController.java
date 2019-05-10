@@ -2,6 +2,7 @@ package com.boot.security.server.controller;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.security.server.page.table.PageTableRequest;
@@ -73,5 +75,11 @@ public class GoodsController {
     @ApiOperation(value = "删除")
     public void delete(@PathVariable Long id) {
         goodsDao.delete(id);
+    }
+    
+    @RequestMapping("/getGoodsByCinemaCode")
+    @ApiOperation(value = "获取所有影院的卖品")
+    public List<Goods> getGoodsByCinemaCode(@RequestParam("id") Long id,@RequestParam("roleId")Long roleId){
+    	return goodsDao.getGoodsByCinemaCode(id,roleId);
     }
 }
