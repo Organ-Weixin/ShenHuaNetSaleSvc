@@ -97,6 +97,7 @@ import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.model.YesOrNoEnum;
+import com.boot.security.server.service.impl.CinemapaymentsettingsServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;

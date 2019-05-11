@@ -398,8 +398,8 @@ public class ReplyExtension {
         }
         return true;
     }
-	//预支付会员卡支付
-	public static boolean RequestInfoPrePayCardCharge(PayParametersReply reply, String Username, String Password, String CinemaCode,String OpenID,String ChargeAmount)
+	//预支付会员卡充值
+	public static boolean RequestInfoPrePayCardCharge(PrePayParametersReply reply, String Username, String Password, String CinemaCode,String OpenID,String ChargeAmount)
     {
         if (Username == null || "".equals(Username))
         {
@@ -426,8 +426,8 @@ public class ReplyExtension {
         }
         return true;
     }
-	//预支付会员卡支付
-	public static boolean RequestInfoPrePayCardRegister(PayParametersReply reply, String Username, String Password, String CinemaCode,String OpenID,String InitialAmount)
+	//预支付会员卡注册
+	public static boolean RequestInfoPrePayCardRegister(PrePayParametersReply reply, String Username, String Password, String CinemaCode,String OpenID,String InitialAmount)
     {
         if (Username == null || "".equals(Username))
         {

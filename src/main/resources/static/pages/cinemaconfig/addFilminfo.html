@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen"
+	href="../../css/bootstrap.min.css">
+</head>
+<body>
+	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+		<form class="form-horizontal" onsubmit="return false" id="form">
+			<fieldset>
+
+				<div class='form-group'>
+					<label class='col-md-2 control-label'>影片编码<font
+						style="color: red">*</font></label>
+					<div class='col-md-10'>
+						<input class='form-control' placeholder='影片编码' type='text'
+							name='filmCode' id='FilmCode' data-bv-notempty='true'
+							data-bv-notempty-message='影片编码 不能为空'>
+					</div>
+				</div>
+				<div class='form-group'>
+					<label class='col-md-2 control-label'>影片名称<font
+						style="color: red">*</font></label>
+					<div class='col-md-10'>
+						<input class='form-control' placeholder='影片名称' type='text'
+							name='filmName' id='FilmName' data-bv-notempty='true'
+							data-bv-notempty-message='影片名称 不能为空'>
+					</div>
+				</div>
+				<div class='form-group'>
+					<label class='col-md-2 control-label'>影片版本</label>
+					<div class='col-md-10'>
+						<input class='form-control' placeholder='影片版本' type='text'
+							name='version' id='Version' data-bv-notempty='false'
+							data-bv-notempty-message='影片版本 可以为空'>
+					</div>
+				</div>
+				
+				<div class='form-group'>
+					<label class='col-md-2 control-label'>影片时长</label>
+					<div class='col-md-10'>
+						<input class='form-control' placeholder='影片时长' type='text'
+							name='duration' id='Duration' data-bv-notempty='false'
+							data-bv-notempty-message='影片时长 可以为空'>
+					</div>
+				</div>
+				
+				<div class='form-group'>
+					<label class='col-md-2 control-label'>发布时间</label>
+					<div class='col-md-10'>
+						<input class='form-control' placeholder='发布时间' type='text'
+							name='publishDate' id='PublishDate' data-bv-notempty='false'
+							data-bv-notempty-message='发布时间 可以为空'>
+					</div>
+				</div>
+				
+				<div class='form-group'>
+					<label class='col-md-2 control-label'>发行方</label>
+					<div class='col-md-10'>
+						<input class='form-control' placeholder='发行方' type='text'
+							name='publisher' id='Publisher' data-bv-notempty='false'
+							data-bv-notempty-message='发行方可以为空'>
+					</div>
+				</div>
+				
+				<div class='form-group'>
+					<label class='col-md-2 control-label'>制片人</label>
+					<div class='col-md-10'>
+						<input class='form-control' placeholder='制片人' type='text'
+							name='producer' id='Producer' data-bv-notempty='false'
+							data-bv-notempty-message='制片人 可以为空'>
+					</div>
+				</div>
+				
+				<div class='form-group'>
+					<label class='col-md-2 control-label'>导演</label>
+					<div class='col-md-10'>
+						<input class='form-control' placeholder='导演' type='text'
+							name='director' id='Director' data-bv-notempty='false'
+							data-bv-notempty-message='导演 可以为空'>
+					</div>
+				</div>
+				
+				<div class='form-group'>
+					<label class='col-md-2 control-label'>演员</label>
+					<div class='col-md-10'>
+						<input class='form-control' placeholder='演员' type='text'
+							name='cast' id='Cast' data-bv-notempty='false'
+							data-bv-notempty-message='演员 可以为空'>
+					</div>
+				</div>
+				
+				<div class='form-group'>
+					<label class='col-md-2 control-label'>影片介绍</label>
+					<div class='col-md-10'>
+						<input class='form-control' placeholder='影片介绍' type='text'
+							name='introduction' id='Introduction' data-bv-notempty='false'
+							data-bv-notempty-message='影片介绍 可以为空'>
+					</div>
+				</div>
+				
+				<div class='form-group'>
+					<label class='col-md-2 control-label'>评分</label>
+					<div class='col-md-10'>
+						<input class='form-control' placeholder='评分' type='text'
+							name='score' id='Score' data-bv-notempty='false'
+							data-bv-notempty-message='评分 可以为空'>
+					</div>
+				</div>
+				
+				<div class='form-group'>
+					<label class='col-md-2 control-label'>地区</label>
+					<div class='col-md-10'>
+						<input class='form-control' placeholder='地区' type='text'
+							name='area' id='Area' data-bv-notempty='false'
+							data-bv-notempty-message='地区 可以为空'>
+					</div>
+				</div>
+				
+				<div class='form-group'>
+					<label class='col-md-2 control-label'>类型</label>
+					<div class='col-md-10'>
+						<input class='form-control' placeholder='类型' type='text'
+							name='type' id='Type' data-bv-notempty='false'
+							data-bv-notempty-message='类型 可以为空'>
+					</div>
+				</div>
+				
+				<div class='form-group'>
+					<label class='col-md-2 control-label'>语言</label>
+					<div class='col-md-10'>
+						<input class='form-control' placeholder='语言' type='text'
+							name='language' id='Language' data-bv-notempty='false'
+							data-bv-notempty-message='语言 可以为空'>
+					</div>
+				</div>
+				
+				<div class='form-group'>
+					<label class='col-md-2 control-label'>是否通过<font
+						style="color: red">*</font></label>
+					<div class='col-md-10'>
+						<select class="form-control" id="Status" name="status">
+							<option selected="selected">请选择...</option>
+							<option value="1">通过</option>
+							<option value="0">不通过</option>
+						</select>
+					</div>
+				</div>
+				
+				<div class='form-group'>
+					<label class='col-md-2 control-label'>图片</label>
+					<div class='col-md-10'>
+						<input class='form-control' placeholder='图片' type='text'
+							name='image' id='Image' data-bv-notempty='false'
+							data-bv-notempty-message='图片 可以为空'>
+					</div>
+				</div>
+
+				<div class='form-group'>
+					<label class='col-md-2 control-label'>预告片</label>
+					<div class='col-md-10'>
+						<input class='form-control' placeholder='预告片' type='text'
+							name='trailer' id='Trailer' data-bv-notempty='false'
+							data-bv-notempty-message='预告片 可以为空'>
+					</div>
+				</div>
+
+				<div class="form-actions">
+					<div class="row" align="center">
+						<div class="col-md-12">
+							<button class="btn btn-primary"
+								onclick="location.href='cinemaList.html'">返回</button>
+							<button class="btn btn-primary" type="submit" onclick="add()">
+								<i class="fa fa-save"></i> 保存
+							</button>
+						</div>
+					</div>
+				</div>
+
+			</fieldset>
+		</form>
+	</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript"
+		src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use([ 'layer', 'laydate' ], function() {
+			var layer = layui.layer;
+			var laydate = layui.laydate;
+		    laydate.render({
+		       elem: '#PublishDate',
+		       type: 'datetime'
+		    });
+		});
+
+		function add() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+			if (!bootstrapValidator.isValid()) {
+				return;
+			}
+
+			var formdata = $("#form").serializeObject();
+
+			$.ajax({
+				type : 'post',
+				url : '/filminfos',
+				contentType : "application/json; charset=utf-8",
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("添加成功", {
+						shift : -1,
+						time : 1000
+					}, function() {
+						location.href = "FilminfoList.html";
+					});
+				}
+			});
+		}
+	</script>
+</body>
+</html>
