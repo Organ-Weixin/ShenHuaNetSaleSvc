@@ -103,6 +103,6 @@
 
 		</set>
 
-		where t.Code = #{Code}
+		where t.Id = #{Id}
 	</update>
 </mapper>
