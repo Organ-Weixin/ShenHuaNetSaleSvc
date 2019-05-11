@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="../../layui/css/layui.css" media="all" />
+</head>
+<body>
+    <div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div>
+                <header style="height: 100%">
+                    <div align="left">
+	                    <table style="width: 100%">
+	                   		<tr>
+	                   			<td>
+		                   			<form class="form-inline" onsubmit="return false">
+										<div class="form-group">
+																							
+					<!--根据手机号搜索对应用户信息-->				
+						<input id="mobilephone" type="text" class="form-control" placeholder="手机号">&nbsp;&nbsp;
+						<!--根据手机号搜索对应用户信息-->				
+						<input id="nickname" type="text" class="form-control" placeholder="用户昵称">&nbsp;&nbsp;
+											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
+										</div>
+									</form>
+	                   			</td>
+	                   			<td align="right">
+	                   				<!-- <button class="layui-btn layui-btn-sm" onclick="location.href='addTicketusers.html'">
+                                      <i class="layui-icon">&#xe608;</i> 添加
+                                    </button> -->
+	                   			</td>
+	                   		</tr> 
+	                    </table>
+					</div>
+                </header>
+                
+                <div>
+                    <div class="widget-body no-padding">
+                        <table id="dt-table" class="table table-striped table-bordered table-hover" style="width:100%">
+                            <thead>
+                                <tr>
+                                </tr>                       
+                                <tr>
+									<th>#</th>
+									<th>手机号</th>
+									<th>是否通过验证</th>
+									<th>用户昵称</th>
+									<th>用户性别</th>
+									<th>用户所在国家</th>
+									<th>用户所在省份</th>
+									<th>用户所在城市</th>
+									<th>用户头像</th>
+								  <!-- <th>操作</th>   -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/jq.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript" src="../../js/my/permission.js"></script>
+<script type="text/javascript" src="../../js/dict.js"></script>
+<script type="text/javascript">
+
+var pers = checkPermission();
+var Sex = showDictSelect("sex", "Sex", true);
+
+var isActive = showDictSelect("isActive", "isActive", true);
+
+var example;
+function init(){
+	example = 
+    	$('#dt-table').DataTable({
+        	"searching": false,
+        	"processing": false,
+        	"serverSide" : true,
+        	"ordering":false,
+        	"language": {
+                "url": "/js/plugin/datatables/Chinese.lang"
+            },
+        	"ajax": {
+        		"url" : "/ticketuserss",
+        		"type":"get",
+        		"data":function(d){
+        			d.Id = $("#id").val();
+    				d.MobilePhone = $("#mobilephone").val();
+    				d.NickName = $("#nickname").val();
+    			}
+        	},
+        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
+            "columns": [
+            	{"data" : "id", "defaultContent" : ""},
+				{"data" : "mobilePhone", "defaultContent" : ""},
+				{"data" : "isActive", "defaultContent" : "",
+					"render": function (data, type, row) {
+                	return isActive[data];
+              	}		},
+				{"data" : "nickName", "defaultContent" : ""},
+				{"data" : "sex", "defaultContent" : "",
+					"render": function (data, type, row) {
+                    	return Sex[data];
+                  	}		},
+				{"data" : "country", "defaultContent" : ""},
+				{"data" : "province", "defaultContent" : ""},
+				{"data" : "city", "defaultContent" : ""},
+				/* {"data" : "headImgUrl", "defaultContent" : ""}, */
+				{
+					"data":"headImgUrl",
+					"defaultContent": "",
+					"render":function(data,type,row){
+						 var headImgUrl = row['headImgUrl'];
+		       var img = "<img id='pic' style='width:32px;height: 32px;' src='"+headImgUrl+"'>";
+					  	return img;
+					}
+				},
+            
+				/* { 
+								"data": "", 
+								"defaultContent": "",
+								"orderable":false,
+						        "render": function (data, type, row) {
+                		           var id = row['id'];
+                		           var href = "updateTicketusers.html?id=" + id;
+                                   var edit = buttonEdit(href, "", pers);
+                		           var del = buttonDel(id, "", pers);
+                                   return edit + del;
+                  	            }		
+							}, */
+                
+            ],
+           "order": [[ 0, "asc" ]]
+        } );
+}
+
+layui.use('layer', function(){
+    var layer = layui.layer;
+});
+
+function del(id){
+	layer.confirm('确定要删除吗？', {
+        btn : [ '确定', '取消' ]
+    }, function() {
+    	$.ajax({
+            type : 'delete',
+            url : '/ticketuserss/'+id,
+            success : function(data) {
+                example.ajax.reload();
+                layer.msg("删除成功");
+            }
+        });
+        
+        layer.close(1);
+    });
+}
+
+$("#searchBt").click(function(){
+	example.ajax.reload();
+});
+
+init();
+</script>
