@@ -1555,7 +1555,7 @@ public class YkInterface implements ICTMSInterface {
 					newGoods.setIsRecommand(0); 	//接口无返回，默认0
 					newGoods.setStockCount(0);		//接口无返回，默认0
 					newGoods.setShowSeqNo(0);		//接口无返回，默认0
-					newGoods.setGoodsStatus(0); 	//接口无返回，默认0
+					newGoods.setGoodsStatus(1); 	//接口无返回，默认0
 					YkModelMapper.MapToEntity(goods, newGoods);
 					goodslist.add(newGoods);
 				}

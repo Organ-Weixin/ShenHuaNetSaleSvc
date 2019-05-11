@@ -41,9 +41,9 @@
 	
 	<sql id="whereByroleId">
 		<where>
-			<if test="params.roleId == 4 ">
+			<if test="params.roleId != 1 ">
 				CinemaCode in (select CinemaCode from sys_user sy,(select id from sys_user where username = #{params.username})s
-											where  sy.roleId=4 and (sy.username = #{params.username}  or  sy.createUserId = s.id)) 
+											where  sy.username = #{params.username}  or  sy.createUserId = s.id) 
 			</if>
 		</where>
 	</sql>
