@@ -29,7 +29,6 @@ public class CouponsgroupServiceImpl implements CouponsgroupService{
 	}
 	@Override
 	public Couponsgroup getByGroupCode(String groupcode) {
-		// TODO Auto-generated method stub
 		return couponsgroupDao.getByGroupCode(groupcode);
 	}
 	

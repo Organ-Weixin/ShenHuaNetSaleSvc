@@ -10,7 +10,7 @@ public interface CouponsgroupService {
 	Couponsgroup getByGroupCode(String  groupcode);
 	
 	List<Couponsgroup> getByCinemaCode(String cinemacode);
-	
+	    
 	int changeStatus(Integer status,Long id);
 	
 }

@@ -5,63 +5,62 @@
 
 	<sql id="where">
 		<where>
-			<if test="params.Id != null and params.Id != ''">
-				and Id = #{params.Id} 
-			</if>
 			<if test="params.CinemaCode != null and params.CinemaCode != ''">
 				and CinemaCode = #{params.CinemaCode} 
 			</if>
-			<if test="params.UserId != null and params.UserId != ''">
-				and UserId = #{params.UserId} 
-			</if>
-			<if test="params.GoodsCode != null and params.GoodsCode != ''">
-				and GoodsCode = #{params.GoodsCode} 
-			</if>
 			<if test="params.GoodsName != null and params.GoodsName != ''">
-				and GoodsName = #{params.GoodsName} 
+				and GoodsName like concat('%', #{params.GoodsName}, '%') 
 			</if>
 			<if test="params.GoodsType != null and params.GoodsType != ''">
 				and GoodsType = #{params.GoodsType} 
 			</if>
-			<if test="params.StandardPrice != null and params.StandardPrice != ''">
-				and StandardPrice = #{params.StandardPrice} 
-			</if>
-			<if test="params.SettlePrice != null and params.SettlePrice != ''">
-				and SettlePrice = #{params.SettlePrice} 
-			</if>
-			<if test="params.GoodsPic != null and params.GoodsPic != ''">
-				and GoodsPic = #{params.GoodsPic} 
-			</if>
-			<if test="params.StockCount != null and params.StockCount != ''">
-				and StockCount = #{params.StockCount} 
-			</if>
-			<if test="params.GoodsDesc != null and params.GoodsDesc != ''">
-				and GoodsDesc = #{params.GoodsDesc} 
-			</if>
-			<if test="params.UnitName != null and params.UnitName != ''">
-				and UnitName = #{params.UnitName} 
-			</if>
-			<if test="params.ShowSeqNo != null and params.ShowSeqNo != ''">
-				and ShowSeqNo = #{params.ShowSeqNo} 
-			</if>
-			<if test="params.IsDiscount != null and params.IsDiscount != ''">
-				and IsDiscount = #{params.IsDiscount} 
-			</if>
-			<if test="params.GoodsKey != null and params.GoodsKey != ''">
-				and GoodsKey = #{params.GoodsKey} 
-			</if>
 			<if test="params.GoodsStatus != null and params.GoodsStatus != ''">
 				and GoodsStatus = #{params.GoodsStatus} 
-			</if>
-			<if test="params.IsRecommand != null and params.IsRecommand != ''">
-				and IsRecommand = #{params.IsRecommand} 
-			</if>
-			<if test="params.IsPackage != null and params.IsPackage != ''">
-				and IsPackage = #{params.IsPackage} 
 			</if>
 		
 		</where>
 	</sql>
+	
+
+	<select id="count" resultType="int">
+		select count(1) from (select g.*,c.Name AS CinemaName	from goods g
+							  left join (select * from cinema where isDel=0) c on g.CinemaCode=c.code <include refid="whereByroleId" />) t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Goods">
+		select * from (select g.*,c.Name AS CinemaName	from goods g
+						left join (select * from cinema where isDel=0) c on g.CinemaCode=c.code <include refid="whereByroleId" />) t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+	<sql id="whereByroleId">
+		<where>
+			<if test="params.roleId == 1 ">
+				g.cinemaCode in (select cinemaCode from sys_user) 
+			</if>
+			<if test="params.roleId != 1 ">
+				g.cinemaCode in (select CinemaCode from sys_user sy  where sy.id = #{params.id}  or  sy.createUserId = #{params.roleId})
+			</if>
+		</where>
+	</sql>
+	
+	
+<<<<<<< HEAD
+=======
+	<select id="getGoodsByCinemaCode" resultType="Goods">
+		select * from goods where cinemacode in (
+			select ss.cinemacode from sys_user ss,(select id,cinemacode,cinemaname from sys_user where roleid = 4 and status = 1) s
+			 <if test='roleId!=1'>
+				,(select id from sys_user <include refid="getId"/> ) sss
+			 </if>
+				where ss.id = s.id
+			 <if test='roleId!=1'>
+				and (ss.createuserid = sss.id or ss.id = sss.id)
+			 </if>
+		)
+	</select>
 	<sql id="getId">
 		<where>
 			<if test="id !=null and id !='' ">
@@ -69,19 +68,9 @@
 			</if>
 		</where>
 	</sql>
-
-	<select id="count" resultType="int">
-		select count(1) from goods t
-		<include refid="where" />
-	</select>
-
-	<select id="list" resultType="Goods">
-		select * from goods t
-		<include refid="where" />
-		${params.orderBy}
-		limit #{offset}, #{limit}
-	</select>
 	
+
+>>>>>>> branch 'master' of https://github.com/Organ-Weixin/ShenHuaNetSaleSvc.git
 	<update id="update">
 		update goods t
 		<set>
