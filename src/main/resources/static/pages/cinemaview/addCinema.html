@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>影院配置-影院管理-添加影院</title>
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+		<h1>基础信息</h1>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院编码<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='' type='text' name='code' id='Code' data-bv-notempty='true' data-bv-notempty-message='影院编码不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院名称<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='' type='text' name='name' id='Name' data-bv-notempty='true' data-bv-notempty-message='影院名称不能为空'>
+				</div>
+			</div>
+					<div class='form-group'>
+				<label class='col-md-2 control-label'>中间件<font style="color:red">*</font></label>
+					<div class='col-md-10'>
+						<select class="form-control" name="mid" id="Mid" >
+							<option selected="selected" value="">请选择...</option>
+							<option value="1">辰星科技</option>
+							<option value="3">鼎新</option>
+							<option value="4">满天星</option>
+							<option value="5">满天星2</option>
+							<option value="6">1905网</option>
+							<option value="7">衢州裕丰影城</option>
+							<option value="13">太平国际环球影城</option>
+							<option value="16">上海川沙影剧院</option>
+							<option value="19">江山蒙太奇影城</option>
+							<option value="26">辰星科技2</option>
+							<option value="27">蓝钻时光下沙店</option>
+							<option value="35">沙湾影剧院</option>
+							<option value="41">满天星3</option>
+							<option value="54">粤科</option>
+							<option value="55">满天星4</option>
+							<option value="58">VISTA</option>
+							<option value="59">吉大满天星</option>
+							<option value="60">电影1905</option>
+						</select>
+					</div>
+				</div>
+					<div class='form-group'>
+				<label class='col-md-2 control-label'>联系人</font></label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='' type='text' name='contactName' id='ContactName' data-bv-notempty='true' data-bv-notempty-message='联系人不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>联系人电话</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='' type='text' name='contactMobile' id='ContactMobile' data-bv-notempty='true' data-bv-notempty-message='联系人电话不能为空'>
+				</div>
+			</div>
+					<div class='form-group'>
+				<label class='col-md-2 control-label'>所属院线<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					<select class="form-control" id="TheaterChain" name="theaterChain">
+							<option selected="selected" value="">请选择...</option>
+							<option value="1">万达院线</option>
+							<option value="2">大地院线</option>
+							<option value="3">上海联和院线</option>
+							<option value="4">中影星美院线</option>
+							<option value="5">中影南方新干线</option>
+							<option value="6">中数院线</option>
+							<option value="7">金逸珠江院线</option>
+							<option value="8">横店院线</option>
+							<option value="9">时代院线</option>
+							<option value="10">华夏联合院线</option>
+							<option value="11">江苏幸福蓝海院线</option>
+							<option value="12">四川太平洋</option>
+							<option value="13">北京新影联院线</option>
+							<option value="14">保利万和院线</option>
+							<option value="15">时代华夏今典院线</option>
+							<option value="16">深影橙天院线</option>
+							<option value="17">湖北银兴院线</option>
+							<option value="18">河南奥斯卡</option>
+							<option value="19">辽宁中影北方</option>
+							<option value="20">北京红鲤鱼院线</option>
+							<option value="21">武汉天河院线</option>
+							<option value="22">浙江星光院线</option>
+							<option value="23">湖南潇湘院线</option>
+							<option value="24">上海大光明院线</option>
+							<option value="25">福建中兴院线</option>
+							<option value="26">山东新世纪</option>
+							<option value="27">温州雁荡院线</option>
+							<option value="28">世纪环球院线</option>
+							<option value="29">长城沃美</option>
+							<option value="30">江苏东方院线</option>
+							<option value="31">九州中原</option>
+							<option value="32">河北中联院线</option>
+							<option value="33">江西星河院线</option>
+							<option value="34">湖南楚湘院线</option>
+							<option value="35">吉林吉影院线</option>
+							<option value="36">鲁信院线</option>
+							<option value="37">华夏新华大地院线</option>
+							<option value="38">中广院线</option>
+							<option value="39">四川峨眉院线</option>
+							<option value="40">贵州星空院线</option>
+							<option value="41">新疆华夏天山院线</option>
+							<option value="42">内蒙古民族院线</option>
+							<option value="43">西安长安院线</option>
+							<option value="44">北京明星时代院线</option>
+							<option value="45">上海弘歌院线</option>
+							<option value="46">天津银光院线</option>
+							<option value="47">新疆电影公司</option>
+							<option value="48">华夏星火院线</option>
+						</select>
+				</div>
+			</div>
+				<div class='form-group'>
+				<label class='col-md-2 control-label'>影院地址</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='' type='text' name='address' id=Address data-bv-notempty='true' data-bv-notempty-message='影院地址不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>状态<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					<select class="form-control" name="isOpen"  id="IsOpen">
+								<option selected="selected" value="">请选择...</option>
+							<option value="1">开通</option>
+							<option value="2">关闭</option>
+						</select>
+				</div>
+			</div>
+				<div class='form-group'>
+				<label class='col-md-2 control-label'>小卖配送<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					<select class="form-control" id="IsSnackDistribution" name="isSnackDistribution">
+								<option selected="selected" value="">请选择...</option>
+							<option value="1">是</option>
+							<option value="0">否</option>
+						</select>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院所在位置纬度</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='' type='text' name='latitude' id='Latitude' data-bv-notempty='true' data-bv-notempty-message='影院所在位置纬度'>
+				</div>
+			</div>
+				<div class='form-group'>
+				<label class='col-md-2 control-label'>影院所在位置经度</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='' type='text' name='longitude' id='Longitude' data-bv-notempty='true' data-bv-notempty-message='影院所在位置经度'>
+				</div>
+			</div>
+					<div class='form-group'>
+				<label class='col-md-2 control-label'>是否开通套餐<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					<select class="form-control" id="IsOpenSnacks" name="isOpenSnacks">
+								<option selected="selected" value="">请选择...</option>
+								<option value="1">开通</option>
+							<option value="0">关闭</option>
+						</select>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>购票提示</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='' type='text' name='ticketHint' id='TicketHint' data-bv-notempty='true' data-bv-notempty-message='购票提示'>
+				</div>
+			</div>
+			
+				<div class='form-group'>
+				<label class='col-md-2 control-label'>影院标签</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='' type='text' name='cinemaLabel' id='CinemaLabel' data-bv-notempty='true' data-bv-notempty-message='影院标签'>
+				</div>
+			</div>
+				<div class='form-group'>
+				<label class='col-md-2 control-label'>影院电话</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='' type='text' name='cinemaPhone' id=CinemaPhone data-bv-notempty='true' data-bv-notempty-message='影院电话'>
+				</div>
+			</div>
+				</div> 
+				<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					<button class="btn btn-primary" type="submit" onclick="add()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					    <button class="btn btn-primary" onclick="location.href='cinemaviewList.html'">取消</button>
+						
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		});
+		
+		function add() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var formdata = $("#form").serializeObject();
+
+			$.ajax({
+				type : 'post',
+				url : '/cinemas',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("添加成功", {shift: -1, time: 1000}, function(){
+                        location.href = "cinemaviewList.html";
+                    });
+				}
+			});
+		}
+		
+	</script>
+</body>
+</html>
