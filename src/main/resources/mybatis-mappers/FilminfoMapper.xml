@@ -114,7 +114,7 @@
 
 		</set>
 
-		where t.FilmCode = #{FilmCode}
+		where t.Id = #{Id}
 	</update>
 	
 

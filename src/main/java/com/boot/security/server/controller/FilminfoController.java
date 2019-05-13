@@ -1,6 +1,10 @@
 package com.boot.security.server.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,7 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.boot.security.server.page.table.PageTableRequest;
 import com.boot.security.server.page.table.PageTableHandler;
@@ -45,9 +52,8 @@ public class FilminfoController {
 
     @PutMapping
     @ApiOperation(value = "修改")
-    public Filminfo update(@RequestBody Filminfo filminfo) {
-        filminfoDao.update(filminfo);
-
+    public Filminfo update(@RequestBody Filminfo filminfo){
+    	filminfoDao.update(filminfo);
         return filminfo;
     }
 

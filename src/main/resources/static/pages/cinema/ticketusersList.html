@@ -18,22 +18,19 @@
 	                   			<td>
 		                   			<form class="form-inline" onsubmit="return false">
 										<div class="form-group">
-											渠道：
-											<select class="form-control input-sm" id="channel" style="width:150px;">
-												<option value="">渠道</option>
-											</select>
-											排期时间：
-											<input id="sessionDate" type="text" class="form-control" placeholder="排期时间">
-											关键字：
-											<input id="keyword" type="text" class="form-control" placeholder="请输入搜索关键字">
+																							
+					<!--根据手机号搜索对应用户信息-->				
+						<input id="mobilephone" type="text" class="form-control" placeholder="手机号">&nbsp;&nbsp;
+						<!--根据手机号搜索对应用户信息-->				
+						<input id="nickname" type="text" class="form-control" placeholder="用户昵称">&nbsp;&nbsp;
 											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
 										</div>
 									</form>
 	                   			</td>
 	                   			<td align="right">
-	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='getNewSessioninfo.html'">
-                                      <i class="layui-icon">&#xe608;</i> 重新获取排期
-                                    </button>
+	                   				<!-- <button class="layui-btn layui-btn-sm" onclick="location.href='addTicketusers.html'">
+                                      <i class="layui-icon">&#xe608;</i> 添加
+                                    </button> -->
 	                   			</td>
 	                   		</tr> 
 	                    </table>
@@ -48,17 +45,15 @@
                                 </tr>                       
                                 <tr>
 									<th>#</th>
-									<th>影院名称</th>
-									<th>渠道名称</th>
-									<th>影片名称</th>
-									<th>影厅名称</th>
-									<th>放映时间</th>
-									<th>时长(分钟)</th>
-									<th>语言</th>
-									<th>标准价</th>
-									<th>最低价</th>
-									<th>设置价</th>
-									<th>操作</th>
+									<th>手机号</th>
+									<th>是否通过验证</th>
+									<th>用户昵称</th>
+									<th>用户性别</th>
+									<th>用户所在国家</th>
+									<th>用户所在省份</th>
+									<th>用户所在城市</th>
+									<th>用户头像</th>
+								  <!-- <th>操作</th>   -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -78,8 +73,13 @@
 <script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="../../layui/layui.js"></script>
 <script type="text/javascript" src="../../js/my/permission.js"></script>
+<script type="text/javascript" src="../../js/dict.js"></script>
 <script type="text/javascript">
+
 var pers = checkPermission();
+var Sex = showDictSelect("sex", "Sex", true);
+
+var isActive = showDictSelect("isActive", "isActive", true);
 
 var example;
 function init(){
@@ -88,87 +88,84 @@ function init(){
         	"searching": false,
         	"processing": false,
         	"serverSide" : true,
+        	"ordering":false,
         	"language": {
                 "url": "/js/plugin/datatables/Chinese.lang"
             },
         	"ajax": {
-        		"url" : "/sessioninfoviews",
+        		"url" : "/ticketuserss",
         		"type":"get",
         		"data":function(d){
-    				d.Company = $("#channel").val();
-    				d.StartTime = $("#sessionDate").val();
-    				d.FilmName = $("#keyword").val();
+        			d.Id = $("#id").val();
+    				d.MobilePhone = $("#mobilephone").val();
+    				d.NickName = $("#nickname").val();
     			}
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
             "columns": [
-            	{	"data" : null, 
-            		"defaultContent" : "",
-					"render" : function(data, type, full, meta){
-						return meta.row + 1 + meta.settings._iDisplayStart;
-						}
-				},
-				{"data" : "cinemaName","defaultContent": ""},
-				{"data" : "company","defaultContent": ""},
-				{"data" : "filmName", "defaultContent" : ""},
-				{"data" : "screenName","defaultContent": ""},
-				{"data" : "startTime", "defaultContent" : ""},
-				{"data" : "duration", "defaultContent" : ""},
-				{"data" : "language", "defaultContent" : ""},
-				{"data" : "standardPrice", "defaultContent" : ""},
-				{"data" : "lowestPrice", "defaultContent" : ""},
-				{
-					"data" : "price", 
-					"defaultContent" : "0",
+            	{"data" : "id", "defaultContent" : ""},
+				{"data" : "mobilePhone", "defaultContent" : ""},
+				{"data" : "isActive", "defaultContent" : "",
 					"render": function (data, type, row) {
-                		var price = row['price'];
-                      
-                        return price;
-                  	}
+                	return isActive[data];
+              	}		},
+				{"data" : "nickName", "defaultContent" : ""},
+				{"data" : "sex", "defaultContent" : "",
+					"render": function (data, type, row) {
+                    	return Sex[data];
+                  	}		},
+				{"data" : "country", "defaultContent" : ""},
+				{"data" : "province", "defaultContent" : ""},
+				{"data" : "city", "defaultContent" : ""},
+				/* {"data" : "headImgUrl", "defaultContent" : ""}, */
+				{
+					"data":"headImgUrl",
+					"defaultContent": "",
+					"render":function(data,type,row){
+						 var headImgUrl = row['headImgUrl'];
+		       var img = "<img id='pic' style='width:32px;height: 32px;' src='"+headImgUrl+"'>";
+					  	return img;
+					}
 				},
-				{ 
-					"data": "", 
-					"sDefaultContent": "",
-					"orderable":false,
-			        "render": function (data, type, row) {
-             		           var id=row['id'];		
-             		           var href = "updateSessioninfo.html?Id=" + id;
-                               var edit = buttonEdit(href, "", pers,row);
-
-                                return edit;
-               	            }		
-				},
+            
+				/* { 
+								"data": "", 
+								"defaultContent": "",
+								"orderable":false,
+						        "render": function (data, type, row) {
+                		           var id = row['id'];
+                		           var href = "updateTicketusers.html?id=" + id;
+                                   var edit = buttonEdit(href, "", pers);
+                		           var del = buttonDel(id, "", pers);
+                                   return edit + del;
+                  	            }		
+							}, */
                 
             ],
            "order": [[ 0, "asc" ]]
         } );
 }
 
-getCompany();
-function getCompany(){
-	$.ajax({
-        type:"post",
-        url:"/sessioninfoviews/getCompany",
-        success:function(data){
-			for(var i=0; i<data.length;i++){
-				var option = "<option value="+data[i].company+">"+data[i].company+"</option>";
-				$("#channel").append(option);
-			}
-        },
-        error:function(){
-            J.alert('Error');
-        }
-    })
-}
-
-
-layui.use(['layer','laydate'], function(){
+layui.use('layer', function(){
     var layer = layui.layer;
-    var laydate = layui.laydate;
-    laydate.render({
-       elem: '#sessionDate',
-    });
 });
+
+function del(id){
+	layer.confirm('确定要删除吗？', {
+        btn : [ '确定', '取消' ]
+    }, function() {
+    	$.ajax({
+            type : 'delete',
+            url : '/ticketuserss/'+id,
+            success : function(data) {
+                example.ajax.reload();
+                layer.msg("删除成功");
+            }
+        });
+        
+        layer.close(1);
+    });
+}
 
 $("#searchBt").click(function(){
 	example.ajax.reload();

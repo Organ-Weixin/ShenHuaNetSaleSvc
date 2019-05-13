@@ -12,7 +12,6 @@ public class Cinema extends BaseEntity<Long> {
 	private String City;
 	private String Address;
 	private Integer ScreenCount;
-	private Integer IsDel;
 	private Integer ManualAdd;
 	private Integer IsOpen;
 	private String ContactName;
@@ -76,12 +75,6 @@ public class Cinema extends BaseEntity<Long> {
 	}
 	public void setScreenCount(Integer ScreenCount) {
 		this.ScreenCount = ScreenCount;
-	}
-	public Integer getIsDel() {
-		return IsDel;
-	}
-	public void setIsDel(Integer IsDel) {
-		this.IsDel = IsDel;
 	}
 	public Integer getManualAdd() {
 		return ManualAdd;

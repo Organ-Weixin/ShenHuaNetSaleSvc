@@ -36,4 +36,10 @@ public interface CouponsDao {
     int count(@Param("params") Map<String, Object> params);
 
     List<Coupons> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+
+    @Select("select * from coupons t where t.openid = #{openid}")
+    List<Coupons> getByOpenID(String openid);
+    
+    @Select("select * from coupons t where t.groupcode = #{groupcode}")
+    Coupons getByGroupCode(String groupcode);
 }

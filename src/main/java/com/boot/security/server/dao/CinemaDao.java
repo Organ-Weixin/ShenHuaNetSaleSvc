@@ -28,7 +28,7 @@ public interface CinemaDao {
     @Update("update  cinema set Name=#{Name},Address=#{Address},ScreenCount=#{ScreenCount},CinemaId=#{CinemaId} where Code=#{Code}")
     int updateByCode(Cinema cinema);
     
-    @Insert("insert into cinema(MId, Code, Name, Province, City, Address, ScreenCount, IsDel, ManualAdd, IsOpen, ContactName, ContactMobile, TheaterChain, Latitude, Longitude, IsOpenSnacks, CinemaPhone, TicketHint, CinemaLabel, IsSnackDistribution, Created, Updated, CinemaId) values(#{MId}, #{Code}, #{Name}, #{Province}, #{City}, #{Address}, #{ScreenCount}, #{IsDel}, #{ManualAdd}, #{IsOpen}, #{ContactName}, #{ContactMobile}, #{TheaterChain}, #{Latitude}, #{Longitude}, #{IsOpenSnacks}, #{CinemaPhone}, #{TicketHint}, #{CinemaLabel}, #{IsSnackDistribution}, #{Created}, #{Updated}, #{CinemaId})")
+    @Insert("insert into cinema(MId, Code, Name, Province, City, Address, ScreenCount, ManualAdd, IsOpen, ContactName, ContactMobile, TheaterChain, Latitude, Longitude, IsOpenSnacks, CinemaPhone, TicketHint, CinemaLabel, IsSnackDistribution, Created, Updated, CinemaId) values(#{MId}, #{Code}, #{Name}, #{Province}, #{City}, #{Address}, #{ScreenCount}, #{ManualAdd}, #{IsOpen}, #{ContactName}, #{ContactMobile}, #{TheaterChain}, #{Latitude}, #{Longitude}, #{IsOpenSnacks}, #{CinemaPhone}, #{TicketHint}, #{CinemaLabel}, #{IsSnackDistribution}, #{Created}, #{Updated}, #{CinemaId})")
     int save(Cinema cinema);
   
     int update(Cinema cinema);
@@ -37,7 +37,6 @@ public interface CinemaDao {
 
     List<Cinema> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
     
-    //获取未删除的影院
-    @Select("select * from cinema t where t.IsDel= 0")
-    List<Cinema> getCinemas();
+    //获取当前登陆用户的影院
+    List<Cinema> getCinemasByUser(@Param("roleId") Long roleId, @Param("username") String username);
 }

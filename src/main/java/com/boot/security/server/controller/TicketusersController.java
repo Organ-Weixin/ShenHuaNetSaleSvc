@@ -17,40 +17,38 @@ import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
-import com.boot.security.server.utils.UserUtil;
-import com.boot.security.server.dao.CinemaDao;
-import com.boot.security.server.model.Cinema;
-import com.boot.security.server.model.SysUser;
+import com.boot.security.server.dao.TicketusersDao;
+import com.boot.security.server.model.Ticketusers;
 
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/cinemas")
-public class CinemaController {
+@RequestMapping("/ticketuserss")
+public class TicketusersController {
 
     @Autowired
-    private CinemaDao cinemaDao;
+    private TicketusersDao ticketusersDao;
 
     @PostMapping
     @ApiOperation(value = "保存")
-    public Cinema save(@RequestBody Cinema cinema) {
-        cinemaDao.save(cinema);
+    public Ticketusers save(@RequestBody Ticketusers ticketusers) {
+        ticketusersDao.save(ticketusers);
 
-        return cinema;
+        return ticketusers;
     }
 
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取")
-    public Cinema get(@PathVariable Long id) {
-    	return cinemaDao.getById(id);
+    public Ticketusers get(@PathVariable Long id) {
+        return ticketusersDao.getById(id);
     }
-    
+
     @PutMapping
     @ApiOperation(value = "修改")
-    public Cinema update(@RequestBody Cinema cinema) {
-        cinemaDao.update(cinema);
+    public Ticketusers update(@RequestBody Ticketusers ticketusers) {
+        ticketusersDao.update(ticketusers);
 
-        return cinema;
+        return ticketusers;
     }
 
     @GetMapping
@@ -60,13 +58,13 @@ public class CinemaController {
 
             @Override
             public int count(PageTableRequest request) {
-                return cinemaDao.count(request.getParams());
+                return ticketusersDao.count(request.getParams());
             }
         }, new ListHandler() {
 
             @Override
-            public List<Cinema> list(PageTableRequest request) {
-                return cinemaDao.list(request.getParams(), request.getOffset(), request.getLimit());
+            public List<Ticketusers> list(PageTableRequest request) {
+                return ticketusersDao.list(request.getParams(), request.getOffset(), request.getLimit());
             }
         }).handle(request);
     }
@@ -74,15 +72,6 @@ public class CinemaController {
     @DeleteMapping("/{id}")
     @ApiOperation(value = "删除")
     public void delete(@PathVariable Long id) {
-        cinemaDao.delete(id);
-    }
-    
-    @GetMapping("/getCinemas")
-    @ApiOperation(value = "获取登陆用户影院")
-    public List<Cinema> getCinemas() {
-    	//获取当前登陆人信息
-    	SysUser sysuser = UserUtil.getLoginUser();
-    	
-    	return cinemaDao.getCinemasByUser(sysuser.getRoleId(),sysuser.getUsername());
+        ticketusersDao.delete(id);
     }
 }
