@@ -1658,14 +1658,18 @@ public class YkInterface implements ICTMSInterface {
 				if("goods_success".equals(ykResult.getData().getData().getOrderStatus())){
 					order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
 					order.getOrderBaseInfo().setSubmitTime(new Date());
+				} else {
+					order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.SubmitFail.getStatusCode());
 				}
 				reply.Status = StatusEnum.Success;
 			} else {
 				reply.Status = StatusEnum.Failure;
+				order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.SubmitFail.getStatusCode());
 			}
 			reply.ErrorCode = ykResult.getData().getBizCode();
 			reply.ErrorMessage=ykResult.getData().getBizMsg();
 		} else {
+			order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.SubmitFail.getStatusCode());
 			reply.Status = StatusEnum.Failure;
 			reply.ErrorCode = ykResult.getRetCode();
 			reply.ErrorMessage = ykResult.getRetMsg();
