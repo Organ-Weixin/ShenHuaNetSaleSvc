@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<h1>基础信息</h1>
+			<input type="hidden" id="Id" name="id">
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院编码：</label>
+				<div class='col-md-10'>
+					<select class="form-control" name='cinemaCode' id='CinemaCode' data-bv-notempty='true' data-bv-notempty-message='影院 不能为空'>
+						<option value="">请选择影院...</option>
+					</select>
+				</div>
+			</div>
+			<div class='form-group' style="display: none;">
+				<label class='col-md-2 control-label'>影院名称：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='cinemaName' id='CinemaName' data-bv-notempty='true' data-bv-notempty-message='影院名称 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>AppId：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='appId' id='AppId' >
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>AppSecret：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='appSecret' id='AppSecret' >
+				</div>
+			</div>
+			<div class='form-group' style="display: none;">
+				<label class='col-md-2 control-label'>IsDel</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='isDel' id='IsDel' value='0' >
+				</div>
+			</div>
+
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+						<button class="btn btn-primary" type="submit" onclick="add()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+						<button class="btn btn-primary" onclick="location.href='cinemaminiprogramaccountsList.html'">返回</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		});
+		
+		function add() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    $('#CinemaName').val($('#CinemaCode').find("option:selected").text());
+		    var formdata = $("#form").serializeObject();
+
+			$.ajax({
+				type : 'post',
+				url : '/cinemaminiprogramaccountss',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("添加成功", {shift: -1, time: 1000}, function(){
+                        location.href = "cinemaminiprogramaccountsList.html";
+                    });
+				}
+			});
+		}
+		
+		//获取影院
+		getCinema();
+		function getCinema(){
+			$.ajax({
+		        type:"get",
+		        url:"/cinemas/getCinemas",
+		        success:function(data){
+					for(var i=0; i<data.length;i++){
+						var option = "<option value="+data[i].code+">"+data[i].name+"</option>";
+						$("#CinemaCode").append(option);
+					}
+		        },
+		        error:function(){
+		            J.alert('Error');
+		        }
+		    })
+		}
+		
+	</script>
+</body>
+</html>
