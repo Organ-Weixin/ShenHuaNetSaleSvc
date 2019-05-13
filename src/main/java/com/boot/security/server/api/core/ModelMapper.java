@@ -208,7 +208,9 @@ public class ModelMapper {
 		if(entity.getSettlePrice()!=null){
 			goods.setSettlePrice(entity.getSettlePrice().floatValue());
 		}
-		goods.setShowSeqNo(entity.getShowSeqNo());
+		if(entity.getShowSeqNo()!=null){
+			goods.setShowSeqNo(entity.getShowSeqNo());
+		}
 		if(entity.getStandardPrice()!=null){
 			goods.setStandardPrice(entity.getStandardPrice().floatValue());
 		}
