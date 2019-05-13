@@ -21,17 +21,21 @@
 		                   				<input type="hidden" id="roleId">
 		                   				<input type="hidden" id="cinemacodes">
 										<div class="form-group">
-											<input id="cinemacode" type="text" class="form-control" placeholder="影院编码">
-											<input id="cinemaname" type="text" class="form-control" placeholder="影院名称">
+											<select id="CinemaSelect" class="form-control input-sm" name="cinemaCode" data-bv-notempty='true' data-bv-notempty-message='请选择影院'>
+												<option value="">全部影院</option>
+											</select>
+											<input type="text" id="CardNo" class="form-control" placeholder="卡号">
+											<input type="text" id="MobilePhone" class="form-control" placeholder="手机号">
+											<input type="text" id="UserName" class="form-control" placeholder="用户名">
 											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
 										</div>
 									</form>
 	                   			</td>
-	                   			<td align="right">
-	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addCinemaprepaysettings.html'">
+	                   			<!-- <td align="right">
+	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addMembercard.html'">
                                       <i class="layui-icon">&#xe608;</i> 添加
                                     </button>
-	                   			</td>
+	                   			</td> -->
 	                   		</tr> 
 	                    </table>
 					</div>
@@ -46,11 +50,13 @@
                                 <tr>
 									<th>#</th>
 									<th>影院编码</th>
-									<th>影院名称</th>
-									<th>是否支付预付款</th>
-									<th>剩余预付款</th>
-									<th>预付款最低金额</th>
-									<th>操作</th>
+									<th>卡号</th>
+									<th>手机号</th>
+									<th>会员卡等级</th>
+									<th>余额</th>
+									<th>用户名</th>
+									<th>开卡日期</th>
+									<th>有效期</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -70,7 +76,6 @@
 <script type="text/javascript" src="../../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="../../../layui/layui.js"></script>
 <script type="text/javascript" src="../../../js/my/permission.js"></script>
-<script type="text/javascript" src="../../../js/dict.js"></script>
 <script type="text/javascript">
 window.onload=function(){
 	//获取登陆人信息
@@ -87,7 +92,7 @@ window.onload=function(){
 			}
 		});
 	}
-	//获取登陆人的所有影院的影院编码并获取对应的预付款配置
+	//获取登陆人的所有影院的影院编码并获取对应的会员卡
 	function getCinemaCodes(id,roleId){
 		$.ajax({
 			url:'/users/getCinemaName',
@@ -96,6 +101,8 @@ window.onload=function(){
 			success:function(data){
 				var cinemacodes = "";
 				for(var i=0; i<data.length; i++){
+					var option = "<option value='"+data[i].cinemaCode+"' title='"+data[i].cinemaName+"'>"+data[i].cinemaName+"</option>";
+					$("#CinemaSelect").append(option);
 					cinemacodes += data[i].cinemaCode+",";
 				}
 				$("#cinemacodes").val(cinemacodes.substring(0,cinemacodes.length-1));
@@ -105,7 +112,6 @@ window.onload=function(){
 	}
 }
 var pers = checkPermission();
-var Whether = showDictSelect("isUseWxpay", "Whether", true);
 
 var example;
 function init(){
@@ -118,15 +124,17 @@ function init(){
                 "url": "/js/plugin/datatables/Chinese.lang"
             },
         	"ajax": {
-        		"url" : "/cinemaprepaysettingss",
+        		"url" : "/membercards",
         		"type":"get",
         		"data":function(d){
-        			if($("#cinemacode").val()==null||$("#cinemacode").val()==""){
+        			if($("#CinemaSelect").val()==null||$("#CinemaSelect").val()==""){
 	    				d.CinemaCode = $("#cinemacodes").val();
         			}else{
-        				d.CinemaCode = $("#cinemacode").val();
+        				d.CinemaCode = $("#CinemaSelect").val();
         			}
-        			d.CinemaName = $("#cinemaname").val();
+        			d.CardNo = $("#CardNo").val();
+        			d.MobilePhone = $("#MobilePhone").val();
+        			d.UserName = $("#UserName").val();
     			}
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
@@ -137,26 +145,25 @@ function init(){
 						}
 				},
 				{"data" : "cinemaCode", "defaultContent" : "","orderable":false},
-				{"data" : "cinemaName", "defaultContent" : "","orderable":false},
-				{"data" : "isPrePay", "defaultContent" : "","orderable":false,
-					"render":function(data, type, row){
-						return Whether[data];
-					}					
-				},
-				{"data" : "surplusPayment", "defaultContent" : "","orderable":false},
-				{"data" : "lowestPrePayment", "defaultContent" : "","orderable":false},
-				{ 
+				{"data" : "cardNo", "defaultContent" : "","orderable":false},
+				{"data" : "mobilePhone", "defaultContent" : "","orderable":false},
+				{"data" : "levelName", "defaultContent" : "","orderable":false},
+				{"data" : "balance", "defaultContent" : "","orderable":false},
+				{"data" : "userName", "defaultContent" : "","orderable":false},
+				{"data" : "createTime", "defaultContent" : "","orderable":false},
+				{"data" : "expireDate", "defaultContent" : "","orderable":false},
+				/* { 
 								"data": "", 
 								"defaultContent": "",
 								"orderable":false,
 						        "render": function (data, type, row) {
                 		           var id = row['id'];
-                		           var href = "updateCinemaprepaysettings.html?id=" + id;
+                		           var href = "updateMembercard.html?id=" + id;
                                    var edit = buttonEdit(href, "", pers);
                 		           var del = buttonDel(id, "", pers);
                                    return edit + del;
                   	            }		
-							},
+							}, */
                 
             ],
            "order": [[ 0, "asc" ]]
@@ -166,13 +173,14 @@ function init(){
 layui.use('layer', function(){
     var layer = layui.layer;
 });
+
 function del(id){
 	layer.confirm('确定要删除吗？', {
         btn : [ '确定', '取消' ]
     }, function() {
     	$.ajax({
             type : 'delete',
-            url : '/cinemaprepaysettingss/'+id,
+            url : '/membercards/'+id,
             success : function(data) {
                 example.ajax.reload();
                 layer.msg("删除成功");
@@ -182,7 +190,9 @@ function del(id){
         layer.close(1);
     });
 }
-
+$("#CinemaSelect").blur(function(){
+	example.ajax.reload();
+});
 $("#searchBt").click(function(){
 	example.ajax.reload();
 });

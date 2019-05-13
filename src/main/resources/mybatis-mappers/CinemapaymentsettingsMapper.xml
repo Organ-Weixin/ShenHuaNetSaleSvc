@@ -9,10 +9,10 @@
 				and Id = #{params.Id} 
 			</if>
 			<if test="params.CinemaCode != null and params.CinemaCode != ''">
-				and CinemaCode = #{params.CinemaCode} 
+				and (CinemaCode = #{params.CinemaCode} or find_in_set(CinemaCode,#{params.CinemaCode}))
 			</if>
 			<if test="params.CinemaName != null and params.CinemaName != ''">
-				and CinemaName = #{params.CinemaName} 
+				and (CinemaName = #{params.CinemaName} or CinemaName like '%${params.CinemaName}%')
 			</if>
 			<if test="params.IsUseWxpay != null and params.IsUseWxpay != ''">
 				and IsUseWxpay = #{params.IsUseWxpay} 

@@ -9,7 +9,7 @@
 				and Id = #{params.Id} 
 			</if>
 			<if test="params.CinemaCode != null and params.CinemaCode != ''">
-				and CinemaCode = #{params.CinemaCode} 
+				and (CinemaCode = #{params.CinemaCode} or find_in_set(CinemaCode,#{params.CinemaCode}))
 			</if>
 			<if test="params.CardNo != null and params.CardNo != ''">
 				and CardNo = #{params.CardNo} 
@@ -33,7 +33,7 @@
 				and Balance = #{params.Balance} 
 			</if>
 			<if test="params.UserName != null and params.UserName != ''">
-				and UserName = #{params.UserName} 
+				and (UserName = #{params.UserName} or UserName like '%${params.UserName}%')
 			</if>
 			<if test="params.Sex != null and params.Sex != ''">
 				and Sex = #{params.Sex} 

@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
-<link rel="stylesheet" href="../../layui/css/layui.css" media="all" />
+<link rel="stylesheet" type="text/css" media="screen" href="../../../css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="../../../css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="../../../layui/css/layui.css" media="all" />
 </head>
 <body>
     <div>
@@ -17,16 +17,19 @@
 	                   		<tr>
 	                   			<td>
 		                   			<form class="form-inline" onsubmit="return false">
+		                   				<input type="hidden" id="userId">
+		                   				<input type="hidden" id="roleId">
+		                   				<input type="hidden" id="cinemacodes">
 										<div class="form-group">
-											id：
-											<input id="id" type="text" class="form-control" placeholder="id">
+											<input id="cinemacode" type="text" class="form-control" placeholder="影院编码">
+											<input id="cinemaname" type="text" class="form-control" placeholder="影院名称">
 											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
 										</div>
 									</form>
 	                   			</td>
 	                   			<td align="right">
 	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addCinemapaymentsettings.html'">
-                                      <i class="layui-icon">&#xe608;</i> 添加
+                                      <i class="layui-icon">&#xe608;</i> 新建影院支付方式配置
                                     </button>
 	                   			</td>
 	                   		</tr> 
@@ -41,16 +44,11 @@
                                 <tr>
                                 </tr>                       
                                 <tr>
-									<th>Id</th>
-									<th>CinemaCode</th>
-									<th>CinemaName</th>
-									<th>IsUseWxpay</th>
-									<th>WxpayAppId</th>
-									<th>WxpayMchId</th>
-									<th>WxpayKey</th>
-									<th>WxpayRefundCert</th>
-									<th>IsUserMemberCard</th>
-									<th>IsDel</th>
+									<th>#</th>
+									<th>影院编码</th>
+									<th>影院名称</th>
+									<th>是否使用微信</th>
+									<th>是否使用会员卡</th>
 									<th>操作</th>
                                 </tr>
                             </thead>
@@ -65,14 +63,48 @@
 </body>
 </html>
 
-<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="../../js/jq.js"></script>
-<script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
-<script type="text/javascript" src="../../layui/layui.js"></script>
-<script type="text/javascript" src="../../js/my/permission.js"></script>
+<script type="text/javascript" src="../../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../../js/jq.js"></script>
+<script type="text/javascript" src="../../../js/plugin/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="../../../layui/layui.js"></script>
+<script type="text/javascript" src="../../../js/my/permission.js"></script>
+<script type="text/javascript" src="../../../js/dict.js"></script>
 <script type="text/javascript">
+window.onload=function(){
+	//获取登陆人信息
+	initUser();
+	function initUser(){
+		$.ajax({
+			type : 'get',
+			url : '/users/current',
+			async : false,
+			success : function(data) {
+				$("#userId").val(data.id);
+				$("#roleId").val(data.roleId);
+				getCinemaCodes(data.id,data.roleId);
+			}
+		});
+	}
+	//获取登陆人的所有影院的影院编码并获取对应的支付配置
+	function getCinemaCodes(id,roleId){
+		$.ajax({
+			url:'/users/getCinemaName',
+			data:{"id":id,"roleId":roleId},
+			type:'post',
+			success:function(data){
+				var cinemacodes = "";
+				for(var i=0; i<data.length; i++){
+					cinemacodes += data[i].cinemaCode+",";
+				}
+				$("#cinemacodes").val(cinemacodes.substring(0,cinemacodes.length-1));
+				example.ajax.reload();
+			}
+		})
+	}
+}
 var pers = checkPermission();
+var Whether = showDictSelect("isUseWxpay", "Whether", true);
 
 var example;
 function init(){
@@ -88,21 +120,33 @@ function init(){
         		"url" : "/cinemapaymentsettingss",
         		"type":"get",
         		"data":function(d){
-    				d.id = $("#id").val();
+    				if($("#cinemacode").val()==null||$("#cinemacode").val()==""){
+	    				d.CinemaCode = $("#cinemacodes").val();
+        			}else{
+        				d.CinemaCode = $("#cinemacode").val();
+        			}
+    				d.CinemaName = $("#cinemaname").val();
     			}
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
             "columns": [
-				{"data" : "Id", "defaultContent" : ""},
-				{"data" : "CinemaCode", "defaultContent" : ""},
-				{"data" : "CinemaName", "defaultContent" : ""},
-				{"data" : "IsUseWxpay", "defaultContent" : ""},
-				{"data" : "WxpayAppId", "defaultContent" : ""},
-				{"data" : "WxpayMchId", "defaultContent" : ""},
-				{"data" : "WxpayKey", "defaultContent" : ""},
-				{"data" : "WxpayRefundCert", "defaultContent" : ""},
-				{"data" : "IsUserMemberCard", "defaultContent" : ""},
-				{"data" : "IsDel", "defaultContent" : ""},
+            	{"data" : null, "defaultContent" : "","orderable":false,
+					"render" : function(data, type, full, meta){
+						return meta.row + 1 + meta.settings._iDisplayStart;
+						}
+				},
+				{"data" : "cinemaCode", "defaultContent" : "","orderable":false},
+				{"data" : "cinemaName", "defaultContent" : "","orderable":false},
+				{"data" : "isUseWxpay", "defaultContent" : "","orderable":false,
+					"render":function(data, type, row){
+						return Whether[data];
+					}					
+				},
+				{"data" : "isUserMemberCard", "defaultContent" : "","orderable":false,
+					"render":function(data, type, row){
+						return Whether[data];
+					}	
+				},
 				{ 
 								"data": "", 
 								"defaultContent": "",

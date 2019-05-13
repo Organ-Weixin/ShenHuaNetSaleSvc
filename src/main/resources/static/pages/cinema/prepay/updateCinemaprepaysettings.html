@@ -8,21 +8,22 @@
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 	<form class="form-horizontal" onsubmit="return false" id="form">
 		<fieldset>
-			<input type="hidden" id="id" name="id">
+			<input type="hidden" id="Id" name="id">
 			<div class='form-group'>
 				<label class='col-md-2 control-label'>影院名称</label>
 				<div class='col-md-10'>
-					<input type="hidden" id="cinemaCode">
-					<input type="hidden" id="cinemaName" name="cinemaName">
-					<select id="cinemaSelect" class="form-control input-sm" name="cinemaCode" data-bv-notempty='true' data-bv-notempty-message='请选择影院'>
+					<input type="hidden" id="CinemaCode">
+					<input type="hidden" id="CinemaName" name="cinemaName">
+					<select id="CinemaSelect" class="form-control input-sm" name="cinemaCode" data-bv-notempty='true' data-bv-notempty-message='请选择影院'>
 						<option value="">请选择影院...</option>
 					</select>
 				</div>
 			</div>
 			<div class='form-group'>
 				<label class='col-md-2 control-label'>是否支付预付款</label>
+				<input type="hidden" id="IsPrePay">
 				<div class='col-md-10'>
-					<select id="cinemaSelect" class="form-control input-sm" name="isPrePay" data-bv-notempty='true' data-bv-notempty-message='请选择是否支付预付款'>
+					<select id="paySelect" class="form-control input-sm" name="isPrePay" data-bv-notempty='true' data-bv-notempty-message='请选择是否支付预付款'>
 						<option value="">请选择...</option>
 						<option value="0" selected="selected">否</option>
 						<option value="1">是</option>
@@ -32,7 +33,7 @@
 			<div class='form-group'>
 				<label class='col-md-2 control-label'>预付款最低金额</label>
 				<div class='col-md-10'>
-					<input class='form-control' placeholder='LowestPrePayment' type='text' name='lowestPrePayment' id='LowestPrePayment' data-bv-notempty='true' data-bv-notempty-message='LowestPrePayment 不能为空'>
+					<input class='form-control' type='text' name='lowestPrePayment' id='LowestPrePayment' data-bv-notempty='true' data-bv-notempty-message='LowestPrePayment 不能为空'>
 				</div>
 			</div>
 
@@ -72,9 +73,9 @@
 					url : '/cinemaprepaysettingss/'+id,
 					async : false,
 					success : function(data) {
-						$("#id").val(data.id);
-						$('#cinemaCode').val(data.cinemaCode);
-						$("#cinemaName").val(data.cinemaName);
+						$("#Id").val(data.id);
+						$('#CinemaCode').val(data.cinemaCode);
+						$("#CinemaName").val(data.cinemaName);
 						$('#IsPrePay').val(data.isPrePay);
 						$('#LowestPrePayment').val(data.lowestPrePayment);
 					}
@@ -112,8 +113,6 @@
 				url : '/users/current',
 				async : false,
 				success : function(data) {
-					$("#userId").val(data.id);
-					$("#roleId").val(data.roleId);
 					getCinemaCodes(data.id,data.roleId);
 				}
 			});
@@ -127,16 +126,16 @@
 				success:function(data){
 					for(var i=0; i<data.length; i++){
 						var option = "<option value='"+data[i].cinemaCode+"' title='"+data[i].cinemaName+"'>"+data[i].cinemaName+"</option>";
-						$("#cinemaSelect").append(option);
+						$("#CinemaSelect").append(option);
 					}
-					$("#cinemaSelect").val($("#cinemaCode").val());
+					$("#CinemaSelect").val($("#CinemaCode").val());
 				}
 			})
 		}
-		$("#cinemaSelect").blur(function(){
-			$("#cinemaName").val($(this).find("option:selected").attr('title'));
+		$("#CinemaSelect").blur(function(){
+			$("#CinemaName").val($(this).find("option:selected").attr('title'));
 		}); 
-		
+		$("#paySelect").val($("#IsPrePay").val());
 	</script>
 </body>
 </html>

@@ -2,75 +2,69 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="../../../css/bootstrap.min.css">
 </head>
 <body>
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 	<form class="form-horizontal" onsubmit="return false" id="form">
 		<fieldset>
-			<input type="hidden" id="id" name="id">
+			<input type="hidden" id="Id" name="id">
 			<div class='form-group'>
-				<label class='col-md-2 control-label'>Id</label>
+				<label class='col-md-2 control-label'>影院名称</label>
 				<div class='col-md-10'>
-					<input class='form-control' placeholder='Id' type='text' name='Id' id='Id' data-bv-notempty='true' data-bv-notempty-message='Id 不能为空'>
+					<input type="hidden" id="CinemaCode">
+					<input type="hidden" id="CinemaName" name="cinemaName">
+					<select id="CinemaSelect" class="form-control input-sm" name="cinemaCode" data-bv-notempty='true' data-bv-notempty-message='请选择影院'>
+						<option value="">请选择影院...</option>
+					</select>
 				</div>
 			</div>
 			<div class='form-group'>
-				<label class='col-md-2 control-label'>CinemaCode</label>
+				<label class='col-md-2 control-label'>是否使用微信支付</label>
+				<input type="hidden" id="IsUseWxpay">
 				<div class='col-md-10'>
-					<input class='form-control' placeholder='CinemaCode' type='text' name='CinemaCode' id='CinemaCode' data-bv-notempty='true' data-bv-notempty-message='CinemaCode 不能为空'>
+					<select id="PaySelect" class="form-control input-sm" name="isUseWxpay" data-bv-notempty='true' data-bv-notempty-message='请选择是否使用微信支付'>
+						<option value="">请选择...</option>
+						<option value="0" selected="selected">否</option>
+						<option value="1">是</option>
+					</select>
 				</div>
 			</div>
 			<div class='form-group'>
-				<label class='col-md-2 control-label'>CinemaName</label>
+				<label class='col-md-2 control-label'>微信AppId</label>
 				<div class='col-md-10'>
-					<input class='form-control' placeholder='CinemaName' type='text' name='CinemaName' id='CinemaName' data-bv-notempty='true' data-bv-notempty-message='CinemaName 不能为空'>
+					<input class='form-control' type='text' name='wxpayAppId' id='WxpayAppId' data-bv-notempty='true' data-bv-notempty-message='WxpayAppId 不能为空'>
 				</div>
 			</div>
 			<div class='form-group'>
-				<label class='col-md-2 control-label'>IsUseWxpay</label>
+				<label class='col-md-2 control-label'>微信支付商户号</label>
 				<div class='col-md-10'>
-					<input class='form-control' placeholder='IsUseWxpay' type='text' name='IsUseWxpay' id='IsUseWxpay' data-bv-notempty='true' data-bv-notempty-message='IsUseWxpay 不能为空'>
+					<input class='form-control' type='text' name='wxpayMchId' id='WxpayMchId' data-bv-notempty='true' data-bv-notempty-message='WxpayMchId 不能为空'>
 				</div>
 			</div>
 			<div class='form-group'>
-				<label class='col-md-2 control-label'>WxpayAppId</label>
+				<label class='col-md-2 control-label'>微信支付密钥</label>
 				<div class='col-md-10'>
-					<input class='form-control' placeholder='WxpayAppId' type='text' name='WxpayAppId' id='WxpayAppId' data-bv-notempty='true' data-bv-notempty-message='WxpayAppId 不能为空'>
+					<input class='form-control' type='text' name='wxpayKey' id='WxpayKey' data-bv-notempty='true' data-bv-notempty-message='WxpayKey 不能为空'>
 				</div>
 			</div>
 			<div class='form-group'>
-				<label class='col-md-2 control-label'>WxpayMchId</label>
+				<label class='col-md-2 control-label'>退款用到的证书</label>
 				<div class='col-md-10'>
-					<input class='form-control' placeholder='WxpayMchId' type='text' name='WxpayMchId' id='WxpayMchId' data-bv-notempty='true' data-bv-notempty-message='WxpayMchId 不能为空'>
+					<input class='form-control' type='text' name='wxpayRefundCert' id='WxpayRefundCert' data-bv-notempty='true' data-bv-notempty-message='WxpayRefundCert 不能为空'>
 				</div>
 			</div>
 			<div class='form-group'>
-				<label class='col-md-2 control-label'>WxpayKey</label>
+				<label class='col-md-2 control-label'>是否会员卡</label>
+				<input type="hidden" id="IsUserMemberCard">
 				<div class='col-md-10'>
-					<input class='form-control' placeholder='WxpayKey' type='text' name='WxpayKey' id='WxpayKey' data-bv-notempty='true' data-bv-notempty-message='WxpayKey 不能为空'>
+					<select id="MemberCardSelect" class="form-control input-sm" name="isUserMemberCard" data-bv-notempty='true' data-bv-notempty-message='请选择是否使用会员卡'>
+						<option value="">请选择...</option>
+						<option value="0" selected="selected">否</option>
+						<option value="1">是</option>
+					</select>
 				</div>
 			</div>
-			<div class='form-group'>
-				<label class='col-md-2 control-label'>WxpayRefundCert</label>
-				<div class='col-md-10'>
-					<input class='form-control' placeholder='WxpayRefundCert' type='text' name='WxpayRefundCert' id='WxpayRefundCert' data-bv-notempty='true' data-bv-notempty-message='WxpayRefundCert 不能为空'>
-				</div>
-			</div>
-			<div class='form-group'>
-				<label class='col-md-2 control-label'>IsUserMemberCard</label>
-				<div class='col-md-10'>
-					<input class='form-control' placeholder='IsUserMemberCard' type='text' name='IsUserMemberCard' id='IsUserMemberCard' data-bv-notempty='true' data-bv-notempty-message='IsUserMemberCard 不能为空'>
-				</div>
-			</div>
-			<div class='form-group'>
-				<label class='col-md-2 control-label'>IsDel</label>
-				<div class='col-md-10'>
-					<input class='form-control' placeholder='IsDel' type='text' name='IsDel' id='IsDel' data-bv-notempty='true' data-bv-notempty-message='IsDel 不能为空'>
-				</div>
-			</div>
-
-
 
 			<div class="form-actions">
 				<div class="row" align="center">
@@ -86,11 +80,11 @@
 		</fieldset>
 	</form>
 </div>
-	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
-	<script type="text/javascript" src="../../js/jq.js"></script>
-	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
-	<script type="text/javascript" src="../../js/common.js"></script>
-	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript" src="../../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../../js/jq.js"></script>
+	<script type="text/javascript" src="../../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../../js/common.js"></script>
+	<script type="text/javascript" src="../../../layui/layui.js"></script>
 	<script type="text/javascript">
 		layui.use(['layer','laydate'], function(){
 		    var layer = layui.layer;
@@ -106,16 +100,15 @@
 					url : '/cinemapaymentsettingss/'+id,
 					async : false,
 					success : function(data) {
-						$('#Id').val(data.Id);
-						$('#CinemaCode').val(data.CinemaCode);
-						$('#CinemaName').val(data.CinemaName);
-						$('#IsUseWxpay').val(data.IsUseWxpay);
-						$('#WxpayAppId').val(data.WxpayAppId);
-						$('#WxpayMchId').val(data.WxpayMchId);
-						$('#WxpayKey').val(data.WxpayKey);
-						$('#WxpayRefundCert').val(data.WxpayRefundCert);
-						$('#IsUserMemberCard').val(data.IsUserMemberCard);
-						$('#IsDel').val(data.IsDel);
+						$('#Id').val(data.id);
+						$('#CinemaCode').val(data.cinemaCode);
+						$('#CinemaName').val(data.cinemaName);
+						$('#IsUseWxpay').val(data.isUseWxpay);
+						$('#WxpayAppId').val(data.wxpayAppId);
+						$('#WxpayMchId').val(data.wxpayMchId);
+						$('#WxpayKey').val(data.wxpayKey);
+						$('#WxpayRefundCert').val(data.wxpayRefundCert);
+						$('#IsUserMemberCard').val(data.isUserMemberCard);
 
 					}
 				});
@@ -144,7 +137,38 @@
 				}
 			});
 		}
-		
+		//获取登陆人信息
+		initUser();
+		function initUser(){
+			$.ajax({
+				type : 'get',
+				url : '/users/current',
+				async : false,
+				success : function(data) {
+					getCinemaCodes(data.id,data.roleId);
+				}
+			});
+		}
+		//获取登陆人的所有影院的影院编码并获取对应的订单
+		function getCinemaCodes(id,roleId){
+			$.ajax({
+				url:'/users/getCinemaName',
+				data:{"id":id,"roleId":roleId},
+				type:'post',
+				success:function(data){
+					for(var i=0; i<data.length; i++){
+						var option = "<option value='"+data[i].cinemaCode+"' title='"+data[i].cinemaName+"'>"+data[i].cinemaName+"</option>";
+						$("#CinemaSelect").append(option);
+					}
+					$("#CinemaSelect").val($("#CinemaCode").val());
+				}
+			})
+		}
+		$("#CinemaSelect").blur(function(){
+			$("#CinemaName").val($(this).find("option:selected").attr('title'));
+		});
+		$("#PaySelect").val($("#IsUseWxpay").val());
+		$("#MemberCardSelect").val($("#IsUserMemberCard").val());
 	</script>
 </body>
 </html>
