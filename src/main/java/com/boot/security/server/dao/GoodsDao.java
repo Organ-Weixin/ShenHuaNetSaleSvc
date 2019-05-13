@@ -43,5 +43,6 @@ public interface GoodsDao {
 
     List<Goods> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
     
-    List<Goods> getGoodsByCinemaCode(@Param("id")Long id,@Param("roleId")Long roleId);
+    @Select("select * from goods where find_in_set(CinemaCode,#{cinemacodes}) and stockcount >0")
+    List<Goods> getGoodsByCinemaCode(String cinemacodes);
 }

@@ -82,19 +82,6 @@
 		limit #{offset}, #{limit}
 	</select>
 	
-	<select id="getGoodsByCinemaCode" resultType="Goods">
-		select * from goods where cinemacode in (
-			select ss.cinemacode from sys_user ss,(select id,cinemacode,cinemaname from sys_user where roleid = 4 and status = 1) s
-			 <if test='roleId!=1'>
-				,(select id from sys_user <include refid="getId"/> ) sss
-			 </if>
-				where ss.id = s.id
-			 <if test='roleId!=1'>
-				and (ss.createuserid = sss.id or ss.id = sss.id)
-			 </if>
-		)
-	</select>
-
 	<update id="update">
 		update goods t
 		<set>

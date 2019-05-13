@@ -20,7 +20,9 @@ import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.dao.GoodsDao;
+import com.boot.security.server.dao.UserDao;
 import com.boot.security.server.model.Goods;
+import com.boot.security.server.model.SysUser;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -30,6 +32,8 @@ public class GoodsController {
 
     @Autowired
     private GoodsDao goodsDao;
+    @Autowired
+    private UserDao userDao;
 
     @PostMapping
     @ApiOperation(value = "保存")
@@ -78,8 +82,9 @@ public class GoodsController {
     }
     
     @RequestMapping("/getGoodsByCinemaCode")
-    @ApiOperation(value = "获取所有影院的卖品")
-    public List<Goods> getGoodsByCinemaCode(@RequestParam("id") Long id,@RequestParam("roleId")Long roleId){
-    	return goodsDao.getGoodsByCinemaCode(id,roleId);
+    @ApiOperation(value = "获取对应影院卖品")
+    public List<Goods> getGoodsByCinemaCode(@RequestParam("cinemacodes") String cinemacodes){
+    	System.out.println("接收到cinemacodes为"+cinemacodes);
+    	return goodsDao.getGoodsByCinemaCode(cinemacodes);
     }
 }

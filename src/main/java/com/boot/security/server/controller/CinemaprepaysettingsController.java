@@ -1,7 +1,7 @@
 package com.boot.security.server.controller;
 
 import java.util.List;
-import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,59 +10,61 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.security.server.page.table.PageTableRequest;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
-import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
-import com.boot.security.server.dao.SessioninfoDao;
-import com.boot.security.server.model.Priceplan;
-import com.boot.security.server.model.Sessioninfo;
-import com.boot.security.server.model.Userinfo;
+import com.boot.security.server.dao.CinemaprepaysettingsDao;
+import com.boot.security.server.model.Cinemaprepaysettings;
 
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/sessioninfos")
-public class SessioninfoController{
+@RequestMapping("/cinemaprepaysettingss")
+public class CinemaprepaysettingsController {
 
     @Autowired
-    private SessioninfoDao sessioninfoDao;
-    @Autowired
-    private SessioninfoServiceImpl sessioninfoService;
+    private CinemaprepaysettingsDao cinemaprepaysettingsDao;
 
     @PostMapping
     @ApiOperation(value = "保存")
-    public Sessioninfo save(@RequestBody Sessioninfo sessioninfo) {
-        sessioninfoDao.save(sessioninfo);
+    public Cinemaprepaysettings save(@RequestBody Cinemaprepaysettings cinemaprepaysettings) {
+        cinemaprepaysettingsDao.save(cinemaprepaysettings);
 
-        return sessioninfo;
+        return cinemaprepaysettings;
     }
 
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取")
-    public Sessioninfo get(@PathVariable Long id) {
-        return sessioninfoDao.getById(id);
+    public Cinemaprepaysettings get(@PathVariable Long id) {
+        return cinemaprepaysettingsDao.getById(id);
+    }
+
+    @PutMapping
+    @ApiOperation(value = "修改")
+    public Cinemaprepaysettings update(@RequestBody Cinemaprepaysettings cinemaprepaysettings) {
+        cinemaprepaysettingsDao.update(cinemaprepaysettings);
+
+        return cinemaprepaysettings;
     }
 
     @GetMapping
-    @ApiOperation(value = "排期列表")
+    @ApiOperation(value = "列表")
     public PageTableResponse list(PageTableRequest request) {
         return new PageTableHandler(new CountHandler() {
 
             @Override
             public int count(PageTableRequest request) {
-                return sessioninfoDao.countSession(request.getParams());
+                return cinemaprepaysettingsDao.count(request.getParams());
             }
         }, new ListHandler() {
 
             @Override
-            public List<Sessioninfo> list(PageTableRequest request) {
-                return sessioninfoDao.list(request.getParams(), request.getOffset(), request.getLimit());
+            public List<Cinemaprepaysettings> list(PageTableRequest request) {
+                return cinemaprepaysettingsDao.list(request.getParams(), request.getOffset(), request.getLimit());
             }
         }).handle(request);
     }
@@ -70,11 +72,6 @@ public class SessioninfoController{
     @DeleteMapping("/{id}")
     @ApiOperation(value = "删除")
     public void delete(@PathVariable Long id) {
-        sessioninfoDao.delete(id);
-    }
-    
-    @RequestMapping("/getFilmsByCinemaCode")
-    public List<Sessioninfo> getFilmsByCinemaCode(@RequestParam("cinemacodes") String cinemacodes){
-    	return sessioninfoService.getFilmsByCinemaCode(cinemacodes);
+        cinemaprepaysettingsDao.delete(id);
     }
 }

@@ -13,13 +13,8 @@
 	<input type="hidden" id="roleId">
 	<input type="hidden" id="CinemaCodes">
 	<form class="form-horizontal" onsubmit="return false" id="form">
+		<input class='form-control' type='hidden' name='couponsType' id='CouponsType'>
 		<fieldset>
-			<!-- <div class='form-group'>
-				<label class='col-md-2 control-label'>优惠券类型</label>
-				<div class='col-md-10'>
-					<input class='form-control' placeholder='CouponsType' type='text' name='CouponsType' id='CouponsType' data-bv-notempty='true' data-bv-notempty-message='CouponsType 不能为空'>
-				</div>
-			</div> -->
 			<div class='form-group' style="margin-top:3%">
 				<label class='col-md-2 control-label'>优惠券名称</label>
 				<div class='col-md-10'>
@@ -101,6 +96,24 @@
 					</div>
 				</div>
 			</div>
+			<div class='form-group' style="margin-top:3%">
+				<label class='col-md-2 control-label'>适用门店</label>
+				<div class='col-md-10' style="font-size:15px">
+					<input type="hidden" id="canUseCinemaType" name="canUseCinemaType">
+					<div>
+						<input type="radio" name="CanUseCinemaTypeRadio" value="1"> 全部门店使用
+					</div>
+					<div style="margin-top:2%">
+						<input type="radio" name="CanUseCinemaTypeRadio" value="2"> 指定门店
+						<div id="Cinemas" style="margin-top:2%;display:none">
+							<input type="hidden" id="cinemaCodes" name="cinemaCodes">
+							<input type="hidden" id="AllCinemaCodes">
+							<select id="CinemasSelect" class="form-control" multiple data-s2-options="s2options" data-krajee-select2="selectcinema">
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
 			<div class='form-group' style="margin-top:5%" style="margin-top:3%">
 				<label class='col-md-2 control-label'>领券限制</label>
 				<div class='col-md-10'>
@@ -121,8 +134,11 @@
 				<input type="hidden" id="reductionPrice" name="reductionPrice">
 				<div class='col-md-10' style="font-size:15px">
 					<div style="margin-top:2%">
-						<input type="radio" name="reductionTypeRadio" value="1">影片&nbsp;&nbsp;减&nbsp;
-						<input type="text" style="width:10%" id="filmReductionPrice">&nbsp;金额
+						<input type="radio" name="reductionTypeRadio" value="1">影片
+						<span id="filmReduction">
+							&nbsp;&nbsp;减&nbsp;
+							<input type="text" style="width:10%" id="filmReductionPrice">&nbsp;金额
+						</span>
 						<div id="Films" style="margin-top:2%;display:none">
 						<input type="radio" style="margin-left:3%" id="checkFilms" name="FilmOrGoodRadio">指定影片可用
 						</div>
@@ -133,8 +149,11 @@
 						</div> 
 					</div>
 					<div style="margin-top:2%">
-						<input type="radio" name="reductionTypeRadio" value="2">卖品&nbsp;&nbsp;减&nbsp;
-						<input type="text" style="width:10%" id="goodReductionPrice">&nbsp;金额
+						<input type="radio" name="reductionTypeRadio" value="2">卖品
+						<span id="goodReduction">
+							&nbsp;&nbsp;减&nbsp;
+							<input type="text" style="width:10%" id="goodReductionPrice">&nbsp;金额
+						</span>
 						<div id="Goods" style="margin-top:2%;display:none">
 						<input type="radio" style="margin-left:3%" id='checkGoods' name="FilmOrGoodRadio">指定卖品可用
 						</div>
@@ -147,8 +166,8 @@
 					<div style="margin-top:2%">
 						优惠共享
 						<select id="isShare" name="isShare"> 
-							<option value="1">可共享</option>
 							<option value="0">不可共享</option>
+							<option value="1">可共享</option>
 						</select>
 					</div>
 				</div>
@@ -164,23 +183,6 @@
 				<div class='col-md-10'>
 					<input class='form-control' type='text' name='couponsNumber' id='CouponsNumber' data-bv-notempty='true' data-bv-notempty-message='库存不能为空' style="width:20%;float:left">
 					<font style="font-size:18px;margin-left:5px">份，自动生成相应券码（可在优惠券管理&nbsp;<font style="color:blur">券码</font>&nbsp;处下载）</font>
-				</div>
-			</div>
-			<div class='form-group' style="margin-top:3%">
-				<label class='col-md-2 control-label'>适用门店</label>
-				<div class='col-md-10' style="font-size:15px">
-					<input type="hidden" id="canUseCinemaType" name="canUseCinemaType">
-					<div>
-						<input type="radio" name="CanUseCinemaTypeRadio" value="1"> 全部门店使用
-					</div>
-					<div style="margin-top:2%">
-						<input type="radio" name="CanUseCinemaTypeRadio" value="2"> 指定门店
-						<div id="Cinemas" style="margin-top:2%;display:none">
-							<input type="hidden" id="cinemaCodes" name="cinemaCodes">
-							<select id="CinemasSelect" class="form-control" multiple data-s2-options="s2options" data-krajee-select2="selectcinema">
-							</select>
-						</div>
-					</div>
 				</div>
 			</div>
 
@@ -206,6 +208,20 @@
 	<script type="text/javascript" src="../../js/select2.full.min.js"></script>
 	<script type="text/javascript" src="../../js/select2-krajee.min.js"></script>
 	<script type="text/javascript">
+	function getUrlParam(name) {//封装方法    
+		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象    
+		var r = window.location.search.substr(1).match(reg); //匹配目标参数    
+		if (r != null) {
+			return unescape(r[2]);    
+		}
+		
+		return null; //返回参数值
+	}
+	$("#CouponsType").val(getUrlParam("CouponsType"));
+	if(getUrlParam("CouponsType")==1){
+		$("#filmReduction").hide();
+		$("#goodReduction").hide();
+	}
 	//影片下拉多选
 	var filmoptions = {"doReset":true,"doToggle":true,"doOrder":false};
 	window.filmoptions = {"theme":"krajee","width":"50%","placeholder":"请选择影片","language":"zh-CN"};
@@ -239,40 +255,13 @@
 				data:{"id":$("#userId").val(),"roleId":$("#roleId").val()},
 				type:'post',
 				success:function(data){
+					var cinemacodes = "";
 					for(var i=0; i<data.length; i++){
 						var option = "<option value='"+data[i].cinemaCode+"'>"+data[i].cinemaName+"</option>";
+						cinemacodes +=data[i].cinemaCode+",";
 						$("#CinemasSelect").append(option);
 					}
-				}
-			});
-		}
-		//获取影片列表
-		getFilms();
-		function getFilms(){
-			$.ajax({
-				url:'/sessioninfos/getFilmsByCinemaCode',
-				data:{"id":$("#userId").val(),"roleId":$("#roleId").val()},
-				type:'post',
-				success:function(data){
-					for(var i=0;i<data.length;i++){
-						var option = "<option value='"+data[i].filmCode+"'>"+data[i].filmName+"</option>";
-						$("#FilmsSelect").append(option); 
-					}
-				}
-			});
-		}
-		//获取卖品列表
-		getGoods();
-		function getGoods(){
-			$.ajax({
-				url:'/goodss/getGoodsByCinemaCode',
-				data:{"id":$("#userId").val(),"roleId":$("#roleId").val()},
-				type:'post',
-				success:function(data){
-					for(var i=0;i<data.length;i++){
-						var option = "<option value='"+data[i].goodsCode+"'>"+data[i].goodsName+"</option>";
-						$("#GoodsSelect").append(option); 
-					}
+					$("#AllCinemaCodes").val(cinemacodes.substring(0,cinemacodes.length-1));
 				}
 			});
 		}
@@ -358,33 +347,75 @@
 		});
 		//减免金额选择
 		$("input:radio[name='reductionTypeRadio']").click(function(){
-			if($(this).css("checked",true).val()==1){
-				$("#Goods").css("display","none");
-				$("#Films").css("display","block");
-				$("#goodsDiv").css("display","none");
-				$("#GoodsSelect").val(null);
-			}
-			if($(this).css("checked",true).val()==2){
-				$("#Films").css("display","none");
-				$("#Goods").css("display","block");
-				$("#filmsDiv").css("display","none");
-				$("#FilmsSelect").val(null);
+			if($("input:radio[name='CanUseCinemaTypeRadio']:checked").length<=0){
+				layer.msg("请选择门店");
+			}else{
+				if($(this).css("checked",true).val()==1){
+					$("#Goods").css("display","none");
+					$("#Films").css("display","block");
+					$("#goodsDiv").css("display","none");
+					$("#GoodsSelect").val(null);
+				}
+				if($(this).css("checked",true).val()==2){
+					$("#Films").css("display","none");
+					$("#Goods").css("display","block");
+					$("#filmsDiv").css("display","none");
+					$("#FilmsSelect").val(null);
+				}
 			}
 		}); 
 		//减免金额选择影片
 		$("#checkFilms").click(function(){
+			if($("input:radio[name='CanUseCinemaTypeRadio']:checked").val()==1){
+				getFilms($("#AllCinemaCodes").val());
+			}else{
+				getFilms($("#CinemasSelect").val().toString());
+			}
 			$("#Films").css("display","block");
 			$("#goodsDiv").css("display","none");
 		});
+		//获取影片列表
+		function getFilms(cinemacodes){
+			$.ajax({
+				url:'/sessioninfos/getFilmsByCinemaCode?cinemacodes='+cinemacodes,
+				type:'post',
+				success:function(data){
+					$("#FilmsSelect").text('请选择卖品');
+					for(var i=0;i<data.length;i++){
+						var option = "<option value='"+data[i].filmCode+"'>"+data[i].filmName+"</option>";
+						$("#FilmsSelect").append(option); 
+					}
+				}
+			});
+		}
 		$("#Films").click(function(){
 			$("#filmsDiv").css("display","block");
 			$("#goodsDiv").css("display","none");
 		});
 		//减免金额选择卖品
 		$("#checkGoods").click(function(){
+			if($("input:radio[name='CanUseCinemaTypeRadio']:checked").val()==1){
+				getGoods($("#AllCinemaCodes").val());
+			}else{
+				getGoods($("#CinemasSelect").val().toString());
+			}
 			$("#Goods").css("display","block");
 			$("#filmsDiv").css("display","none");
 		});
+		//获取卖品列表
+		function getGoods(cinemacodes){
+			$.ajax({
+				url:'/goodss/getGoodsByCinemaCode?cinemacodes='+cinemacodes,
+				type:'post',
+				success:function(data){
+					$("#GoodsSelect").text('请选择卖品');
+					for(var i=0;i<data.length;i++){
+						var option = "<option value='"+data[i].goodsCode+"'>"+data[i].goodsName+"</option>";
+						$("#GoodsSelect").append(option); 
+					}
+				}
+			});
+		}
 		$("#Goods").click(function(){
 			$("#goodsDiv").css("display","block");
 			$("#filmsDiv").css("display","none");
@@ -433,35 +464,35 @@
 			$("#canUseCinemaType").val($('input:radio[name="CanUseCinemaTypeRadio"]:checked').val());
 			//提交之前非空判断
 			if($("input:radio[name='ValidityTypeRadio']:checked").length<=0){
-				alert("请选择有效期类型！");
+				layer.msg("请选择有效期类型！");
 			}
 			 if($("input:radio[name='ValidityTypeRadio']:checked").val()==1
 					&&($("#effectiveDate").val()==null||$("#effectiveDate").val()=="")
 					&&($("#expireDate").val()==null||$("#expireDate").val()=="")){
-				alert("请选择有效期！");
+				 layer.msg("请选择有效期！");
 			}
 			if($("input:radio[name='ValidityTypeRadio']:checked").val()==2
 					&&($("#effectiveDays").val()==null||$("#effectiveDays").val()=="")
 					&&($("#validityDays").val()==null||$("#validityDays").val()=="")){
-				alert("请选择有效时间！");
+				layer.msg("请选择有效时间！");
 			}
 			if($("input:radio[name='canUsePeriodType']:checked").length<=0){
-				alert("请选择可用时段类型！");
+				layer.msg("请选择可用时段类型！");
 			}
 			if($("input:radio[name='canUsePeriodType']:checked").val()==2&&$("input[class='checkWeek']:checked").length<=0){
-				alert("请选择可用时间！");
+				layer.msg("请选择可用时间！");
 			}
 			if($("input:radio[name='reductionTypeRadio']:checked").length<=0){
-				alert("请选择减免金额类型！");
+				layer.msg("请选择减免金额类型！");
 			}
 			if($("input:radio[name='reductionTypeRadio']:checked").length>0&&($("#reductionPrice").val()==null||$("#reductionPrice").val()=="")){
-				alert("请输入减免金额！");
+				layer.msg("请输入减免金额！");
 			}
 			if($("input:radio[name='CanUseCinemaTypeRadio']:checked").length<=0){
-				alert("请选择使用门店类型！");
+				layer.msg("请选择使用门店类型！");
 			}
 			if($("input:radio[name='CanUseCinemaTypeRadio']:checked").val()==2&&($("#cinemaCodes").val()==null||$("#cinemaCodes").val()=="")){
-				alert("请选择适用门店！");
+				layer.msg("请选择适用门店！");
 			}else{
 				add();
 			} 

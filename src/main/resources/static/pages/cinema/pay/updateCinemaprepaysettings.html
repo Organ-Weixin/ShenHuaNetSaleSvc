@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<input type="hidden" id="id" name="id">
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院名称</label>
+				<div class='col-md-10'>
+					<input type="hidden" id="cinemaCode">
+					<input type="hidden" id="cinemaName" name="cinemaName">
+					<select id="cinemaSelect" class="form-control input-sm" name="cinemaCode" data-bv-notempty='true' data-bv-notempty-message='请选择影院'>
+						<option value="">请选择影院...</option>
+					</select>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>是否支付预付款</label>
+				<div class='col-md-10'>
+					<select id="cinemaSelect" class="form-control input-sm" name="isPrePay" data-bv-notempty='true' data-bv-notempty-message='请选择是否支付预付款'>
+						<option value="">请选择...</option>
+						<option value="0" selected="selected">否</option>
+						<option value="1">是</option>
+					</select>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>预付款最低金额</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='LowestPrePayment' type='text' name='lowestPrePayment' id='LowestPrePayment' data-bv-notempty='true' data-bv-notempty-message='LowestPrePayment 不能为空'>
+				</div>
+			</div>
+
+
+
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="location.href='cinemaprepaysettingsList.html'">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="update()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../../js/jq.js"></script>
+	<script type="text/javascript" src="../../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../../js/common.js"></script>
+	<script type="text/javascript" src="../../../layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		});
+		
+		initData();
+		
+		function initData(){
+			var id = getUrlParam("id");
+			if(id != ""){
+				$.ajax({
+					type : 'get',
+					url : '/cinemaprepaysettingss/'+id,
+					async : false,
+					success : function(data) {
+						$("#id").val(data.id);
+						$('#cinemaCode').val(data.cinemaCode);
+						$("#cinemaName").val(data.cinemaName);
+						$('#IsPrePay').val(data.isPrePay);
+						$('#LowestPrePayment').val(data.lowestPrePayment);
+					}
+				});
+			}
+		}
+
+		function update() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var formdata = $("#form").serializeObject();
+
+			$.ajax({
+				type : 'put',
+				url : '/cinemaprepaysettingss',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("修改成功", {shift: -1, time: 1000}, function(){
+                        location.href = "cinemaprepaysettingsList.html";
+                    });
+				}
+			});
+		}
+		//获取登陆人信息
+		initUser();
+		function initUser(){
+			$.ajax({
+				type : 'get',
+				url : '/users/current',
+				async : false,
+				success : function(data) {
+					$("#userId").val(data.id);
+					$("#roleId").val(data.roleId);
+					getCinemaCodes(data.id,data.roleId);
+				}
+			});
+		}
+		//获取登陆人的所有影院的影院编码并获取对应的订单
+		function getCinemaCodes(id,roleId){
+			$.ajax({
+				url:'/users/getCinemaName',
+				data:{"id":id,"roleId":roleId},
+				type:'post',
+				success:function(data){
+					for(var i=0; i<data.length; i++){
+						var option = "<option value='"+data[i].cinemaCode+"' title='"+data[i].cinemaName+"'>"+data[i].cinemaName+"</option>";
+						$("#cinemaSelect").append(option);
+					}
+					$("#cinemaSelect").val($("#cinemaCode").val());
+				}
+			})
+		}
+		$("#cinemaSelect").blur(function(){
+			$("#cinemaName").val($(this).find("option:selected").attr('title'));
+		}); 
+		
+	</script>
+</body>
+</html>

@@ -8,6 +8,9 @@
 			<if test="params.Id != null and params.Id != ''">
 				and Id = #{params.Id} 
 			</if>
+			<if test="params.GroupCode != null and params.GroupCode != ''">
+			    and	GroupCode = #{GroupCode}
+			</if>
 			<if test="params.CouponsType != null and params.CouponsType != ''">
 				and CouponsType = #{params.CouponsType} 
 			</if>
@@ -63,7 +66,7 @@
 				and CanUseCinemaType = #{params.CanUseCinemaType} 
 			</if>
 			<if test="params.CinemaCodes != null and params.CinemaCodes != ''">
-				and CinemaCodes = #{params.CinemaCodes} 
+				and CinemaCodes = #{params.CinemaCodes} or find_in_set(#{params.CinemaCodes},CinemaCodes)
 			</if>
 			<if test="params.Status != null and params.Status != ''">
 				and Status = #{params.Status} 

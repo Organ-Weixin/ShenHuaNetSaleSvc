@@ -56,9 +56,15 @@ public class GoodsServiceImpl implements GoodsService {
 	}
 
 	@Override
+	public List<Goods> getGoodsByCinemaCode(String cinemacodes) {
+		// TODO Auto-generated method stub
+		return goodsDao.getGoodsByCinemaCode(cinemacodes);
+	}
+
+	/*@Override
 	public List<Goods> getGoodsByCinemaCode(Long id,Long roleId) {
 		// TODO Auto-generated method stub
 		return goodsDao.getGoodsByCinemaCode(id,roleId);
-	}
+	}*/
 
 }

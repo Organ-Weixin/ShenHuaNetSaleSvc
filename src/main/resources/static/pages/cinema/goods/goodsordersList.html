@@ -25,8 +25,8 @@
 									</form>
 	                   			</td>
 	                   			<td align="right">
-	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='couponsgroupList.html'">
-                                      	返回
+	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addGoodsorders.html'">
+                                      <i class="layui-icon">&#xe608;</i> 添加
                                     </button>
 	                   			</td>
 	                   		</tr> 
@@ -41,13 +41,37 @@
                                 <tr>
                                 </tr>                       
                                 <tr>
-									<th>#</th>
-									<th>优惠券名称</th>
-									<th>价格</th>
-									<th>优惠券编码</th>
-									<th>有效期</th>
-									<th>是否使用</th>
-									<th>使用时间</th>
+									<th>Id</th>
+									<th>CinemaCode</th>
+									<th>UserId</th>
+									<th>LocalOrderCode</th>
+									<th>OrderCode</th>
+									<th>PickUpCode</th>
+									<th>VerifyCode</th>
+									<th>OrderStatus</th>
+									<th>TotalPrice</th>
+									<th>TotalSettlePrice</th>
+									<th>TotalFee</th>
+									<th>SubmitTime</th>
+									<th>Created</th>
+									<th>Updated</th>
+									<th>MobilePhone</th>
+									<th>GoodsCount</th>
+									<th>RefundTime</th>
+									<th>PickUpTime</th>
+									<th>DeliveryType</th>
+									<th>DeliveryAddress</th>
+									<th>DeliveryTime</th>
+									<th>DeliveryMark</th>
+									<th>OrderPayFlag</th>
+									<th>OrderPayType</th>
+									<th>OrderPayTime</th>
+									<th>OrderTradeNo</th>
+									<th>PayType</th>
+									<th>PaySeqNo</th>
+									<th>CardNo</th>
+									<th>CardPassword</th>
+									<th>ErrorMessage</th>
 									<th>操作</th>
                                 </tr>
                             </thead>
@@ -68,25 +92,11 @@
 <script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="../../layui/layui.js"></script>
 <script type="text/javascript" src="../../js/my/permission.js"></script>
-<script type="text/javascript" src="../../js/dict.js"></script>
 <script type="text/javascript">
-function getUrlParam(name) {//封装方法    
-	var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象    
-	var r = window.location.search.substr(1).match(reg); //匹配目标参数    
-	if (r != null) {
-		return unescape(r[2]);    
-	}
-	
-	return null; //返回参数值
-}
-
-var CouponsStatus = showDictSelect("status", "CouponsStatus", true);
 var pers = checkPermission();
 
 var example;
 function init(){
-	var groupCode = getUrlParam("groupCode");
-	var reductionPrice = getUrlParam("reductionPrice");
 	example = 
     	$('#dt-table').DataTable({
         	"searching": false,
@@ -96,52 +106,55 @@ function init(){
                 "url": "/js/plugin/datatables/Chinese.lang"
             },
         	"ajax": {
-        		"url" : "/couponss",
+        		"url" : "/goodsorderss",
         		"type":"get",
         		"data":function(d){
-        			d.GroupCode = groupCode;
+    				d.id = $("#id").val();
     			}
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
             "columns": [
-            	{"data" : null, "defaultContent" : "","orderable":false,
-					"render" : function(data, type, full, meta){
-						return meta.row + 1 + meta.settings._iDisplayStart;
-						}
-				},
-				{"data" : "couponsName", "defaultContent" : "","orderable":false},
-				{"data" : "", "defaultContent" : "","orderable":false,
-					"render":function(data,type,row){
-						return reductionPrice;
-					}
-				},
-				{"data" : "couponsCode", "defaultContent" : "","orderable":false},
-				{"data" : "expireDate", "defaultContent" : "","orderable":false,
-					"render":function(data,type,row){
-						var effectiveDate = row['effectiveDate'];
-						var expireDate = row['expireDate'];
-						return effectiveDate.substr(0,10) + "至" + expireDate.substr(0,10);
-					}
-				},
-				{"data" : "status", "defaultContent" : "","orderable":false,
-					"render": function (data, type, row) {
-						return CouponsStatus[data];	
-                  	}
-				},
-				{"data" : "usedDate", "defaultContent" : "","orderable":false},
+				{"data" : "Id", "defaultContent" : ""},
+				{"data" : "CinemaCode", "defaultContent" : ""},
+				{"data" : "UserId", "defaultContent" : ""},
+				{"data" : "LocalOrderCode", "defaultContent" : ""},
+				{"data" : "OrderCode", "defaultContent" : ""},
+				{"data" : "PickUpCode", "defaultContent" : ""},
+				{"data" : "VerifyCode", "defaultContent" : ""},
+				{"data" : "OrderStatus", "defaultContent" : ""},
+				{"data" : "TotalPrice", "defaultContent" : ""},
+				{"data" : "TotalSettlePrice", "defaultContent" : ""},
+				{"data" : "TotalFee", "defaultContent" : ""},
+				{"data" : "SubmitTime", "defaultContent" : ""},
+				{"data" : "Created", "defaultContent" : ""},
+				{"data" : "Updated", "defaultContent" : ""},
+				{"data" : "MobilePhone", "defaultContent" : ""},
+				{"data" : "GoodsCount", "defaultContent" : ""},
+				{"data" : "RefundTime", "defaultContent" : ""},
+				{"data" : "PickUpTime", "defaultContent" : ""},
+				{"data" : "DeliveryType", "defaultContent" : ""},
+				{"data" : "DeliveryAddress", "defaultContent" : ""},
+				{"data" : "DeliveryTime", "defaultContent" : ""},
+				{"data" : "DeliveryMark", "defaultContent" : ""},
+				{"data" : "OrderPayFlag", "defaultContent" : ""},
+				{"data" : "OrderPayType", "defaultContent" : ""},
+				{"data" : "OrderPayTime", "defaultContent" : ""},
+				{"data" : "OrderTradeNo", "defaultContent" : ""},
+				{"data" : "PayType", "defaultContent" : ""},
+				{"data" : "PaySeqNo", "defaultContent" : ""},
+				{"data" : "CardNo", "defaultContent" : ""},
+				{"data" : "CardPassword", "defaultContent" : ""},
+				{"data" : "ErrorMessage", "defaultContent" : ""},
 				{ 
 								"data": "", 
 								"defaultContent": "",
 								"orderable":false,
 						        "render": function (data, type, row) {
                 		           var id = row['id'];
-                		           var status = row['status'];
-                		           var href = "updateCoupons.html?id=" + id;
+                		           var href = "updateGoodsorders.html?id=" + id;
                                    var edit = buttonEdit(href, "", pers);
                 		           var del = buttonDel(id, "", pers);
-                		           if(status == 0){
-                		        	   return del;
-                		           }
+                                   return edit + del;
                   	            }		
 							},
                 
@@ -160,7 +173,7 @@ function del(id){
     }, function() {
     	$.ajax({
             type : 'delete',
-            url : '/couponss/'+id,
+            url : '/goodsorderss/'+id,
             success : function(data) {
                 example.ajax.reload();
                 layer.msg("删除成功");

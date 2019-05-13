@@ -2,6 +2,7 @@ package com.boot.security.server.controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -26,8 +27,8 @@ import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.dao.CouponsDao;
 import com.boot.security.server.dao.CouponsgroupDao;
 import com.boot.security.server.model.CouponGroupStatusEnum;
-import com.boot.security.server.model.CouponStatusEnum;
 import com.boot.security.server.model.Coupons;
+import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.Couponsgroup;
 
 import io.swagger.annotations.ApiOperation;
@@ -48,26 +49,21 @@ public class CouponsgroupController {
     @PostMapping
     @ApiOperation(value = "保存")
     public Couponsgroup save(@RequestBody Couponsgroup couponsgroup) throws ParseException {
-    	String effectiveDate = "";
-    	String expireDate = "";
-    	if(couponsgroup.getEffectiveDate()!=null){
-    		effectiveDate = String.valueOf(couponsgroup.getEffectiveDate()).substring(0,10);
-    		couponsgroup.setEffectiveDate(new SimpleDateFormat("yyyy-MM-dd").parse(effectiveDate));
-    	}
-    	if(couponsgroup.getExpireDate()!=null){
-    		expireDate = String.valueOf(couponsgroup.getExpireDate()).substring(0,10);
-    		couponsgroup.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").parse(expireDate));
-    	}
+    	couponsgroup.setEffectiveDate(couponsgroup.getEffectiveDate());
+    	couponsgroup.setExpireDate(couponsgroup.getExpireDate());
     	couponsgroup.setGroupCode(getCharAndNumr(8));
     	couponsgroup.setStatus(CouponGroupStatusEnum.UnEnabled.getStatusCode());
+    	couponsgroup.setFetchNumber(0);
+    	couponsgroup.setRemainingNumber(couponsgroup.getCouponsNumber());
+    	couponsgroup.setUsedNumber(0);
     	for(int i=0;i<couponsgroup.getCouponsNumber();i++){
     		Coupons coupons = new Coupons();
     		coupons.setCouponsCode(getCharAndNumr(10));
         	coupons.setCouponsName(couponsgroup.getCouponsName());
-        	coupons.setEffectiveDate(new SimpleDateFormat("yyyy-MM-dd").parse(effectiveDate));
-        	coupons.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").parse(expireDate));
+        	coupons.setEffectiveDate(couponsgroup.getEffectiveDate());
+        	coupons.setExpireDate(couponsgroup.getEffectiveDate());
         	coupons.setGroupCode(couponsgroup.getGroupCode());
-        	coupons.setStatus(CouponStatusEnum.UnUsed.getStatusCode());
+        	coupons.setStatus(CouponsStatusEnum.Created.getStatusCode());
     		couponsDao.save(coupons);
     	}
         couponsgroupDao.save(couponsgroup);
@@ -91,6 +87,8 @@ public class CouponsgroupController {
     @GetMapping
     @ApiOperation(value = "列表")
     public PageTableResponse list(PageTableRequest request) {
+    	String CinemaCodes = request.getParams().get("CinemaCodesList").toString();
+    	String CinemaCodesList []  = CinemaCodes.split(",");
         return new PageTableHandler(new CountHandler() {
 
             @Override
@@ -101,7 +99,19 @@ public class CouponsgroupController {
 
             @Override
             public List<Couponsgroup> list(PageTableRequest request) {
-                return couponsgroupDao.list(request.getParams(), request.getOffset(), request.getLimit());
+            	System.out.println("接收到的cinemacodes="+request.getParams().get("CinemaCodes"));
+            	if(request.getParams().get("CinemaCodes")!=null&&request.getParams().get("CinemaCodes").toString()!=""&&CinemaCodes.contains(request.getParams().get("CinemaCodes").toString())){
+            		return couponsgroupDao.list(request.getParams(), request.getOffset(), request.getLimit());
+            	}else{
+            		System.out.println("没有接收到cinemacodes");
+            		//传过去不存在的影院编码，清空list列表
+            		request.getParams().put("CinemaCodes", "00000000");
+            		List<Couponsgroup> list = couponsgroupDao.list(request.getParams(), request.getOffset(), request.getLimit());
+                	for(int i=0; i<CinemaCodesList.length; i++){
+                		list.addAll(couponsgroupService.getByCinemaCode(CinemaCodesList[i]));
+                	}
+                	return list;
+            	}
             }
         }).handle(request);
     }

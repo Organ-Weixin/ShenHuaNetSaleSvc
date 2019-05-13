@@ -18,5 +18,8 @@ public interface GoodsService {
 	
 	int deleteByCinemaCode(Long userid,String cinemacode);
 	
-	List<Goods> getGoodsByCinemaCode(Long id,Long roleId);
+	//List<Goods> getGoodsByCinemaCode(Long id,Long roleId);
+	
+	List<Goods> getGoodsByCinemaCode(String cinemacodes);
+	
 }

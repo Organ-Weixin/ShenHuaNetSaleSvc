@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.CinemaprepaysettingsDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and Id = #{params.Id} 
+			</if>
+			<if test="params.CinemaCode != null and params.CinemaCode != ''">
+				and (CinemaCode = #{params.CinemaCode} or find_in_set(CinemaCode,#{params.CinemaCode}))
+			</if>
+			<if test="params.CinemaName != null and params.CinemaName != ''">
+				and (CinemaName = #{params.CinemaName} or CinemaName like '%${params.CinemaName}%')
+			</if>
+			<if test="params.IsPrePay != null and params.IsPrePay != ''">
+				and IsPrePay = #{params.IsPrePay} 
+			</if>
+			<if test="params.SurplusPayment != null and params.SurplusPayment != ''">
+				and SurplusPayment = #{params.SurplusPayment} 
+			</if>
+			<if test="params.LowestPrePayment != null and params.LowestPrePayment != ''">
+				and LowestPrePayment = #{params.LowestPrePayment} 
+			</if>
+			
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from cinemaprepaysettings t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Cinemaprepaysettings">
+		select * from cinemaprepaysettings t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="update">
+		update cinemaprepaysettings t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="CinemaCode != null">
+				CinemaCode = #{CinemaCode}, 
+			</if>
+			<if test="CinemaName != null">
+				CinemaName = #{CinemaName}, 
+			</if>
+			<if test="IsPrePay != null">
+				IsPrePay = #{IsPrePay}, 
+			</if>
+			<if test="SurplusPayment != null">
+				SurplusPayment = #{SurplusPayment}, 
+			</if>
+			<if test="LowestPrePayment != null">
+				LowestPrePayment = #{LowestPrePayment}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+
+</mapper>

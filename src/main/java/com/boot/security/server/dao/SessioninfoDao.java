@@ -75,7 +75,8 @@ public interface SessioninfoDao {
     @Select("select * from userinfo where IsDel='0'")
     List<Userinfo> getCompany();
     
-    List<Sessioninfo> getFilmsByCinemaCode(@Param("id")Long id,@Param("roleId")Long roleId);
+    @Select("select * from sessioninfo where find_in_set(ccode,#{cinemacodes}) and starttime >= NOW() group by filmcode")
+    List<Sessioninfo> getFilmsByCinemaCode(String cinemacodes);
     
     ////////
     @Select("select * from sessioninfo t where t.ccode=#{cinemacode} and t.scode = #{sessioncode}")

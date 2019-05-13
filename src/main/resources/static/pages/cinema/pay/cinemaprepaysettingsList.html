@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
-<link rel="stylesheet" href="../../layui/css/layui.css" media="all" />
+<link rel="stylesheet" type="text/css" media="screen" href="../../../css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="../../../css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="../../../layui/css/layui.css" media="all" />
 </head>
 <body>
     <div>
@@ -17,16 +17,19 @@
 	                   		<tr>
 	                   			<td>
 		                   			<form class="form-inline" onsubmit="return false">
+		                   				<input type="hidden" id="userId">
+		                   				<input type="hidden" id="roleId">
+		                   				<input type="hidden" id="cinemacodes">
 										<div class="form-group">
-											id：
-											<input id="id" type="text" class="form-control" placeholder="id">
+											<input id="cinemacode" type="text" class="form-control" placeholder="影院编码">
+											<input id="cinemaname" type="text" class="form-control" placeholder="影院名称">
 											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
 										</div>
 									</form>
 	                   			</td>
 	                   			<td align="right">
-	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='couponsgroupList.html'">
-                                      	返回
+	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addCinemaprepaysettings.html'">
+                                      <i class="layui-icon">&#xe608;</i> 添加
                                     </button>
 	                   			</td>
 	                   		</tr> 
@@ -42,12 +45,11 @@
                                 </tr>                       
                                 <tr>
 									<th>#</th>
-									<th>优惠券名称</th>
-									<th>价格</th>
-									<th>优惠券编码</th>
-									<th>有效期</th>
-									<th>是否使用</th>
-									<th>使用时间</th>
+									<th>影院编码</th>
+									<th>影院名称</th>
+									<th>是否支付预付款</th>
+									<th>剩余预付款</th>
+									<th>预付款最低金额</th>
 									<th>操作</th>
                                 </tr>
                             </thead>
@@ -62,31 +64,17 @@
 </body>
 </html>
 
-<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="../../js/jq.js"></script>
-<script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
-<script type="text/javascript" src="../../layui/layui.js"></script>
-<script type="text/javascript" src="../../js/my/permission.js"></script>
-<script type="text/javascript" src="../../js/dict.js"></script>
+<script type="text/javascript" src="../../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../../js/jq.js"></script>
+<script type="text/javascript" src="../../../js/plugin/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="../../../layui/layui.js"></script>
+<script type="text/javascript" src="../../../js/my/permission.js"></script>
 <script type="text/javascript">
-function getUrlParam(name) {//封装方法    
-	var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象    
-	var r = window.location.search.substr(1).match(reg); //匹配目标参数    
-	if (r != null) {
-		return unescape(r[2]);    
-	}
-	
-	return null; //返回参数值
-}
-
-var CouponsStatus = showDictSelect("status", "CouponsStatus", true);
 var pers = checkPermission();
 
 var example;
 function init(){
-	var groupCode = getUrlParam("groupCode");
-	var reductionPrice = getUrlParam("reductionPrice");
 	example = 
     	$('#dt-table').DataTable({
         	"searching": false,
@@ -96,10 +84,15 @@ function init(){
                 "url": "/js/plugin/datatables/Chinese.lang"
             },
         	"ajax": {
-        		"url" : "/couponss",
+        		"url" : "/cinemaprepaysettingss",
         		"type":"get",
         		"data":function(d){
-        			d.GroupCode = groupCode;
+        			if($("#cinemacode").val()==null||$("#cinemacode").val()==""){
+	    				d.CinemaCode = $("#cinemacodes").val();
+        			}else{
+        				d.CinemaCode = $("#cinemacode").val();
+        			}
+        			d.CinemaName = $("#cinemaname").val();
     			}
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
@@ -109,39 +102,21 @@ function init(){
 						return meta.row + 1 + meta.settings._iDisplayStart;
 						}
 				},
-				{"data" : "couponsName", "defaultContent" : "","orderable":false},
-				{"data" : "", "defaultContent" : "","orderable":false,
-					"render":function(data,type,row){
-						return reductionPrice;
-					}
-				},
-				{"data" : "couponsCode", "defaultContent" : "","orderable":false},
-				{"data" : "expireDate", "defaultContent" : "","orderable":false,
-					"render":function(data,type,row){
-						var effectiveDate = row['effectiveDate'];
-						var expireDate = row['expireDate'];
-						return effectiveDate.substr(0,10) + "至" + expireDate.substr(0,10);
-					}
-				},
-				{"data" : "status", "defaultContent" : "","orderable":false,
-					"render": function (data, type, row) {
-						return CouponsStatus[data];	
-                  	}
-				},
-				{"data" : "usedDate", "defaultContent" : "","orderable":false},
+				{"data" : "cinemaCode", "defaultContent" : ""},
+				{"data" : "cinemaName", "defaultContent" : ""},
+				{"data" : "isPrePay", "defaultContent" : ""},
+				{"data" : "surplusPayment", "defaultContent" : ""},
+				{"data" : "lowestPrePayment", "defaultContent" : ""},
 				{ 
 								"data": "", 
 								"defaultContent": "",
 								"orderable":false,
 						        "render": function (data, type, row) {
                 		           var id = row['id'];
-                		           var status = row['status'];
-                		           var href = "updateCoupons.html?id=" + id;
+                		           var href = "updateCinemaprepaysettings.html?id=" + id;
                                    var edit = buttonEdit(href, "", pers);
                 		           var del = buttonDel(id, "", pers);
-                		           if(status == 0){
-                		        	   return del;
-                		           }
+                                   return edit + del;
                   	            }		
 							},
                 
@@ -153,14 +128,13 @@ function init(){
 layui.use('layer', function(){
     var layer = layui.layer;
 });
-
 function del(id){
 	layer.confirm('确定要删除吗？', {
         btn : [ '确定', '取消' ]
     }, function() {
     	$.ajax({
             type : 'delete',
-            url : '/couponss/'+id,
+            url : '/cinemaprepaysettingss/'+id,
             success : function(data) {
                 example.ajax.reload();
                 layer.msg("删除成功");
@@ -169,6 +143,37 @@ function del(id){
         
         layer.close(1);
     });
+}
+
+//获取登陆人信息
+initUser();
+function initUser(){
+	$.ajax({
+		type : 'get',
+		url : '/users/current',
+		async : false,
+		success : function(data) {
+			$("#userId").val(data.id);
+			$("#roleId").val(data.roleId);
+			getCinemaCodes(data.id,data.roleId);
+		}
+	});
+}
+//获取登陆人的所有影院的影院编码并获取对应的预付款配置
+function getCinemaCodes(id,roleId){
+	$.ajax({
+		url:'/users/getCinemaName',
+		data:{"id":id,"roleId":roleId},
+		type:'post',
+		success:function(data){
+			var cinemacodes = "";
+			for(var i=0; i<data.length; i++){
+				cinemacodes += data[i].cinemaCode+",";
+			}
+			$("#cinemacodes").val(cinemacodes.substring(0,cinemacodes.length-1));
+			example.ajax.reload();
+		}
+	})
 }
 
 $("#searchBt").click(function(){

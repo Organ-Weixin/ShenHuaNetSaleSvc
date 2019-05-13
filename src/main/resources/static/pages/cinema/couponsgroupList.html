@@ -17,23 +17,28 @@
 	                   		<tr>
 	                   			<td>
 		                   			<form class="form-inline" onsubmit="return false">
+		                   			<input type="hidden" id="cinemacodes">
+		                   			<input type="hidden" id="userId">
+		                   			<input type="hidden" id="roleId">
 										<div class="form-group">
-											id：
-											<input id="id" type="text" class="form-control" placeholder="id">
-											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
+											<!-- id：
+											<input id="id" type="text" class="form-control" placeholder="id"> -->
+											<select class="form-control" style="width:180px;float:left;margin-left:1%" name="cinema" id="cinemaName">
+												<option value="">全部优惠券</option>
+											</select>
+											<!-- <button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button> -->
 										</div>
 									</form>
 	                   			</td>
 	                   			<td align="right">
-	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addCouponsgroup.html'">
-                                      <i class="layui-icon">&#xe608;</i> 添加
+	                   				<button class="layui-btn layui-btn-sm" id="choose">
+                                      <i class="layui-icon">&#xe608;</i> 生成优惠券
                                     </button>
 	                   			</td>
 	                   		</tr> 
 	                    </table>
 					</div>
                 </header>
-                
                 <div>
                     <div class="widget-body no-padding">
                         <table id="dt-table" class="table table-striped table-bordered table-hover" style="width:100%">
@@ -41,17 +46,17 @@
                                 <tr>
                                 </tr>                       
                                 <tr>
-									<th>Id</th>
+									<th>#</th>
 									<th>卡券类型</th>
 									<th>卡券名称</th>
-									<th>有效期</th>
+									<th style="width:15%">有效期</th>
 									<th>状态</th>
 									<th>价格</th>
 									<th>总投放</th>
 									<th>已领取</th>
 									<th>库存</th>
 									<th>已使用</th>
-									<th>操作</th>
+									<th style="width:10%">操作</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody">
@@ -61,6 +66,37 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div id="chooseDiv" style="background-color:lightgray;width:100%;height:800px;z-index:99;position: relative; background: rgba(0, 0, 0, 0.5);display:none">
+           <div style="margin-left:10%;margin-top:10%;background-color:white;width:70%;height:300px; opacity:1;z-index: 999;position:absolute;">
+                	<button style="margin-top:1%;margin-left:95%;" class="layui-btn layui-btn-sm" id="close">
+                        	X
+                      </button>
+		        	<div style="height:15%;margin-left:15%">
+		        		<span>选择创建优惠券类型</span>
+		        	</div>
+		        	<div style="height:20%;margin-left:17%">
+		        		<span>
+		        			<input type="radio" name="chooseRadio" value="2">&nbsp;&nbsp;代金券
+		        		</span>
+		        		<br>
+		        		<span>
+		        			<font style="color:gray">可为用户提供抵扣现金服务。可设置成为“满*元，减*元”</font>
+		        		</span>
+		        	</div>
+		        	<div style="height:20%;margin-left:17%">
+		        		<span>
+		        			<input type="radio" name="chooseRadio" value="1">&nbsp;&nbsp;兑换券
+		        		</span>
+		        		<br>
+		        		<span>
+		        			<font style="color:gray">可为用户提供消费送赠品服务</font>
+		        		</span>
+		        	</div>
+		        	<button style="margin-top:3%;margin-left:45%" class="layui-btn layui-btn-sm" id="submit">
+                        	确认
+                      </button>
+        		</div>     	
     </div>
 </body>
 </html>
@@ -77,6 +113,39 @@ var pers = checkPermission();
 var CouponsType = showDictSelect("couponsType", "CouponsType", true);
 var CGroupStatus = showDictSelect("status", "CGroupStatus", true);
 
+//获取登陆人信息
+initUser();
+function initUser(){
+	$.ajax({
+		type : 'get',
+		url : '/users/current',
+		async : false,
+		success : function(data) {
+			$("#userId").val(data.id);
+			$("#roleId").val(data.roleId);
+			getCinemaCodes(data.id,data.roleId);
+		}
+	});
+}
+//获取登陆人的所有影院的影院编码并获取对应的订单
+function getCinemaCodes(id,roleId){
+	$.ajax({
+		url:'/users/getCinemaName',
+		data:{"id":id,"roleId":roleId},
+		type:'post',
+		success:function(data){
+			var cinemacodes = "";
+			for(var i=0; i<data.length; i++){
+				cinemacodes += data[i].cinemaCode+",";
+				var option = "<option value="+data[i].cinemaCode+">"+data[i].cinemaName+"</option>";
+				$("#cinemaName").append(option);
+			}
+			$("#cinemacodes").val(cinemacodes.substring(0,cinemacodes.length-1));
+			example.ajax.reload();
+		}
+	})
+}
+
 var example;
 function init(){
 	example = 
@@ -91,7 +160,9 @@ function init(){
         		"url" : "/couponsgroups",
         		"type":"get",
         		"data":function(d){
-    				d.id = $("#id").val();
+    				d.Id = $("#id").val();
+    				d.CinemaCodes = $("#cinemaName").val();
+    				d.CinemaCodesList = $("#cinemacodes").val();
     			}
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
@@ -101,13 +172,13 @@ function init(){
 						return meta.row + 1 + meta.settings._iDisplayStart;
 						}
 				},
-				{"data" : "couponsType", "defaultContent" : "",
+				{"data" : "couponsType", "defaultContent" : "","orderable":false,
 					"render": function (data, type, row) {
                     	return CouponsType[data];
                   	}						
 				},
-				{"data" : "couponsName", "defaultContent" : ""},
-				{"data" : "", "defaultContent" : "",
+				{"data" : "couponsName", "defaultContent" : "","orderable":false},
+				{"data" : "", "defaultContent" : "","orderable":false,
 					"render":function(data,type,row){
 						var effectiveDate = row['effectiveDate'];
 						var expireDate = row['expireDate'];
@@ -121,12 +192,12 @@ function init(){
 						
 					}
 				},
-				{"data" : "status", "defaultContent" : "",
+				{"data" : "status", "defaultContent" : "","orderable":false,
 					"render": function (data, type, row) {
                     	return CGroupStatus[data];
                   	}
 				},
-				{"data" : "reductionPrice", "defaultContent" : "",
+				{"data" : "reductionPrice", "defaultContent" : "","orderable":false,
 					"render":function(data,type,row){
 						var reductionPrice = row['reductionPrice'];
 						if(reductionPrice!=null){
@@ -136,8 +207,8 @@ function init(){
 						}
 					}						
 				},
-				{"data" : "couponsNumber", "defaultContent" : ""},
-				{"data" : "fetchNumber", "defaultContent" : "",
+				{"data" : "couponsNumber", "defaultContent" : "","orderable":false},
+				{"data" : "fetchNumber", "defaultContent" : "","orderable":false,
 					"render" : function(data, type, row){
 						var fetchNumber = row['fetchNumber'];
 						if(fetchNumber!=null){
@@ -147,7 +218,7 @@ function init(){
 						}
 					}					
 				},
-				{"data" : "remainingNumber", "defaultContent" : "",
+				{"data" : "remainingNumber", "defaultContent" : "","orderable":false,
 					"render" : function(data, type, row){
 						var remainingNumber = row['remainingNumber'];
 						if(remainingNumber!=null){
@@ -157,7 +228,7 @@ function init(){
 						}
 					}						
 				},
-				{"data" : "usedNumber", "defaultContent" : "",
+				{"data" : "usedNumber", "defaultContent" : "","orderable":false,
 					"render" : function(data, type, row){
 						var usedNumber = row['usedNumber'];
 						if(usedNumber!=null){
@@ -176,6 +247,7 @@ function init(){
                 		           var status = row['status'];
                 		           var groupCode = row['groupCode'];
                 		           var price = row['reductionPrice'];
+                		           var fetchNumber = row['fetchNumber'];
                 		           var change = "";
                 		           if(status==1){
                 		        	   change = "停用";
@@ -191,8 +263,13 @@ function init(){
                 		           var del = buttonDel(id, "", pers);
                 		           if(status == 2){
                                   	 return coupons + edit + del;
-                		           }else{
-                		        	 return upda + coupons + edit + del;
+                		           }
+                		           if(fetchNumber == 0){
+                		        	   //return upda + coupons + edit + del;
+                		        	   return upda + coupons + del;
+                		           }
+                		           else{
+                		        	 return upda + coupons;
                 		           }
                   	            }		
 							},
@@ -201,6 +278,18 @@ function init(){
            "order": [[ 0, "asc" ]]
         } );
 }
+
+$("#choose").click(function(){
+	$("#chooseDiv").show();
+});
+$("#close").click(function(){
+	$("#chooseDiv").hide();
+});
+$("#submit").click(function(){
+	if($("input:radio[name='chooseRadio']:checked").length>0){
+		window.location.href="addCouponsgroup.html?CouponsType="+$("input:radio[name='chooseRadio']:checked").val();
+	}
+});
 
 layui.use('layer', function(){
     var layer = layui.layer;
@@ -245,7 +334,7 @@ $("#tbody").on('click','.coupons',function(){
 });
 
 
-$("#searchBt").click(function(){
+$("#cinemaName").blur(function(){
 	example.ajax.reload();
 });
 

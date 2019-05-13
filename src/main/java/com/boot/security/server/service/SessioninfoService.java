@@ -28,7 +28,7 @@ public interface SessioninfoService {
 	
 	List<Sessioninfo> getByCCodeGroupByFilm(Long userid,String cinemacode,Date StartDate,Date EndDate);
 	
-	List<Sessioninfo> getFilmsByCinemaCode(Long id,Long roleId);
+	List<Sessioninfo> getFilmsByCinemaCode(String cinemacodes);
 	
 	   List<Sessioninfo> getByCinemaStartDateEndDate(String cinemacode,String StartDate,String EndDate);
 

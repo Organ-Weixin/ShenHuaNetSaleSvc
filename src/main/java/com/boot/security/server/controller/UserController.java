@@ -127,7 +127,6 @@ public class UserController{
 	}
 	
 	@RequestMapping(value="/getCinemaName",method=RequestMethod.POST)
-	@PreAuthorize("hasAuthority('sys:user:query')")
     public List<SysUser> getCinemaName(@RequestParam(value = "id") Long id,@RequestParam(value = "roleId") Long roleId){
     	return userService.getCinemaName(id,roleId);
     }
