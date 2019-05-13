@@ -23,9 +23,6 @@
 			<if test="params.ScreenCount != null and params.ScreenCount != ''">
 				and ScreenCount = #{params.ScreenCount} 
 			</if>
-			<if test="params.IsDel != null and params.IsDel != ''">
-				and IsDel = #{params.IsDel} 
-			</if>
 			<if test="params.ManualAdd != null and params.ManualAdd != ''">
 				and ManualAdd = #{params.ManualAdd} 
 			</if>
@@ -90,9 +87,6 @@
 			</if>
 			<if test="ScreenCount != null">
 				ScreenCount = #{ScreenCount}, 
-			</if>
-			<if test="IsDel != null">
-				IsDel = #{IsDel}, 
 			</if>
 			<if test="ManualAdd != null">
 				ManualAdd = #{ManualAdd}, 
