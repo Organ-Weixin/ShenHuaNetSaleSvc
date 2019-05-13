@@ -24,13 +24,13 @@
 
 	<select id="count" resultType="int">
 		select count(1) from (select g.*,c.Name AS CinemaName	from goods g
-							  left join (select * from cinema where isDel=0) c on g.CinemaCode=c.code <include refid="whereByroleId" />) t
+							  left join cinema c on g.CinemaCode=c.code <include refid="whereByroleId" />) t
 		<include refid="where" />
 	</select>
 
 	<select id="list" resultType="Goods">
 		select * from (select g.*,c.Name AS CinemaName	from goods g
-						left join (select * from cinema where isDel=0) c on g.CinemaCode=c.code <include refid="whereByroleId" />) t
+						left join cinema c on g.CinemaCode=c.code <include refid="whereByroleId" />) t
 		<include refid="where" />
 		${params.orderBy}
 		limit #{offset}, #{limit}
@@ -47,8 +47,6 @@
 	</sql>
 	
 	
-<<<<<<< HEAD
-=======
 	<select id="getGoodsByCinemaCode" resultType="Goods">
 		select * from goods where cinemacode in (
 			select ss.cinemacode from sys_user ss,(select id,cinemacode,cinemaname from sys_user where roleid = 4 and status = 1) s
@@ -70,7 +68,6 @@
 	</sql>
 	
 
->>>>>>> branch 'master' of https://github.com/Organ-Weixin/ShenHuaNetSaleSvc.git
 	<update id="update">
 		update goods t
 		<set>

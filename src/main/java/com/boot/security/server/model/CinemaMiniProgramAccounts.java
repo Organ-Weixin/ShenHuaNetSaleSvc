@@ -1,6 +1,6 @@
 package com.boot.security.server.model;
 
-public class CinemaMiniProgramAccounts extends BaseEntity<Long> {
+public class CinemaMiniProgramAccounts {
 
 	private Long Id;
 	private String CinemaCode;
