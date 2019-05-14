@@ -23,13 +23,30 @@
 				</div>
 			</div>
 			<div class='form-group'>
+				<label class='col-md-2 control-label'>服务费：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='ticketFee' id='TicketFee' data-bv-notempty='true' data-bv-notempty-message='服务费 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>增值服务费：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='addFee' id='AddFee' data-bv-notempty='true' data-bv-notempty-message='增值服务费 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院补贴：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='cinemaAllowance' id='CinemaAllowance' data-bv-notempty='true' data-bv-notempty-message='影院补贴 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
 				<label class='col-md-2 control-label'>类型：</label>
 				<div class='col-md-10'>
 					<select class="form-control input-sm" id="Type" name="type">
 						<option value="">请选择...</option>
 						<option value="2">影片</option>
 						<option value="1">排期</option>
-						<option value="3">最低价</option>
 					</select>
 				</div>
 			</div>
@@ -74,6 +91,9 @@
 						$('#FilmCode').val(data.filmCode);
 						$('#UserID').val(data.userID);
 						$('#StandardPrice').val(data.standardPrice);
+						$('#TicketFee').val(data.ticketFee);
+						$('#AddFee').val(data.addFee);
+						$('#CinemaAllowance').val(data.cinemaAllowance);
 					}
 				});
 			}

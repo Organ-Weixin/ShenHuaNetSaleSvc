@@ -165,12 +165,6 @@
 		delete from sessioninfo 
 		<include refid="deleteWhere"/>
 	</delete>
-
-	<update id="updatePriceplan" parameterType="com.boot.security.server.model.Priceplan" >
-		update pricePlan p set Price = #{Price}
-		where CinemaCode=#{CinemaCode} and Code=#{Code} and UserID=#{UserID}
-	
-	</update>
 	
 	<update id="update">
 		update sessioninfo t

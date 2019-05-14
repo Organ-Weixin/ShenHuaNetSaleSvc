@@ -36,4 +36,8 @@ public interface UserinfoDao {
     int count(@Param("params") Map<String, Object> params);
 
     List<Userinfo> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    
+    //获取渠道
+    @Select("select * from userinfo where IsDel='0'")
+    List<Userinfo> getCompany();
 }

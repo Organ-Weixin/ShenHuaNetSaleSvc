@@ -11,9 +11,7 @@ import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import com.boot.security.server.model.Priceplan;
 import com.boot.security.server.model.Sessioninfo;
-import com.boot.security.server.model.Userinfo;
 
 @Mapper
 public interface SessioninfoDao {
@@ -63,28 +61,16 @@ public interface SessioninfoDao {
 
     List<Sessioninfo> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
     
-    @Select("select * from priceplan where CinemaCode=#{CinemaCode} and Code=#{Code} and UserID=#{UserID}")
-    Priceplan selectPrice(Priceplan priceplan);
-    
-    //新增价格数据
-    @Insert("insert into priceplan (CinemaCode,Code,UserID,Price,Type) values (#{CinemaCode},#{Code},#{UserID},#{Price},#{Type})")
-    int addPriceplan(Priceplan priceplan);
-    int updatePriceplan(Priceplan priceplan);
-    
-    //获取渠道
-    @Select("select * from userinfo where IsDel='0'")
-    List<Userinfo> getCompany();
-    
     @Select("select * from sessioninfo where find_in_set(ccode,#{cinemacodes}) and starttime >= NOW() group by filmcode")
     List<Sessioninfo> getFilmsByCinemaCode(String cinemacodes);
     
     ////////
     @Select("select * from sessioninfo t where t.ccode=#{cinemacode} and t.scode = #{sessioncode}")
-	   Sessioninfo getSessionCode(@Param("cinemacode")String cinemacode,@Param("sessioncode")String sessioncode);
+	Sessioninfo getSessionCode(@Param("cinemacode")String cinemacode,@Param("sessioncode")String sessioncode);
 	 
 	 ////
-	 @Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.starttime>=#{StartDate} and t.starttime<=#{EndDate}")
-	    List<Sessioninfo> getByCinemaStartDateEndDate(@Param("cinemacode")String cinemacode,@Param("StartDate")String StartDate,@Param("EndDate")String EndDate);
+	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.starttime>=#{StartDate} and t.starttime<=#{EndDate}")
+    List<Sessioninfo> getByCinemaStartDateEndDate(@Param("cinemacode")String cinemacode,@Param("StartDate")String StartDate,@Param("EndDate")String EndDate);
 	 
     
 }

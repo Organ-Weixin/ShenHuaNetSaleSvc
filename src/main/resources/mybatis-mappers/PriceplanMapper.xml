@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.PriceplanDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and Id = #{params.Id} 
+			</if>
+			<if test="params.CinemaCode != null and params.CinemaCode != ''">
+				and CinemaCode = #{params.CinemaCode} 
+			</if>
+			<if test="params.Code != null and params.Code != ''">
+				and Code = #{params.Code} 
+			</if>
+			<if test="params.UserID != null and params.UserID != ''">
+				and UserID = #{params.UserID} 
+			</if>
+			<if test="params.Price != null and params.Price != ''">
+				and Price = #{params.Price} 
+			</if>
+			<if test="params.TicketFee != null and params.TicketFee != ''">
+				and TicketFee = #{params.TicketFee} 
+			</if>
+			<if test="params.AddFee != null and params.AddFee != ''">
+				and AddFee = #{params.AddFee} 
+			</if>
+			<if test="params.CinemaAllowance != null and params.CinemaAllowance != ''">
+				and CinemaAllowance = #{params.CinemaAllowance} 
+			</if>
+			<if test="params.Type != null and params.Type != ''">
+				and Type = #{params.Type} 
+			</if>
+		
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from priceplan t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Priceplan">
+		select * from priceplan t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="updatePriceplan">
+		update priceplan t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="CinemaCode != null">
+				CinemaCode = #{CinemaCode}, 
+			</if>
+			<if test="Code != null">
+				Code = #{Code}, 
+			</if>
+			<if test="UserID != null">
+				UserID = #{UserID}, 
+			</if>
+			<if test="Price != null">
+				Price = #{Price}, 
+			</if>
+			<if test="TicketFee != null">
+				TicketFee = #{TicketFee}, 
+			</if>
+			<if test="AddFee != null">
+				AddFee = #{AddFee}, 
+			</if>
+			<if test="CinemaAllowance != null">
+				CinemaAllowance = #{CinemaAllowance}, 
+			</if>
+			<if test="Type != null">
+				Type = #{Type}, 
+			</if>
+		</set>
+		where CinemaCode=#{CinemaCode} and Code=#{Code} and UserID=#{UserID}
+	</update>
+
+</mapper>

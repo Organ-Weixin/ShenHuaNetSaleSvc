@@ -1,8 +1,8 @@
-package com.boot.security.server.model;
+package com.boot.security.server.modelView;
 
 import java.util.Date;
 
-public class Sessioninfoview extends BaseEntity<Long> {
+public class Sessioninfoview {
 
 	private Long Id;
 	private String SCode;
@@ -19,6 +19,9 @@ public class Sessioninfoview extends BaseEntity<Long> {
 	private String Language;
 	private Double StandardPrice;
 	private Double LowestPrice;
+	private Double TicketFee;
+	private Double AddFee;
+	private Double CinemaAllowance;
 	private Double Price;
 	
 	public Long getId() {
@@ -111,6 +114,24 @@ public class Sessioninfoview extends BaseEntity<Long> {
 	}
 	public void setLowestPrice(Double lowestPrice) {
 		LowestPrice = lowestPrice;
+	}
+	public Double getTicketFee() {
+		return TicketFee;
+	}
+	public void setTicketFee(Double ticketFee) {
+		TicketFee = ticketFee;
+	}
+	public Double getAddFee() {
+		return AddFee;
+	}
+	public void setAddFee(Double addFee) {
+		AddFee = addFee;
+	}
+	public Double getCinemaAllowance() {
+		return CinemaAllowance;
+	}
+	public void setCinemaAllowance(Double cinemaAllowance) {
+		CinemaAllowance = cinemaAllowance;
 	}
 	public Double getPrice() {
 		return Price;

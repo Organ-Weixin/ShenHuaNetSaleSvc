@@ -57,6 +57,9 @@
 									<th>语言</th>
 									<th>标准价</th>
 									<th>最低价</th>
+									<th>服务费</th>
+									<th>增值服务费</th>
+									<th>影院补贴</th>
 									<th>设置价</th>
 									<th>操作</th>
                                 </tr>
@@ -69,8 +72,6 @@
             </div>
         </div>
     </div>
-</body>
-</html>
 
 <script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
 <script type="text/javascript" src="../../js/jq.js"></script>
@@ -79,100 +80,106 @@
 <script type="text/javascript" src="../../layui/layui.js"></script>
 <script type="text/javascript" src="../../js/my/permission.js"></script>
 <script type="text/javascript">
-var pers = checkPermission();
-
-var example;
-function init(){
-	example = 
-    	$('#dt-table').DataTable({
-        	"searching": false,
-        	"processing": false,
-        	"serverSide" : true,
-        	"language": {
-                "url": "/js/plugin/datatables/Chinese.lang"
-            },
-        	"ajax": {
-        		"url" : "/sessioninfoviews",
-        		"type":"get",
-        		"data":function(d){
-    				d.Company = $("#channel").val();
-    				d.StartTime = $("#sessionDate").val();
-    				d.FilmName = $("#keyword").val();
-    			}
-        	},
-        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
-            "columns": [
-            	{	"data" : null, 
-            		"defaultContent" : "",
-					"render" : function(data, type, full, meta){
-						return meta.row + 1 + meta.settings._iDisplayStart;
-						}
-				},
-				{"data" : "cinemaName","defaultContent": ""},
-				{"data" : "company","defaultContent": ""},
-				{"data" : "filmName", "defaultContent" : ""},
-				{"data" : "screenName","defaultContent": ""},
-				{"data" : "startTime", "defaultContent" : ""},
-				{"data" : "duration", "defaultContent" : ""},
-				{"data" : "language", "defaultContent" : ""},
-				{"data" : "standardPrice", "defaultContent" : ""},
-				{"data" : "lowestPrice", "defaultContent" : ""},
-				{
-					"data" : "price", 
-					"defaultContent" : "0",
-					"render": function (data, type, row) {
-                		var price = row['price'];
-                      
-                        return price;
-                  	}
-				},
-				{ 
-					"data": "", 
-					"sDefaultContent": "",
-					"orderable":false,
-			        "render": function (data, type, row) {
-             		           var id=row['id'];		
-             		           var href = "updateSessioninfo.html?Id=" + id;
-                               var edit = buttonEdit(href, "", pers,row);
-
-                                return edit;
-               	            }		
-				},
-                
-            ],
-           "order": [[ 0, "asc" ]]
-        } );
-}
-
-getCompany();
-function getCompany(){
-	$.ajax({
-        type:"post",
-        url:"/sessioninfoviews/getCompany",
-        success:function(data){
-			for(var i=0; i<data.length;i++){
-				var option = "<option value="+data[i].company+">"+data[i].company+"</option>";
-				$("#channel").append(option);
-			}
-        },
-        error:function(){
-            J.alert('Error');
-        }
-    })
-}
-
-
-layui.use(['layer','laydate'], function(){
-    var layer = layui.layer;
-    var laydate = layui.laydate;
-    laydate.render({
-       elem: '#sessionDate',
-    });
-});
-
-$("#searchBt").click(function(){
-	example.ajax.reload();
-});
-
-init();
+	var pers = checkPermission();
+	
+	var example;
+	function init(){
+		example = 
+	    	$('#dt-table').DataTable({
+	        	"searching": false,
+	        	"processing": false,
+	        	"serverSide" : true,
+	        	"language": {
+	                "url": "/js/plugin/datatables/Chinese.lang"
+	            },
+	        	"ajax": {
+	        		"url" : "/sessioninfoviews",
+	        		"type":"get",
+	        		"data":function(d){
+	    				d.Company = $("#channel").val();
+	    				d.StartTime = $("#sessionDate").val();
+	    				d.FilmName = $("#keyword").val();
+	    			}
+	        	},
+	        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
+	            "columns": [
+	            	{	"data" : null, 
+	            		"defaultContent" : "",
+						"render" : function(data, type, full, meta){
+							return meta.row + 1 + meta.settings._iDisplayStart;
+							}
+					},
+					{"data" : "cinemaName","defaultContent": ""},
+					{"data" : "company","defaultContent": ""},
+					{"data" : "filmName", "defaultContent" : ""},
+					{"data" : "screenName","defaultContent": ""},
+					{"data" : "startTime", "defaultContent" : ""},
+					{"data" : "duration", "defaultContent" : ""},
+					{"data" : "language", "defaultContent" : ""},
+					{"data" : "standardPrice", "defaultContent" : ""},
+					{"data" : "lowestPrice", "defaultContent" : ""},
+					{"data" : "ticketFee", "defaultContent" : ""},
+					{"data" : "addFee", "defaultContent" : ""},
+					{"data" : "cinemaAllowance", "defaultContent" : ""},
+					{
+						"data" : "price", 
+						"defaultContent" : "0",
+						"render": function (data, type, row) {
+	                		var price = row['price'];
+	                      
+	                        return price;
+	                  	}
+					},
+					{ 
+						"data": "", 
+						"sDefaultContent": "",
+						"orderable":false,
+				        "render": function (data, type, row) {
+	             		           var id=row['id'];		
+	             		           var href = "updateSessioninfo.html?Id=" + id;
+	                               var edit = buttonEdit(href, "", pers,row);
+	
+	                               return edit;
+	               	            }		
+					},
+	                
+	            ],
+	           "order": [[ 0, "asc" ]]
+	        } );
+	}
+	
+	//获取渠道列表
+	getCompany();
+	function getCompany(){
+		$.ajax({
+	        type:"post",
+	        url:"/sessioninfoviews/getCompany",
+	        success:function(data){
+				for(var i=0; i<data.length;i++){
+					var option = "<option value="+data[i].company+">"+data[i].company+"</option>";
+					$("#channel").append(option);
+				}
+	        },
+	        error:function(){
+	            J.alert('Error');
+	        }
+	    })
+	}
+	
+	
+	layui.use(['layer','laydate'], function(){
+	    var layer = layui.layer;
+	    var laydate = layui.laydate;
+	    laydate.render({
+	       elem: '#sessionDate',
+	    });
+	});
+	
+	$("#searchBt").click(function(){
+		example.ajax.reload();
+	});
+	
+	init();
 </script>
+</body>
+</html>

@@ -9,6 +9,9 @@ public class Priceplan {
 	private String Code;
 	private Integer UserID;
 	private Double Price;
+	private Double TicketFee;
+	private Double AddFee;
+	private Double CinemaAllowance;
 	private Integer Type;
 
 	public Integer getId() {
@@ -40,6 +43,24 @@ public class Priceplan {
 	}
 	public void setPrice(Double Price) {
 		this.Price = Price;
+	}
+	public Double getTicketFee() {
+		return TicketFee;
+	}
+	public void setTicketFee(Double ticketFee) {
+		TicketFee = ticketFee;
+	}
+	public Double getAddFee() {
+		return AddFee;
+	}
+	public void setAddFee(Double addFee) {
+		AddFee = addFee;
+	}
+	public Double getCinemaAllowance() {
+		return CinemaAllowance;
+	}
+	public void setCinemaAllowance(Double cinemaAllowance) {
+		CinemaAllowance = cinemaAllowance;
 	}
 	public Integer getType() {
 		return Type;

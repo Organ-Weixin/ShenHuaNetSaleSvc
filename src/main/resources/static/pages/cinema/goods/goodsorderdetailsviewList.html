@@ -38,7 +38,7 @@
 									</form>
 	                   			</td>
 	                   			<td align="right">
-	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addGoodsorderdetailsview.html'">
+	                   				<button class="layui-btn layui-btn-sm" onclick="exportExcel()">
                                       <i class="layui-icon">&#xe608;</i> 导出
                                     </button>
 	                   			</td>
@@ -199,6 +199,23 @@
 	    });
 	}
 	
+	//导出表格数据
+	function exportExcel(){
+		var orderStatus = $("#orderStatus").val();
+		if(orderStatus == null || orderStatus == ""){
+			orderStatus = 0;
+		}
+		alert("该功能还未实现");
+		/* $.ajax({
+			type : 'post',
+			url : '/goodsorderdetailsviews/exportExcel/'+orderStatus,
+			contentType: "application/json; charset=utf-8",  
+			success : function(data) {
+				alert(data);
+				
+			}
+		}); */
+	}
 	
 	$("#searchBt").click(function(){
 		example.ajax.reload();

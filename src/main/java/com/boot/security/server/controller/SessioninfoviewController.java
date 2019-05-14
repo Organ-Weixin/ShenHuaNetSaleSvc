@@ -21,12 +21,13 @@ import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.utils.UserUtil;
 import com.boot.security.server.api.core.NetSaleSvcCore;
 import com.boot.security.server.api.core.QuerySessionReply;
-import com.boot.security.server.dao.SessioninfoDao;
+import com.boot.security.server.dao.PriceplanDao;
 import com.boot.security.server.dao.SessioninfoviewDao;
+import com.boot.security.server.dao.UserinfoDao;
 import com.boot.security.server.model.Priceplan;
-import com.boot.security.server.model.Sessioninfoview;
 import com.boot.security.server.model.SysUser;
 import com.boot.security.server.model.Userinfo;
+import com.boot.security.server.modelView.Sessioninfoview;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -35,7 +36,9 @@ import io.swagger.annotations.ApiOperation;
 public class SessioninfoviewController {
 
 	@Autowired
-    private SessioninfoDao sessioninfoDao;
+    private UserinfoDao userinfodao;
+	@Autowired
+    private PriceplanDao priceplanDao;
     @Autowired
     private SessioninfoviewDao sessioninfoviewDao;
 
@@ -50,7 +53,7 @@ public class SessioninfoviewController {
     public PageTableResponse list(PageTableRequest request) {
     	//获取当前登陆人信息
     	SysUser sysuser = UserUtil.getLoginUser();
-    	request.getParams().put("username", sysuser.getUsername());
+    	request.getParams().put("id", sysuser.getId());
     	request.getParams().put("roleId", sysuser.getRoleId());
     	
         return new PageTableHandler(new CountHandler() {
@@ -70,11 +73,15 @@ public class SessioninfoviewController {
 
     @PutMapping
     @ApiOperation(value = "修改价格")
-    public int update(@RequestBody Map map) {
+    public int update(@RequestBody Map<String,Object> map) {
+    	System.out.println("22222"+map);
     	Priceplan priceplan=new Priceplan();
     	priceplan.setCinemaCode(map.get("cinemaCode").toString());
     	priceplan.setUserID(Integer.parseInt(map.get("userID").toString()));
     	priceplan.setPrice(Double.parseDouble(map.get("standardPrice").toString()));
+    	priceplan.setTicketFee(Double.parseDouble(map.get("ticketFee").toString()));
+    	priceplan.setAddFee(Double.parseDouble(map.get("addFee").toString()));
+    	priceplan.setCinemaAllowance(Double.parseDouble(map.get("cinemaAllowance").toString()));
     	String type=map.get("type").toString();
     	if("1".equals(type)){
     		priceplan.setCode(map.get("scode").toString());
@@ -84,24 +91,24 @@ public class SessioninfoviewController {
     	
     	priceplan.setType(Integer.parseInt(map.get("type").toString()));
     	
-    	Priceplan p = sessioninfoDao.selectPrice(priceplan);
+    	Priceplan p = priceplanDao.selectPrice(priceplan);
     	if(p == null){
-    		sessioninfoDao.addPriceplan(priceplan);
+    		priceplanDao.save(priceplan);
     	}
     	
-        return sessioninfoDao.updatePriceplan(priceplan);
+        return priceplanDao.updatePriceplan(priceplan);
     }
     
     @PostMapping("/getCompany")
     @ApiOperation(value = "渠道列表")
     public List<Userinfo> getCompany() {
-        return sessioninfoDao.getCompany();
+        return userinfodao.getCompany();
     }
     
     
     @PostMapping("/getNewSession")
     @ApiOperation(value = "重新获取排期")
-    public QuerySessionReply getNewSession(@RequestBody Map map){
+    public QuerySessionReply getNewSession(@RequestBody Map<String,Object> map){
     	String UserName = "MiniProgram";
     	String Password = "6BF477EBCC446F54E6512AFC0E976C41";
     	try {

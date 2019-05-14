@@ -30,5 +30,14 @@ public enum GoodsOrderStatusEnum {
 	public void setStatusCode(int statusCode) {
 		StatusCode = statusCode;
 	}
+	
+	public static String getNameByCode(int code){
+		for(GoodsOrderStatusEnum order : GoodsOrderStatusEnum.values()){
+			if(code == order.getStatusCode()){
+				return order.getStatusName();
+			}
+		}
+		return null;
+	}
 
 }
