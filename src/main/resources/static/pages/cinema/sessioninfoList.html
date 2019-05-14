@@ -48,8 +48,8 @@
                                 </tr>                       
                                 <tr>
 									<th>#</th>
-									<th>影院名称</th>
-									<th>渠道名称</th>
+									<th width="8%">影院名称</th>
+									<th width="8%">渠道名称</th>
 									<th>影片名称</th>
 									<th>影厅名称</th>
 									<th>放映时间</th>
@@ -61,7 +61,7 @@
 									<th>增值服务费</th>
 									<th>影院补贴</th>
 									<th>设置价</th>
-									<th>操作</th>
+									<th width="6%">操作</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -136,16 +136,22 @@
 						"orderable":false,
 				        "render": function (data, type, row) {
 	             		           var id=row['id'];		
-	             		           var href = "updateSessioninfo.html?Id=" + id;
-	                               var edit = buttonEdit(href, "", pers,row);
+//	             		           var href = "updateSessioninfo.html?Id=" + id;
+//	                               var edit = buttonEdit(href, "", pers,row);
+								   var update = "<button style='color:blue; background-color:transparent; border:0' onclick='updatePrice("+id+")'>价格设置</button>";
+                		           
 	
-	                               return edit;
+	                               return update;
 	               	            }		
 					},
 	                
 	            ],
 	           "order": [[ 0, "asc" ]]
 	        } );
+	}
+	
+	function updatePrice(id){
+		window.location.href="updateSessioninfo.html?Id=" + id;
 	}
 	
 	//获取渠道列表
