@@ -7,7 +7,7 @@ public class Membercard extends BaseEntity<Long> {
 	//新增OpenId Updated
 	private Long Id;
 	private String CinemaCode;
-	private Long OpenId;
+	private String OpenId;
 	private String CardNo;
 	private String CardPassword;
 	private String MobilePhone;
@@ -120,10 +120,10 @@ public class Membercard extends BaseEntity<Long> {
 	public void setStatus(Integer Status) {
 		this.Status = Status;
 	}
-	public Long getOpenId() {
+	public String getOpenId() {
 		return OpenId;
 	}
-	public void setOpenId(Long openId) {
+	public void setOpenId(String openId) {
 		OpenId = openId;
 	}
 	public Date getUpdated() {

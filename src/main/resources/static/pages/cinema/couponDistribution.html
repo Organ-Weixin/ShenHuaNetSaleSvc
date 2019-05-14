@@ -27,12 +27,13 @@
                     <div class="top-wrapper">
                         <div class="top-content">
                             <div class="issue-setting">
-                                <select name="choose" class="issue-choose">
+                                <select id="CouponsSelect" name="choose" class="issue-choose">
                                     <option value="">选择优惠券</option>
                                 </select>
                                 <span>，赠送张数</span>
                                 <input type="text" class="issue-num" placeholder="输入数量">
                                 <span class="issue-del">删除</span>
+                                <span id="remainingNumber" style="margin-left:5%"></span>
                             </div>
                         </div>
                     </div>
@@ -168,6 +169,50 @@ $(function (){
     $(".empty").click(function(){
     	$(".specify-dis").val("");
     })
+});
+
+//获取登陆人信息
+initUser();
+function initUser(){
+	$.ajax({
+		type : 'get',
+		url : '/users/current',
+		async : false,
+		success : function(data) {
+			getCinemaCodes(data.id,data.roleId);
+		}
+	});
+}
+//获取登陆人的所有影院的影院编码
+function getCinemaCodes(id,roleId){
+	$.ajax({
+		url:'/users/getCinemaName',
+		data:{"id":id,"roleId":roleId},
+		type:'post',
+		success:function(data){
+			var cinemacodes = "";
+			for(var i=0; i<data.length; i++){
+				cinemacodes += data[i].cinemaCode+",";
+			}
+			getCouponGroups(cinemacodes.substring(0,cinemacodes.length-1));
+		}
+	})
+}
+//获取登陆人的对应影院的优惠券
+function getCouponGroups(cinemacodes){
+	$.ajax({
+		url:'/couponsgroups/getCouponGroups?cinemacode='+cinemacodes,
+		type:'post',
+		success:function(data){
+			for(var i=0; i<data.length; i++){
+				var option = "<option value='"+data[i].groupCode+"' title='"+data[i].remainingNumber+"'>"+data[i].couponsName+"</option>";
+				$("#CouponsSelect").append(option);
+			}
+		}
+	});
+}
+$("#CouponsSelect").blur(function(){
+	$("#remainingNumber").html('库存'+$(this).find('option:checked').attr('title'));
 });
 </script>
 </html>

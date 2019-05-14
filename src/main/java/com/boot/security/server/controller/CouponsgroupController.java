@@ -89,6 +89,10 @@ public class CouponsgroupController {
     @GetMapping
     @ApiOperation(value = "列表")
     public PageTableResponse list(PageTableRequest request) {
+    	List<Couponsgroup> pastCouponsList = couponsgroupService.getPastCoupons();
+    	if(pastCouponsList.size()>0){
+        	couponsgroupDao.updatePastCoupons(CouponGroupStatusEnum.Expired.getStatusCode());
+    	}
     	String CinemaCodes = request.getParams().get("CinemaCodesList").toString();
     	String CinemaCodesList []  = CinemaCodes.split(",");
         return new PageTableHandler(new CountHandler() {
@@ -146,6 +150,37 @@ public class CouponsgroupController {
     	return couponsgroupService.changeStatus(status, id);
     }
     
+    @RequestMapping("/getCouponGroups")
+    @ApiOperation(value = "获取对应影院的优惠券")
+    public List<Couponsgroup> getCouponGroups(@RequestParam("cinemacode") String cinemacode){
+    	List<Couponsgroup> pastCouponsList = couponsgroupService.getPastCoupons();
+    	if(pastCouponsList.size()>0){
+        	couponsgroupDao.updatePastCoupons(CouponGroupStatusEnum.Expired.getStatusCode());
+    	}
+    	List<Couponsgroup> list = new ArrayList<>();
+    	String CinemaCodesList []  = cinemacode.split(",");
+    	List<String> strings = new ArrayList<>();
+    	for(int i=0; i<CinemaCodesList.length; i++){
+    		for(int j=0; j<couponsgroupService.getCanUseByGroupCode(CinemaCodesList[i]).size(); j++){
+    			//将对应影院的所有优惠券组编码放在strings中
+    			strings.add(couponsgroupService.getCanUseByGroupCode(CinemaCodesList[i]).get(j).getGroupCode());
+    		}
+    	}
+    	Set<String> set = new HashSet<>();
+    	//得到去除重复之后的优惠券组编码
+    	for(String s : strings){
+    		if (set.contains(s)) {
+    		}else{
+    			set.add(s);
+    		}
+    	}
+    	//根据去除重复的优惠券组编码查出对应记录，并添入list
+    	for(String str : set){
+    		list.add(couponsgroupService.getByGroupCode(str));
+    	}
+    	return list;
+    }
+    
     public static String getCharAndNumr(int length) {
     	  String val = "";
     	  Random random = new Random();
@@ -163,7 +198,4 @@ public class CouponsgroupController {
     	  }
     	  return val;
     	 }
-    public static void main(String[] args) {
-    	System.out.println(getCharAndNumr(10));
-	}
 }

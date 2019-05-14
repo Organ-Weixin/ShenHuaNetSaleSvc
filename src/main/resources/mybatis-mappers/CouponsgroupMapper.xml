@@ -104,6 +104,11 @@
 		${params.orderBy}
 		limit #{offset}, #{limit}
 	</select>
+	
+	<!-- <select id="getByCinemaCodes" resultType="Couponsgroup">
+		select * from couponsgroup t
+		<include refid="where" />
+	</select> -->
 
 	<update id="update">
 		update couponsgroup t

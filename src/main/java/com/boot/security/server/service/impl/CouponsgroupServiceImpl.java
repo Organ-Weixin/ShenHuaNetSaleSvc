@@ -31,5 +31,20 @@ public class CouponsgroupServiceImpl implements CouponsgroupService{
 	public Couponsgroup getByGroupCode(String groupcode) {
 		return couponsgroupDao.getByGroupCode(groupcode);
 	}
+	@Override
+	public List<Couponsgroup> getPastCoupons() {
+		// TODO Auto-generated method stub
+		return couponsgroupDao.getPastCoupons();
+	}
+	@Override
+	public int updatePastCoupons(Integer status) {
+		// TODO Auto-generated method stub
+		return couponsgroupDao.updatePastCoupons(status);
+	}
+	@Override
+	public List<Couponsgroup> getCanUseByGroupCode(String cinemacode) {
+		// TODO Auto-generated method stub
+		return couponsgroupDao.getCanUseByGroupCode(cinemacode);
+	}
 	
 }

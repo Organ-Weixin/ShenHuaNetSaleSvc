@@ -72,11 +72,13 @@ public class MemberController {
 	@ApiOperation(value = "会员卡登陆")
 	public LoginCardReply  LoginCard(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String OpenID,@PathVariable String CardNo,@PathVariable String CardPassword){
-		if(OpenID.isEmpty()){
-			return new LoginCardReply();
-		}else{
-			return new NetSaleSvcCore().LoginCard(Username, Password, CinemaCode, CardNo, CardPassword);
+		LoginCardReply loginCardReply = new NetSaleSvcCore().LoginCard(Username, Password, CinemaCode, CardNo, CardPassword);
+		if(loginCardReply.Status.equals("Success")){
+			Membercard membercard = _memberCardService.getByCardNo(CinemaCode, CardNo);
+			membercard.setOpenId(OpenID);
+			_memberCardService.Update(membercard);
 		}
+		return loginCardReply;
 	}
 	//endregion
 	
@@ -147,12 +149,18 @@ public class MemberController {
 	//endregion
 	
 	//region 会员卡注册
-	@GetMapping("/CardRegister/{Username}/{Password}/{CinemaCode}/{CardPassword}/{LevelCode}/{InitialAmount}/{CardUserName}/{MobilePhone}/{IDNumber}/{Sex}")
+	@GetMapping("/CardRegister/{Username}/{Password}/{OpenID}/{CinemaCode}/{CardPassword}/{LevelCode}/{InitialAmount}/{CardUserName}/{MobilePhone}/{IDNumber}/{Sex}")
 	@ApiOperation(value = "会员卡注册")
-	public CardRegisterReply CardRegister(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
+	public CardRegisterReply CardRegister(@PathVariable String Username,@PathVariable String Password,String OpenID,@PathVariable String CinemaCode,
 			@PathVariable String CardPassword,@PathVariable String LevelCode,@PathVariable String InitialAmount,@PathVariable String CardUserName,
 			@PathVariable String MobilePhone,@PathVariable String IDNumber,@PathVariable String Sex){
-		return new NetSaleSvcCore().CardRegister(Username, Password, CinemaCode, CardPassword, LevelCode, InitialAmount, CardUserName, MobilePhone, IDNumber, Sex);
+			CardRegisterReply cardRegisterReply = new NetSaleSvcCore().CardRegister(Username, Password, CinemaCode, CardPassword, LevelCode, InitialAmount, CardUserName, MobilePhone, IDNumber, Sex);
+			if(cardRegisterReply.Status.equals("Success")){
+				Membercard membercard = _memberCardService.getByCardNo(CinemaCode, cardRegisterReply.getCardNo());
+				membercard.setOpenId(OpenID);
+				_memberCardService.Update(membercard);
+			}
+		return cardRegisterReply; 
 	}
 	//endregion
 	

@@ -37,7 +37,16 @@ public interface CouponsgroupDao {
     
     @Select("select * from couponsgroup where find_in_set(#{cinemacode},cinemacodes)")
     List<Couponsgroup> getByCinemaCode(String cinemacode);
+    
+    @Select("select * from couponsgroup where find_in_set(#{cinemacode},cinemacodes) and status = 1")
+    List<Couponsgroup> getCanUseByGroupCode(String cinemacode);
 
     @Select("select * from couponsgroup t where t.groupcode = #{groupcode}")
     Couponsgroup getByGroupCode(String  groupcode);
+    
+    @Select("select * from couponsgroup t where t.expireDate < now()")
+    List<Couponsgroup> getPastCoupons();
+    
+    @Update("update couponsgroup t set t.status = #{status}, t.updateDate = now() where t.expireDate < now()")
+    int updatePastCoupons(Integer status);
 }
