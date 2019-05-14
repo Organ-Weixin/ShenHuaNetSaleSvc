@@ -143,7 +143,7 @@ function init(){
                     'title' : '订单信息',
                     'exportOptions': {  
                         'modifier': {  
-                            'page': 'current'  
+                        	'page': 'current'  
                         }  
                     }  
                 }  
@@ -156,7 +156,11 @@ function init(){
 						return meta.row + 1 + meta.settings._iDisplayStart;
 						}
 				}, 
-				{"data" : "cinemaname", "defaultContent" : "","orderable":false},
+				{"data" : "cinemaname", "defaultContent" : "","orderable":false,
+					"render":function(data, type, row){
+			            return '<div style="width:130px;height:20px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;" title='+data+'>'+data+'</div>';
+					}	
+				},
 				{"data" : "filmname", "defaultContent" : "","orderable":false,
 					"render":function(data, type, row){
 						if (type === 'display') {
@@ -209,7 +213,6 @@ function init(){
            "order": [[ 0, "asc" ]]
         } );
 }
-
 layui.use(['layer','laydate'], function(){
     var layer = layui.layer;
     var laydate = layui.laydate;

@@ -3,8 +3,10 @@ package com.boot.security.server.controller;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -99,16 +101,30 @@ public class CouponsgroupController {
 
             @Override
             public List<Couponsgroup> list(PageTableRequest request) {
-            	System.out.println("接收到的cinemacodes="+request.getParams().get("CinemaCodes"));
             	if(request.getParams().get("CinemaCodes")!=null&&request.getParams().get("CinemaCodes").toString()!=""&&CinemaCodes.contains(request.getParams().get("CinemaCodes").toString())){
             		return couponsgroupDao.list(request.getParams(), request.getOffset(), request.getLimit());
             	}else{
-            		System.out.println("没有接收到cinemacodes");
             		//传过去不存在的影院编码，清空list列表
             		request.getParams().put("CinemaCodes", "00000000");
             		List<Couponsgroup> list = couponsgroupDao.list(request.getParams(), request.getOffset(), request.getLimit());
+            		List<String> strings = new ArrayList<>();
                 	for(int i=0; i<CinemaCodesList.length; i++){
-                		list.addAll(couponsgroupService.getByCinemaCode(CinemaCodesList[i]));
+                		for(int j=0; j<couponsgroupService.getByCinemaCode(CinemaCodesList[i]).size(); j++){
+                			//将对应影院的所有优惠券组编码放在strings中
+                			strings.add(couponsgroupService.getByCinemaCode(CinemaCodesList[i]).get(j).getGroupCode());
+                		}
+                	}
+                	Set<String> set = new HashSet<>();
+                	//得到去除重复之后的优惠券组编码
+                	for(String s : strings){
+                		if (set.contains(s)) {
+                		}else{
+                			set.add(s);
+                		}
+                	}
+                	//根据去除重复的优惠券组编码查出对应记录，并添入list
+                	for(String str : set){
+                		list.add(couponsgroupService.getByGroupCode(str));
                 	}
                 	return list;
             	}
