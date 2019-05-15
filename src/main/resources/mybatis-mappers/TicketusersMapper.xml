@@ -114,6 +114,9 @@
 			<if test="Language != null">
 				Language = #{Language}, 
 			</if>
+			<if test="Roll != null">
+				Roll = #{Roll}, 
+			</if>
 		</set>
 		where t.id = #{id}
 	</update>

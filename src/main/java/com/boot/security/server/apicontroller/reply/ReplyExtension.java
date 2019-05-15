@@ -567,6 +567,25 @@ public class ReplyExtension {
 			}
 			return true;
 		}
+		
+		//region   获取所有启用优惠券  QueryUsingConpons 
+		public static boolean RequestInfoGuard(QueryUsingConponsReply reply,String Username,String Password,String CinemaCode){
+			if (Username==null || "".equals(Username)) {
+				reply.SetNecessaryParamMissReply("UserName");
+				return false;
+			}
+			if (Password==null || "".equals(Password)) {
+				reply.SetNecessaryParamMissReply("Password");
+				return false;
+			}
+			if (CinemaCode==null || "".equals(CinemaCode)) {
+				reply.SetNecessaryParamMissReply("CinemaCode");
+				return false;
+			}
+			
+			return true;
+		}
+				
 		//region   获取用户优惠券(不分页)       QueryUserConponsReply 
 		public static boolean RequestInfoGuard(QueryUserConponsReply reply,String Username,String Password,String CinemaCode,String OpenID,String Status){
 			if (Username==null || "".equals(Username)) {

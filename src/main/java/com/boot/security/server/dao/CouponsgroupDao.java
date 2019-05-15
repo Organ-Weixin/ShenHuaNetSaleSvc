@@ -41,6 +41,10 @@ public interface CouponsgroupDao {
     @Select("select * from couponsgroup where find_in_set(#{cinemacode},cinemacodes) and status = 1")
     List<Couponsgroup> getCanUseByGroupCode(String cinemacode);
 
+    //查询所有启用优惠券
+    @Select("select * from couponsgroup where status = 1 and (CinemaCodes is NULL or find_in_set(#{cinemacode},cinemacodes))")
+    List<Couponsgroup> getAllUseByGroupCode(String cinemacode);
+    
     @Select("select * from couponsgroup t where t.groupcode = #{groupcode}")
     Couponsgroup getByGroupCode(String  groupcode);
     

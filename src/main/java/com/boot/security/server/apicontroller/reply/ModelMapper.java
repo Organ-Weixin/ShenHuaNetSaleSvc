@@ -3,20 +3,20 @@ package com.boot.security.server.apicontroller.reply;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.boot.security.server.api.core.LockSeatQueryXml.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat;
-import com.boot.security.server.api.core.SubmitOrderQueryXml.SubmitOrderQueryXmlOrder.SubmitOrderQueryXmlSeat;
 import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson.PrePayOrderQueryJsonSeat;
 import com.boot.security.server.apicontroller.reply.QueryFilmReply.QueryFilmReplyFilm;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.QueryMemberCardByPhoneReplyMemberCardByPhone;
-import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.QueryMemberCardByPhoneReplyMemberCardByPhone.QueryMemberCardByPhoneReplyPhone;
 import com.boot.security.server.apicontroller.reply.QueryScreenInfoReply.QueryScreensReplyScreenInfo;
 import com.boot.security.server.apicontroller.reply.QueryScreenSeatsReply.QueryScreenSeatsReplyScreenSeats;
 import com.boot.security.server.apicontroller.reply.QueryScreensReply.QueryScreensReplyScreens.QueryScreensReplyScreen;
 import com.boot.security.server.apicontroller.reply.QuerySessionsReply.QuerySessionsReplySessions.QuerySessionsReplySession.QuerySessionsReplyFilms.QuerySessionsReplyFilm;
+import com.boot.security.server.apicontroller.reply.QueryUsingConponsReply.ConponData.ConponBean;
 import com.boot.security.server.model.Coupons;
+import com.boot.security.server.model.Couponsgroup;
 import com.boot.security.server.model.Filmcomments;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Membercard;
@@ -25,6 +25,7 @@ import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
 import com.boot.security.server.model.Sessioninfo;
+import com.boot.security.server.model.Ticketusers;
 
 public class ModelMapper {
 	public static QueryScreensReplyScreen MapFrom(QueryScreensReplyScreen screen, Screeninfo entity)
@@ -209,5 +210,49 @@ public class ModelMapper {
 		userConpon.setReceivedDate(String.valueOf(entity.getReceiveDate()));
 		return userConpon;
 		
+	}
+	
+	public static ConponBean MapFrom(Couponsgroup model, ConponBean entity) {
+		entity.setGroupCode(model.getGroupCode());
+		entity.setCouponsType(model.getCouponsType().toString());
+		entity.setCouponsName(model.getCouponsName());
+		entity.setValidityType(model.getValidityType());
+		entity.setEffectiveDate(model.getEffectiveDate()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(model.getEffectiveDate()));
+		entity.setExpireDate(model.getExpireDate()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(model.getExpireDate()));
+		entity.setEffectiveDays(model.getEffectiveDays());
+		entity.setValidityDays(model.getValidityDays());
+		entity.setCanUsePeriodType(model.getCanUsePeriodType());
+		entity.setWeekDays(model.getWeekDays());
+		entity.setTimePeriod(model.getTimePeriod());
+		entity.setLimitNum(model.getLimitNum());
+		entity.setReductionType(model.getReductionType());
+		entity.setReductionPrice(Double.valueOf(model.getReductionPrice().toString()));
+		entity.setFilmCodes(model.getFilmCodes());
+		entity.setGoodsCodes(model.getGoodsCodes());
+		entity.setIsShare(model.getIsShare());
+		entity.setStatus(model.getStatus().toString());
+		entity.setRemainingNumber(model.getRemainingNumber());
+		entity.setRemark(model.getRemark());
+		
+        return entity;
+    }
+	
+	//用户登陆信息转为entity
+	public static Ticketusers MapToEntity(UserWXResult model,Ticketusers entity){
+		entity.setNickName(model.getNickName());
+		entity.setSex(model.getGender());
+		entity.setCountry(model.getCountry());
+		entity.setProvince(model.getProvince());
+		entity.setCity(model.getCity());
+		entity.setHeadImgUrl(model.getAvatarUrl());
+		entity.setLanguage(model.getLanguage());
+		if(model.getOpenId() == null ){
+			entity.setIsActive(0);
+		} else {
+			entity.setIsActive(1);
+			entity.setCreated(new Date());
+		}
+		
+		return entity;
 	}
 }

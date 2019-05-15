@@ -14,17 +14,14 @@ public class CouponsgroupServiceImpl implements CouponsgroupService{
 	private CouponsgroupDao couponsgroupDao;
 	@Override
 	public int changeStatus(Integer status, Long id) {
-		// TODO Auto-generated method stub
 		return couponsgroupDao.changeStatus(status, id);
 	}
 	@Override
 	public List<Couponsgroup> getByCinemaCode(String cinemacode) {
-		// TODO Auto-generated method stub
 		return couponsgroupDao.getByCinemaCode(cinemacode);
 	}
 	@Override
 	public Couponsgroup getById(Long id) {
-		// TODO Auto-generated method stub
 		return couponsgroupDao.getById(id);
 	}
 	@Override
@@ -33,18 +30,19 @@ public class CouponsgroupServiceImpl implements CouponsgroupService{
 	}
 	@Override
 	public List<Couponsgroup> getPastCoupons() {
-		// TODO Auto-generated method stub
 		return couponsgroupDao.getPastCoupons();
 	}
 	@Override
 	public int updatePastCoupons(Integer status) {
-		// TODO Auto-generated method stub
 		return couponsgroupDao.updatePastCoupons(status);
 	}
 	@Override
 	public List<Couponsgroup> getCanUseByGroupCode(String cinemacode) {
-		// TODO Auto-generated method stub
 		return couponsgroupDao.getCanUseByGroupCode(cinemacode);
+	}
+	@Override
+	public List<Couponsgroup> getAllUseByGroupCode(String cinemacode) {
+		return couponsgroupDao.getAllUseByGroupCode(cinemacode);
 	}
 	
 }
