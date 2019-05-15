@@ -82,27 +82,40 @@ public class ReplyExtension {
     }
 	
 	//region QueryScreenRoom 放映厅
-	public static boolean RequestInfoGuard(QueryScreenRoomReply reply, String Username, String Password, String CinemaCode)
-    {
-        if (Username == null || "".equals(Username))
-        {
+	public static boolean RequestInfoGuard(QueryScreenRoomReply reply, String Username, String Password, String CinemaCode){
+        if (Username == null || "".equals(Username)) {
             reply.SetNecessaryParamMissReply("UserName");
             return false;
         }
-        if (Password == null || "".equals(Password))
-        {
+        if (Password == null || "".equals(Password)) {
             reply.SetNecessaryParamMissReply("Password");
             return false;
         }
-        if (CinemaCode == null || "".equals(CinemaCode))
-        {
+        if (CinemaCode == null || "".equals(CinemaCode)) {
             reply.SetNecessaryParamMissReply("CinemaCode");
             return false;
         }
         
         return true;
     }
-		
+	
+	//region QueryScreenRoom 放映厅
+	public static boolean RequestInfoGuard(QueryBannerReply reply, String Username, String Password, String CinemaCode) {
+        if (Username == null || "".equals(Username)) {
+            reply.SetNecessaryParamMissReply("UserName");
+            return false;
+        }
+        if (Password == null || "".equals(Password)) {
+            reply.SetNecessaryParamMissReply("Password");
+            return false;
+        }
+        if (CinemaCode == null || "".equals(CinemaCode)) {
+            reply.SetNecessaryParamMissReply("CinemaCode");
+            return false;
+        }
+        
+        return true;
+    }
 
 	//region QueryScreenSeatsReply
 	public static boolean RequestInfoGuard(QueryScreenSeatsReply reply, String Username, String Password, String CinemaCode,String ScreenCode)
