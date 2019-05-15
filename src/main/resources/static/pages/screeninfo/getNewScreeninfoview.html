@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>影厅管理-重新获取影厅</title>
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+		<h1>基础信息</h1>
+			<input type="hidden" id="id" name="id">
+			<div class='form-group'>
+				<label class='col-md-2 control-label' >所属影院<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					<select class="form-control" name='cinemaCode' id='CinemaCode' data-bv-notempty='true' data-bv-notempty-message='所属影院不能为空'>
+							<option  value="">请选择...</option>
+					<!-- 		<option value="31120907">上海市川沙影剧院</option>
+							<option value="22113901">吉大巨幕影城</option>
+							<option value="33090902">永康影剧院</option>
+							<option value="33096401">哈雷激光影城</option>
+							<option value="33097601">荣耀激光影城</option>
+							<option value="33048201">大马力影城</option>   -->
+						</select>
+					</div>
+			</div>
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+				<button class="btn btn-primary" type="submit" onclick="regain()"><i class="fa fa-save"></i>重新获取
+						</button>&nbsp;&nbsp;&nbsp; 
+					    <button class="btn btn-primary" onclick="location.href='screeninfoviewList.html'">取消</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		});
+		function regain(){
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var formdata = $("#form").serializeObject();
+		    
+		    $.ajax({
+		    	type:'post',
+		    	url:'/screeninfoviews/getNewScreeninfoview',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success:function(data){
+					if("Success" == data.Status){
+						layer.msg("重新获取成功", {shift: -1, time: 1000}, function(){
+	                        location.href = "screeninfoviewList.html";
+					});
+				}else{
+					alert(data.ErrorMessage);
+				}
+				}
+		    });
+		    
+		}
+		//////////
+			getCinema();
+		function getCinema(){
+			$.ajax({
+		        type:"get",
+		        url:"/cinemas/getCinemas",
+		        success:function(data){
+					for(var i=0; i<data.length;i++){
+						var option = "<option value="+data[i].code+">"+data[i].name+"</option>";
+						$("#CinemaCode").append(option);
+					}
+		        },
+		        error:function(){
+		            J.alert('Error');
+		        }
+		    })
+		}  
+	</script>
+</body>
+</html>
