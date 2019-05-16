@@ -36,7 +36,7 @@
 							data-bv-notempty-message='影片版本 可以为空'>
 					</div>
 				</div>
-				
+
 				<div class='form-group'>
 					<label class='col-md-2 control-label'>影片时长</label>
 					<div class='col-md-10'>
@@ -45,7 +45,7 @@
 							data-bv-notempty-message='影片时长 可以为空'>
 					</div>
 				</div>
-				
+
 				<div class='form-group'>
 					<label class='col-md-2 control-label'>发布时间</label>
 					<div class='col-md-10'>
@@ -54,7 +54,7 @@
 							data-bv-notempty-message='发布时间 可以为空'>
 					</div>
 				</div>
-				
+
 				<div class='form-group'>
 					<label class='col-md-2 control-label'>发行方</label>
 					<div class='col-md-10'>
@@ -63,7 +63,7 @@
 							data-bv-notempty-message='发行方可以为空'>
 					</div>
 				</div>
-				
+
 				<div class='form-group'>
 					<label class='col-md-2 control-label'>制片人</label>
 					<div class='col-md-10'>
@@ -72,7 +72,7 @@
 							data-bv-notempty-message='制片人 可以为空'>
 					</div>
 				</div>
-				
+
 				<div class='form-group'>
 					<label class='col-md-2 control-label'>导演</label>
 					<div class='col-md-10'>
@@ -81,7 +81,7 @@
 							data-bv-notempty-message='导演 可以为空'>
 					</div>
 				</div>
-				
+
 				<div class='form-group'>
 					<label class='col-md-2 control-label'>演员</label>
 					<div class='col-md-10'>
@@ -90,7 +90,7 @@
 							data-bv-notempty-message='演员 可以为空'>
 					</div>
 				</div>
-				
+
 				<div class='form-group'>
 					<label class='col-md-2 control-label'>影片介绍</label>
 					<div class='col-md-10'>
@@ -99,7 +99,7 @@
 							data-bv-notempty-message='影片介绍 可以为空'>
 					</div>
 				</div>
-				
+
 				<div class='form-group'>
 					<label class='col-md-2 control-label'>评分</label>
 					<div class='col-md-10'>
@@ -108,7 +108,7 @@
 							data-bv-notempty-message='评分 可以为空'>
 					</div>
 				</div>
-				
+
 				<div class='form-group'>
 					<label class='col-md-2 control-label'>地区</label>
 					<div class='col-md-10'>
@@ -117,7 +117,7 @@
 							data-bv-notempty-message='地区 可以为空'>
 					</div>
 				</div>
-				
+
 				<div class='form-group'>
 					<label class='col-md-2 control-label'>类型</label>
 					<div class='col-md-10'>
@@ -126,7 +126,7 @@
 							data-bv-notempty-message='类型 可以为空'>
 					</div>
 				</div>
-				
+
 				<div class='form-group'>
 					<label class='col-md-2 control-label'>语言</label>
 					<div class='col-md-10'>
@@ -135,7 +135,7 @@
 							data-bv-notempty-message='语言 可以为空'>
 					</div>
 				</div>
-				
+
 				<div class='form-group'>
 					<label class='col-md-2 control-label'>是否通过<font
 						style="color: red">*</font></label>
@@ -147,13 +147,25 @@
 						</select>
 					</div>
 				</div>
-				
-				<div class='form-group'>
+
+				<!-- <div class='form-group'>
 					<label class='col-md-2 control-label'>图片</label>
 					<div class='col-md-10'>
 						<input class='form-control' placeholder='图片' type='text'
 							name='image' id='Image' data-bv-notempty='false'
 							data-bv-notempty-message='图片 可以为空'>
+					</div>
+				</div> -->
+
+				<div class="form-group">
+				    <input type="hidden" name="image"  id="Image"/>
+					<label class="col-md-2 control-label">图片</label>
+					<div class="col-md-10">
+						<div class="layui-upload-drag" id="filmImage">
+						</div>
+						<img class="layui-upload-img headImage" src="http://t.cn/RCzsdCq"
+								id="preview" width="118" height="118">
+					    <p id="resultMsg"></p>
 					</div>
 				</div>
 
@@ -188,13 +200,53 @@
 	<script type="text/javascript" src="../../js/common.js"></script>
 	<script type="text/javascript" src="../../layui/layui.js"></script>
 	<script type="text/javascript">
+		layui.use([ "jquery", "upload", "form", "layer", "element" ],function() {
+			var $ = layui.$, element = layui.element, layer = layui.layer, upload = layui.upload, form = layui.form;
+			//拖拽上传
+			var uploadInst = upload.render({
+					elem : '#filmImage',
+					url : '/filminfos/upload/filmImage',
+					size : 500,
+					before : function(obj) {
+						//预读本地文件示例，不支持ie8
+						obj.preview(function(index,file, result) {
+							$('#preview').attr('src',result); //图片链接（base64）
+						});
+					},
+					done : function(res) {
+						//如果上传失败
+						if (res.code > 0) {
+							return layer.msg('上传失败');
+						}
+						//上传成功
+						//打印后台传回的地址: 把地址放入一个隐藏的input中, 和表单一起提交到后台, 此处略..
+						console.log(res.data.src);
+						$("#Image").val(res.data.src);//将地址存储好
+						window.parent.uploadHeadImage(res.data.src);
+						var resultMsg = $('#resultMsg');
+						resultMsg.html('<span style="color: #8f8f8f;">上传成功!!!</span>');
+					},
+					error : function() {
+						//演示失败状态，并实现重传
+						var resultMsg = $('#resultMsg');
+						resultMsg
+								.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
+						resultMsg.find('.demo-reload').on(
+								'click', function() {
+									uploadInst.upload();
+								});
+					}
+				});
+			element.init();
+		});
+
 		layui.use([ 'layer', 'laydate' ], function() {
 			var layer = layui.layer;
 			var laydate = layui.laydate;
-		    laydate.render({
-		       elem: '#PublishDate',
-		       type: 'datetime'
-		    });
+			laydate.render({
+				elem : '#PublishDate',
+				type : 'datetime'
+			});
 		});
 
 		function add() {

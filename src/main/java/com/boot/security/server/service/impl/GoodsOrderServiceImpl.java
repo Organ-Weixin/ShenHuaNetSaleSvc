@@ -28,7 +28,7 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
 	public int Insert(GoodsOrderView orderview) {
 		ordersDao.save(orderview.getOrderBaseInfo());
 		//重新读出主订单
-		Goodsorders order = ordersDao.getByLocalOrderCode(orderview.getOrderBaseInfo().getCinemaCode(), orderview.getOrderBaseInfo().getLocalOrderCode());
+		Goodsorders order = ordersDao.getByLocalOrderCode(orderview.getOrderBaseInfo().getLocalOrderCode());
 		if(order != null){
 			for(Goodsorderdetails orderdetail:orderview.getOrderGoodsDetails()){
 				orderdetail.setOrderId(order.getId());	//将orders表成功插入的数据id作为orderdetails表的OrderId
@@ -38,15 +38,15 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
 		return 1;//暂时的
 	}
 	@Override
-	public Goodsorders getByLocalOrderCode(String cinemacode, String localordercode) {
+	public Goodsorders getByLocalOrderCode(String localordercode) {
 		// TODO Auto-generated method stub
-		return ordersDao.getByLocalOrderCode(cinemacode, localordercode);
+		return ordersDao.getByLocalOrderCode(localordercode);
 	}
 	@Override
 	public GoodsOrderView getWithLocalOrderCode(String cinemacode, String localordercode) {
 		// TODO Auto-generated method stub
 		GoodsOrderView orderview=new GoodsOrderView();
-		orderview.setOrderBaseInfo(ordersDao.getByLocalOrderCode(cinemacode, localordercode));
+		orderview.setOrderBaseInfo(ordersDao.getByLocalOrderCode(localordercode));
 		orderview.setOrderGoodsDetails(orderdetailsDao.getByOrderId(orderview.getOrderBaseInfo().getId()));
 		return orderview;
 	}

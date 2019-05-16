@@ -6,7 +6,8 @@ public class Goodstype extends BaseEntity<Long> {
 
 	private Long Id;
 	private String CinemaCode;
-	private Integer UserId;
+	private Long UserId;
+	private String TypeCode;
 	private String TypeName;
 	private String TypeDesc;
 	private String TypePic;
@@ -23,11 +24,18 @@ public class Goodstype extends BaseEntity<Long> {
 	public void setCinemaCode(String CinemaCode) {
 		this.CinemaCode = CinemaCode;
 	}
-	public Integer getUserId() {
+	public Long getUserId() {
 		return UserId;
 	}
-	public void setUserId(Integer UserId) {
+	public void setUserId(Long UserId) {
 		this.UserId = UserId;
+	}
+	
+	public String getTypeCode() {
+		return TypeCode;
+	}
+	public void setTypeCode(String typeCode) {
+		TypeCode = typeCode;
 	}
 	public String getTypeName() {
 		return TypeName;

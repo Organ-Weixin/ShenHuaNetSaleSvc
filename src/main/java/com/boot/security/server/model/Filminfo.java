@@ -19,7 +19,7 @@ public class Filminfo extends BaseEntity<Long> {
 	public String Area;
 	public String Type;
 	public String Language;
-	public String Status;
+	public int Status;
 	public String Image;
 	public String Trailer;
 
@@ -113,10 +113,10 @@ public class Filminfo extends BaseEntity<Long> {
 	public void setLanguage(String language) {
 		Language = language;
 	}
-	public String getStatus() {
+	public int getStatus() {
 		return Status;
 	}
-	public void setStatus(String status) {
+	public void setStatus(int status) {
 		Status = status;
 	}
 	public String getImage() {

@@ -7,7 +7,7 @@ public class Goods extends BaseEntity<Long> {
 	private Long UserId;
 	private String GoodsCode;
 	private String GoodsName;
-	private Integer GoodsType;
+	private String GoodsType;
 	private Double StandardPrice;
 	private Double SettlePrice;
 	private String GoodsPic;
@@ -51,10 +51,10 @@ public class Goods extends BaseEntity<Long> {
 	public void setGoodsName(String GoodsName) {
 		this.GoodsName = GoodsName;
 	}
-	public Integer getGoodsType() {
+	public String getGoodsType() {
 		return GoodsType;
 	}
-	public void setGoodsType(Integer GoodsType) {
+	public void setGoodsType(String GoodsType) {
 		this.GoodsType = GoodsType;
 	}
 	public Double getStandardPrice() {

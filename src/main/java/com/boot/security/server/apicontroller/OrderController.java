@@ -185,7 +185,7 @@ public class OrderController {
 		OrderView order = _orderService.getOrderWidthLockOrderCode(CinemaCode, LockOrderCode);
 		if (order == null) {
 			orderReply.SetOrderNotExistReply();
-			
+			return orderReply;
 		} else {
 			QueryLocalOrder orderResult = new QueryLocalOrder();
 			orderResult.setOrderId(order.getOrderBaseInfo().getId());

@@ -781,7 +781,7 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 					goo.setGoodsCode(getSPInfosBean.getSpno());
 					goo.setGoodsName(getSPInfosBean.getSpname());
 					if (getSPInfosBean.getSptype() != null) {
-						goo.setGoodsType(Integer.valueOf(getSPInfosBean.getSptype()));
+						goo.setGoodsType(getSPInfosBean.getSptype());
 					}
 					if (getSPInfosBean.getSellprice() != null) {
 						goo.setStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));

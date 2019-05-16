@@ -18,8 +18,8 @@ public interface GoodsordersDao {
     @Select("select * from goodsorders t where t.id = #{id}")
     Goodsorders getById(Long id);
     
-    @Select("select * from goodsorders t where t.cinemacode=#{cinemacode} and t.localordercode = #{localordercode}")
-    Goodsorders getByLocalOrderCode(@Param("cinemacode") String cinemacode, @Param("localordercode") String localordercode);
+    @Select("select * from goodsorders t where t.localordercode = #{localordercode}")
+    Goodsorders getByLocalOrderCode(@Param("localordercode") String localordercode);
     
     @Select("select * from goodsorders t where t.cinemacode=#{cinemacode} and t.ordercode = #{ordercode}")
     Goodsorders getByOrderCode(@Param("cinemacode") String cinemacode, @Param("ordercode") String ordercode);
@@ -30,7 +30,7 @@ public interface GoodsordersDao {
     int update(Goodsorders goodsorders);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into goodsorders(Id, CinemaCode, UserId, LocalOrderCode, OrderCode, PickUpCode, VerifyCode, OrderStatus, TotalPrice, TotalSettlePrice, TotalFee, SubmitTime, Created, Updated, MobilePhone, GoodsCount, RefundTime, PickUpTime, DeliveryType, DeliveryAddress, DeliveryTime, DeliveryMark, OrderPayFlag, OrderPayType, OrderPayTime, OrderTradeNo, PayType, PaySeqNo, CardNo, CardPassword, ErrorMessage) values(#{Id}, #{CinemaCode}, #{UserId}, #{LocalOrderCode}, #{OrderCode}, #{PickUpCode}, #{VerifyCode}, #{OrderStatus}, #{TotalPrice}, #{TotalSettlePrice}, #{TotalFee}, #{SubmitTime}, #{Created}, #{Updated}, #{MobilePhone}, #{GoodsCount}, #{RefundTime}, #{PickUpTime}, #{DeliveryType}, #{DeliveryAddress}, #{DeliveryTime}, #{DeliveryMark}, #{OrderPayFlag}, #{OrderPayType}, #{OrderPayTime}, #{OrderTradeNo}, #{PayType}, #{PaySeqNo}, #{CardNo}, #{CardPassword}, #{ErrorMessage})")
+    @Insert("insert into goodsorders(Id, CinemaCode, UserId, LocalOrderCode, OrderCode, PickUpCode, VerifyCode, OrderStatus, TotalPrice, TotalSettlePrice, TotalFee, SubmitTime, Created, Updated, MobilePhone, GoodsCount, RefundTime, PickUpTime, DeliveryType, DeliveryAddress, DeliveryTime, DeliveryMark, OrderPayFlag, OrderPayType, OrderPayTime, OrderTradeNo, PayType, PaySeqNo, CardNo, CardPassword, ErrorMessage,OpenID) values(#{Id}, #{CinemaCode}, #{UserId}, #{LocalOrderCode}, #{OrderCode}, #{PickUpCode}, #{VerifyCode}, #{OrderStatus}, #{TotalPrice}, #{TotalSettlePrice}, #{TotalFee}, #{SubmitTime}, #{Created}, #{Updated}, #{MobilePhone}, #{GoodsCount}, #{RefundTime}, #{PickUpTime}, #{DeliveryType}, #{DeliveryAddress}, #{DeliveryTime}, #{DeliveryMark}, #{OrderPayFlag}, #{OrderPayType}, #{OrderPayTime}, #{OrderTradeNo}, #{PayType}, #{PaySeqNo}, #{CardNo}, #{CardPassword}, #{ErrorMessage},#{OpenID})")
     int save(Goodsorders goodsorders);
     
     int count(@Param("params") Map<String, Object> params);

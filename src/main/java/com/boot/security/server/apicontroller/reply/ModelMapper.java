@@ -7,9 +7,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.boot.security.server.api.core.LockSeatQueryXml.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat;
+import com.boot.security.server.api.core.SubmitOrderQueryXml.SubmitOrderQueryXmlOrder.SubmitOrderQueryXmlSeat;
 import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson.PrePayOrderQueryJsonSeat;
 import com.boot.security.server.apicontroller.reply.QueryFilmReply.QueryFilmReplyFilm;
+import com.boot.security.server.apicontroller.reply.QueryGoodsReply.QueryGoodsReplyGoodss.QueryGoodsReplyGoods;
+import com.boot.security.server.apicontroller.reply.QueryGoodsTypeReply.QueryGoodsTypeReplyTypes.QueryGoodsTypeReplyType;
+import com.boot.security.server.apicontroller.reply.QueryLocalGoodsOrderReply.QueryLocalGoodsOrderReplyOrder;
+import com.boot.security.server.apicontroller.reply.QueryLocalGoodsOrderReply.QueryLocalGoodsOrderReplyOrder.QueryLocalGoodsOrderReplyGoodsList;
+import com.boot.security.server.apicontroller.reply.QueryLocalGoodsOrderReply.QueryLocalGoodsOrderReplyOrder.QueryLocalGoodsOrderReplyGoodsList.QueryLocalGoodsOrderReplyGoods;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.QueryMemberCardByPhoneReplyMemberCardByPhone;
+import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.QueryMemberCardByPhoneReplyMemberCardByPhone.QueryMemberCardByPhoneReplyPhone;
 import com.boot.security.server.apicontroller.reply.QueryScreenInfoReply.QueryScreensReplyScreenInfo;
 import com.boot.security.server.apicontroller.reply.QueryScreenSeatsReply.QueryScreenSeatsReplyScreenSeats;
 import com.boot.security.server.apicontroller.reply.QueryScreensReply.QueryScreensReplyScreens.QueryScreensReplyScreen;
@@ -19,6 +27,10 @@ import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.Couponsgroup;
 import com.boot.security.server.model.Filmcomments;
 import com.boot.security.server.model.Filminfo;
+import com.boot.security.server.model.Goods;
+import com.boot.security.server.model.GoodsOrderView;
+import com.boot.security.server.model.Goodsorderdetails;
+import com.boot.security.server.model.Goodstype;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orderseatdetails;
@@ -60,7 +72,7 @@ public class ModelMapper {
         data.setArea(entity.getArea());
         data.setType(entity.getType());
         data.setLanguage(entity.getLanguage());
-        data.setStatus(entity.getStatus());
+        data.setStatus(entity.getStatus()==1?"通过":"未审核");
         data.setImage(entity.getImage());
         data.setTrailer(entity.getTrailer());
         return data;
@@ -254,5 +266,69 @@ public class ModelMapper {
 		}
 		
 		return entity;
+	}
+	
+	public static QueryGoodsTypeReplyType MapFrom(QueryGoodsTypeReply.QueryGoodsTypeReplyTypes.QueryGoodsTypeReplyType type,Goodstype entity){
+		type.setTypeId(entity.getId());
+		type.setCinemaCode(entity.getCinemaCode());
+		type.setUserId(entity.getUserId());
+		type.setTypeCode(entity.getTypeCode());
+		type.setTypeName(entity.getTypeName());
+		type.setTypeDesc(entity.getTypeDesc());
+		type.setTypePic(entity.getTypePic());
+		return type;
+	}
+	
+	public static QueryGoodsReplyGoods MapFrom(QueryGoodsReplyGoods goods,Goods entity){
+		goods.setGoodsId(entity.getId());
+		goods.setCinemaCode(entity.getCinemaCode());
+		goods.setUserId(entity.getUserId());
+		goods.setGoodsCode(entity.getGoodsCode());
+		goods.setGoodsName(entity.getGoodsName());
+		goods.setGoodsType(entity.getGoodsType());
+		goods.setStandardPrice(entity.getStandardPrice());
+		goods.setSettlePrice(entity.getSettlePrice());
+		goods.setGoodsPic(entity.getGoodsPic());
+		goods.setStockCount(entity.getStockCount());
+		goods.setGoodsDesc(entity.getGoodsDesc());
+		goods.setUnitName(entity.getUnitName());
+		goods.setShowSeqNo(entity.getShowSeqNo());
+		goods.setIsDiscount(entity.getIsDiscount()==1?"是":"否");
+		goods.setGoodsStatus(entity.getGoodsStatus()==1?"上架":"下架");
+		goods.setIsRecommand(entity.getIsRecommand()==1?"是":"否");
+		goods.setIsPackage(entity.getIsPackage()==1?"是":"否");
+		return goods;
+	}
+	
+	public static QueryLocalGoodsOrderReplyOrder MapFrom(QueryLocalGoodsOrderReplyOrder order,GoodsOrderView ov){
+		order.setCinemaCode(ov.getOrderBaseInfo().getCinemaCode());
+		order.setLocalOrderCode(ov.getOrderBaseInfo().getLocalOrderCode());
+		order.setOrderStatus(ov.getOrderBaseInfo().getOrderStatus().toString());
+		order.setTotalPrice(ov.getOrderBaseInfo().getTotalPrice());
+		order.setTotalSettlePrice(ov.getOrderBaseInfo().getTotalSettlePrice());
+		order.setTotalFee(ov.getOrderBaseInfo().getTotalFee());
+		order.setCreated(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ov.getOrderBaseInfo().getCreated()));
+		order.setGoodsCount(ov.getOrderBaseInfo().getGoodsCount());
+		order.setDeliveryType(ov.getOrderBaseInfo().getDeliveryType());
+		order.setDeliveryAddress(ov.getOrderBaseInfo().getDeliveryAddress());
+		order.setDeliveryTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ov.getOrderBaseInfo().getDeliveryTime()));
+		order.setOpenID(ov.getOrderBaseInfo().getOpenID());
+		order.setGoodsList(new QueryLocalGoodsOrderReplyGoodsList());
+		order.getGoodsList().setGoods(new ArrayList<QueryLocalGoodsOrderReplyGoods>());
+		for(Goodsorderdetails orderdetail:ov.getOrderGoodsDetails()){
+			QueryLocalGoodsOrderReplyGoods replygoods=new QueryLocalGoodsOrderReplyGoods();
+			replygoods.setGoodsCode(orderdetail.getGoodsCode());
+			replygoods.setGoodsName(orderdetail.getGoodsName());
+			replygoods.setStandardPrice(orderdetail.getStandardPrice());
+			replygoods.setSettlePrice(orderdetail.getSettlePrice());
+			replygoods.setChannelFee(orderdetail.getChannelFee());
+			replygoods.setGoodsCount(orderdetail.getGoodsCount());
+			replygoods.setIsPackage(orderdetail.getIsPackage()==1?"是":"否");
+			replygoods.setGoodsDetail(orderdetail.getGoodsDetail());
+			replygoods.setShowSeqNo(orderdetail.getShowSeqNo());
+			order.getGoodsList().getGoods().add(replygoods);
+		}
+		return order;
+		
 	}
 }

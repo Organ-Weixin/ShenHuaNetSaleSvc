@@ -98,6 +98,9 @@
 			<if test="params.ErrorMessage != null and params.ErrorMessage != ''">
 				and ErrorMessage = #{params.ErrorMessage} 
 			</if>
+			<if test="params.OpenID != null and params.OpenID != ''">
+				and OpenID = #{params.OpenID} 
+			</if>
 		
 		</where>
 	</sql>
@@ -209,6 +212,9 @@
 			</if>
 			<if test="ErrorMessage != null">
 				ErrorMessage = #{ErrorMessage}, 
+			</if>
+			<if test="OPenID != null">
+				OPenID = #{OPenID}, 
 			</if>
 
 		</set>

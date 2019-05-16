@@ -14,6 +14,9 @@
 			<if test="params.UserId != null and params.UserId != ''">
 				and UserId = #{params.UserId} 
 			</if>
+			<if test="params.TypeCode != null and params.TypeCode != ''">
+				and TypeCode = #{params.TypeCode}
+			</if>
 			<if test="params.TypeName != null and params.TypeName != ''">
 				and TypeName = #{params.TypeName} 
 			</if>
@@ -50,6 +53,9 @@
 			</if>
 			<if test="UserId != null">
 				UserId = #{UserId}, 
+			</if>
+			<if test="TypeCode != null">
+				TypeCode = #{TypeCode}, 
 			</if>
 			<if test="TypeName != null">
 				TypeName = #{TypeName}, 

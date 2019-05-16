@@ -1,6 +1,7 @@
 package com.boot.security.server.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,30 @@ public class FilminfoServiceImpl implements FilminfoService{
 	public List<Filminfo> getFilmByFilmName(String filmName) {
 		// TODO Auto-generated method stub
 		return filminfoDao.getFilmByFilmName(filmName);
+	}
+
+	@Override
+	public Filminfo getById(Long id) {
+		// TODO Auto-generated method stub
+		return filminfoDao.getById(id);
+	}
+
+	@Override
+	public int delete(Long id) {
+		// TODO Auto-generated method stub
+		return filminfoDao.delete(id);
+	}
+
+	@Override
+	public int count(Map<String, Object> params) {
+		// TODO Auto-generated method stub
+		return filminfoDao.count(params);
+	}
+
+	@Override
+	public List<Filminfo> list(Map<String, Object> params, Integer offset, Integer limit) {
+		// TODO Auto-generated method stub
+		return filminfoDao.list(params, offset, limit);
 	}
 	
 }
