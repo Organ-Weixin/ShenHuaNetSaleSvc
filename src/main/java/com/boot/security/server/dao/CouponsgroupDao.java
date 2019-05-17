@@ -28,7 +28,7 @@ public interface CouponsgroupDao {
     int changeStatus(@Param("status") Integer status,@Param("id") Long id);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into couponsgroup(GroupCode, CouponsType, CouponsName, ValidityType, EffectiveDate, ExpireDate, EffectiveDays, ValidityDays, CanUsePeriodType, WeekDays, TimePeriod, LimitNum, ReductionType, ReductionPrice, FilmCodes, GoodsCodes, IsShare, Remark, CanUseCinemaType, CinemaCodes, Status, CouponsNumber, FetchNumber, RemainingNumber, UsedNumber, CreateDate) values(#{GroupCode}, #{CouponsType}, #{CouponsName}, #{ValidityType}, #{EffectiveDate}, #{ExpireDate}, #{EffectiveDays}, #{ValidityDays}, #{CanUsePeriodType}, #{WeekDays}, #{TimePeriod}, #{LimitNum}, #{ReductionType}, #{ReductionPrice}, #{FilmCodes}, #{GoodsCodes}, #{IsShare}, #{Remark}, #{CanUseCinemaType}, #{CinemaCodes}, #{Status}, #{CouponsNumber}, #{FetchNumber}, #{RemainingNumber}, #{UsedNumber}, Now())")
+    @Insert("insert into couponsgroup(GroupCode, CouponsType, CouponsName, ValidityType, EffectiveDate, ExpireDate, EffectiveDays, ValidityDays, CanUsePeriodType, WeekDays, TimePeriod, LimitNum, ReductionType, ReductionPrice, FilmCodes, GoodsCodes, IsShare, Remark, CanUseCinemaType, CinemaCodes, Status, CouponsNumber, IssuedNumber, FetchNumber, RemainingNumber, UsedNumber, CreateDate) values(#{GroupCode}, #{CouponsType}, #{CouponsName}, #{ValidityType}, #{EffectiveDate}, #{ExpireDate}, #{EffectiveDays}, #{ValidityDays}, #{CanUsePeriodType}, #{WeekDays}, #{TimePeriod}, #{LimitNum}, #{ReductionType}, #{ReductionPrice}, #{FilmCodes}, #{GoodsCodes}, #{IsShare}, #{Remark}, #{CanUseCinemaType}, #{CinemaCodes}, #{Status}, #{CouponsNumber}, #{IssuedNumber}, #{FetchNumber}, #{RemainingNumber}, #{UsedNumber}, Now())")
     int save(Couponsgroup couponsgroup);
     
     int count(@Param("params") Map<String, Object> params);
@@ -41,6 +41,10 @@ public interface CouponsgroupDao {
     @Select("select * from couponsgroup where find_in_set(#{cinemacode},cinemacodes) and status = 1")
     List<Couponsgroup> getCanUseByGroupCode(String cinemacode);
 
+    //查询所有启用优惠券
+    @Select("select * from couponsgroup where status = 1 and (CinemaCodes is NULL or find_in_set(#{cinemacode},cinemacodes))")
+    List<Couponsgroup> getAllUseByGroupCode(String cinemacode);
+    
     @Select("select * from couponsgroup t where t.groupcode = #{groupcode}")
     Couponsgroup getByGroupCode(String  groupcode);
     

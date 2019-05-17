@@ -24,7 +24,7 @@ public class Goodsorders extends BaseEntity<Long> {
 	private Date PickUpTime;
 	private Integer DeliveryType;
 	private String DeliveryAddress;
-	private Date DeliveryTime;
+	private String DeliveryTime;
 	private String DeliveryMark;
 	private Integer OrderPayFlag;
 	private Integer OrderPayType;
@@ -156,10 +156,10 @@ public class Goodsorders extends BaseEntity<Long> {
 	public void setDeliveryAddress(String DeliveryAddress) {
 		this.DeliveryAddress = DeliveryAddress;
 	}
-	public Date getDeliveryTime() {
+	public String getDeliveryTime() {
 		return DeliveryTime;
 	}
-	public void setDeliveryTime(Date DeliveryTime) {
+	public void setDeliveryTime(String DeliveryTime) {
 		this.DeliveryTime = DeliveryTime;
 	}
 	public String getDeliveryMark() {

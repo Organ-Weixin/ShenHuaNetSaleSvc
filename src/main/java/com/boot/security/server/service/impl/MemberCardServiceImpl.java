@@ -43,4 +43,10 @@ public class MemberCardServiceImpl implements MemberCardService {
 		// TODO Auto-generated method stub
 		return membercardDao.getByCinemaCodeAndOpenId(cinemacode, openid);
 	}
+
+	@Override
+	public List<Membercard> getByCinemaCodes(String cinemacodes) {
+		// TODO Auto-generated method stub
+		return membercardDao.getByCinemaCodes(cinemacodes);
+	}
 }

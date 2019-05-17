@@ -28,6 +28,7 @@ public class Couponsgroup extends BaseEntity<Long> {
 	private String CinemaCodes;
 	private Integer Status;
 	private Integer CouponsNumber;
+	private Integer IssuedNumber;
 	private Integer FetchNumber;
 	private Integer RemainingNumber;
 	private Integer UsedNumber;
@@ -171,6 +172,12 @@ public class Couponsgroup extends BaseEntity<Long> {
 	}
 	public void setCouponsNumber(Integer CouponsNumber) {
 		this.CouponsNumber = CouponsNumber;
+	}
+	public Integer getIssuedNumber() {
+		return IssuedNumber;
+	}
+	public void setIssuedNumber(Integer issuedNumber) {
+		IssuedNumber = issuedNumber;
 	}
 	public Integer getFetchNumber() {
 		return FetchNumber;

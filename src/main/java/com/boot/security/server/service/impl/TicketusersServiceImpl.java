@@ -1,5 +1,7 @@
 package com.boot.security.server.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +39,5 @@ public class TicketusersServiceImpl implements TicketusersService{
 	public Ticketusers getByopenids(String openid) {
 		return ticketusersDao.getByopenids(openid);
 	}
-
 
 }

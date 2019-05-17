@@ -74,6 +74,9 @@
 			<if test="params.CouponsNumber != null and params.CouponsNumber != ''">
 				and CouponsNumber = #{params.CouponsNumber} 
 			</if>
+			<if test="params.IssuedNumber != null and params.IssuedNumber != ''">
+				and IssuedNumber = #{params.IssuedNumber} 
+			</if>
 			<if test="params.FetchNumber != null and params.FetchNumber != ''">
 				and FetchNumber = #{params.FetchNumber} 
 			</if>
@@ -181,6 +184,9 @@
 			</if>
 			<if test="CouponsNumber != null">
 				CouponsNumber = #{CouponsNumber}, 
+			</if>
+			<if test="IssuedNumber != null">
+				IssuedNumber = #{IssuedNumber}, 
 			</if>
 			<if test="FetchNumber != null">
 				FetchNumber = #{FetchNumber}, 

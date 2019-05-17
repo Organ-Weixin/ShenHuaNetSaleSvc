@@ -260,7 +260,8 @@ function init(){
                 		           var upda = "<button class='change' title='"+status+"' value='"+id+"' style='margin-right:5%'>"+change+"</button>";
                 		           var coupons = "<button class='coupons' value='"+price+"' title='"+groupCode+"' style='margin-right:5%'>券码</button>";
                                    var edit = buttonEdit(href, "", pers);
-                		           var del = buttonDel(id, "", pers);
+                		           //var del = buttonDel(id, "", pers);
+                		           var del = "<button value='"+id+"' onclick='del("+id+")'>删除</button>"
                 		           if(status == 2){
                                   	 return coupons + edit + del;
                 		           }

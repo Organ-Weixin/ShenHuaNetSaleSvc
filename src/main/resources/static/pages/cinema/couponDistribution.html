@@ -15,6 +15,8 @@
 </head>
 <body>
 <div id="issue">
+	<input type="hidden" id="userId" name="issuer">
+	<input type="hidden" value="1" name="status">
     <div id="content">
         <div class="issue-title">优惠券发放</div>
         <div class="issue-type">
@@ -27,7 +29,7 @@
                     <div class="top-wrapper">
                         <div class="top-content">
                             <div class="issue-setting">
-                                <select id="CouponsSelect" name="choose" class="issue-choose">
+                                <select id="CouponsSelect" name="groupCode" class="issue-choose">
                                     <option value="">选择优惠券</option>
                                 </select>
                                 <span>，赠送张数</span>
@@ -43,12 +45,13 @@
                 <div class="customers">
                     <div class="customers-title">选择顾客群体：</div>
                     <form class="customers-choose">
-                        <input type="checkbox" name="user" class="all-user">&nbsp;&nbsp;所有顾客<br><br>
-                        <input type="checkbox" name="user" class="vip-user">&nbsp;&nbsp;会员
+                    	<input type="hidden" id="CustomerType" name="customerType">
+                        <input type="checkbox" value="1" name="user" class="all-user">&nbsp;&nbsp;所有顾客<br><br>
+                        <input type="checkbox" value="2" name="user" class="vip-user">&nbsp;&nbsp;会员
                         <div class="reg-container">
                             <div class="reg-add">+</div><span class="reg-user">注册用户</span><br>
-                            <div class="active-user"><input type="checkbox" name="user">&nbsp;活跃用户</div>
-                            <div class="inactive-user"><input type="checkbox" name="user">&nbsp;非活跃用户</div>
+                            <div class="active-user"><input type="checkbox" value="3" name="user">&nbsp;活跃用户</div>
+                            <div class="inactive-user"><input type="checkbox" value="4" name="user">&nbsp;非活跃用户</div>
                             <div class="inactive-info">?</div>
                             <div class="clues">
                                 <div class="triangle"></div>
@@ -156,9 +159,6 @@ $(function (){
     $(".btn-issue").click(function(){
     	$("#choose").css("display","block");
     });
-    $(".type-sure").click(function(){
-    	$("#choose").css("display","none");
-    });
     $(".type-cancel").click(function(){
     	$("#choose").css("display","none");
     });
@@ -170,7 +170,34 @@ $(function (){
     	$(".specify-dis").val("");
     })
 });
+$(".type-sure").click(function(){
+	$("#CustomerType").val($("input:checkbox[name='user']:checked").val());
+	add();
+	$("#choose").css("display","none");
+});
 
+		function add() {
+			$('#issue').bootstrapValidator();
+			var bootstrapValidator = $("#issue").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var formdata = $("#issue").serializeObject();
+		
+			$.ajax({
+				type : 'post',
+				url : '/coupondistributionrecords',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("添加成功", {shift: -1, time: 1000}, function(){
+		                location.href = "couponsgroupList.html";
+		            });
+				}
+			});
+		}
 //获取登陆人信息
 initUser();
 function initUser(){
@@ -179,6 +206,7 @@ function initUser(){
 		url : '/users/current',
 		async : false,
 		success : function(data) {
+			$("#userId").val(data.id);
 			getCinemaCodes(data.id,data.roleId);
 		}
 	});

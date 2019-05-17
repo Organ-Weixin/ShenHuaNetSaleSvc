@@ -46,5 +46,15 @@ public class CouponsgroupServiceImpl implements CouponsgroupService{
 		// TODO Auto-generated method stub
 		return couponsgroupDao.getCanUseByGroupCode(cinemacode);
 	}
+	@Override
+	public int update(Couponsgroup couponsgroup) {
+		// TODO Auto-generated method stub
+		return couponsgroupDao.update(couponsgroup);
+	}
+	@Override
+	public List<Couponsgroup> getAllUseByGroupCode(String cinemacode) {
+		// TODO Auto-generated method stub
+		return couponsgroupDao.getAllUseByGroupCode(cinemacode);
+	}
 	
 }

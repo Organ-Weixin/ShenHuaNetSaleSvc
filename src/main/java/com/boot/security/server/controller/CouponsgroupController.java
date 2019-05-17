@@ -1,7 +1,6 @@
 package com.boot.security.server.controller;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -55,6 +54,7 @@ public class CouponsgroupController {
     	couponsgroup.setExpireDate(couponsgroup.getExpireDate());
     	couponsgroup.setGroupCode(getCharAndNumr(8));
     	couponsgroup.setStatus(CouponGroupStatusEnum.UnEnabled.getStatusCode());
+    	couponsgroup.setIssuedNumber(couponsgroup.getCouponsNumber());
     	couponsgroup.setFetchNumber(0);
     	couponsgroup.setRemainingNumber(couponsgroup.getCouponsNumber());
     	couponsgroup.setUsedNumber(0);

@@ -42,4 +42,7 @@ public interface CouponsDao {
     
     @Select("select * from coupons t where t.groupcode = #{groupcode}")
     Coupons getByGroupCode(String groupcode);
+    
+    @Select("select * from coupons t where t.groupcode = #{groupcode} and t.status = 0")
+    List<Coupons> getCanUseByGroupCode(String groupcode);
 }

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/conponDistribution.css"/>
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="../../layui/css/layui.css" media="all" />
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<input type="hidden" id="userName" name="issuer">
+			<input type="hidden" id="cinemacodes" name="cinemacodes">
+			<div class='form-group' style="margin-top:3%">
+				<label class='col-md-2 control-label'>选择顾客群体&nbsp;<font style="color:red;font-size:15px">*</font></label>
+				<div class='col-md-10'>
+					<input type="hidden" id="CustomerType" name = "customerType" >
+					<div style="margin-bottom:1%">
+						<input type="radio" value="1" name="customer">&nbsp;&nbsp;所有顾客
+					</div>
+					<div style="margin-bottom:1%">
+						<input type="radio" value="2" name="customer">&nbsp;&nbsp;会员
+					</div>
+					<div style="margin-bottom:1%">
+						<input type="radio" value="3" name="customer">&nbsp;&nbsp;活跃用户
+					</div>
+					<div style="float:left;margin-bottom:1%">
+						<input type="radio" value="4" name="customer">&nbsp;&nbsp;非活跃用户
+					</div>
+					<div id="hint" style="float:left;margin-left:-12%;margin-top:2px;margin-bottom:1%" class="inactive-info">?</div>
+					<div class="clues" style="float:left;margin-left:-12%;margin-top:15px;margin-bottom:1%">
+                        <div class="triangle"></div>
+                        <div class="triangle-container">会员卡过期用户以及三个月内无消费用户</div>
+                    </div>
+                  </div>
+			</div>
+			<div class='form-group' id="user">
+				<label class='col-md-2 control-label'>指定用户</label>
+				<!-- <input type="hidden" name="openID" id="OpenID"> -->
+				<div class='col-md-10' id="userDiv">
+					<div style="width:100%">
+						<!-- style="width:30%;float:left" -->
+						<input class='form-control input' id="OpenID" name="openID" placeholder='输入用户手机号，多个用户手机号用“,”隔开' type='text'>
+						<!-- <span id="addOpenID" style="margin-left:2%;margin-top:3px;font-size:20px;cursor:pointer">添加</span> -->
+					</div>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>每个顾客发放数量&nbsp;<font style="color:red;font-size:15px">*</font></label>
+				<input type="hidden" id="Number" name="issuedNumber">
+				<div class='col-md-10'>
+					<input class='form-control' type='text' id="IssuedNumber" data-bv-notempty="true" data-bv-notempty-message='发放数量不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>选择优惠券&nbsp;<font style="color:red;font-size:15px">*</font></label>
+				<div class='col-md-10'>
+					<select class="form-control" id="CouponsSelect" name="groupCode">
+							<option value="">请选择优惠券...</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-actions" style="margin-top:5%">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="location.href='coupondistributionrecordList.html'">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="add()" id="submitButn">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		});
+		
+		//获取登陆人信息
+		initUser();
+		function initUser(){
+			$.ajax({
+				type : 'get',
+				url : '/users/current',
+				async : false,
+				success : function(data) {
+					$("#userName").val(data.username);
+					getCinemaCodes(data.id,data.roleId);
+				}
+			});
+		}
+		//获取登陆人的所有影院的影院编码
+		function getCinemaCodes(id,roleId){
+			$.ajax({
+				url:'/users/getCinemaName',
+				data:{"id":id,"roleId":roleId},
+				type:'post',
+				success:function(data){
+					var cinemacodes = "";
+					for(var i=0; i<data.length; i++){
+						cinemacodes += data[i].cinemaCode+",";
+					}
+					$("#cinemacodes").val(cinemacodes.substring(0,cinemacodes.length-1));
+					getCouponGroups(cinemacodes.substring(0,cinemacodes.length-1));
+				}
+			})
+		}
+		//获取登陆人的对应影院的优惠券
+		function getCouponGroups(cinemacodes){
+			$.ajax({
+				url:'/couponsgroups/getCouponGroups?cinemacode='+cinemacodes,
+				type:'post',
+				success:function(data){
+					for(var i=0; i<data.length; i++){
+						var option = "<option value='"+data[i].groupCode+"' limit ='"+data[i].limitNum+"' title='"+data[i].couponsNumber+"' issued='"+data[i].issuedNumber+"'>"+data[i].couponsName+"</option>";
+						$("#CouponsSelect").append(option);
+					}
+				}
+			});
+		}
+		//非活跃用户
+		$(".inactive-info").mouseenter(function () {
+        	$(".clues").css("display","block");
+    	});
+    	$(".inactive-info").mouseleave(function () {
+        	$(".clues").css("display","none");
+    	});
+		/* $("#addOpenID").click(function(){
+			var spanDiv = '<div style="width:100%;margin-top:2%">';
+			spanDiv = spanDiv + '<input class="form-control input" name="input" placeholder="输入用户手机号" type="text" style="width:30%;float:left">';
+			spanDiv = spanDiv + '<span class="delOpenID" style="margin-left:2%;margin-top:3px;font-size:20px;cursor:pointer">删除</span>';
+			spanDiv = spanDiv + '</div>';
+			$("#userDiv").append(spanDiv);
+		});
+		$("#userDiv").on('click','.delOpenID',function(){
+			$($(this).parent().remove());
+			var OpenID = [];
+			$("input[name='input']").each(
+				function(){
+					OpenID.push($(this).val());
+				}		
+			);
+			$("#OpenID").val(OpenID);
+		}) */
+		
+		//顾客群体
+		$("input:radio[name='customer']").click(function(){
+			var CustomerType = [];
+			$("input:radio[name='customer']:checked").each(
+					function(){
+						CustomerType.push($(this).val());
+					}
+			);
+			$("#CustomerType").val(CustomerType);
+			$("#CouponsSelect").val("");
+		});
+		//验证用户手机号
+		function checkMobilePhone(){
+			$.ajax({
+				url:'/ticketuserss/checkMobliePhone?mobilephone='+$("#OpenID").val(),
+				type:'post',
+				success:function(data){
+					var mobilephones = $("#OpenID").val();
+					var mobilephonesArr = mobilephones.split(",");
+					if($("#OpenID").val()!=null&&$("#OpenID").val()!=""){
+						if(data.length!=mobilephonesArr.length){
+							layer.msg("输入的用户不存在或不合法，请重新输入");
+							$("#OpenID").val("");
+						}
+					}
+					/* if(data.length<=0){
+						layer.msg("该用户不存在，请重新输入");
+						$(this).val("");
+					} */
+				}
+			});
+		}
+		$("#OpenID").blur(function(){
+			checkMobilePhone();
+		});
+		$("#OpenID").click(function(){
+			$("#CouponsSelect").val("");
+		});
+		/* $("#user").on('blur','.input',function(){
+			$.ajax({
+				url:'/ticketuserss/checkMobliePhone?mobilephone='+$(this).val(),
+				type:'post',
+				success:function(data){
+					if(data.length<=0){
+						layer.msg("该用户不存在，请重新输入");
+						$(this).val("");
+					}
+				}
+			});
+			var OpenID = [];
+			$("input[name='input']").each(
+				function(){
+					OpenID.push($(this).val());
+				}		
+			);
+			$("#OpenID").val(OpenID);
+		}); */
+		
+		function checkSubmit(){
+			if($("input:radio[name='customer']:checked").length<=0){
+				layer.msg("请选择顾客群体");
+				$("#CouponsSelect").val("");
+			}else{
+				$.ajax({
+					url:'/ticketuserss/getCountUser',
+					data:{
+						"customertype":$("#CustomerType").val(),
+						"cinemacodes":$("#cinemacodes").val(),
+						"mobilephone":$("#OpenID").val()
+						},
+					type:'post',
+					success:function(data){
+						//用户可领取最大数量				
+						var limitNumber = $("#CouponsSelect").find('option:checked').attr('limit');
+						//发放数量
+						var count = Number(data) * Number($("#IssuedNumber").val());
+						//优惠券总数量
+						var all = Number($("#CouponsSelect").find('option:checked').attr('title'));
+						//已发放数量
+						var issued = Number($("#CouponsSelect").find('option:checked').attr('issued'));
+						//可发放数量
+						var max = all-issued;
+						if(data<=0){
+							layer.msg("顾客群体数量为"+data+",请重新选择顾客群体");
+						}else{
+							if(Number($("#IssuedNumber").val())>limitNumber){
+								layer.msg("该优惠券顾客最大领取数量为"+limitNumber+"，请重新输入顾客发放数量");
+								$("#IssuedNumber").val(null);
+								$("#Number").val(Number(data) * Number($("#IssuedNumber").val()));
+							}else{
+								if(count>max){
+									layer.msg("可发放数量不足，剩余可发放数量为"+max);
+									$("#Number").val(0);
+								}else{
+									$("#Number").val(count);
+								}
+							}
+						}
+					}
+				});
+			}
+		}
+		$("#CouponsSelect").blur(function(){
+			checkSubmit();
+		});
+		$("#IssuedNumber").change(function(){
+			checkSubmit();
+		});
+		//发放数量只能输入数字
+		$("#IssuedNumber").blur(function(){
+			var num = $(this).val();
+			if(!(/(^[1-9]\d*$)/.test(num))){
+				layer.msg("请输入正确的发放数量");
+			}
+		})
+		
+		/* $("input[name='input']").click(function(){
+			var OpenID = [];
+			$("input[name='input']").each(
+				function(){
+					OpenID.push($(this).val());
+				}		
+			);
+			$("#OpenID").val(OpenID);
+		}); */
+		
+		
+		function add() {
+			
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var formdata = $("#form").serializeObject();
+		    
+		    checkMobilePhone();
+		    if($("#IssuedNumber").val()==null||$("#IssuedNumber").val()==""
+		    ||$("#CouponsSelect").val()==null||$("#CouponsSelect").val()==""){
+		    	layer.msg("请完善发放信息");
+		    }else{
+		    	$.ajax({
+					type : 'post',
+					url : '/coupondistributionrecords',
+					contentType: "application/json; charset=utf-8",  
+					data : JSON.stringify(formdata),
+					success : function(data) {
+						layer.msg("操作成功", {shift: -1, time: 1000}, function(){
+	                        location.href = "coupondistributionrecordList.html";
+	                    });
+					}
+				});
+		    }
+		    
+		}
+</script>
+
+</body>
+</html>

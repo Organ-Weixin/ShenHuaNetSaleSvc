@@ -15,7 +15,7 @@
 				and OpenID = #{params.OpenID} 
 			</if>
 			<if test="params.MobilePhone != null and params.MobilePhone != ''">
-				and MobilePhone = #{params.MobilePhone} 
+				and MobilePhone = #{params.MobilePhone} or find_in_set(MobilePhone,#{params.MobilePhone})
 			</if>
 			<if test="params.VerifyCode != null and params.VerifyCode != ''">
 				and VerifyCode = #{params.VerifyCode} 
@@ -65,6 +65,11 @@
 		${params.orderBy}
 		limit #{offset}, #{limit}
 	</select>
+	
+	<select id="getTicketusers" resultType="Ticketusers">
+		select * from ticketusers t
+		<include refid="where"/>
+	</select>
 
 	<update id="update">
 		update ticketusers t
@@ -113,6 +118,9 @@
 			</if>
 			<if test="Language != null">
 				Language = #{Language}, 
+			</if>
+			<if test="Roll != null">
+				Roll = #{Roll}, 
 			</if>
 		</set>
 		where t.id = #{id}

@@ -50,4 +50,9 @@ public class CouponsServiceImpl implements CouponsService{
 		return couponsdao.getByCouponsCode(groupcode);
 	}
 
+	@Override
+	public List<Coupons> getCanUseByGroupCode(String groupcode) {
+		return couponsdao.getCanUseByGroupCode(groupcode);
+	}
+
 }

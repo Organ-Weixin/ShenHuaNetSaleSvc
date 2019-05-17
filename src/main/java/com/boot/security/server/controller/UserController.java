@@ -1,6 +1,12 @@
 package com.boot.security.server.controller;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,7 +133,20 @@ public class UserController{
 	}
 	
 	@RequestMapping(value="/getCinemaName",method=RequestMethod.POST)
-    public List<SysUser> getCinemaName(@RequestParam(value = "id") Long id,@RequestParam(value = "roleId") Long roleId){
+    public List<SysUser> getCinemaName(@RequestParam(value = "id") Long id,@RequestParam(value = "roleId") Long roleId,HttpServletRequest request){
+		List<SysUser> list = userService.getCinemaName(id,roleId);
+		List<String> strings = new ArrayList<>();
+		for(int i=0; i<list.size(); i++){
+			strings.add(list.get(i).getCinemaCode());
+		}
+		Set<String> cinemacodes = new HashSet<>();
+		for(String s : strings){
+    		if (cinemacodes.contains(s)) {
+    		}else{
+    			cinemacodes.add(s);
+    		}
+    	}
+		request.getSession().setAttribute("cinemacodes", cinemacodes);
     	return userService.getCinemaName(id,roleId);
     }
 }

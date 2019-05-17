@@ -26,7 +26,6 @@ import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.Goodsorderdetails;
-import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.LoveFlagEnum;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
@@ -1121,6 +1120,7 @@ public class Dy1905Interface implements ICTMSInterface {
 				goodsService.deleteByCinemaCode(userCinema.getUserId(),userCinema.getCinemaCode());
 				for(GoodBean dy1905good : dy1905goodList){
 					Goods goods = new Goods();
+					goods.setGoodsType(1);
 					goods.setCinemaCode(userCinema.getCinemaCode());
 					goods.setUserId(userCinema.getUserId());
 					goods.setIsDiscount(0);
@@ -1197,7 +1197,7 @@ public class Dy1905Interface implements ICTMSInterface {
 			param.put("pCardPwd",order.getOrderBaseInfo().getCardPassword());
 			param.put("pDeliveryType",String.valueOf(order.getOrderBaseInfo().getDeliveryType()));
 			param.put("pSeat",order.getOrderBaseInfo().getDeliveryAddress());
-			param.put("pDeliveryTime",String.valueOf(order.getOrderBaseInfo().getDeliveryTime()));
+			param.put("pDeliveryTime",order.getOrderBaseInfo().getDeliveryTime());
 			param.put("pMark",order.getOrderBaseInfo().getDeliveryMark());
 			param.put("pVerifyInfo",pVerifyInfo);
 			String GoodsOrderResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/GoodsOrder",param,"UTF-8");
