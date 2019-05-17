@@ -71,6 +71,7 @@ public interface SessioninfoDao {
 	 ////
 	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.starttime>=#{StartDate} and t.starttime<=#{EndDate}")
     List<Sessioninfo> getByCinemaStartDateEndDate(@Param("cinemacode")String cinemacode,@Param("StartDate")String StartDate,@Param("EndDate")String EndDate);
-	 
-    
+	
+	//查询第三方场次价格
+    List<Sessioninfo> getByCinemafilm(@Param("cinemacode")String cinemacode, @Param("filmcode")String filmcode);
 }

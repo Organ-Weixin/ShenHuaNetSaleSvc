@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.QmmpriceDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.id != null and params.id != ''">
+				and id = #{params.id} 
+			</if>
+			<if test="params.cinemaCode != null and params.cinemaCode != ''">
+				and cinemaCode = #{params.cinemaCode} 
+			</if>
+			<if test="params.cinemaName != null and params.cinemaName != ''">
+				and cinemaName = #{params.cinemaName} 
+			</if>
+			<if test="params.cinemaId != null and params.cinemaId != ''">
+				and cinemaId = #{params.cinemaId} 
+			</if>
+			<if test="params.screenName != null and params.screenName != ''">
+				and screenName = #{params.screenName} 
+			</if>
+			<if test="params.filmId != null and params.filmId != ''">
+				and filmId = #{params.filmId} 
+			</if>
+			<if test="params.filmName != null and params.filmName != ''">
+				and filmName = #{params.filmName} 
+			</if>
+			<if test="params.dataType != null and params.dataType != ''">
+				and dataType = #{params.dataType} 
+			</if>
+			<if test="params.dataName != null and params.dataName != ''">
+				and dataName = #{params.dataName} 
+			</if>
+			<if test="params.showId != null and params.showId != ''">
+				and showId = #{params.showId} 
+			</if>
+			<if test="params.showTime != null and params.showTime != ''">
+				and showTime = #{params.showTime} 
+			</if>
+			<if test="params.price != null and params.price != ''">
+				and price = #{params.price} 
+			</if>
+			<if test="params.settlePrice != null and params.settlePrice != ''">
+				and settlePrice = #{params.settlePrice} 
+			</if>
+			<if test="params.minPrice != null and params.minPrice != ''">
+				and minPrice = #{params.minPrice} 
+			</if>
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from qmmprice t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Qmmprice">
+		select * from qmmprice t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="update">
+		update qmmprice t
+		<set>
+			<if test="cinemaCode != null">
+				cinemaCode = #{cinemaCode}, 
+			</if>
+			<if test="cinemaName != null">
+				cinemaName = #{cinemaName}, 
+			</if>
+			<if test="cinemaId != null">
+				cinemaId = #{cinemaId}, 
+			</if>
+			<if test="screenName != null">
+				screenName = #{screenName}, 
+			</if>
+			<if test="filmId != null">
+				filmId = #{filmId}, 
+			</if>
+			<if test="filmName != null">
+				filmName = #{filmName}, 
+			</if>
+			<if test="dataType != null">
+				dataType = #{dataType}, 
+			</if>
+			<if test="dataName != null">
+				dataName = #{dataName}, 
+			</if>
+			<if test="showId != null">
+				showId = #{showId}, 
+			</if>
+			<if test="showTime != null">
+				showTime = #{showTime}, 
+			</if>
+			<if test="price != null">
+				price = #{price}, 
+			</if>
+			<if test="settlePrice != null">
+				settlePrice = #{settlePrice}, 
+			</if>
+			<if test="minPrice != null">
+				minPrice = #{minPrice}, 
+			</if>
+			<if test="updated != null">
+				updated = #{updated}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+
+</mapper>

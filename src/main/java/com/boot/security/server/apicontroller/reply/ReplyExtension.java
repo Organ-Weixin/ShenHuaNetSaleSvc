@@ -102,7 +102,7 @@ public class ReplyExtension {
     }
 	//endregion
 	
-	//region QueryScreenRoom 放映厅
+	//region QueryBanner 图片
 	public static boolean RequestInfoGuard(QueryBannerReply reply, String Username, String Password, String CinemaCode) {
         if (Username == null || "".equals(Username)) {
             reply.SetNecessaryParamMissReply("UserName");
@@ -121,6 +121,28 @@ public class ReplyExtension {
     }
 	//endregion
 
+	//region CinemaChannelPlays 第三方场次价格
+	public static boolean RequestInfoGuard(CinemaChannelPlaysReply reply, String Username, String Password, String CinemaCode,String FilmCode) {
+        if (Username == null || "".equals(Username)) {
+            reply.SetNecessaryParamMissReply("UserName");
+            return false;
+        }
+        if (Password == null || "".equals(Password)) {
+            reply.SetNecessaryParamMissReply("Password");
+            return false;
+        }
+        if (CinemaCode == null || "".equals(CinemaCode)) {
+            reply.SetNecessaryParamMissReply("CinemaCode");
+            return false;
+        }
+        if (FilmCode == null || "".equals(FilmCode)) {
+            reply.SetNecessaryParamMissReply("FilmCode");
+            return false;
+        }
+        return true;
+    }
+	//endregion
+		
 	//region QueryScreenSeatsReply
 	public static boolean RequestInfoGuard(QueryScreenSeatsReply reply, String Username, String Password, String CinemaCode,String ScreenCode)
     {

@@ -94,8 +94,12 @@ public class SessioninfoServiceImpl implements SessioninfoService{
 
 	@Override
 	public Sessioninfo getSessionCode(String cinemacode, String sessioncode) {
-		// TODO Auto-generated method stub
 		return sessioninfoDao.getSessionCode(cinemacode, sessioncode);
+	}
+
+	@Override
+	public List<Sessioninfo> getByCinemafilm(String cinemacode, String filmcode) {
+		return sessioninfoDao.getByCinemafilm(cinemacode, filmcode);
 	}
 
 

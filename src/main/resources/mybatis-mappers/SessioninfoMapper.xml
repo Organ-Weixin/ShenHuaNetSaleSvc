@@ -6,6 +6,8 @@
 	<resultMap type="Sessioninfo" id="Films">
 		<result property="Id" column="Id"/>
 		<result property="CCode" column="CCode"/>
+		<result property="ScreenCode" column="ScreenCode"/>
+		<result property="StartTime" column="StartTime"/>
 		<result property="FilmCode" column="FilmCode"/>
 		<result property="FilmName" column="FilmName"/>
 		<result property="Duration" column="Duration"/>
@@ -17,6 +19,14 @@
 			<result property="FilmName" column="FilmName"/>
 			<result property="FilmType" column="FilmType"/>
 		</association>
+		<collection  property="qmmprices" ofType="Qmmprice">
+			<result property="dataType" column="dataType"/>
+			<result property="dataName" column="dataName"/>
+			<result property="price" column="price"/>
+			<result property="settlePrice" column="settlePrice"/>
+			<result property="minPrice" column="minPrice"/>
+			<result property="screenName" column="screenName"/>
+		</collection >
 	</resultMap>
 	
 	<sql id="where">
@@ -112,13 +122,6 @@
 			</if>
 		</where>
 	</sql>
-	<sql id="getId">
-		<where>
-			<if test="id !=null and id !='' ">
-				and id = #{id}
-			</if>
-		</where>
-	</sql>
 
 	<select id="count" resultType="int">
 		select count(1) from sessioninfo t
@@ -148,18 +151,12 @@
 		limit #{offset}, #{limit}
 	</select>
 	
-	<!-- <select id="getFilmsByCinemaCode" resultType="Sessioninfo">
-		 select DISTINCT(t.filmcode),t.filmname from sessioninfo t where t.ccode in (
-		 select ss.cinemacode from sys_user ss,(select id,cinemacode,cinemaname from sys_user where roleid = 4 and status = 1) s
-		 <if test='roleId!=1'>
-			,(select id from sys_user <include refid="getId"/> ) sss
-		 </if>
-			where ss.id = s.id
-		 <if test='roleId!=1'>
-			and (ss.createuserid = sss.id or ss.id = sss.id)
-		 </if>
-		 ) and t.StartTime >= NOW()
-	</select> -->
+	<select id="getByCinemafilm" resultMap="Films">
+		select s.id,s.ccode,s.ScreenCode,qs.screenName,s.filmCode,s.filmName,s.startTime,qs.dataType,qs.dataName,qs.price,qs.settlePrice,qs.minPrice  
+		from (select ss.* from sessioninfo ss where ss.ccode=#{cinemacode} and ss.filmcode=#{filmcode}) s 
+		left join (select q.*,sc.scode from qmmprice q,screeninfo sc where q.cinemaCode = sc.ccode and q.screenName = sc.SName) qs
+		on s.CCode=qs.cinemaCode and s.ScreenCode=qs.scode and s.startTime=qs.showTime 
+	</select>
 	
 	<delete id="deleteByCinemaCode">
 		delete from sessioninfo 

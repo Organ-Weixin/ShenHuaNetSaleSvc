@@ -1,8 +1,9 @@
 package com.boot.security.server.model;
 
 import java.util.Date;
+import java.util.List;
 
-public class Sessioninfo extends BaseEntity<Long> {
+public class Sessioninfo {
 
 	private Long Id;
 	private String CCode;
@@ -38,6 +39,7 @@ public class Sessioninfo extends BaseEntity<Long> {
 	private Userinfo userinfo;
 	private Priceplan priceplan;
 	private Filminfo Filminfo;
+	private List<Qmmprice> qmmprices;
 	
 	public Cinema getCinema() {
 		return cinema;
@@ -238,6 +240,12 @@ public class Sessioninfo extends BaseEntity<Long> {
 	}
 	public void setFilminfo(Filminfo filminfo) {
 		Filminfo = filminfo;
+	}
+	public List<Qmmprice> getQmmprices() {
+		return qmmprices;
+	}
+	public void setQmmprices(List<Qmmprice> qmmprices) {
+		this.qmmprices = qmmprices;
 	}
 	
 }
