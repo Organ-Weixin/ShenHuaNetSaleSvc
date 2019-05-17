@@ -35,6 +35,7 @@ public class Goodsorders extends BaseEntity<Long> {
 	private String CardNo;
 	private String CardPassword;
 	private String ErrorMessage;
+	private String OpenID;
 
 	public Long getId() {
 		return Id;
@@ -222,5 +223,12 @@ public class Goodsorders extends BaseEntity<Long> {
 	public void setErrorMessage(String ErrorMessage) {
 		this.ErrorMessage = ErrorMessage;
 	}
+	public String getOpenID() {
+		return OpenID;
+	}
+	public void setOpenID(String openID) {
+		OpenID = openID;
+	}
+	
 
 }
