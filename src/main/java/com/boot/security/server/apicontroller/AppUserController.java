@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.boot.security.server.api.ctms.reply.YkModelMapper;
 import com.boot.security.server.apicontroller.reply.Jscode2sessionReply;
 import com.boot.security.server.apicontroller.reply.MobilePhoneRegisterReply;
 import com.boot.security.server.apicontroller.reply.MobilePhoneRegisterReply.MobilePhoneRegisterBean;
+import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.apicontroller.reply.SendVerifyCodeReply;
 import com.boot.security.server.apicontroller.reply.SendVerifyCodeReply.SendVerifyCodeBean;
@@ -109,10 +109,10 @@ public class AppUserController {
         	ticketuser = new Ticketusers();
         	ticketuser.setCinemaCode(userinput.getCinemaCode());
         	ticketuser.setOpenID(jscode2sessionReply.getOpenid());
-        	YkModelMapper.MapToEntity(wxuser, ticketuser);
+        	ModelMapper.MapToEntity(wxuser, ticketuser);
         	_ticketusersService.save(ticketuser);
         } else {
-        	YkModelMapper.MapToEntity(wxuser, ticketuser);
+        	ModelMapper.MapToEntity(wxuser, ticketuser);
         	_ticketusersService.update(ticketuser);
         }
         //返回
@@ -130,6 +130,7 @@ public class AppUserController {
         data.setLanguage(ticketuser.getLanguage());
         data.setTotalScore(ticketuser.getTotalScore());
         data.setIsActive(String.valueOf(ticketuser.getIsActive()));
+        data.setRoll(ticketuser.getRoll());
         data.setCreated(ticketuser.getCreated()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ticketuser.getCreated()));
         
         userReply.setData(data);
@@ -178,6 +179,7 @@ public class AppUserController {
         data.setLanguage(ticketuser.getLanguage());
         data.setTotalScore(ticketuser.getTotalScore());
         data.setIsActive(String.valueOf(ticketuser.getIsActive()));
+        data.setRoll(ticketuser.getRoll());
         data.setCreated(ticketuser.getCreated()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ticketuser.getCreated()));
         
         userReply.setData(data);

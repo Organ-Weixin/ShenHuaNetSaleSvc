@@ -19,6 +19,7 @@ public class Ticketusers {
 	private String HeadImgUrl;
 	private String TotalScore;
 	private String Language;
+	private String Roll = "1";  //放映厅角色,1普通用户,2管理员
 
 	public Long getId() {
 		return Id;
@@ -110,5 +111,11 @@ public class Ticketusers {
 	public void setLanguage(String Language) {
 		this.Language = Language;
 	}
-
+	public String getRoll() {
+		return Roll;
+	}
+	public void setRoll(String roll) {
+		this.Roll = roll;
+	}
+	
 }
