@@ -1120,7 +1120,7 @@ public class Dy1905Interface implements ICTMSInterface {
 				goodsService.deleteByCinemaCode(userCinema.getUserId(),userCinema.getCinemaCode());
 				for(GoodBean dy1905good : dy1905goodList){
 					Goods goods = new Goods();
-					goods.setGoodsType(1);
+					goods.setGoodsType("1");
 					goods.setCinemaCode(userCinema.getCinemaCode());
 					goods.setUserId(userCinema.getUserId());
 					goods.setIsDiscount(0);

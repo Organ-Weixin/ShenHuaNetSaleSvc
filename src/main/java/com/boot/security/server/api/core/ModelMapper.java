@@ -24,6 +24,7 @@ import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
+import com.boot.security.server.model.LoveFlagEnum;
 import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
@@ -59,7 +60,7 @@ public class ModelMapper {
 		seat.setXCoord(seatInfo.getXCoord());
 		seat.setYCoord(seatInfo.getYCoord());
 		seat.setStatus(seatInfo.getStatus());
-		seat.setLoveFlag(seatInfo.getLoveFlag());
+		seat.setLoveFlag(LoveFlagEnum.CastToEnum(seatInfo.getLoveFlag()).toString());
 		return seat;
 	}
 

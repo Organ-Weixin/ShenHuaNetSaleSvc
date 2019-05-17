@@ -30,12 +30,22 @@ public enum CinemaTypeEnum {
 		TypeCode = typeCode;
 	}
 	
-	public static String getNameByCode(int TypeCode){
-		for(CinemaTypeEnum cinemaType : CinemaTypeEnum.values()){
-			if(TypeCode == cinemaType.getTypeCode()){
-				return cinemaType.getTypeName();
-			}
-		}
-		return null;
-	}
+	//按名称转枚举
+	public static CinemaTypeEnum CastToEnum(String TypeName) {  
+        for (CinemaTypeEnum en : CinemaTypeEnum.values()) {  
+            if (en.getTypeName().equals(TypeName)) {  
+                return en;
+            }
+        }
+        return null;
+    }
+	//按编码转枚举
+	public static CinemaTypeEnum CastToEnum(int TypeCode) {  
+        for (CinemaTypeEnum en : CinemaTypeEnum.values()) {  
+            if (en.getTypeCode() == TypeCode) {
+                return en;
+            }
+        }
+        return null;
+    }
 }

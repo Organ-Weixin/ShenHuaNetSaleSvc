@@ -22,4 +22,14 @@ public enum StatusEnum {
 		StatusCode = statusCode;
 	}
 	
+	// 按编码转枚举
+	public static StatusEnum CastToEnum(String statusCode) {
+		for (StatusEnum en : StatusEnum.values()) {
+			if (en.getStatusCode().equals(statusCode)) {
+				return en;
+			}
+		}
+		return null;
+	}
+	
 }

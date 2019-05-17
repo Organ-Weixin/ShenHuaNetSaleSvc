@@ -30,6 +30,22 @@ public enum OrderStatusEnum {
 	public void setStatusCode(int statusCode) {
 		StatusCode = statusCode;
 	}
-	
-
+	//按名称转枚举
+	public static OrderStatusEnum CastToEnum(String StatusName) {  
+        for (OrderStatusEnum en : OrderStatusEnum.values()) {  
+            if (en.getStatusName().equals(StatusName)) {
+            	return en;
+            }
+        }
+        return null;
+    }
+	//按编码转枚举
+	public static OrderStatusEnum CastToEnum(int statusCode) {  
+        for (OrderStatusEnum en : OrderStatusEnum.values()) {  
+            if (en.getStatusCode() == statusCode) {  
+                return en;
+            }
+        }
+        return null;
+    }
 }

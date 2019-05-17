@@ -84,7 +84,7 @@ public class CxModelMapper {
     public static Goods MapToEntity(CxQueryMerchandiseResult.ResBean.MersBean.MerBean model,Goods entity){
     	entity.setGoodsCode(model.getMerUid());
     	entity.setGoodsName(model.getMerName());
-    	entity.setGoodsType(model.getMerTypeId());
+    	entity.setGoodsType(String.valueOf(model.getMerTypeId()));
     	entity.setStandardPrice(model.getListingPrice().doubleValue());
     	entity.setSettlePrice(model.getSettlePrice().doubleValue());
     	entity.setStockCount(9999);

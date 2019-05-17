@@ -105,7 +105,7 @@ public class GoodsorderdetailsviewController {
 				objects[6] = goodsview.getSubTotalSettleAmount();
 				objects[7] = goodsview.getCreated();
 				objects[8] = goodsview.getMobilePhone();
-				objects[9] = GoodsOrderStatusEnum.getNameByCode(goodsview.getOrderStatus());
+				objects[9] = GoodsOrderStatusEnum.CastToEnum(goodsview.getOrderStatus()).getStatusName();
 				 
 				datas.add(objects);
 			}

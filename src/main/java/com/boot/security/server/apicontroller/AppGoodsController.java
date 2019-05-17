@@ -14,12 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.security.server.api.core.CreateGoodsOrderReply;
 import com.boot.security.server.api.core.NetSaleSvcCore;
-import com.boot.security.server.api.core.QueryGoodsOrderReply;
 import com.boot.security.server.api.core.RefundGoodsReply;
 import com.boot.security.server.api.core.SubmitGoodsOrderReply;
 import com.boot.security.server.apicontroller.reply.CreateGoodsOrderQueryJson;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.NetSaleQueryJson;
+import com.boot.security.server.apicontroller.reply.QueryGoodsOrderReply;
+import com.boot.security.server.apicontroller.reply.QueryGoodsOrderReply.QueryGoodsOrderReplyOrder;
 import com.boot.security.server.apicontroller.reply.QueryGoodsReply;
 import com.boot.security.server.apicontroller.reply.QueryGoodsReply.QueryGoodsReplyGoodss;
 import com.boot.security.server.apicontroller.reply.QueryGoodsReply.QueryGoodsReplyGoodss.QueryGoodsReplyGoods;
@@ -134,7 +135,6 @@ public class AppGoodsController {
 	public SubmitGoodsOrderReply SubmitGoodsOrder(@RequestBody NetSaleQueryJson QueryJson){
 		try {
 			SubmitGoodsOrderReply reply = NetSaleSvcCore.getInstance().SubmitGoodsOrder(QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getQueryXml());
-		
 			return reply;
 		} catch (JsonSyntaxException e) {
 			e.printStackTrace();
@@ -146,18 +146,48 @@ public class AppGoodsController {
 	}
 	//endregion
 	
-	//region 调用接口查询已完成订单的详情（远程）
+	//region 查询订单（按订单号查询已完成）
 	@GetMapping("/QueryGoodsOrder/{UserName}/{Password}/{CinemaCode}/{OrderCode}")
 	@ApiOperation(value = "查询卖品订单")
 	public QueryGoodsOrderReply QueryGoodsOrder(@PathVariable String UserName, @PathVariable String Password, 
 			@PathVariable String CinemaCode, @PathVariable String OrderCode){
-		QueryGoodsOrderReply reply = NetSaleSvcCore.getInstance().QueryGoodsOrder(UserName, Password, CinemaCode, OrderCode);
-		
-		return reply;
+		QueryGoodsOrderReply queryGoodsOrderReply = new QueryGoodsOrderReply();
+		//校验参数
+        if (!ReplyExtension.RequestInfoGuard(queryGoodsOrderReply,UserName, Password, CinemaCode,OrderCode))
+        {
+            return queryGoodsOrderReply;
+        }
+      //获取用户信息(渠道)
+        Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
+        if (UserInfo == null)
+        {
+        	queryGoodsOrderReply.SetUserCredentialInvalidReply();
+            return queryGoodsOrderReply;
+        }
+        //验证影院是否存在且可访问
+        Cinema cinema = _cinemaService.getByCinemaCode(CinemaCode);
+        if (cinema == null)
+        {
+        	queryGoodsOrderReply.SetCinemaInvalidReply();
+            return queryGoodsOrderReply;
+        }
+        //验证订单是否存在
+        GoodsOrderView orders=_goodsOrderService.getWithOrderCode(CinemaCode,OrderCode);
+        if(orders==null){
+        	queryGoodsOrderReply.SetOrderNotExistReply();
+        	return queryGoodsOrderReply;
+        }else
+        {
+        	QueryGoodsOrderReplyOrder order=new QueryGoodsOrderReplyOrder();
+        	ModelMapper.MapFrom(order,orders);
+        	queryGoodsOrderReply.setData(order);
+        	queryGoodsOrderReply.SetSuccessReply();
+        }
+        return queryGoodsOrderReply;
 	}
 	//endregion
 	
-	//region 查询本地卖品订单（支付时获取）
+	//region 查询订单（按本地订单号查询）
 	@GetMapping("/QueryLocalGoodsOrder/{UserName}/{Password}/{CinemaCode}/{LocalOrderCode}")
 	@ApiOperation(value = "查询本地卖品订单")
 	public QueryLocalGoodsOrderReply QueryLocalGoodsOrder(@PathVariable String UserName, @PathVariable String Password, 
@@ -175,7 +205,7 @@ public class AppGoodsController {
         	queryLocalGoodsOrderReply.SetUserCredentialInvalidReply();
             return queryLocalGoodsOrderReply;
         }
-      //验证影院是否存在且可访问
+        //验证影院是否存在且可访问
         Cinema cinema = _cinemaService.getByCinemaCode(CinemaCode);
         if (cinema == null)
         {

@@ -43,7 +43,7 @@ public class QueryUserOrdersReply extends BaseReply {
 			private Double TotalPrice;
 			private Double TotalFee;
 			private Double TotalSalePrice;
-			private Integer OrderStatus;
+			private String OrderStatus;
 			private String MobilePhone;
 			private String LockTime;
 			private String AutoUnlockDatetime;
@@ -128,10 +128,10 @@ public class QueryUserOrdersReply extends BaseReply {
 			public void setTotalSalePrice(Double totalSalePrice) {
 				TotalSalePrice = totalSalePrice;
 			}
-			public Integer getOrderStatus() {
+			public String getOrderStatus() {
 				return OrderStatus;
 			}
-			public void setOrderStatus(Integer orderStatus) {
+			public void setOrderStatus(String orderStatus) {
 				OrderStatus = orderStatus;
 			}
 			public String getMobilePhone() {

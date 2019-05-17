@@ -185,7 +185,7 @@ public class OrderController {
 		OrderView order = _orderService.getOrderWidthLockOrderCode(CinemaCode, LockOrderCode);
 		if (order == null) {
 			orderReply.SetOrderNotExistReply();
-			
+			return orderReply;
 		} else {
 			QueryLocalOrder orderResult = new QueryLocalOrder();
 			orderResult.setOrderId(order.getOrderBaseInfo().getId());
@@ -229,9 +229,9 @@ public class OrderController {
 	}
 	//endregion
 	
-	//region 查询影片
+	//region 查询影票信息
 	@GetMapping("/QueryTicket/{UserName}/{Password}/{CinemaCode}/{PrintNo}/{VerifyCode}")
-	@ApiOperation(value = "查询影片")
+	@ApiOperation(value = "查询影票信息")
 	public QueryTicketReply QueryTicket(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String PrintNo,@PathVariable String VerifyCode){
 		QueryTicketReply reply = NetSaleSvcCore.getInstance().QueryTicket(UserName, Password, CinemaCode, PrintNo, VerifyCode);
@@ -315,7 +315,7 @@ public class OrderController {
 				orderinfo.setTotalPrice(order.getTotalPrice());
 				orderinfo.setTotalFee(order.getTotalFee());
 				orderinfo.setTotalSalePrice(order.getTotalSalePrice());
-				orderinfo.setOrderStatus(order.getOrderStatus());
+				orderinfo.setOrderStatus(OrderStatusEnum.CastToEnum(order.getOrderStatus()).getStatusName());
 				orderinfo.setMobilePhone(order.getMobilePhone());
 				orderinfo.setLockTime(order.getLockTime()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getLockTime()));
 				orderinfo.setAutoUnlockDatetime(order.getAutoUnlockDatetime()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getAutoUnlockDatetime()));

@@ -27,5 +27,14 @@ public enum SessionSeatStatusEnum {
 		StatusCode = statusCode;
 	}
 	
+	// 按编码转枚举
+	public static SessionSeatStatusEnum CastToEnum(String statusCode) {
+		for (SessionSeatStatusEnum en : SessionSeatStatusEnum.values()) {
+			if (en.getStatusCode().equals(statusCode)) {
+				return en;
+			}
+		}
+		return null;
+	}
 
 }

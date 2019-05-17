@@ -23,6 +23,23 @@ public enum OrderPayTypeEnum {
 		TypeCode = typeCode;
 	}
 	
-	
+	// 按名称转枚举
+	public static OrderPayTypeEnum CastToEnum(String TypeName) {
+		for (OrderPayTypeEnum en : OrderPayTypeEnum.values()) {
+			if (en.getTypeName().equals(TypeName)) {
+				return en;
+			}
+		}
+		return null;
+	}
 
+	// 按编码转枚举
+	public static OrderPayTypeEnum CastToEnum(int TypeCode) {
+		for (OrderPayTypeEnum en : OrderPayTypeEnum.values()) {
+			if (en.getTypeCode() == TypeCode) {
+				return en;
+			}
+		}
+		return null;
+	}
 }

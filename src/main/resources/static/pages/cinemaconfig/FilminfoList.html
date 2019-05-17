@@ -21,21 +21,21 @@
 										<div class="form-group">
 							
 					<!--根据code影片编码搜索对应影片信息-->				
-						<input id="code" type="text" class="form-control" placeholder="影片编码">&nbsp;&nbsp;
+						<input id="filmCode" type="text" class="form-control" placeholder="影片编码">&nbsp;&nbsp;
 					<!--根据name影片名称搜索对应影片信息-->				
-						<input id="name" type="text" class="form-control" placeholder="影片名称">&nbsp;&nbsp;	
+						<input id="filmName" type="text" class="form-control" placeholder="影片名称">&nbsp;&nbsp;	
 											<!--根据影片状态查询影片信息-->
-											<select class="form-control" id=Status name="Status"
+											<select class="form-control" id=status name="status"
 												style="width: 200px">
 												<option selected="selected" value="">通过状态</option>
 												<option value="1">通过</option>
 												<option value="0">待审核</option>
 											</select>
-											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
+											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>&nbsp;&nbsp;
+											<input id="cityName" type="text" class="form-control" placeholder="城市名称">
+											<button id="grabFilmDataBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>抓取更新影片</button>
 										</div>
 									</form>
-									
-	
 	                   			</td>
 	                   			<td align="right">
 	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addFilminfo.html'">
@@ -100,9 +100,9 @@ function init(){
         		"url" : "/filminfos",
         		"type":"get",
         		"data":function(d){
-    				d.Code = $("#code").val();
-    				d.Status=$("#Status").val();
-    				d.Name=$("#name").val();
+    				d.FilmCode = $("#filmCode").val();
+    				d.Status=$("#status").val();
+    				d.FilmName=$("#filmName").val();
     			}
         	},
          	
@@ -111,10 +111,26 @@ function init(){
 				{"data" : "id", "defaultContent" : ""},
 				{"data" : "filmCode", "defaultContent" : ""},
 				{"data" : "filmName", "defaultContent" : ""},
-				{"data" : "image", "defaultContent" : ""},
+				{"data" : "image", "defaultContent" : "",
+					"render":function(data,type,row){
+						return '<div style="width:200px;height:20px;overflow:hidden" title="'+data+'">'+data+'</div>';
+					}					
+					},
 				{"data" : "duration", "defaultContent" : ""},
 				{"data" : "publishDate", "defaultContent" : ""},
-				{"data" : "status", "defaultContent" : ""},
+				{
+					"data" : "status", 
+					"defaultContent" : "",
+					"render": function (data, type, row) {
+						if(data=="0"){
+							return '<div style="color:#ff0000">未审核</div>';
+						}else{
+							return '<div style="color:#006400">已通过</div>';
+						}
+                  	}	
+				},
+				
+				
 				{ 
 								"data": "", 
 								"defaultContent": "",
@@ -156,6 +172,22 @@ function del(id){
 
 $("#searchBt").click(function(){
 	example.ajax.reload();
+});
+
+$("#grabFilmDataBt").click(function(){
+	layer.confirm('从百度抓取并更新本地片库？', {
+        btn : [ '确定', '取消' ]
+    }, function() {
+    	$.ajax({
+            type : 'get',
+            url : '/filminfos/grabFilmData/'+$("#cityName").val(),
+            success : function(data) {
+                example.ajax.reload();
+                layer.msg(data.msg);
+            }
+        });
+        layer.close(1);
+    });
 });
 
 

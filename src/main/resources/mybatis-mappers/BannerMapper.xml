@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.BannerDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and Id = #{params.Id} 
+			</if>
+			<if test="params.CinemaCode != null and params.CinemaCode != ''">
+				and CinemaCode = #{params.CinemaCode} 
+			</if>
+			<if test="params.Title != null and params.Title != ''">
+				and Title = #{params.Title} 
+			</if>
+			<if test="params.Image != null and params.Image != ''">
+				and Image = #{params.Image} 
+			</if>
+			<if test="params.Created != null and params.Created != ''">
+				and Created = #{params.Created} 
+			</if>
+			<if test="params.StartDate != null and params.StartDate != ''">
+				and StartDate = #{params.StartDate} 
+			</if>
+			<if test="params.EndDate != null and params.EndDate != ''">
+				and EndDate = #{params.EndDate} 
+			</if>
+			<if test="params.LinkUrl != null and params.LinkUrl != ''">
+				and LinkUrl = #{params.LinkUrl} 
+			</if>
+			<if test="params.Status != null and params.Status != ''">
+				and Status = #{params.Status} 
+			</if>
+		
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from banner t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Banner">
+		select * from banner t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="update">
+		update banner t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="CinemaCode != null">
+				CinemaCode = #{CinemaCode}, 
+			</if>
+			<if test="Title != null">
+				Title = #{Title}, 
+			</if>
+			<if test="Image != null">
+				Image = #{Image}, 
+			</if>
+			<if test="Created != null">
+				Created = #{Created}, 
+			</if>
+			<if test="StartDate != null">
+				StartDate = #{StartDate}, 
+			</if>
+			<if test="EndDate != null">
+				EndDate = #{EndDate}, 
+			</if>
+			<if test="LinkUrl != null">
+				LinkUrl = #{LinkUrl}, 
+			</if>
+			<if test="Status != null">
+				Status = #{Status}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+
+</mapper>

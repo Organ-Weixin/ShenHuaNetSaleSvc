@@ -1,8 +1,7 @@
 package com.boot.security.server.utils;
 
+import java.util.Arrays;
 import java.util.List;
-
-import org.assertj.core.util.Arrays;
 
 public class FilmCodeUtil {
 	private static String[] _3DFlagsArray={"2", "4", "9", "c", "e", "j", "m", "o", "t", "w", "y", "D"};

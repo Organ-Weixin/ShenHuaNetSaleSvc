@@ -26,6 +26,7 @@ public class UserLoginReply extends BaseReply {
 		private String TotalScore;
 		private String IsActive;
 		private String Created;
+		private String Roll;
 		
 		public Long getTicketUserId() {
 			return TicketUserId;
@@ -110,6 +111,12 @@ public class UserLoginReply extends BaseReply {
 		}
 		public void setCreated(String created) {
 			Created = created;
+		}
+		public String getRoll() {
+			return Roll;
+		}
+		public void setRoll(String roll) {
+			Roll = roll;
 		}
 		
 	}

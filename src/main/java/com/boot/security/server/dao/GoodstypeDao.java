@@ -17,6 +17,9 @@ public interface GoodstypeDao {
 
     @Select("select * from goodstype t where t.id = #{id}")
     Goodstype getById(Long id);
+    
+    @Select("select * from goodstype t where t.cinemacode = #{cinemacode}")
+    List<Goodstype> getByCinemaCode(String cinemacode);
 
     @Delete("delete from goodstype where id = #{id}")
     int delete(Long id);
@@ -24,7 +27,7 @@ public interface GoodstypeDao {
     int update(Goodstype goodstype);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into goodstype(Id, CinemaCode, UserId, TypeName, TypeDesc, TypePic) values(#{Id}, #{CinemaCode}, #{UserId}, #{TypeName}, #{TypeDesc}, #{TypePic})")
+    @Insert("insert into goodstype(Id, CinemaCode, UserId,TypeCode, TypeName, TypeDesc, TypePic) values(#{Id}, #{CinemaCode}, #{UserId}, #{TypeCode},#{TypeName}, #{TypeDesc}, #{TypePic})")
     int save(Goodstype goodstype);
     
     int count(@Param("params") Map<String, Object> params);

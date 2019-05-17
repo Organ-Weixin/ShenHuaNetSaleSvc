@@ -71,7 +71,7 @@ public class CinemaListController {
         		   cinemareply.setCinemaName(cinema.getName());
         		   
         		   Usercinemaview usercinema = userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(), cinema.getCode());
-        		   cinemareply.setCinemaType(usercinema==null?"":CinemaTypeEnum.getNameByCode(usercinema.getCinemaType()));
+        		   cinemareply.setCinemaType(usercinema==null?"":CinemaTypeEnum.CastToEnum(usercinema.getCinemaType()).getTypeName());
         		   cinemareply.setContactName(cinema.getContactName());
         		   cinemareply.setContactMobile(cinema.getContactMobile());
         		   cinemareply.setTheaterChain(cinema.getTheaterChain()==null?"":cinema.getTheaterChain().toString());

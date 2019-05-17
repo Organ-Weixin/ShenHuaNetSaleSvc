@@ -38,7 +38,9 @@
 			<if test="params.Introduction != null and params.Introduction != ''">
 				and Introduction = #{params.Introduction} 
 			</if>
-		
+		    <if test="params.Status != null and params.Status != ''">
+				and Status = #{params.Status}
+			</if>
 		</where>
 	</sql>
 

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<h1>基础信息</h1>
+			<input type="hidden" id="id" name="id">
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='cinemaCode' id='CinemaCode' data-bv-notempty='true' data-bv-notempty-message='CinemaCode 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>标题：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='title' id='Title' data-bv-notempty='true' data-bv-notempty-message='Title 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>图片：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='image' id='Image' data-bv-notempty='true' data-bv-notempty-message='Image 不能为空'>
+				</div>
+			</div>
+			<div class='form-group' style="display: none;">
+				<label class='col-md-2 control-label'>上传时间：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='created' id='Created' data-bv-notempty='true' data-bv-notempty-message='Created 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>开始时间：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='startDate' id='StartDate' data-bv-notempty='true' data-bv-notempty-message='StartDate 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>结束时间：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='endDate' id='EndDate' data-bv-notempty='true' data-bv-notempty-message='EndDate 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>链接地址：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='linkUrl' id='LinkUrl' data-bv-notempty='true' data-bv-notempty-message='LinkUrl 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>是否启用：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='status' id='Status' data-bv-notempty='true' data-bv-notempty-message='Status 不能为空'>
+				</div>
+			</div>
+
+
+
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="location.href='bannerList.html'">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="update()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		});
+		
+		initData();
+		
+		function initData(){
+			var id = getUrlParam("id");
+			if(id != ""){
+				$.ajax({
+					type : 'get',
+					url : '/banners/'+id,
+					async : false,
+					success : function(data) {
+						$('#Id').val(data.Id);
+						$('#CinemaCode').val(data.CinemaCode);
+						$('#Title').val(data.Title);
+						$('#Image').val(data.Image);
+						$('#Created').val(data.Created);
+						$('#StartDate').val(data.StartDate);
+						$('#EndDate').val(data.EndDate);
+						$('#LinkUrl').val(data.LinkUrl);
+						$('#Status').val(data.Status);
+
+					}
+				});
+			}
+		}
+
+		function update() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var formdata = $("#form").serializeObject();
+
+			$.ajax({
+				type : 'put',
+				url : '/banners',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("修改成功", {shift: -1, time: 1000}, function(){
+                        location.href = "bannerList.html";
+                    });
+				}
+			});
+		}
+		
+	</script>
+</body>
+</html>
