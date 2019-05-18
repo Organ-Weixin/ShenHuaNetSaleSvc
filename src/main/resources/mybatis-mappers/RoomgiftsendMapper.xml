@@ -23,8 +23,8 @@
 			<if test="params.sendNumber != null and params.sendNumber != ''">
 				and sendNumber = #{params.sendNumber} 
 			</if>
-			<if test="params.sendUserphone != null and params.sendUserphone != ''">
-				and sendUserphone = #{params.sendUserphone} 
+			<if test="params.openid != null and params.openid != ''">
+				and openid = #{params.openid} 
 			</if>
 			<if test="params.sendTime != null and params.sendTime != ''">
 				and sendTime = #{params.sendTime} 
@@ -63,8 +63,8 @@
 			<if test="sendNumber != null">
 				sendNumber = #{sendNumber}, 
 			</if>
-			<if test="sendUserphone != null">
-				sendUserphone = #{sendUserphone}, 
+			<if test="openid != null">
+				openid = #{openid}, 
 			</if>
 			<if test="sendTime != null">
 				sendTime = #{sendTime}, 

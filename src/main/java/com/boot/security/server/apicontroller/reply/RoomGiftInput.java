@@ -9,7 +9,7 @@ public class RoomGiftInput {
 	private String GiftCode;
 	private String GiftType;
 	private int SendNumber;
-	private String Phone;
+	private String OpenID;
 	private String Roll;	//放映厅角色
 	
 	public String getUserName() {
@@ -60,12 +60,11 @@ public class RoomGiftInput {
 	public void setSendNumber(int sendNumber) {
 		SendNumber = sendNumber;
 	}
-	public String getPhone() {
-		return Phone;
+	public String getOpenID() {
+		return OpenID;
 	}
-	public void setPhone(String phone) {
-		Phone = phone;
+	public void setOpenID(String openID) {
+		OpenID = openID;
 	}
-	
 	
 }

@@ -13,7 +13,7 @@ public class Roomgiftsend {
 	private String giftName;
 	private String giftType;
 	private Integer sendNumber;
-	private String sendUserphone;
+	private String openid;
 	private Date sendTime;
 
 	public Long getId() {
@@ -52,11 +52,11 @@ public class Roomgiftsend {
 	public void setSendNumber(Integer sendNumber) {
 		this.sendNumber = sendNumber;
 	}
-	public String getSendUserphone() {
-		return sendUserphone;
+	public String getOpenid() {
+		return openid;
 	}
-	public void setSendUserphone(String sendUserphone) {
-		this.sendUserphone = sendUserphone;
+	public void setOpenid(String openid) {
+		this.openid = openid;
 	}
 	public Date getSendTime() {
 		return sendTime;

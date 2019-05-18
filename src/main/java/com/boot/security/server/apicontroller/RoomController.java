@@ -231,7 +231,7 @@ public class RoomController {
 		newgift.setGiftName(gigtName);
 		newgift.setGiftType(input.getGiftType());
 		newgift.setSendNumber(input.getSendNumber());
-		newgift.setSendUserphone(input.getPhone());
+		newgift.setOpenid(input.getOpenID());
 		newgift.setSendTime(new Date());
 		roomgiftsendService.save(newgift);
 		
