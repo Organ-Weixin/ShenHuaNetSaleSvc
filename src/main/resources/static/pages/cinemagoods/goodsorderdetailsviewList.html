@@ -205,16 +205,18 @@
 		if(orderStatus == null || orderStatus == ""){
 			orderStatus = 0;
 		}
-		alert("该功能还未实现");
-		/* $.ajax({
-			type : 'post',
+//		window.location.href="/goodsorderdetailsviews/exportExcel/"+orderStatus;
+
+		$.ajax({
+			type : 'get',
 			url : '/goodsorderdetailsviews/exportExcel/'+orderStatus,
-			contentType: "application/json; charset=utf-8",  
-			success : function(data) {
-				alert(data);
+			contentType: "application/json; charset=utf-8", 
+//			data : {orderStatus:orderStatus},
+			success : function() {
+				alert(123);
 				
 			}
-		}); */
+		});
 	}
 	
 	$("#searchBt").click(function(){

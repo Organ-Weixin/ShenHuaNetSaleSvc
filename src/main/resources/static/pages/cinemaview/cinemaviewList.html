@@ -57,6 +57,7 @@
 									<th>接口类型</th>
 									<th>开通状态</th>
 									<th>是否开通套餐</th>
+									<th>放映厅功能</th>
 									<th>操作</th>
                                 </tr>
                             </thead>
@@ -68,8 +69,6 @@
             </div>
         </div>
     </div>
-</body>
-</html>
 
 <script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
 <script type="text/javascript" src="../../js/jq.js"></script>
@@ -78,94 +77,114 @@
 <script type="text/javascript" src="../../layui/layui.js"></script>
 <script type="text/javascript" src="../../js/my/permission.js"></script>
 <script type="text/javascript" src="../../js/dict.js"></script>
-
 <script type="text/javascript">
-var pers = checkPermission();
-var CinemaOpen = showDictSelect("cinemaOpen", "CinemaOpen", true);
-var IsOpenSnacks = showDictSelect("isOpenSnacks", "IsOpenSnacks", true);
-var middleWareType = showDictSelect("cinemaType", "middleWareType", true);
-
-var example;
-function init(){
-	example = 
-    	$('#dt-table').DataTable({
-        	"searching": false,
-        	"processing": false,
-        	"serverSide" : true,
-          	"ordering":false,
-        	"language": {
-                "url": "/js/plugin/datatables/Chinese.lang"
-            },
-        	"ajax": {
-        		"url" : "/cinemaviews",
-        		"type":"get",
-        		"data":function(d){
-        			d.id = $("#id").val();
-        			d.Code = $("#code").val();
-    				d.Name=$("#name").val();
-    				d.CinemaOpen=$("#cinemaOpen").val();
-    			}
-        	},
-        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
-            "columns": [
-            	{"data" : "id", "defaultContent" : ""},
-				{"data" : "code", "defaultContent" : ""},
-				{"data" : "name", "defaultContent" : ""},
-				{"data" : "address", "defaultContent" : ""},
-				{"data" : "cinemaType", "defaultContent" : "",
-					"render": function (data, type, row) {
-                	return middleWareType[data];
-              	}		},
-				{"data" : "cinemaOpen", "defaultContent" : "",
-					"render": function (data, type, row) {
-                	return CinemaOpen[data];
-              	}		},
-				{"data" : "isOpenSnacks", "defaultContent" : "",
-					"render": function (data, type, row) {
-                	return IsOpenSnacks[data];
-              	}		},
-				{ 
-								"data": "", 
-								"defaultContent": "",
-								"orderable":false,
-						        "render": function (data, type, row) {
-                		           var id = row['id'];
-                		           var href = "updateCinema.html?id=" + id;
-                                   var edit = buttonEdit(href, "", pers);
-                		           var del = buttonDel(id, "", pers);
-                                   return edit + del;
-                  	            }		
-							},
-                
-            ],
-           "order": [[ 0, "asc" ]]
-        } );
-}
-
-layui.use('layer', function(){
-    var layer = layui.layer;
-});
-
-function del(id){
-	layer.confirm('确定要删除吗？', {
-        btn : [ '确定', '取消' ]
-    }, function() {
-    	$.ajax({
-            type : 'delete',
-            url : '/cinemas/'+id,
-            success : function(data) {
-                example.ajax.reload();
-                layer.msg("删除成功");
-            }
-        });
-        
-        layer.close(1);
-    });
-}
-
-$("#searchBt").click(function(){
-	example.ajax.reload();
-});
-
-init();
+	var pers = checkPermission();
+	var CinemaOpen = showDictSelect("cinemaOpen", "CinemaOpen", true);
+	var IsOpenSnacks = showDictSelect("isOpenSnacks", "IsOpenSnacks", true);
+	var middleWareType = showDictSelect("cinemaType", "middleWareType", true);
+	
+	var example;
+	function init(){
+		example = 
+	    	$('#dt-table').DataTable({
+	        	"searching": false,
+	        	"processing": false,
+	        	"serverSide" : true,
+	          	"ordering":false,
+	        	"language": {
+	                "url": "/js/plugin/datatables/Chinese.lang"
+	            },
+	        	"ajax": {
+	        		"url" : "/cinemaviews",
+	        		"type":"get",
+	        		"data":function(d){
+	        			d.id = $("#id").val();
+	        			d.Code = $("#code").val();
+	    				d.Name=$("#name").val();
+	    				d.CinemaOpen=$("#cinemaOpen").val();
+	    			}
+	        	},
+	        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
+	            "columns": [
+	            	{	"data" : null, 
+	            		"defaultContent" : "",
+						"render" : function(data, type, full, meta){
+							return meta.row + 1 + meta.settings._iDisplayStart;
+							}
+					},
+					{"data" : "code", "defaultContent" : ""},
+					{"data" : "name", "defaultContent" : ""},
+					{"data" : "address", "defaultContent" : ""},
+					{"data" : "cinemaType", "defaultContent" : "",
+						"render": function (data, type, row) {
+	                	return middleWareType[data];
+	              	}		},
+					{"data" : "cinemaOpen", "defaultContent" : "",
+						"render": function (data, type, row) {
+	                	return CinemaOpen[data];
+	              	}		},
+					{				"data" : "isOpenSnacks", 
+	              					"defaultContent" : "",
+									"render": function (data, type, row) {
+	                					return IsOpenSnacks[data];
+	              					}		
+	              	},
+	              	{				"data" : "", 
+				  					"defaultContent" : "",
+									"render": function (data, type, row) {
+										var button = "<button style='color:blue; background-color:transparent; border:0' onclick='room()'>放映厅</button>";
+				    					return button;
+				  					}		
+				  	},
+					{ 
+									"data": "", 
+									"defaultContent": "",
+									"orderable":false,
+							        "render": function (data, type, row) {
+	                		           var id = row['id'];
+	                		           var href = "updateCinema.html?id=" + id;
+	                                   var edit = buttonEdit(href, "", pers);
+	                		           var del = buttonDel(id, "", pers);
+	                                   return edit + del;
+	                  	            }		
+								},
+	                
+	            ],
+	           "order": [[ 0, "asc" ]]
+	        } );
+	}
+	
+	layui.use('layer', function(){
+	    var layer = layui.layer;
+	});
+	
+	//读取放映厅
+	function room(){
+		window.location.href = "roomgiftList.html";
+	}
+	
+	function del(id){
+		layer.confirm('确定要删除吗？', {
+	        btn : [ '确定', '取消' ]
+	    }, function() {
+	    	$.ajax({
+	            type : 'delete',
+	            url : '/cinemas/'+id,
+	            success : function(data) {
+	                example.ajax.reload();
+	                layer.msg("删除成功");
+	            }
+	        });
+	        
+	        layer.close(1);
+	    });
+	}
+	
+	$("#searchBt").click(function(){
+		example.ajax.reload();
+	});
+	
+	init();
 </script>
+</body>
+</html>

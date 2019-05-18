@@ -42,7 +42,6 @@ public class CouponsgroupServiceImpl implements CouponsgroupService{
 	}
 	@Override
 	public int update(Couponsgroup couponsgroup) {
-		// TODO Auto-generated method stub
 		return couponsgroupDao.update(couponsgroup);
 	}
 	@Override

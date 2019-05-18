@@ -9,19 +9,32 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.boot.security.server.apicontroller.reply.QueryRoomGiftReply;
 import com.boot.security.server.apicontroller.reply.QueryScreenRoomReply;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
+import com.boot.security.server.apicontroller.reply.RoomGiftInput;
+import com.boot.security.server.apicontroller.reply.SendGiftReply;
+import com.boot.security.server.apicontroller.reply.SendGiftReply.SendGiftBean;
+import com.boot.security.server.apicontroller.reply.QueryRoomGiftReply.RoomGiftReply;
 import com.boot.security.server.apicontroller.reply.QueryScreenRoomReply.ScreenRoom;
 import com.boot.security.server.model.Cinema;
+import com.boot.security.server.model.Couponsgroup;
 import com.boot.security.server.model.Filminfo;
+import com.boot.security.server.model.Roomgift;
+import com.boot.security.server.model.Roomgiftsend;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
+import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
+import com.boot.security.server.service.impl.RoomgiftServiceImpl;
+import com.boot.security.server.service.impl.RoomgiftsendServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
@@ -42,6 +55,12 @@ public class RoomController {
 	private SessioninfoServiceImpl _sessionInfoService;
 	@Autowired
 	private FilminfoServiceImpl _filminfoService;
+	@Autowired
+	private RoomgiftServiceImpl roomgiftService;
+	@Autowired
+	private RoomgiftsendServiceImpl roomgiftsendService;
+	@Autowired
+	private CouponsgroupServiceImpl couponsgroupService;
 	
 	@GetMapping("/QueryScreenRoom/{UserName}/{Password}/{CinemaCode}")
 	@ApiOperation(value="获取放映厅信息")
@@ -74,6 +93,7 @@ public class RoomController {
 			ScreenRoom screenRoom = new ScreenRoom();
 			screenRoom.setCinemaCode(cinema.getCode());
 			screenRoom.setCinemaName(cinema.getName());
+			screenRoom.setRoomCode(sessioninfo.getSCode());//排期编码作为放映厅房间号，唯一标识
 			
 			Screeninfo screeninfo = _screeninfoService.getByScreenCode(sessioninfo.getCCode(),sessioninfo.getScreenCode());
 			screenRoom.setScreenName(screeninfo==null?"":screeninfo.getSName());
@@ -88,6 +108,139 @@ public class RoomController {
 			rooms.add(screenRoom);
 		}
 		reply.setData(rooms);
+		reply.SetSuccessReply();
+		return reply;
+	}
+	
+	@GetMapping("/QueryRoomGift/{UserName}/{Password}/{CinemaCode}")
+	@ApiOperation(value="获取放映厅可发送礼物列表")
+	public QueryRoomGiftReply QueryRoomGift(@PathVariable String UserName, @PathVariable String Password,@PathVariable String CinemaCode) {
+		QueryRoomGiftReply reply=new QueryRoomGiftReply();
+		//校验参数
+		/*if(!ReplyExtension.RequestInfoGuard(reply, UserName, Password, CinemaCode)){
+			return reply;
+		}*/
+		//获取用户信息(渠道)
+		Userinfo UserInfo=_userInfoService.getByUserCredential(UserName, Password);
+		if(UserInfo == null){
+			reply.SetUserCredentialInvalidReply();
+			return reply;
+		}
+		//验证影院是否存在且可访问
+		Cinema cinema=_cinemaService.getByCinemaCode(CinemaCode);
+		if(cinema == null){
+			reply.SetCinemaInvalidReply();
+			return reply;
+		}
+		
+		List<RoomGiftReply> data = new ArrayList<RoomGiftReply>();
+		//获取实物列表
+		List<Roomgift> giftlist = roomgiftService.getByCinema(CinemaCode);
+		for(Roomgift gift : giftlist){
+			RoomGiftReply newgift = new RoomGiftReply();
+			newgift.setGiftCode(gift.getGiftCode());
+			newgift.setGiftName(gift.getGiftName());
+			newgift.setGiftType(gift.getGiftType());
+			newgift.setSendNumber(String.valueOf(gift.getSendNumber()));
+			newgift.setImage(gift.getImage());
+			data.add(newgift);
+		}
+		//获取优惠劵列表
+		List<Couponsgroup> coupons = couponsgroupService.getAllUseByGroupCode(CinemaCode);
+		for(Couponsgroup coupon : coupons){
+			RoomGiftReply newgift2 = new RoomGiftReply();
+			newgift2.setGiftCode(coupon.getGroupCode());
+			newgift2.setGiftName(coupon.getCouponsName());
+			newgift2.setGiftType(coupon.getGiftType());
+			newgift2.setSendNumber(String.valueOf(coupon.getSendNumber()));
+//			newgift2.setImage();
+			data.add(newgift2);
+		}
+		reply.setData(data);
+		reply.SetSuccessReply();
+		return reply;
+	}
+	
+	@PostMapping("/SendGift")
+	@ApiOperation(value="发放奖品")
+	public SendGiftReply SendGift(@RequestBody RoomGiftInput input) {
+		SendGiftReply reply=new SendGiftReply();
+		//校验参数
+		/*if(!ReplyExtension.RequestInfoGuard(reply, UserName, Password, CinemaCode)){
+			return reply;
+		}*/
+		//获取用户信息(渠道)
+		Userinfo UserInfo=_userInfoService.getByUserCredential(input.getUserName(), input.getPassword());
+		if(UserInfo == null){
+			reply.SetUserCredentialInvalidReply();
+			return reply;
+		}
+		//验证影院是否存在且可访问
+		Cinema cinema=_cinemaService.getByCinemaCode(input.getCinemaCode());
+		if(cinema == null){
+			reply.SetCinemaInvalidReply();
+			return reply;
+		}
+		//验证发放次数是否超出上限
+		List<Roomgiftsend> sendlist = roomgiftsendService.getByRoomCode(input.getRoomCode(), input.getGiftCode());
+		int sendNum = sendlist.size()+1;	//发送次数
+		String gigtName=null;
+		String image=null;
+		if("1".equals(input.getGiftType())) {
+			Roomgift roomgift = roomgiftService.getByGiftCode(input.getGiftCode());
+			if(roomgift == null){
+				reply.SetSendGiftFailureReply();
+				return reply;
+			}
+			if(sendNum > roomgift.getGroupNumber()){
+				reply.SetOverrunGiftReply();
+				return reply;
+			}
+			gigtName = roomgift.getGiftName();
+			image = roomgift.getImage();
+			
+		} else if("2".equals(input.getGiftType())) {
+			Couponsgroup coupon = couponsgroupService.getByGroupCode(input.getGiftCode());
+			if(coupon == null){
+				reply.SetSendGiftFailureReply();
+				return reply;
+			}
+			if(sendNum > coupon.getSendGroupNumber()){
+				reply.SetOverrunGiftReply();
+				return reply;
+			}
+			//更新优惠劵-已发放数量
+			int suedNumber = coupon.getIssuedNumber()+input.getSendNumber();
+			if(suedNumber > coupon.getCouponsNumber()){
+				reply.SetCouponsInadequateReply();
+				return reply;
+			}
+			coupon.setIssuedNumber(suedNumber);
+			int num = couponsgroupService.update(coupon);
+			if(num == 0){
+				reply.SetCouponsSendFailureReply();
+				return reply;
+			}
+			gigtName = coupon.getCouponsName();
+		}
+		
+		//存入到发放奖品记录表
+		Roomgiftsend newgift = new Roomgiftsend();
+		newgift.setRoomCode(input.getRoomCode());
+		newgift.setGiftCode(input.getGiftCode());
+		newgift.setGiftName(gigtName);
+		newgift.setGiftType(input.getGiftType());
+		newgift.setSendNumber(input.getSendNumber());
+		newgift.setSendUserphone(input.getPhone());
+		newgift.setSendTime(new Date());
+		roomgiftsendService.save(newgift);
+		
+		SendGiftBean gift = new SendGiftBean();
+		gift.setGiftCode(input.getGiftCode());
+		gift.setGiftName(gigtName);
+		gift.setGiftType(input.getGiftType());
+		gift.setImage(image);
+		reply.setData(gift);
 		reply.SetSuccessReply();
 		return reply;
 	}

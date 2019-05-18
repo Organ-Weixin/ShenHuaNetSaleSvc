@@ -1,6 +1,5 @@
 package com.boot.security.server.apicontroller.reply;
 
-import com.boot.security.server.api.ctms.reply.CTMSBaseReply;
 import com.boot.security.server.model.ErrorCodeEnum;
 import com.boot.security.server.model.StatusEnum;
 
@@ -249,6 +248,42 @@ public class BaseReply {
         Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.SentMessageFailure.getCode();
         ErrorMessage = ErrorCodeEnum.SentMessageFailure.getMessage();
+    }
+    /// <summary>
+    /// 发放放映厅奖品失败
+    /// </summary>
+    public void SetSendGiftFailureReply()
+    {
+        Status = StatusEnum.Failure.getStatusCode();
+        ErrorCode = ErrorCodeEnum.SendGiftFailure.getCode();
+        ErrorMessage = ErrorCodeEnum.SendGiftFailure.getMessage();
+    }
+    /// <summary>
+    /// 超出放映厅此奖品发放上限
+    /// </summary>
+    public void SetOverrunGiftReply()
+    {
+        Status = StatusEnum.Failure.getStatusCode();
+        ErrorCode = ErrorCodeEnum.OverrunGift.getCode();
+        ErrorMessage = ErrorCodeEnum.OverrunGift.getMessage();
+    }
+    /// <summary>
+    /// 优惠劵数量不足
+    /// </summary>
+    public void SetCouponsInadequateReply()
+    {
+        Status = StatusEnum.Failure.getStatusCode();
+        ErrorCode = ErrorCodeEnum.CouponsInadequate.getCode();
+        ErrorMessage = ErrorCodeEnum.CouponsInadequate.getMessage();
+    }
+    /// <summary>
+    /// 优惠劵发放失败
+    /// </summary>
+    public void SetCouponsSendFailureReply()
+    {
+        Status = StatusEnum.Failure.getStatusCode();
+        ErrorCode = ErrorCodeEnum.CouponsSendFailure.getCode();
+        ErrorMessage = ErrorCodeEnum.CouponsSendFailure.getMessage();
     }
     
     public String Status;

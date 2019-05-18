@@ -3,7 +3,7 @@ package com.boot.security.server.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class Couponsgroup extends BaseEntity<Long> {
+public class Couponsgroup {
 
 	private Long Id;
 	private String GroupCode;
@@ -32,6 +32,9 @@ public class Couponsgroup extends BaseEntity<Long> {
 	private Integer FetchNumber;
 	private Integer RemainingNumber;
 	private Integer UsedNumber;
+	private Integer SendGroupNumber;
+	private Integer SendNumber;
+	private String GiftType = "2";
 	private Date CreateDate;
 	private Date UpdateDate;
 
@@ -196,6 +199,25 @@ public class Couponsgroup extends BaseEntity<Long> {
 	}
 	public void setUsedNumber(Integer UsedNumber) {
 		this.UsedNumber = UsedNumber;
+	}
+	
+	public Integer getSendGroupNumber() {
+		return SendGroupNumber;
+	}
+	public void setSendGroupNumber(Integer sendGroupNumber) {
+		SendGroupNumber = sendGroupNumber;
+	}
+	public Integer getSendNumber() {
+		return SendNumber;
+	}
+	public void setSendNumber(Integer sendNumber) {
+		SendNumber = sendNumber;
+	}
+	public String getGiftType() {
+		return GiftType;
+	}
+	public void setGiftType(String giftType) {
+		GiftType = giftType;
 	}
 	public Date getCreateDate() {
 		return CreateDate;

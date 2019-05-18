@@ -27,7 +27,11 @@ public enum ErrorCodeEnum {
 	VerifyCodeNotMatch("用户手机验证码不匹配！","10000022"),
 	SentMessageFailure("短信发送失败！","10000023"),
 	CinemaPaySettingInvalid("影院支付配置不存在或不合法！","10000024"),
-	CouponsNotExistOrUsed("优惠券不存在或已使用","10000025");
+	CouponsNotExistOrUsed("优惠券不存在或已使用","10000025"),
+	CouponsInadequate("优惠劵数量不足","10000026"),
+	CouponsSendFailure("优惠劵发放失败","10000027"),
+	SendGiftFailure("发放放映厅奖品失败！","10000028"),
+	OverrunGift("超出放映厅此奖品发放上限","10000029");
 	
 	private String Message;
 	private String Code;

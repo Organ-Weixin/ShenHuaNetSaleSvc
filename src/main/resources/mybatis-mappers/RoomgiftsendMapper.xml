@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.RoomgiftsendDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.id != null and params.id != ''">
+				and id = #{params.id} 
+			</if>
+			<if test="params.roomCode != null and params.roomCode != ''">
+				and roomCode = #{params.roomCode} 
+			</if>
+			<if test="params.giftCode != null and params.giftCode != ''">
+				and giftCode = #{params.giftCode} 
+			</if>
+			<if test="params.giftName != null and params.giftName != ''">
+				and giftName = #{params.giftName} 
+			</if>
+			<if test="params.giftType != null and params.giftType != ''">
+				and giftType = #{params.giftType} 
+			</if>
+			<if test="params.sendNumber != null and params.sendNumber != ''">
+				and sendNumber = #{params.sendNumber} 
+			</if>
+			<if test="params.sendUserphone != null and params.sendUserphone != ''">
+				and sendUserphone = #{params.sendUserphone} 
+			</if>
+			<if test="params.sendTime != null and params.sendTime != ''">
+				and sendTime = #{params.sendTime} 
+			</if>
+		
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from roomgiftsend t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Roomgiftsend">
+		select * from roomgiftsend t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="update">
+		update roomgiftsend t
+		<set>
+			<if test="roomCode != null">
+				roomCode = #{roomCode}, 
+			</if>
+			<if test="giftCode != null">
+				giftCode = #{giftCode}, 
+			</if>
+			<if test="giftName != null">
+				giftName = #{giftName}, 
+			</if>
+			<if test="giftType != null">
+				giftType = #{giftType}, 
+			</if>
+			<if test="sendNumber != null">
+				sendNumber = #{sendNumber}, 
+			</if>
+			<if test="sendUserphone != null">
+				sendUserphone = #{sendUserphone}, 
+			</if>
+			<if test="sendTime != null">
+				sendTime = #{sendTime}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+
+</mapper>

@@ -16,6 +16,7 @@ public class QueryScreenRoomReply extends BaseReply {
 	public static class ScreenRoom {
 		private String CinemaCode;
 		private String CinemaName;
+		private String RoomCode;
 		private String ScreenName;
 		private String FilmName;
 		private String StartTime;
@@ -33,6 +34,12 @@ public class QueryScreenRoomReply extends BaseReply {
 		}
 		public void setCinemaName(String cinemaName) {
 			CinemaName = cinemaName;
+		}
+		public String getRoomCode() {
+			return RoomCode;
+		}
+		public void setRoomCode(String roomCode) {
+			RoomCode = roomCode;
 		}
 		public String getScreenName() {
 			return ScreenName;

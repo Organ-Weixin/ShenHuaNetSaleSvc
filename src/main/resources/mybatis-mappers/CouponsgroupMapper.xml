@@ -197,6 +197,15 @@
 			<if test="UsedNumber != null">
 				UsedNumber = #{UsedNumber}, 
 			</if>
+			<if test="SendGroupNumber != null">
+				SendGroupNumber = #{SendGroupNumber}, 
+			</if>
+			<if test="SendNumber != null">
+				SendNumber = #{SendNumber}, 
+			</if>
+			<if test="GiftType != null">
+				GiftType = #{GiftType}, 
+			</if>
 			<if test="CreateDate != null">
 				CreateDate = #{CreateDate}, 
 			</if>
