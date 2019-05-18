@@ -509,9 +509,7 @@ public class Dy1905Interface implements ICTMSInterface {
 		String pVerifyInfo=MD5Util.MD5Encode(userCinema.getDefaultUserName()+order.getOrderBaseInfo().getSessionCode()+OrderID
 				+SeatCode+TicketPrice+Fee+userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
 		param.put("pVerifyInfo",pVerifyInfo);
-		System.out.println("订单编号-----------------"+OrderID);
 		String checkSeatStateResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/LockSeatCustom", param,"UTF-8");
-		System.out.println("1905返回结果"+checkSeatStateResult);
 		////////////////////////////////////////////////
 		Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd")
 				.registerTypeAdapter(Integer.class, new IntegerDefaultAdapter())
@@ -1172,7 +1170,6 @@ public class Dy1905Interface implements ICTMSInterface {
 					GoodsPrice += ","+orderGoodsDetails.get(i).getSettlePrice()*Integer.valueOf(orderGoodsDetails.get(i).getGoodsCount());
 				}
 			}
-//			System.out.println("卖品编码："+GoodsCode+"---卖品数量："+GoodsCount+"---卖品价格："+GoodsPrice);
 			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() 
 					+ order.getOrderBaseInfo().getLocalOrderCode().substring(0,20)
 					+ GoodsCode + GoodsCount + GoodsPrice + order.getOrderBaseInfo().getMobilePhone() + String.valueOf(new Date().getTime()).substring(0,10)
@@ -1181,8 +1178,6 @@ public class Dy1905Interface implements ICTMSInterface {
 					+ order.getOrderBaseInfo().getDeliveryType() + order.getOrderBaseInfo().getDeliveryAddress()
 					+ order.getOrderBaseInfo().getDeliveryTime() + order.getOrderBaseInfo().getDeliveryMark()
 					+ userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
-			/*System.out.println("本地订单编码："+order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
-			System.out.println("校验信息"+pVerifyInfo);*/
 			param.put("pAppCode",userCinema.getDefaultUserName());
 			param.put("pCinemaID",userCinema.getCinemaId());
 			param.put("pNetOrder",order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));

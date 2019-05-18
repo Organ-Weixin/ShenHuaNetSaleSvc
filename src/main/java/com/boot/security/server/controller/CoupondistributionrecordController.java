@@ -81,7 +81,7 @@ public class CoupondistributionrecordController {
     	}
     	//会员
     	if(coupondistributionrecord.getCustomerType()==2){
-    		List<Membercard> membercardList = memberCardService.getByCinemaCodes(request.getAttribute("cinemacodes").toString());
+    		List<Membercard> membercardList = memberCardService.getByCinemaCodes(request.getSession().getAttribute("cinemacodes").toString());
     		for(int i=0; i<membercardList.size();i++){
     			openIDs.add(membercardList.get(i).getOpenId());
     		}
@@ -107,9 +107,12 @@ public class CoupondistributionrecordController {
     		params = new HashMap<>();
     		params.put("MobilePhone", coupondistributionrecord.getOpenID());
     		List<Ticketusers> ticketusersList = ticketusersDao.getTicketusers(params);
+    		String openid = "";
     		for(Ticketusers ticketusers :ticketusersList){
+    			openid += ticketusers.getOpenID()+",";
     			openIDs.add(ticketusers.getOpenID());
         	}
+    		coupondistributionrecord.setOpenID(openid.substring(0,openid.length()-1));
     	}
     	DefaultTransactionDefinition defaultTransactionDefinition = new DefaultTransactionDefinition();
         defaultTransactionDefinition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);

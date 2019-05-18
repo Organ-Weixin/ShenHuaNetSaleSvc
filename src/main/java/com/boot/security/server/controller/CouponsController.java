@@ -1,5 +1,6 @@
 package com.boot.security.server.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boot.security.server.page.table.PageTableRequest;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
+import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.dao.CouponsDao;
 import com.boot.security.server.model.Coupons;
+import com.boot.security.server.model.Couponsgroup;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -28,6 +31,8 @@ public class CouponsController {
 
     @Autowired
     private CouponsDao couponsDao;
+    @Autowired
+    private CouponsgroupServiceImpl couponsgroupService;
 
     @PostMapping
     @ApiOperation(value = "保存")
@@ -72,6 +77,14 @@ public class CouponsController {
     @DeleteMapping("/{id}")
     @ApiOperation(value = "删除")
     public void delete(@PathVariable Long id) {
-        couponsDao.delete(id);
+    	Coupons coupons = couponsDao.getById(id);
+    	Couponsgroup couponsgroup = couponsgroupService.getByGroupCode(coupons.getGroupCode());
+    	int i = couponsDao.delete(id);
+    	if(i>0){
+    		couponsgroup.setCouponsNumber(couponsgroup.getCouponsNumber()-i);
+    		couponsgroup.setRemainingNumber(couponsgroup.getRemainingNumber()-i);
+    		couponsgroup.setUpdateDate(new Date());
+    		couponsgroupService.update(couponsgroup);
+    	}
     }
 }

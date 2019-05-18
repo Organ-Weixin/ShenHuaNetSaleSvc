@@ -14,6 +14,8 @@ public interface CouponsgroupService {
 	List<Couponsgroup> getCanUseByGroupCode(String cinemacode);
 	
 	List<Couponsgroup> getAllUseByGroupCode(String cinemacode);
+	
+	List<Couponsgroup> getAllCinemaCanUseCoupons();
 	    
 	int changeStatus(Integer status,Long id);
 	

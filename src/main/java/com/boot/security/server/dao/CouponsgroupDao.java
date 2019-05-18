@@ -51,6 +51,9 @@ public interface CouponsgroupDao {
     @Select("select * from couponsgroup t where t.expireDate < now()")
     List<Couponsgroup> getPastCoupons();
     
+    @Select("select * from couponsgroup where canusecinematype =1")
+    List<Couponsgroup> getAllCinemaCanUseCoupons();
+    
     @Update("update couponsgroup t set t.status = #{status}, t.updateDate = now() where t.expireDate < now()")
     int updatePastCoupons(Integer status);
 }

@@ -3,6 +3,7 @@ package com.boot.security.server.controller;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -53,7 +54,10 @@ public class CouponsgroupController {
     public Couponsgroup save(@RequestBody Couponsgroup couponsgroup) throws ParseException {
     	couponsgroup.setEffectiveDate(couponsgroup.getEffectiveDate());
     	couponsgroup.setExpireDate(couponsgroup.getExpireDate());
-    	couponsgroup.setGroupCode(getCharAndNumr(8));
+    	//优惠券组编码--10位时间戳加6位随机数
+    	String groupCode = String.valueOf(new Date().getTime()/1000);
+    	groupCode+=(int)((Math.random()*9+1)*100000);
+    	couponsgroup.setGroupCode(groupCode);
     	couponsgroup.setStatus(CouponGroupStatusEnum.UnEnabled.getStatusCode());
     	couponsgroup.setIssuedNumber(couponsgroup.getCouponsNumber());
     	couponsgroup.setFetchNumber(0);
@@ -61,7 +65,10 @@ public class CouponsgroupController {
     	couponsgroup.setUsedNumber(0);
     	for(int i=0;i<couponsgroup.getCouponsNumber();i++){
     		Coupons coupons = new Coupons();
-    		coupons.setCouponsCode(getCharAndNumr(10));
+    		//优惠券编码--13位时间戳加5位随机数
+    		String couponsCode = String.valueOf(new Date().getTime());
+    		couponsCode+=(int)((Math.random()*9+1)*10000);
+    		coupons.setCouponsCode(couponsCode);
         	coupons.setCouponsName(couponsgroup.getCouponsName());
         	coupons.setEffectiveDate(couponsgroup.getEffectiveDate());
         	coupons.setExpireDate(couponsgroup.getEffectiveDate());
@@ -131,6 +138,7 @@ public class CouponsgroupController {
                 	for(String str : set){
                 		list.add(couponsgroupService.getByGroupCode(str));
                 	}
+                	list.addAll(couponsgroupService.getAllCinemaCanUseCoupons());
                 	return list;
             	}
             }
@@ -141,8 +149,9 @@ public class CouponsgroupController {
     @ApiOperation(value = "删除")
     public void delete(@PathVariable Long id) {
     	Couponsgroup couponsgroup = couponsgroupDao.getById(id);
-    	couponsService.deleteByGroupCode(couponsgroup.getGroupCode());
-        couponsgroupDao.delete(id);
+    	if(couponsgroupDao.delete(id)>0){
+    		couponsService.deleteByGroupCode(couponsgroup.getGroupCode());
+    	}
     }
     
     @RequestMapping("/changeStatus")
@@ -179,9 +188,10 @@ public class CouponsgroupController {
     	for(String str : set){
     		list.add(couponsgroupService.getByGroupCode(str));
     	}
+    	list.addAll(couponsgroupService.getAllCinemaCanUseCoupons());
     	return list;
     }
-    
+    //随机字符串
     public static String getCharAndNumr(int length) {
     	  String val = "";
     	  Random random = new Random();
@@ -199,4 +209,16 @@ public class CouponsgroupController {
     	  }
     	  return val;
     	 }
+    public static void main(String[] args) {
+    	String groupCode = String.valueOf(new Date().getTime()/1000);
+    	String couponsCode = String.valueOf(new Date().getTime());
+		couponsCode+=(int)((Math.random()*9+1)*10000);
+		/*for (int i = 0; i < 5; i++) {
+            // 得到随机字母
+            char c = (char) ((Math.random() * 26) + 97);
+            // 拼接成字符串
+            groupCode += (c + "");
+        }*/
+		System.out.println(couponsCode);
+	}
 }
