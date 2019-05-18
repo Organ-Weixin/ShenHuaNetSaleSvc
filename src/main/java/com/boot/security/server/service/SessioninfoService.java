@@ -35,4 +35,7 @@ public interface SessioninfoService {
 	Sessioninfo getSessionCode(String cinemacode,String sessioncode);
 
 	List<Sessioninfo> getByCinemafilm(String cinemacode,String filmcode);
+	
+	  List<Sessioninfo> getByFilmName(String cinemacode,String startDate,String endDate);
+
 }

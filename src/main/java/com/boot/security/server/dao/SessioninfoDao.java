@@ -74,4 +74,9 @@ public interface SessioninfoDao {
 	
 	//查询第三方场次价格
     List<Sessioninfo> getByCinemafilm(@Param("cinemacode")String cinemacode, @Param("filmcode")String filmcode);
+
+    //小程序-新分组查询电影排期
+    @Select("select * from sessioninfo t where t.CCode = #{cinemacode} and t.StartTime>=#{startDate} and t.StartTime<=#{endDate} GROUP BY FilmName")
+    List<Sessioninfo> getByFilmName(@Param("cinemacode") String cinemacode,@Param("startDate") String startDate,@Param("endDate") String endDate);
+    
 }

@@ -445,6 +445,32 @@ public class ReplyExtension {
 	}
 	//endregion
 	
+	//region查询影片场次信息-新    QueryNewSessionsReply
+		public static boolean RequestInfoGuard(QueryNewSessionsReply reply,String UserName,String Password,String CinemaCode,String StartDate,String EndDate){
+			if (UserName == null || "".equals(UserName)) {
+				reply.SetNecessaryParamMissReply("UserName");
+				return false;
+			}
+			if(Password == null || "".equals(Password)){
+				reply.SetNecessaryParamMissReply("Password");
+				return false;
+			}
+			if(CinemaCode == null || "".equals(CinemaCode)){
+				reply.SetNecessaryParamMissReply("CinemaCode");
+				return false;
+			}
+			if(StartDate == null || "".equals(StartDate)){
+				reply.SetNecessaryParamMissReply("StartDate");
+				return false;
+			}
+			if(EndDate == null || "".equals(EndDate)){
+				reply.SetNecessaryParamMissReply("EndDate");
+				return false;
+			}
+			return true;
+		}
+		//endregion
+		
 	//region 获取订单场次信息
 	public static boolean RequestInfoGuard(QueryOrderSessionReply reply, String Username, String Password, String CinemaCode,String SessionCode)
     {

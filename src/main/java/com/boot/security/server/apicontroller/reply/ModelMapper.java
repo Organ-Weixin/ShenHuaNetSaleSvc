@@ -7,8 +7,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.boot.security.server.api.core.LockSeatQueryXml.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat;
-import com.boot.security.server.api.core.SubmitOrderQueryXml.SubmitOrderQueryXmlOrder.SubmitOrderQueryXmlSeat;
 import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson.PrePayOrderQueryJsonSeat;
 import com.boot.security.server.apicontroller.reply.QueryFilmReply.QueryFilmReplyFilm;
 import com.boot.security.server.apicontroller.reply.QueryGoodsOrderReply.QueryGoodsOrderReplyOrder;
@@ -20,7 +18,6 @@ import com.boot.security.server.apicontroller.reply.QueryLocalGoodsOrderReply.Qu
 import com.boot.security.server.apicontroller.reply.QueryLocalGoodsOrderReply.QueryLocalGoodsOrderReplyOrder.QueryLocalGoodsOrderReplyGoodsList;
 import com.boot.security.server.apicontroller.reply.QueryLocalGoodsOrderReply.QueryLocalGoodsOrderReplyOrder.QueryLocalGoodsOrderReplyGoodsList.QueryLocalGoodsOrderReplyGoods;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.QueryMemberCardByPhoneReplyMemberCardByPhone;
-import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.QueryMemberCardByPhoneReplyMemberCardByPhone.QueryMemberCardByPhoneReplyPhone;
 import com.boot.security.server.apicontroller.reply.QueryScreenInfoReply.QueryScreensReplyScreenInfo;
 import com.boot.security.server.apicontroller.reply.QueryScreenSeatsReply.QueryScreenSeatsReplyScreenSeats;
 import com.boot.security.server.apicontroller.reply.QueryScreensReply.QueryScreensReplyScreens.QueryScreensReplyScreen;
@@ -42,7 +39,8 @@ import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Ticketusers;
-
+//import com.boot.security.server.apicontroller.reply.QueryNewSessionsReply.QueryNewSessionsReplyNewSessions.QueryNewSessionsReplyFilm.QueryNewSessionsReplySessions.QueryNewSessionsReplyPrices;
+import com.boot.security.server.apicontroller.reply.QueryNewSessionsReply.QueryNewSessionsReplyNewSessions.QueryNewSessionsReplyFilm.QueryNewSessionsReplySessions.QueryNewSessionsReplySession;
 public class ModelMapper {
 	public static QueryScreensReplyScreen MapFrom(QueryScreensReplyScreen screen, Screeninfo entity)
     {
@@ -170,6 +168,38 @@ public class ModelMapper {
         session.getPrice().setListingPrice(entity.getStandardPrice()==null?"0":new DecimalFormat("#.00").format(entity.getStandardPrice()));
         return session;
     }
+public static QueryNewSessionsReply.QueryNewSessionsReplyNewSessions.QueryNewSessionsReplyFilm MapFrom(QueryNewSessionsReply.QueryNewSessionsReplyNewSessions.QueryNewSessionsReplyFilm newSessions,Sessioninfo entity){
+	newSessions.setCode(entity.getFilmCode());
+	newSessions.setName(entity.getFilmName());
+	newSessions.setDimensional(entity.getDimensional());
+	newSessions.setDuration(entity.getDuration());
+	newSessions.setSequence(entity.getSequence());
+	newSessions.setLanguage(entity.getLanguage());
+	newSessions.setSessionns(newSessions.new QueryNewSessionsReplySessions());
+	newSessions.getSessionns().setSessionn(new ArrayList<QueryNewSessionsReplySession>());
+	QueryNewSessionsReplySession replysession=newSessions.getSessionns().new QueryNewSessionsReplySession();
+	if(entity.getScreenCode()!=null){
+	replysession.setScreenCode(Integer.valueOf(entity.getScreenCode()));
+	}
+	replysession.setCode(entity.getSCode());
+	replysession.setFeatureNo(entity.getFeatureNo());
+	replysession.setStartTime(entity.getStartTime());
+	replysession.setPlaythroughFlag(entity.getPlaythroughFlag());
+	if(entity.getStandardPrice()!=null){
+		replysession.setStandardPrice(String.valueOf(entity.getStandardPrice()));
+	}
+	if(entity.getLowestPrice()!=null){
+		replysession.setLowestPrice(String.valueOf(entity.getLowestPrice()));
+	}
+	if(entity.getListingPrice()!=null){
+		replysession.setListingPrice(String.valueOf(entity.getListingPrice()));
+	}
+//	newSessions.getPrice().setActivityPrice();
+//	newSessions.getPrice().setMemberPrice(entity.get);
+	newSessions.getSessionns().getSessionn().add(replysession);
+	return newSessions;
+	}
+	
 	public static QueryOrderSessionReply.QueryOrderSessionReplyOrderSession MapFrom1(QueryOrderSessionReply.QueryOrderSessionReplyOrderSession orderSession,Sessioninfo entity){
 		orderSession.setSessionId(entity.getId());
 		orderSession.setCCode(entity.getCCode());
