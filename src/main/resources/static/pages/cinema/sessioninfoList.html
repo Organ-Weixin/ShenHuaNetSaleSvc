@@ -22,8 +22,13 @@
 											<select class="form-control input-sm" id="channel" style="width:150px;">
 												<option value="">渠道</option>
 											</select>
+											影院：
+											<select class="form-control input-sm" id="cinema" style="width:150px;" >
+												<option value="">影院</option>
+											</select>
 											排期时间：
-											<input id="sessionDate" type="text" class="form-control" placeholder="排期时间">
+											<input id="startDate" type="text" class="form-control" placeholder="开始时间">
+											<input id="endDate" type="text" class="form-control" placeholder="结束时间">
 											关键字：
 											<input id="keyword" type="text" class="form-control" placeholder="请输入搜索关键字">
 											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
@@ -97,8 +102,11 @@
 	        		"type":"get",
 	        		"data":function(d){
 	    				d.Company = $("#channel").val();
-	    				d.StartTime = $("#sessionDate").val();
+	    				d.CinemaCode = $("#cinema").val();
+	    				d.StartTime = $("#startDate").val();
+	    				d.EndTime = $("#endDate").val();
 	    				d.FilmName = $("#keyword").val();
+	    				
 	    			}
 	        	},
 	        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
@@ -146,7 +154,7 @@
 					},
 	                
 	            ],
-	           "order": [[ 0, "asc" ]]
+	           "order": [[ 1, "asc" ]]
 	        } );
 	}
 	
@@ -172,12 +180,32 @@
 	    })
 	}
 	
+	//获取影院
+	getCinema();
+	function getCinema(){
+		$.ajax({
+	        type:"get",
+	        url:"/cinemas/getCinemas",
+	        success:function(data){
+				for(var i=0; i<data.length;i++){
+					var option = "<option value="+data[i].code+">"+data[i].name+"</option>";
+					$("#cinema").append(option);
+				}
+	        },
+	        error:function(){
+	            J.alert('Error');
+	        }
+	    })
+	}
 	
 	layui.use(['layer','laydate'], function(){
 	    var layer = layui.layer;
 	    var laydate = layui.laydate;
 	    laydate.render({
-	       elem: '#sessionDate',
+	       elem: '#startDate',
+	    });
+	    laydate.render({
+	       elem: '#endDate'
 	    });
 	});
 	

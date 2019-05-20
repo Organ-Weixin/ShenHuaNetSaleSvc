@@ -24,6 +24,8 @@ public class Sessioninfoview {
 	private Double CinemaAllowance;
 	private Double Price;
 	
+	private Date EndTime;
+	
 	public Long getId() {
 		return Id;
 	}
@@ -138,6 +140,12 @@ public class Sessioninfoview {
 	}
 	public void setPrice(Double price) {
 		Price = price;
+	}
+	public Date getEndTime() {
+		return EndTime;
+	}
+	public void setEndTime(Date endTime) {
+		EndTime = endTime;
 	}
 	
 }

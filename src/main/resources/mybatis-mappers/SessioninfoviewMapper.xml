@@ -8,11 +8,8 @@
 			<if test="params.Id != null and params.Id != ''">
 				and Id = #{params.Id} 
 			</if>
-			<if test="params.CCode != null and params.CCode != ''">
-				and CinemaCode = #{params.CCode} 
-			</if>
-			<if test="params.Name != null and params.Name != ''">
-				and CinemaName = #{params.Name} 
+			<if test="params.CinemaCode != null and params.CinemaCode != ''">
+				and CinemaCode = #{params.CinemaCode} 
 			</if>
 			<if test="params.Company != null and params.Company != ''">
 				and Company = #{params.Company} 
@@ -21,9 +18,11 @@
 				and FilmName like concat('%', #{params.FilmName}, '%')  
 			</if>
 			<if test="params.StartTime != null and params.StartTime != ''">
-				and StartTime like concat('%', #{params.StartTime}, '%') 
+				and StartTime > #{params.StartTime} 
 			</if>
-			
+			<if test="params.EndTime != null and params.EndTime != ''">
+				and #{params.EndTime} > StartTime 
+			</if>
 		</where>
 	</sql>
 
