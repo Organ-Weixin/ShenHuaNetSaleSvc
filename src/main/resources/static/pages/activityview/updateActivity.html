@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>影院管理-广告管理-修改广告</title>
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="../../js/plugin/ckeditor/contents.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+		<h1>基础信息</h1>
+			<input type="hidden" id="Id" name="id">
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院编码<font style="color:red">*</font></label>
+					<div class='col-md-10'>
+					<select class="form-control" name='cinemaCode' id='CinemaCode' data-bv-notempty='true' data-bv-notempty-message='影院编码不能为空'>
+							<option  value="">请选择...</option>
+					 		<option value="31120907">上海市川沙影剧院</option>
+							<option value="22113901">吉大巨幕影城</option>
+							<option value="33090902">永康影剧院</option>
+							<option value="33096401">哈雷激光影城</option>
+							<option value="33097601">荣耀激光影城</option>
+							<option value="33048201">浙江省宁波市慈溪市大马力影城</option>
+						</select>
+					</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>标题<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='' type='text' name='title' id='Title' data-bv-notempty='true' data-bv-notempty-message='标题不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+			   <input type="hidden" name="image"  id="Image"/>
+					<label class="col-md-2 control-label">图片</label>
+					<div class="col-md-10">
+						<div class="layui-upload-drag" id="filmImage">
+						</div>
+						<img class="layui-upload-img headImage" src="http://t.cn/RCzsdCq"
+								id="preview" width="118" height="118">
+					    <p id="resultMsg"></p>
+					</div></div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>活动开始时间</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='' type='text' name='startDate' id='StartDate' data-bv-notempty='true' data-bv-notempty-message='活动开始时间不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>活动结束时间</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='' type='text' name='endDate' id='EndDate' data-bv-notempty='true' data-bv-notempty-message='活动结束时间不能为空'>
+				</div>
+			</div>
+				<div class='form-group'>
+				<label class='col-md-2 control-label'>活动链接地址</label>
+					<div class='col-md-10'>
+						<select class="form-control" name='linkUrl' id='LinkUrl'data-bv-notempty='true' data-bv-notempty-message='活动链接地址不能为空'>
+							<option value="">请选择...</option>
+							<option value="../index/index">首页</option>
+							<option value="../onLineSelect_payment/onLineSelect_payment">支付页面</option>
+							<option value="../ticket/ticket">票据</option>
+							<option value="../onLineSelect_film/onLineSelect_film">电影列表</option>
+							<option value="../filmcenter-detail/filmcenter-detail">影片详情</option>
+							<option value="../filmcenter/filmcenter">影城列表</option>
+							<option value="../movie_time/movie_time">选择电影场次时间</option>
+							<option value="../evaluate/evaluate">影评</option>
+							<option value="../onlineselect/onlineselect">选座</option>
+							<option value="../pay-success/pay-success">支付成功提示页面</option>
+							<option value="../psw-success/psw-success">支付成功</option>
+							<option value="../buyCar/buyCar">卖品</option>
+							<option value="../pd-submit/pd-submit">卖品下单</option>
+							<option value="../pd-submit-j/pd-submit-j">卖品下单选用优惠卷</option>
+							<option value="../meal_paySuccess/meal_paySuccess">卖品支付成功提示</option>
+							<option value="../indent-payed/indent-payed">卖品订单详情（已付款未发货）</option>
+							<option value="../indent-pay/indent-pay">卖品订单详情（未付款）</option>
+							<option value="../indent-fahuo/indent-fahuo">卖品订单详情（已发货）</option>
+							<option value="../pcenter/pcenter">个人中心</option>
+							<option value="../coupon/coupon">优惠卷</option>
+							<option value="../huiyuanka/huiyuanka">会员卡</option>
+							<option value="../pc-recharge/pc-recharge">充值</option>
+							<option value="../purchase_myIndent/purchase_myIndent">我的订单</option>
+							<option value="../qianzhang/qianzhang">签章</option>
+							<option value="../select-packages/select-packages">影票支付</option>
+							<option value="../signrecord/signrecord">积分获取详情</option>
+							<option value="../UserLogin/UserLogin">授权登陆</option>
+							<option value="../pc-recharge/pc-recharge">会员开卡</option>
+							<option value="../pc-bindCard/pc-bindCard">会员卡绑定</option>
+						</select>
+					</div>
+				</div>
+				<div class='form-group'>
+				<label class='col-md-2 control-label'>等级编号</label>
+					<div class='col-md-10'>
+						<select class="form-control" id="GradeCode"name="gradeCode" data-bv-notempty='true' data-bv-notempty-message='等级编号不能为空'>
+							<option value="">请选择...</option>
+							<option value="01">首页推荐</option>
+							<option value="02">首页弹窗</option>
+							<option value="03">卖品Banner</option>
+							<option value="04">影片列表推荐</option>
+							<option value="05">卖品弹窗</option>
+							<option value="06">选座弹窗</option>
+						</select>
+					</div>
+				</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>排序</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='' type='text' name='activitySequence' id='ActivitySequence' data-bv-notempty='true' data-bv-notempty-message='排序不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+					<label class='col-md-2 control-label'>是否启用<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					<select class="form-control" name="status"  id="Status">
+								<option selected="selected" value="">请选择...</option>
+							<option value="1">是</option>
+							<option value="0">否</option>
+						</select>
+				</div>
+			</div>
+<!--  ckeditor编辑器--开始-->
+    <div class="form-group">
+        <label class="col-md-2 control-label" for="">内容</label>
+        <div class="col-md-10">
+<textarea class="form-control" cols="" id="ActivityContent" name="activityContent"  rows="2" ></textarea>
+        </div>
+    </div>
+<!--ckeditor编辑器结束  -->
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="location.href='activityviewList.html'">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="update()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script  type="text/javascript"src="../../js/plugin/ckeditor/ckeditor.js"></script>
+	<script type="text/javascript">
+	//富文本编辑器CKEditor
+	 //CKEDITOR.replace('ActivityContent');
+	  	var editor = CKEDITOR.replace('ActivityContent');
+	/////////////////////
+	  layui.use([ "jquery", "upload", "form", "layer", "element" ],function() {
+			var $ = layui.$, element = layui.element, layer = layui.layer, upload = layui.upload, form = layui.form;
+			//拖拽上传
+			var uploadInst = upload.render({
+					elem : '#filmImage',
+					url : '/filminfos/upload/filmImage',
+					size : 500,
+					exts:'jpg|png|gif|bmp|jpeg',
+					before : function(obj) {
+						//预读本地文件示例，不支持ie8
+						obj.preview(function(index,file, result) {
+							$('#preview').attr('src',result); //图片链接（base64）
+						});
+					},
+					done : function(res) {
+						//如果上传失败
+						if (res.code > 0) {
+							return layer.msg('上传失败');
+						}
+						//上传成功
+						//打印后台传回的地址: 把地址放入一个隐藏的input中, 和表单一起提交到后台, 此处略..
+						console.log(res.data.src);
+						$("#Image").val(res.data.src);//将地址存储好
+						window.parent.uploadHeadImage(res.data.src);
+						var resultMsg = $('#resultMsg');
+						resultMsg.html('<span style="color: #8f8f8f;">上传成功!!!</span>');
+					},
+					error : function() {
+						//演示失败状态，并实现重传
+						var resultMsg = $('#resultMsg');
+						resultMsg
+								.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
+						resultMsg.find('.demo-reload').on(
+								'click', function() {
+									uploadInst.upload();
+								});
+					}
+				});
+			element.init();
+		});
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		    var laydate = layui.laydate;
+		    laydate.render({
+		       elem: '#StartDate',
+		       type: 'datetime'
+		    });
+		    laydate.render({
+		       elem: '#EndDate',
+		       type: 'datetime'
+		    }); 
+		});
+		
+		initData();
+		
+		function initData(){
+			var id = getUrlParam("id");
+			if(id != ""){
+				$.ajax({
+					type : 'get',
+					url : '/activitys/'+id,
+					async : false,
+					success : function(data) {
+						$('#Id').val(data.id);
+						$('#CinemaCode').val(data.cinemaCode);
+						$('#Title').val(data.title);
+						$('#Image').val(data.image);
+						$('#StartDate').val(data.startDate);
+						$('#EndDate').val(data.endDate);
+						$('#LinkUrl').val(data.linkUrl);
+						$('#GradeCode').val(data.gradeCode);
+						$('#ActivitySequence').val(data.activitySequence);
+						$('#Status').val(data.status);
+					//	$('#ActivityContent').val(data.activityContent);
+					}
+				});
+			}
+		}
+
+		function update() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    //ckeditor获取文本区域值
+		     for(instance in CKEDITOR.instances )
+		    	  CKEDITOR.instances[instance].updateElement();
+		     /*  var value = CKEDITOR.instances['activityContent'].getData();
+		   */  
+		   var formdata = $("#form").serializeObject();
+
+			$.ajax({
+				type : 'put',
+				url : '/activitys',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("修改成功", {shift: -1, time: 1000}, function(){
+                        location.href = "activityviewList.html";
+                    });
+				}
+			});
+		}
+		//获取影院
+		getCinema();
+		function getCinema(){
+			$.ajax({
+		        type:"get",
+		        url:"/cinemas/getCinemas",
+		        success:function(data){
+					for(var i=0; i<data.length;i++){
+						var option = "<option value="+data[i].code+">"+data[i].name+"</option>";
+						$("#CinemaCode").append(option);
+					}
+		        },
+		        error:function(){
+		            J.alert('Error');
+		        }
+		    })
+		}
+	</script>
+</body>
+</html>

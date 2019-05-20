@@ -12,6 +12,7 @@
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div>
                 <header style="height: 100%">
+                <input type="hidden" id="cinemacodes" >
                     <div align="left">
 	                    <table style="width: 100%">
 	                   		<tr>
@@ -19,15 +20,15 @@
 		                   			<form class="form-inline" onsubmit="return false">
 										<div class="form-group">
 											<!--根据影院名称查询对应的影厅信息-->
-											<select class="form-control" id="ccode" name="ccode"
+											<select class="form-control" id="CCode" name="ccode"
 												style="width: 200px">
-												<option selected="selected" value="">影院</option>
-												<option value="31120907">上海市川沙影剧院</option>
+										 <option selected="selected" value="">影院</option>
+											<!-- 			<option value="31120907">上海市川沙影剧院</option>
 												<option value="22113901">吉大巨幕影城</option>
 												<option value="33090902">永康影剧院</option>
 												<option value="33096401">哈雷激光影城</option>
 												<option value="33097601">荣耀激光影城</option>
-												<option value="33048201">浙江省宁波市慈溪市大马力影城</option>
+												<option value="33048201">浙江省宁波市慈溪市大马力影城</option>  -->
 											</select>&nbsp;&nbsp;&nbsp;							
 	<!--根据影院名称搜索对应影厅信息-->				
 	<input id="cinemaName" type="text" class="form-control" placeholder="影院名称">&nbsp;&nbsp;&nbsp;	
@@ -83,6 +84,7 @@
 <script type="text/javascript">
 var pers = checkPermission();
 
+
 var example;
 function init(){
 	example = 
@@ -99,7 +101,11 @@ function init(){
         		"type":"get",
         		"data":function(d){
     				d.Id = $("#id").val();
-    				d.CCode=$("#ccode").val();
+    				if($("#CCode").val()==null||$("#CCode").val()==""){
+    					d.CCode = $("#cinemacodes").val();
+    				}else{
+	    				d.CCode=$("#CCode").val();
+    				}
     				d.CinemaName=$("#cinemaName").val();
     			}
         	},
@@ -127,6 +133,39 @@ function init(){
            "order": [[ 0, "asc" ]]
         } );
 }
+//获取登陆人信息
+initUser();
+function initUser(){
+	$.ajax({
+		type : 'get',
+		url : '/users/current',
+		async : false,
+		success : function(data) {
+			$("#userId").val(data.id);
+			getCinemaCodes(data.id,data.roleId);
+		}
+	});
+}
+//获取登录人的影院
+function getCinemaCodes(id,roleId){
+	$.ajax({
+		url:'/users/getCinemaName',
+		data:{"id":id,"roleId":roleId},
+		type:'post',
+		success:function(data){
+			var cinemacodes = "";
+			for(var i=0; i<data.length; i++){
+				cinemacodes += data[i].cinemaCode+",";
+				var option = "<option value="+data[i].cinemaCode+">"+data[i].cinemaName+"</option>";
+				$("#CCode").append(option);						
+			}
+			$("#cinemacodes").val(cinemacodes.substring(0,cinemacodes.length-1));
+			example.ajax.reload();
+		}
+	})
+}
+
+
 $("#tbody").on('click','.submit',function(){
 	var str={"cinemaCode":$(this).val(),"screenCode":$(this).attr('title')};
 	$.ajax({
