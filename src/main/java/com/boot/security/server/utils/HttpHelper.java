@@ -66,7 +66,7 @@ public class HttpHelper {
 			con.setDoOutput(true);
 			con.setDoInput(true);
 			con.setUseCaches(false);
-			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
 			if (data != null && data.length() > 0) {
 				osw = new OutputStreamWriter(con.getOutputStream(), charset);
 				osw.write(data);// data.getBytes("UTF-8")
@@ -142,7 +142,7 @@ public class HttpHelper {
 			con.setDoOutput(true);
 			con.setDoInput(true);
 			con.setUseCaches(false);
-			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
 			if (sbParams != null && sbParams.length() > 0) {
 				osw = new OutputStreamWriter(con.getOutputStream(), charset);
 				osw.write(sbParams);
@@ -206,7 +206,7 @@ public class HttpHelper {
 			// 设置通用的请求属性
 			con.setRequestProperty("accept", "*/*");
 			con.setRequestProperty("connection", "Keep-Alive");
-			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
 			con.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
 			// 发送POST请求必须设置如下两行
 			con.setDoOutput(true);
@@ -266,7 +266,7 @@ public class HttpHelper {
 				url = new URL(urlStr);
 			}
 			con = (HttpURLConnection) url.openConnection();
-			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
 			con.connect();
 			resultBuffer = new StringBuffer();
 			br = new BufferedReader(new InputStreamReader(con.getInputStream(), charset));
@@ -310,7 +310,7 @@ public class HttpHelper {
 			// 设置请求属性
 			con.setRequestProperty("accept", "*/*");
 			con.setRequestProperty("connection", "Keep-Alive");
-			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
 			con.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
 			// 建立连接
 			con.connect();
