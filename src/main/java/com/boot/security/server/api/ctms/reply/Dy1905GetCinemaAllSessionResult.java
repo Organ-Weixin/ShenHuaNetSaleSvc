@@ -97,16 +97,16 @@ public class Dy1905GetCinemaAllSessionResult {
 					Films = films;
 				}
 				public static class FilmsBean{
-					private List<FilmBean> Film;
+					private List<SessionFilmBean> Film;
 
-					public List<FilmBean> getFilm() {
+					public List<SessionFilmBean> getFilm() {
 						return Film;
 					}
 
-					public void setFilm(List<FilmBean> film) {
+					public void setFilm(List<SessionFilmBean> film) {
 						Film = film;
 					}
-					public static class FilmBean{
+					public static class SessionFilmBean{
 						private String FilmNo;
 						private String FilmName;
 						private String FilmType;

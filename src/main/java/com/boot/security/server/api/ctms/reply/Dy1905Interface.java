@@ -10,7 +10,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaAllSessionResult.ResBean.SessionsBean.SessionBean;
+import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaAllSessionResult.ResBean.SessionsBean.SessionBean.FilmsBean.SessionFilmBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaResult.ResBean.CinemasBean.CinemaBean;
+import com.boot.security.server.api.ctms.reply.Dy1905GetFeatureFilmResult.ResBean.FilmsBean.FilmBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetOrderStatusResult.ResBean.SeatsBean.SeatBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetScreenResult.ResBean.ScreensBean.ScreenBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetScreenSeatResult.ResBean.ScreenSeatsBean.ScreenSeatBean;
@@ -197,8 +199,6 @@ public class Dy1905Interface implements ICTMSInterface {
 		Gson gson = new Gson();
 		Dy1905GetFeatureFilmResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(getFeatureFilmResult,"GetFeatureFilmResult"),Dy1905GetFeatureFilmResult.class);
 		if(Dy1905Reply.getGetFeatureFilmResult().getResultCode().equals("0")){
-			QuerySession(userCinema, StartDate, EndDate);
-			List<Filminfo> newFilm = new ArrayList<Filminfo>();
 			Map<String,Object> params = new HashMap<String,Object>();
 			params.put("CCode", userCinema.getCinemaCode());
 			if(StartDate!=null){
@@ -207,30 +207,29 @@ public class Dy1905Interface implements ICTMSInterface {
 			if(EndDate!=null){
 				params.put("EndTime", new SimpleDateFormat("yyyy-MM-dd").format(EndDate));
 			}
-			List<Sessioninfo> sessionInfoList = sessioninfoService.getFilms(params);
-			if(sessionInfoList.size()>0){
-				sessionInfoList = sessionInfoList.stream().distinct().collect(Collectors.toList());
-				//获取排期中的影片信息
-				for(Sessioninfo sessioninfo : sessionInfoList){
-					Filminfo film = filminfoService.getByFilmCode(sessioninfo.getFilmCode());
-					if(film==null){
-						film = new Filminfo();
-						film.setFilmCode(sessioninfo.getFilmCode());
-						film.setFilmName(sessioninfo.getFilmName());
-						film.setDuration(String.valueOf(sessioninfo.getDuration()));
-						filminfoService.save(film);
-					}else{
-						film = new Filminfo();
-						film.setFilmCode(sessioninfo.getFilmCode());
-						film.setFilmName(sessioninfo.getFilmName());
-						film.setDuration(String.valueOf(sessioninfo.getDuration()));
-						film.setVersion(sessioninfo.getDimensional());
-						filminfoService.update(film);
-					}
-					newFilm.add(film);
+			List<FilmBean> filmReplyList = Dy1905Reply.getGetFeatureFilmResult().getFilms().getFilm();
+			List<Filminfo> filminfoList = new ArrayList<Filminfo>();
+			for(FilmBean filmReply:filmReplyList){
+				Filminfo filminfo = filminfoService.getByFilmCode(filmReply.getFilmCode());
+				if(filminfo==null){
+					filminfo = new Filminfo();
+					filminfo.setFilmCode(filmReply.getFilmCode());
+					filminfo.setFilmName(filmReply.getFilmName());
+					filminfo.setType(filmReply.getFilmType());
+					filminfo.setLanguage(filmReply.getLanguage());
+					filminfoService.save(filminfo);
+				}else{
+					filminfo = new Filminfo();
+					filminfo.setFilmCode(filmReply.getFilmCode());
+					filminfo.setFilmName(filmReply.getFilmName());
+					filminfo.setType(filmReply.getFilmType());
+					filminfo.setLanguage(filmReply.getLanguage());
+					filminfoService.update(filminfo);
 				}
+				filminfoList.add(filminfo);
 			}
-				reply.setFilms(newFilm);
+				reply.setFilms(filminfoList);
+				
 				reply.Status = StatusEnum.Success;
 			}else{
 				reply.Status = StatusEnum.Failure;
@@ -253,8 +252,23 @@ public class Dy1905Interface implements ICTMSInterface {
 		String getCinemaSession = HttpHelper.httpClientPost(userCinema.getUrl()+"/GetCinemaAllSession", param,"UTF-8");
 		Gson gson = new GsonBuilder().setDateFormat("HH:mm").create();
 		Dy1905GetCinemaAllSessionResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(getCinemaSession,"GetCinemaSessionResult"), Dy1905GetCinemaAllSessionResult.class);
+		
+		String getFeatureFilmResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/GetFeatureFilm", param,"UTF-8");
+		Gson filmgson = new Gson();
+		Dy1905GetFeatureFilmResult Dy1905FilmReply = filmgson.fromJson(XmlToJsonUtil.xmltoJson(getFeatureFilmResult,"GetFeatureFilmResult"),Dy1905GetFeatureFilmResult.class);
 		if(Dy1905Reply.getGetCinemaSessionResult().getResultCode().equals("0")){
 			List<SessionBean> dy1905Sessions = Dy1905Reply.getGetCinemaSessionResult().getSessions().getSession();
+			List<FilmBean> filmReplyList = Dy1905FilmReply.getGetFeatureFilmResult().getFilms().getFilm();
+			for(int i=0;i<dy1905Sessions.size();i++){
+				List<SessionFilmBean> sessionFilmReplyList = Dy1905Reply.getGetCinemaSessionResult().getSessions().getSession().get(i).getFilms().getFilm();
+				for(int m=0; m<sessionFilmReplyList.size(); m++){
+					for(int n=0; n<filmReplyList.size(); n++){
+						if(sessionFilmReplyList.get(m).getFilmNo().equals(filmReplyList.get(n).getFilmNo())){
+							sessionFilmReplyList.get(m).setFilmNo(filmReplyList.get(n).getFilmCode());
+						}
+					}
+				}
+			}
 			if(dy1905Sessions.size()>0){
 				List<Sessioninfo> newSessions = new ArrayList<Sessioninfo>();
 				for (SessionBean cinemaplan : dy1905Sessions) {

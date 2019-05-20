@@ -5,7 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaAllSessionResult.ResBean.SessionsBean.SessionBean.FilmsBean.FilmBean;
+import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaAllSessionResult.ResBean.SessionsBean.SessionBean.FilmsBean.SessionFilmBean;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
@@ -48,7 +48,7 @@ public class Dy1905ModelMapper {
         String dt2 = new SimpleDateFormat("HH:mm").format(model.getStartTime());
         String dt = dt1 +" "+dt2;
     	entity.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(dt));
-    	FilmBean filmInfo=model.getFilms().getFilm().get(0);
+    	SessionFilmBean filmInfo = model.getFilms().getFilm().get(0);
     	if(filmInfo!=null){
     		entity.setFilmCode(filmInfo.getFilmNo());
     		entity.setFilmName(filmInfo.getFilmName());
