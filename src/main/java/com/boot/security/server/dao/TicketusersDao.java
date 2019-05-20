@@ -25,9 +25,6 @@ public interface TicketusersDao {
     @Insert("insert into ticketusers(CinemaCode, MobilePhone, OpenID, VerifyCode, IsActive, Created, NickName, Sex, Country, Province, City, HeadImgUrl, TotalScore, Language,Roll) values(#{CinemaCode}, #{MobilePhone}, #{OpenID}, #{VerifyCode}, #{IsActive}, #{Created}, #{NickName}, #{Sex}, #{Country}, #{Province}, #{City}, #{HeadImgUrl}, #{TotalScore}, #{Language}, #{Roll})")
     int save(Ticketusers ticketusers);
     
-    @Select("select * from Ticketusers where  OpenID = #{openid}  and CinemaCode=#{cinemacode}")
-    Ticketusers getByOpenIdAndCode(@Param("openid") String openid,@Param("cinemacode") String cinemacode);
-    
     @Select("select * from Ticketusers where CinemaCode=#{cinemacode} and OpenID = #{openid}")
     Ticketusers getByOpenId(@Param("openid") String openid,@Param("cinemacode") String cinemacode);
     

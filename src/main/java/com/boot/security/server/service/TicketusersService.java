@@ -13,7 +13,6 @@ public interface TicketusersService {
 	
 	int save(Ticketusers ticketusers);
 	
-	Ticketusers getByOpenIdAndCode(String openid,String cinemacode);
 	
     Ticketusers getByCinemaCode(String cinemacode);
     

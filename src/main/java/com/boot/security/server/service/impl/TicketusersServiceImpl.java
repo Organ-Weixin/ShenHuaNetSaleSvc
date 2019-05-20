@@ -26,11 +26,6 @@ public class TicketusersServiceImpl implements TicketusersService{
 	}
 
 	@Override
-	public Ticketusers getByOpenIdAndCode(String openid, String cinemacode) {
-		return ticketusersDao.getByOpenId(openid, cinemacode);
-	}
-
-	@Override
 	public Ticketusers getByCinemaCode(String cinemacode) {
 		return ticketusersDao.getByCinemaCode(cinemacode);
 	}

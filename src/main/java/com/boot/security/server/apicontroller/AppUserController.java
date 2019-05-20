@@ -104,7 +104,7 @@ public class AppUserController {
         UserWXResult wxuser = new Gson().fromJson(wxuserStr, UserWXResult.class);
         
         //更新到数据库
-        Ticketusers ticketuser = _ticketusersService.getByOpenIdAndCode(jscode2sessionReply.getOpenid(),userinput.getCinemaCode());
+        Ticketusers ticketuser = _ticketusersService.getByopenids(jscode2sessionReply.getOpenid());
         if(ticketuser == null){
         	ticketuser = new Ticketusers();
         	ticketuser.setCinemaCode(userinput.getCinemaCode());
@@ -159,7 +159,7 @@ public class AppUserController {
 			return userReply;
 		}
 		//验证用户OpenId是否存在
-		Ticketusers ticketuser = _ticketusersService.getByOpenIdAndCode(OpenID, CinemaCode);
+		Ticketusers ticketuser = _ticketusersService.getByopenids(OpenID);
 		if(ticketuser == null){
 			userReply.SetOpenIDNotExistReply();
 			return userReply;
@@ -209,7 +209,7 @@ public class AppUserController {
 			return reply;
 		}
 		//验证用户OpenId是否存在
-		Ticketusers ticketuser = _ticketusersService.getByOpenIdAndCode(input.getOpenID(), input.getCinemaCode());
+		Ticketusers ticketuser = _ticketusersService.getByopenids(input.getOpenID());
 		if(ticketuser == null){
 			reply.SetOpenIDNotExistReply();
 			return reply;
@@ -256,7 +256,7 @@ public class AppUserController {
 			return reply;
 		}
 		//验证用户OpenId是否存在
-		Ticketusers ticketuser = _ticketusersService.getByOpenIdAndCode(input.getOpenID(), input.getCinemaCode());
+		Ticketusers ticketuser = _ticketusersService.getByopenids(input.getOpenID());
 		if(ticketuser == null){
 			reply.SetOpenIDNotExistReply();
 			return reply;
