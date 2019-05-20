@@ -37,7 +37,7 @@ public interface MembercardDao {
 
     List<Membercard> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
     
-    @Select("select * from membercard t where t.cinemacode = #{cinemacode} and t.mobilephone = #{mobilephone}")
+    @Select("select * from membercard t where t.cinemacode = #{cinemacode} and (t.mobilephone = #{mobilephone} or t.cardno = #{mobilephone})")
     List<Membercard> getByCinemaCodeAndMobilePhone(@Param("cinemacode") String cinemacode,@Param("mobilephone") String mobilephone);
     
     @Select("select * from membercard where (ExpireDate >now() or ExpireDate is null) and openid is not null and find_in_set(cinemacode,#{cinemacodes})")

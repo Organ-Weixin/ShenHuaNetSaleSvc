@@ -1,5 +1,5 @@
 package com.boot.security.server.apicontroller.reply;
- 
+
 import java.util.List;
 
 public class QueryFilmSessionsReply extends BaseReply{

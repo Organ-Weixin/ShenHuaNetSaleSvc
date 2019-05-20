@@ -20,7 +20,6 @@ import com.boot.security.server.api.core.CardPayReply;
 import com.boot.security.server.api.core.CardRegisterReply;
 import com.boot.security.server.api.core.LoginCardReply;
 import com.boot.security.server.api.core.NetSaleSvcCore;
-import com.boot.security.server.api.core.QueryCardLevelReply;
 import com.boot.security.server.api.core.QueryCardReply;
 import com.boot.security.server.api.core.QueryCardTradeRecordReply;
 import com.boot.security.server.api.core.QueryDiscountReply;
@@ -28,17 +27,22 @@ import com.boot.security.server.api.ctms.reply.Dy1905GetMemberCardByMobileReply;
 import com.boot.security.server.api.ctms.reply.Dy1905Interface;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.PrePayParametersReply;
+import com.boot.security.server.apicontroller.reply.QueryCardLevelReply;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
+import com.boot.security.server.apicontroller.reply.QueryCardLevelReply.QueryCardLevelReplyCard;
+import com.boot.security.server.apicontroller.reply.QueryCardLevelReply.QueryCardLevelReplyCard.QueryCardLevelReplyCardLeve;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.QueryMemberCardByPhoneReplyMemberCardByPhone.QueryMemberCardByPhoneReplyPhone;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Cinemapaymentsettings;
 import com.boot.security.server.model.Membercard;
+import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.CinemapaymentsettingsServiceImpl;
+import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
@@ -66,6 +70,8 @@ public class MemberController {
 	TicketusersServiceImpl _ticketusersService;
 	@Autowired
     private HttpServletRequest request;
+	@Autowired
+	private MemberCardLevelServiceImpl _memberCardLevelService;
 	
 	//region 会员卡登陆
 	@GetMapping("/LoginCard/{Username}/{Password}/{CinemaCode}/{OpenID}/{CardNo}/{CardPassword}")
@@ -76,6 +82,7 @@ public class MemberController {
 		if(loginCardReply.Status.equals("Success")){
 			Membercard membercard = _memberCardService.getByCardNo(CinemaCode, CardNo);
 			membercard.setOpenId(OpenID);
+			membercard.setStatus(1);
 			_memberCardService.Update(membercard);
 			if(membercard.getBirthday()!=null){
 				loginCardReply.getCard().setBirthday(new SimpleDateFormat("yyyy年MM月dd日").format(membercard.getBirthday()));
@@ -147,7 +154,51 @@ public class MemberController {
 	@GetMapping("/QueryCardLevel/{Username}/{Password}/{CinemaCode}")
 	@ApiOperation(value = "查询会员卡等级")
 	public QueryCardLevelReply QueryCardLevel(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode){
-		return new NetSaleSvcCore().QueryCardLevel(Username, Password, CinemaCode);
+		QueryCardLevelReply queryCardLevelReply = new QueryCardLevelReply();
+		//验证参数
+		if (!ReplyExtension.RequestInfoGuard(queryCardLevelReply, Username, Password, CinemaCode))
+        {
+            return queryCardLevelReply;
+        }
+		//获取用户信息(渠道)
+        Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+        if (UserInfo == null)
+        {
+        	queryCardLevelReply.SetUserCredentialInvalidReply();
+            return queryCardLevelReply;
+        }
+        //验证影院是否存在且可访问
+        Cinema cinema = _cinemaService.getByCinemaCode(CinemaCode);
+        if (cinema == null)
+        {
+        	queryCardLevelReply.SetCinemaInvalidReply();
+            return queryCardLevelReply;
+        }
+        QueryCardLevelReplyCard data = new QueryCardLevelReplyCard();
+        List<QueryCardLevelReplyCardLeve> cardReplyList = new ArrayList<>();
+        List<Membercardlevel> memberCardList = _memberCardLevelService.getByCinemaCode(CinemaCode);
+        if(memberCardList.size()>0){
+        	for(Membercardlevel memberCard : memberCardList){
+            	QueryCardLevelReplyCardLeve cardReply = new QueryCardLevelReplyCardLeve();
+            	cardReply.setLevelCode(memberCard.getLevelCode());
+            	cardReply.setLevelName(memberCard.getLevelName());
+            	if(memberCard.getCardCostFee()!=null){
+            		cardReply.setCardCostFee(String.valueOf(memberCard.getCardCostFee()));
+            	}
+            	if(memberCard.getMemberFee()!=null){
+            		cardReply.setMemberFee(String.valueOf(memberCard.getMemberFee()));
+            	}
+            	if(memberCard.getStatus()!=null){
+            		cardReply.setStatus(String.valueOf(memberCard.getStatus()));
+            	}
+            	cardReplyList.add(cardReply);
+            }
+            data.setCardLeve(cardReplyList);
+            data.setCinemaCode(CinemaCode);
+        }
+        	queryCardLevelReply.setData(data);
+        	queryCardLevelReply.SetSuccessReply();
+		return queryCardLevelReply;
 	}
 	//endregion
 	

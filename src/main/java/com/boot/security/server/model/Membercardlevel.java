@@ -10,6 +10,7 @@ public class Membercardlevel extends BaseEntity<Long> {
 	private String LevelName;
 	private Double CardCostFee;
 	private Double MemberFee;
+	private Integer Status;
 
 	public Long getId() {
 		return Id;
@@ -46,6 +47,12 @@ public class Membercardlevel extends BaseEntity<Long> {
 	}
 	public void setMemberFee(Double memberFee) {
 		MemberFee = memberFee;
+	}
+	public Integer getStatus() {
+		return Status;
+	}
+	public void setStatus(Integer status) {
+		Status = status;
 	}
 	
 }
