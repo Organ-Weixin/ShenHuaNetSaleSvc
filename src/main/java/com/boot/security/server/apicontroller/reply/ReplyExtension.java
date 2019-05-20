@@ -102,6 +102,116 @@ public class ReplyExtension {
     }
 	//endregion
 	
+	//region QueryRoomGiftReply 放映厅礼物
+	public static boolean RequestInfoGuard(QueryRoomGiftReply reply, String Username, String Password, String CinemaCode){
+        if (Username == null || "".equals(Username)) {
+            reply.SetNecessaryParamMissReply("UserName");
+            return false;
+        }
+        if (Password == null || "".equals(Password)) {
+            reply.SetNecessaryParamMissReply("Password");
+            return false;
+        }
+        if (CinemaCode == null || "".equals(CinemaCode)) {
+            reply.SetNecessaryParamMissReply("CinemaCode");
+            return false;
+        }
+        
+        return true;
+    }
+	//endregion
+	
+	//region SendGiftReply 放映厅礼物发放
+	public static boolean RequestInfoGuard(SendGiftReply reply, String Username, String Password, String CinemaCode, 
+			String RoomCode, String GiftCode, String GiftType, int SendNumber, String OpenID){
+        if (Username == null || "".equals(Username)) {
+            reply.SetNecessaryParamMissReply("UserName");
+            return false;
+        }
+        if (Password == null || "".equals(Password)) {
+            reply.SetNecessaryParamMissReply("Password");
+            return false;
+        }
+        if (CinemaCode == null || "".equals(CinemaCode)) {
+            reply.SetNecessaryParamMissReply("CinemaCode");
+            return false;
+        }
+        if (RoomCode == null || "".equals(RoomCode)) {
+            reply.SetNecessaryParamMissReply("RoomCode");
+            return false;
+        }
+        if (GiftCode == null || "".equals(GiftCode)) {
+            reply.SetNecessaryParamMissReply("GiftCode");
+            return false;
+        }
+        if (GiftType == null || "".equals(GiftType)) {
+            reply.SetNecessaryParamMissReply("GiftType");
+            return false;
+        }
+        if (SendNumber <= 0) {
+            reply.SetNecessaryParamMissReply("SendNumber");
+            return false;
+        }
+        if (OpenID == null || "".equals(OpenID)) {
+            reply.SetNecessaryParamMissReply("OpenID");
+            return false;
+        }
+        
+        return true;
+    }
+	//endregion
+	
+	//region QueryRoomGiftRecordReply 放映厅用户领取奖品记录
+	public static boolean RequestInfoGuard(QueryRoomGiftRecordReply reply, String Username, String Password, String CinemaCode, 
+			String RoomCode, String OpenID){
+        if (Username == null || "".equals(Username)) {
+            reply.SetNecessaryParamMissReply("UserName");
+            return false;
+        }
+        if (Password == null || "".equals(Password)) {
+            reply.SetNecessaryParamMissReply("Password");
+            return false;
+        }
+        if (CinemaCode == null || "".equals(CinemaCode)) {
+            reply.SetNecessaryParamMissReply("CinemaCode");
+            return false;
+        }
+        if (RoomCode == null || "".equals(RoomCode)) {
+            reply.SetNecessaryParamMissReply("RoomCode");
+            return false;
+        }
+        if (OpenID == null || "".equals(OpenID)) {
+            reply.SetNecessaryParamMissReply("OpenID");
+            return false;
+        }
+        
+        return true;
+    }
+	//endregion
+	
+	//region QueryRoomGiftRecordReply 放映厅用户领取奖品记录
+	public static boolean RequestInfoGuard(QueryRoomGiftRecordReply reply, String Username, String Password, String CinemaCode, String OpenID){
+        if (Username == null || "".equals(Username)) {
+            reply.SetNecessaryParamMissReply("UserName");
+            return false;
+        }
+        if (Password == null || "".equals(Password)) {
+            reply.SetNecessaryParamMissReply("Password");
+            return false;
+        }
+        if (CinemaCode == null || "".equals(CinemaCode)) {
+            reply.SetNecessaryParamMissReply("CinemaCode");
+            return false;
+        }
+        if (OpenID == null || "".equals(OpenID)) {
+            reply.SetNecessaryParamMissReply("OpenID");
+            return false;
+        }
+        
+        return true;
+    }
+	//endregion
+		
 	//region QueryBanner 图片
 	public static boolean RequestInfoGuard(QueryBannerReply reply, String Username, String Password, String CinemaCode) {
         if (Username == null || "".equals(Username)) {

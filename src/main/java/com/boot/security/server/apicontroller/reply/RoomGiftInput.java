@@ -10,7 +10,6 @@ public class RoomGiftInput {
 	private String GiftType;
 	private int SendNumber;
 	private String OpenID;
-	private String Roll;	//放映厅角色
 	
 	public String getUserName() {
 		return UserName;
@@ -41,12 +40,6 @@ public class RoomGiftInput {
 	}
 	public void setGiftType(String giftType) {
 		GiftType = giftType;
-	}
-	public String getRoll() {
-		return Roll;
-	}
-	public void setRoll(String roll) {
-		Roll = roll;
 	}
 	public String getGiftCode() {
 		return GiftCode;

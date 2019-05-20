@@ -30,8 +30,10 @@ public enum ErrorCodeEnum {
 	CouponsNotExistOrUsed("优惠券不存在或已使用","10000025"),
 	CouponsInadequate("优惠劵数量不足","10000026"),
 	CouponsSendFailure("优惠劵发放失败","10000027"),
-	SendGiftFailure("发放放映厅奖品失败！","10000028"),
-	OverrunGift("超出放映厅此奖品发放上限","10000029");
+	GiftInvalid("奖品不存在！","10000028"),
+	SendGiftFailure("发放放映厅奖品失败！","10000029"),
+	OverrunGift("超出放映厅此奖品发放上限","10000030"),
+	SnatchFailure("抢红包失败","10000030");
 	
 	private String Message;
 	private String Code;

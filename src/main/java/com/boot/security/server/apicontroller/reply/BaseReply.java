@@ -250,13 +250,13 @@ public class BaseReply {
         ErrorMessage = ErrorCodeEnum.SentMessageFailure.getMessage();
     }
     /// <summary>
-    /// 发放放映厅奖品失败
+    /// 奖品不存在
     /// </summary>
-    public void SetSendGiftFailureReply()
+    public void SetGiftInvalidReply()
     {
         Status = StatusEnum.Failure.getStatusCode();
-        ErrorCode = ErrorCodeEnum.SendGiftFailure.getCode();
-        ErrorMessage = ErrorCodeEnum.SendGiftFailure.getMessage();
+        ErrorCode = ErrorCodeEnum.GiftInvalid.getCode();
+        ErrorMessage = ErrorCodeEnum.GiftInvalid.getMessage();
     }
     /// <summary>
     /// 超出放映厅此奖品发放上限
@@ -284,6 +284,15 @@ public class BaseReply {
         Status = StatusEnum.Failure.getStatusCode();
         ErrorCode = ErrorCodeEnum.CouponsSendFailure.getCode();
         ErrorMessage = ErrorCodeEnum.CouponsSendFailure.getMessage();
+    }
+    /// <summary>
+    /// 放映厅抢红包失败
+    /// </summary>
+    public void SetSnatchFailureReply()
+    {
+        Status = StatusEnum.Failure.getStatusCode();
+        ErrorCode = ErrorCodeEnum.SnatchFailure.getCode();
+        ErrorMessage = ErrorCodeEnum.SnatchFailure.getMessage();
     }
     
     public String Status;

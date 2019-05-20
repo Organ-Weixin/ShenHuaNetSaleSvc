@@ -1,7 +1,9 @@
 package com.boot.security.server.apicontroller;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -16,8 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boot.security.server.apicontroller.reply.Jscode2sessionReply;
 import com.boot.security.server.apicontroller.reply.MobilePhoneRegisterReply;
 import com.boot.security.server.apicontroller.reply.MobilePhoneRegisterReply.MobilePhoneRegisterBean;
+import com.boot.security.server.apicontroller.reply.QueryRoomGiftRecordReply.QueryRoomGiftRecord;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
+import com.boot.security.server.apicontroller.reply.QueryRoomGiftRecordReply;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
+import com.boot.security.server.apicontroller.reply.RoomGiftInput;
 import com.boot.security.server.apicontroller.reply.SendVerifyCodeReply;
 import com.boot.security.server.apicontroller.reply.SendVerifyCodeReply.SendVerifyCodeBean;
 import com.boot.security.server.apicontroller.reply.UserLoginInput;
@@ -25,12 +30,16 @@ import com.boot.security.server.apicontroller.reply.UserLoginReply;
 import com.boot.security.server.apicontroller.reply.UserLoginReply.UserLoginResult;
 import com.boot.security.server.apicontroller.reply.UserPhoneInput;
 import com.boot.security.server.apicontroller.reply.UserWXResult;
+import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaMiniProgramAccounts;
+import com.boot.security.server.model.Roomgiftuser;
 import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaMiniProgramAccountsServiceImpl;
+import com.boot.security.server.service.impl.CinemaServiceImpl;
+import com.boot.security.server.service.impl.RoomgiftuserServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
@@ -53,6 +62,10 @@ public class AppUserController {
 	private CinemaMiniProgramAccountsServiceImpl _miniProgramAccountsService;
 	@Autowired
 	private TicketusersServiceImpl _ticketusersService;
+	@Autowired
+	private CinemaServiceImpl _cinemaService;
+	@Autowired
+	private RoomgiftuserServiceImpl roomgiftuserService;
 
 	@PostMapping("/UserLogin")
 	@ApiOperation(value = "用户登陆")
@@ -282,6 +295,57 @@ public class AppUserController {
 		sendverify.setMobilePhone(ticketuser.getMobilePhone());
 		sendverify.setVerifyCode(ticketuser.getVerifyCode());
 		reply.setData(sendverify);
+		reply.SetSuccessReply();
+		return reply;
+	}
+	
+	@PostMapping("/QueryGiftRecord")
+	@ApiOperation(value="放映厅房间用户领取奖品记录")
+	public QueryRoomGiftRecordReply QueryGiftRecord(@RequestBody RoomGiftInput input) {
+		QueryRoomGiftRecordReply reply=new QueryRoomGiftRecordReply();
+		//校验参数
+		if(!ReplyExtension.RequestInfoGuard(reply, input.getUserName(), input.getPassword(), input.getCinemaCode(),	input.getOpenID())){
+			return reply;
+		}
+		//获取用户信息(渠道)
+		Userinfo UserInfo=_userInfoService.getByUserCredential(input.getUserName(), input.getPassword());
+		if(UserInfo == null){
+			reply.SetUserCredentialInvalidReply();
+			return reply;
+		}
+		//验证影院是否存在且可访问
+		Cinema cinema=_cinemaService.getByCinemaCode(input.getCinemaCode());
+		if(cinema == null){
+			reply.SetCinemaInvalidReply();
+			return reply;
+		}
+		//验证用户OpenId是否存在
+		Ticketusers ticketuser = _ticketusersService.getByopenids(input.getOpenID());
+		if(ticketuser == null){
+			reply.SetOpenIDNotExistReply();
+			return reply;
+		}
+		
+		List<Roomgiftuser>  roomgiftuserlist = roomgiftuserService.getByOpenid(input.getOpenID());
+		List<QueryRoomGiftRecord> data = new ArrayList<QueryRoomGiftRecord>();
+		for(Roomgiftuser roomgiftuser : roomgiftuserlist){
+			QueryRoomGiftRecord record = new QueryRoomGiftRecord();
+			record.setOpenID(roomgiftuser.getOpenID());
+			record.setGiftCode(roomgiftuser.getGiftCode());
+			record.setGiftName(roomgiftuser.getGiftName());
+			record.setGiftType(roomgiftuser.getGiftType());
+			record.setImage(roomgiftuser.getImage());
+			record.setGetDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(roomgiftuser.getGetDate()));
+			if(roomgiftuser.getStartDate() != null){
+				record.setStartDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(roomgiftuser.getStartDate()));
+			}
+			if(roomgiftuser.getExpireDate() != null){
+				record.setExpireDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(roomgiftuser.getExpireDate()));	
+			}
+			
+			data.add(record);
+		}
+		reply.setData(data);
 		reply.SetSuccessReply();
 		return reply;
 	}
