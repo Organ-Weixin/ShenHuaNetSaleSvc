@@ -9,7 +9,7 @@
 				and id = #{params.id} 
 			</if>
 			<if test="params.cinemacode != null and params.cinemacode != ''">
-				and cinemacode = #{params.cinemacode} or find_in_set(cinemacode,#{params.cinemacode})
+				and (cinemacode = #{params.cinemacode} or find_in_set(cinemacode,#{params.cinemacode}))
 			</if>
 			<if test="params.cinemaname != null and params.cinemaname != ''">
 				and cinemaname = #{params.cinemaname} 
@@ -63,10 +63,10 @@
 				and orderstatus = #{params.orderstatus} 
 			</if>
 			<if test="params.starttime != null and params.starttime != ''">
-				and left(replace(created,'-',''),8) >= #{params.starttime}
+				and sessiontime >= #{params.starttime}
 			</if>
 			<if test="params.endtime != null and params.endtime != ''">
-				and #{params.endtime} >= left(replace(created,'-',''),8)
+				and #{params.endtime} >= sessiontime
 			</if>
 		</where>
 	</sql>

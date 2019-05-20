@@ -77,6 +77,9 @@ public class MemberController {
 			Membercard membercard = _memberCardService.getByCardNo(CinemaCode, CardNo);
 			membercard.setOpenId(OpenID);
 			_memberCardService.Update(membercard);
+			if(membercard.getBirthday()!=null){
+				loginCardReply.getCard().setBirthday(new SimpleDateFormat("yyyy年MM月dd日").format(membercard.getBirthday()));
+			}
 		}
 		return loginCardReply;
 	}

@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boot.security.server.api.core.NetSaleSvcCore;
 import com.boot.security.server.api.core.QuerySessionSeatReply;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
+import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply;
+import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions;
+import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions.QueryFilmSessionsReplyFilm;
+import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions.QueryFilmSessionsReplyFilm.QueryFilmSessionsReplySession;
 import com.boot.security.server.apicontroller.reply.QueryNewSessionsReply;
 import com.boot.security.server.apicontroller.reply.QueryNewSessionsReply.QueryNewSessionsReplyNewSessions.QueryNewSessionsReplyFilm;
 import com.boot.security.server.apicontroller.reply.QueryOrderSessionReply;
@@ -21,9 +25,11 @@ import com.boot.security.server.apicontroller.reply.QuerySessionsReply.QuerySess
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.dao.SessioninfoDao;
 import com.boot.security.server.model.Cinema;
+import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
+import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.google.gson.Gson;
@@ -41,6 +47,8 @@ public class SessionController {
 	private SessioninfoServiceImpl _sessionInfoService;
 	@Autowired
 	private SessioninfoDao  sessioninfoDao;
+	@Autowired
+	private FilminfoServiceImpl _filminfoService;
 	@GetMapping("/QuerySessions/{UserName}/{Password}/{CinemaCode}/{StartDate}/{EndDate}")
 	@ApiOperation(value="获取影片场次信息")
 	public QuerySessionsReply QuerySessions(@PathVariable String UserName, @PathVariable String Password,@PathVariable String CinemaCode,@PathVariable String StartDate,@PathVariable String EndDate) throws ParseException 
@@ -154,6 +162,8 @@ public class SessionController {
 				ModelMapper.MapFrom(replySession, sessioninfo);
 				queryNewSessionsReply.getFilms().setCinemaCode(CinemaCode);
 				queryNewSessionsReply.getFilms().getFilm().add(replySession);
+				List<Sessioninfo> films = _sessionInfoService.getByCinemafilm(CinemaCode, sessioninfo.getFilmCode());
+				
 			}
 		}
 		queryNewSessionsReply.SetSuccessReply();
@@ -202,6 +212,102 @@ public class SessionController {
 	public QuerySessionSeatReply QuerySessionSeat(@PathVariable String UserName, @PathVariable String Password,@PathVariable String CinemaCode,@PathVariable String SessionCode,@PathVariable String Status){
 		return NetSaleSvcCore.getInstance().QuerySessionSeat(UserName, Password, CinemaCode, SessionCode, Status);
 	}
-	
+	@GetMapping("/QueryFilmSessions/{UserName}/{Password}/{CinemaCode}/{StartDate}/{EndDate}")
+	@ApiOperation(value = "获取场次影片信息")
+	public QueryFilmSessionsReply QueryFilmSessions(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
+			@PathVariable String StartDate,@PathVariable String EndDate) throws ParseException{
+		QueryFilmSessionsReply queryFilmSessionsReply = new QueryFilmSessionsReply();
+		// 校验参数
+		if (!ReplyExtension.RequestInfoGuard(queryFilmSessionsReply, UserName, Password, CinemaCode, StartDate, EndDate)) {
+			return queryFilmSessionsReply;
+		}
+		// 获取用户信息(渠道)
+		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
+		if (UserInfo == null) {
+			queryFilmSessionsReply.SetUserCredentialInvalidReply();
+			return queryFilmSessionsReply;
+		}
+		// 验证影院是否存在且可访问
+		Cinema cinema = _cinemaService.getByCinemaCode(CinemaCode);
+		if (cinema == null) {
+			queryFilmSessionsReply.SetCinemaInvalidReply();
+			return queryFilmSessionsReply;
+		}
+		//验证日期是否正确
+		Date Start=new SimpleDateFormat("yyyy-MM-dd").parse(StartDate);
+		Date End=new SimpleDateFormat("yyyy-MM-dd").parse(EndDate);
+		if(Start.getTime() > End.getTime()){
+			queryFilmSessionsReply.SetDateInvalidReply();
+			return queryFilmSessionsReply;
+		}
+		//排期中的全部影片
+		List<Sessioninfo> films = _sessionInfoService.getByFilmName(CinemaCode, StartDate, EndDate);
+		QueryFilmSessionsReplyFilmSessions data = new QueryFilmSessionsReplyFilmSessions();
+		if(films.size()>0){
+			data.setCinemaCode(films.get(0).getCCode());
+			List<QueryFilmSessionsReplyFilm> filmReplyList = new ArrayList<QueryFilmSessionsReplyFilm>();
+			for(Sessioninfo film:films){
+				QueryFilmSessionsReplyFilm filmReply = new QueryFilmSessionsReplyFilm();
+				String filmcode = film.getFilmCode();
+				filmReply.setCode(filmcode);
+				filmReply.setDimensional(film.getDimensional());
+				filmReply.setDuration(String.valueOf(film.getDuration()));
+				filmReply.setLanguage(film.getLanguage());
+				filmReply.setName(film.getFilmName());
+				Filminfo filminfo = _filminfoService.getByFilmCode(filmcode);
+				if(filminfo!=null){
+					filmReply.setArea(filminfo.getArea());
+					filmReply.setCast(filminfo.getCast());
+					filmReply.setDirector(filminfo.getDirector());
+					filmReply.setImage(filminfo.getImage());
+					filmReply.setIntroduction(filminfo.getIntroduction());
+					filmReply.setProducer(filminfo.getProducer());
+					if(filminfo.getPublishDate()!=null){
+						filmReply.setPublishDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(filminfo.getPublishDate()));
+					}
+					filmReply.setPublisher(filminfo.getPublisher());
+					if(filminfo.getScore()!=null){
+						filmReply.setScore(String.valueOf(filminfo.getScore()));
+					}
+					filmReply.setStatus(String.valueOf(filminfo.getStatus()));
+					filmReply.setTrailer(filminfo.getTrailer());
+					filmReply.setType(filminfo.getType());
+					filmReply.setVersion(filminfo.getVersion());
+				}
+				List<Sessioninfo> sessionList = _sessionInfoService.getByCinemaCodeAndFilmCode(film.getCCode(), filmcode);
+				List<QueryFilmSessionsReplySession> sessionReplyList = new ArrayList<QueryFilmSessionsReplySession>();
+				for(Sessioninfo session :sessionList){
+					QueryFilmSessionsReplySession sessionReply = new QueryFilmSessionsReplySession();
+					sessionReply.setFeatureNo(session.getFeatureNo());
+					if(session.getListingPrice()!=null){
+						sessionReply.setListingPrice(String.valueOf(session.getListingPrice()));
+					}
+					if(session.getLowestPrice()!=null){
+						sessionReply.setLowestPrice(String.valueOf(session.getLowestPrice()));
+					}
+					sessionReply.setPlaythroughFlag(session.getPlaythroughFlag());
+					sessionReply.setScreenCode(session.getScreenCode());
+					if(session.getSequence()!=null){
+						sessionReply.setSequence(String.valueOf(session.getSequence()));
+					}
+					sessionReply.setSessionCode(session.getSCode());
+					if(session.getStandardPrice()!=null){
+						sessionReply.setStandardPrice(String.valueOf(session.getStandardPrice()));
+					}
+					if(session.getStartTime()!=null){
+						sessionReply.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(session.getStartTime()));
+					}
+					sessionReplyList.add(sessionReply);
+				}
+				filmReply.setSession(sessionReplyList);
+				filmReplyList.add(filmReply);
+			}
+				data.setFilm(filmReplyList);
+		}
+		queryFilmSessionsReply.setData(data);
+		queryFilmSessionsReply.SetSuccessReply();
+			
+		return queryFilmSessionsReply;
+	}
 	
 }

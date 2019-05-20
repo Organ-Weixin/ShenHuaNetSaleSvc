@@ -25,7 +25,7 @@
 				<label class='col-md-2 control-label'>有效期&nbsp;<font style="color:red;font-size:15px">*</font></label>
 				<div class='col-md-10' style="font-size:15px">
 					<div>
-						<input type="text" placeholder="有效期类型" id="validityType" name="validityType">
+						<input type="hidden" id="validityType" name="validityType">
 						<input type="radio" name="ValidityTypeRadio" value="1"> 固定日期
 						<input type="text" id="effectiveDate" placeholder="请选择日期" name="effectiveDate">
 						至
@@ -52,7 +52,7 @@
 			<div class='form-group' style="margin-top:2%">
 				<label class='col-md-2 control-label'>可用时段&nbsp;<font style="color:red;font-size:15px">*</font></label>
 				<div class='col-md-10' style="font-size:15px">
-					<input type="text" id="canUsePeriodType" name="canUsePeriodType">
+					<input type="hidden" id="canUsePeriodType" name="canUsePeriodType">
 					<div>
 						<input type="radio" name="CanUsePeriodTypeRadio" value="1">
 						全部时段
@@ -64,7 +64,7 @@
 						</div>
 						<div id="checkCanUseDate" style="display:none">
 							<div style="margin-top:1%">
-							<input type="text" id="weekDays" name="weekDays">
+							<input type="hidden" id="weekDays" name="weekDays">
 								日期：
 									<input type="checkbox" class="checkWeek" style="margin-left:2%" value="1">周一
 									<input type="checkbox" class="checkWeek" style="margin-left:2%" value="2">周二
@@ -77,7 +77,7 @@
 							</div>
 							<div style="margin-top:1%">
 								<div style="float:left">
-									<input type="text" id="timePeriod" name="timePeriod">
+									<input type="hidden" id="timePeriod" name="timePeriod">
 									其他日期：
 								</div>
 								<div id="canUseDate" style="float:left;width:50%;margin-left:2%">
@@ -99,15 +99,15 @@
 			<div class='form-group' style="margin-top:3%">
 				<label class='col-md-2 control-label'>适用门店&nbsp;<font style="color:red;font-size:15px">*</font></label>
 				<div class='col-md-10' style="font-size:15px">
-					<input type="text" id="canUseCinemaType" name="canUseCinemaType">
+					<input type="hidden" id="canUseCinemaType" name="canUseCinemaType">
 					<div>
 						<input type="radio" name="CanUseCinemaTypeRadio" value="1"> 全部门店使用
 					</div>
 					<div style="margin-top:2%">
 						<input type="radio" name="CanUseCinemaTypeRadio" value="2"> 指定门店
 						<div id="Cinemas" style="margin-top:2%;display:none">
-							<input type="text" id="cinemaCodes" name="cinemaCodes">
-							<input type="text" id="AllCinemaCodes">
+							<input type="hidden" id="cinemaCodes" name="cinemaCodes">
+							<input type="hidden" id="AllCinemaCodes">
 							<select id="CinemasSelect" class="form-control" multiple data-s2-options="s2options" data-krajee-select2="selectcinema">
 							</select>
 						</div>
@@ -130,8 +130,8 @@
 			</div>
 			<div class='form-group' style="margin-top:3%">
 				<label class='col-md-2 control-label'>减免金额&nbsp;<font style="color:red;font-size:15px">*</font></label>
-				<input type="text" id="reductionType" name="reductionType">
-				<input type="text" id="reductionPrice" name="reductionPrice">
+				<input type="hidden" id="reductionType" name="reductionType">
+				<input type="hidden" id="reductionPrice" name="reductionPrice">
 				<div class='col-md-10' style="font-size:15px">
 					<div style="margin-top:2%">
 						<input type="radio" name="reductionTypeRadio" value="1">影片
@@ -143,7 +143,7 @@
 						<input type="radio" style="margin-left:3%" id="checkFilms" name="FilmOrGoodRadio">指定影片可用
 						</div>
 						<div id="filmsDiv" style="margin-top:2%;display:none">
-							<input type="text" id="filmCodes" name="filmCodes">
+							<input type="hidden" id="filmCodes" name="filmCodes">
 							<select id="FilmsSelect" class="form-control" multiple data-s2-options="s2options" data-krajee-select2="selectfilm">
 							</select>
 						</div> 
@@ -158,7 +158,7 @@
 						<input type="radio" style="margin-left:3%" id='checkGoods' name="FilmOrGoodRadio">指定卖品可用
 						</div>
 						<div id="goodsDiv" style="margin-top:2%;display:none">
-							<input type="text" id="goodsCodes" name="goodsCodes">
+							<input type="hidden" id="goodsCodes" name="goodsCodes">
 							<select id="GoodsSelect" class="form-control" multiple data-s2-options="s2options" data-krajee-select2="selectgood">
 						</select> 
 						</div>
@@ -519,6 +519,7 @@
 					layer.msg("请输入减免金额！");
 				}
 			}
+			//影片选择
 			if($("#roleId").val()!=1){
 				$("#cinemaCodes").val($("#AllCinemaCodes").val());
 				$("#canUseCinemaType").val("2");

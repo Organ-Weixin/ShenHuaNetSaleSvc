@@ -25,6 +25,7 @@ public class LoginCardReply extends BaseReply {
 		private String MobilePhone;
 		private String LevelCode;
 		private String LevelName;
+		private String Birthday;
 		public String getCardNo() {
 			return CardNo;
 		}
@@ -54,6 +55,12 @@ public class LoginCardReply extends BaseReply {
 		}
 		public void setLevelName(String levelName) {
 			LevelName = levelName;
+		}
+		public String getBirthday() {
+			return Birthday;
+		}
+		public void setBirthday(String birthday) {
+			Birthday = birthday;
 		}
 		
 	}
