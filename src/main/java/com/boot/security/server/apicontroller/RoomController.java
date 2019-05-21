@@ -47,7 +47,7 @@ import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
-import com.google.gson.Gson;
+import com.boot.security.server.websocket.ChatRoomServer;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -120,6 +120,7 @@ public class RoomController {
 			Filminfo film = _filminfoService.getByFilmCode(sessioninfo.getFilmCode());
 			screenRoom.setImage(film==null?"":film.getImage());
 			rooms.add(screenRoom);
+			new ChatRoomServer().OpenRoom(screenRoom.getRoomCode(), screenRoom); //开启聊天室
 		}
 		reply.setData(rooms);
 		reply.SetSuccessReply();

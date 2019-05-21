@@ -35,7 +35,10 @@ public interface RoomgiftuserDao {
     @Select("select * from roomgiftuser where OPenID = #{openid} and RoomCode = #{roomcode}")
     List<Roomgiftuser> getByOpenidAndRoom(@Param("openid") String openid,@Param("roomcode") String roomcode);
     
-    //根据用户查询
-    @Select("select * from roomgiftuser where OPenID = #{openid} ")
+    //根据用户查询查询奖品
+    @Select("select * from roomgiftuser where OPenID = #{openid} and giftType = '1' ")
     List<Roomgiftuser> getByOpenid(String openid);
+    
+    @Select("select * from roomgiftuser where RoomCode = #{roomcode} and GiftCode = #{giftcode}")
+    List<Roomgiftuser> getByRoomGift(@Param("roomcode") String roomcode,@Param("giftcode") String giftcode);
 }
