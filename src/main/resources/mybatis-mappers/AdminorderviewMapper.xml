@@ -52,6 +52,9 @@
 			</if>
 			<if test="params.filmticketcode != null and params.filmticketcode != ''">
 				and filmticketcode = #{params.filmticketcode} 
+			</if>ticketinfocode
+			<if test="params.ticketinfocode != null and params.ticketinfocode != ''">
+				and ticketinfocode = #{params.ticketinfocode} 
 			</if>
 			<if test="params.printno != null and params.printno != ''">
 				and printno = #{params.printno} 
@@ -130,6 +133,9 @@
 			</if>
 			<if test="filmticketcode != null">
 				filmticketcode = #{filmticketcode}, 
+			</if>
+			<if test="ticketinfocode != null">
+				ticketinfocode = #{ticketinfocode}, 
 			</if>
 			<if test="printno != null">
 				printno = #{printno}, 

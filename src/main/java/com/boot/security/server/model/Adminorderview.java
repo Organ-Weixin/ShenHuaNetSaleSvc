@@ -19,6 +19,7 @@ public class Adminorderview extends BaseEntity<Long> {
 	private String paytype;
 	private Date created;
 	private String filmticketcode;
+	private String ticketinfocode;
 	private String printno;
 	private String mobilephone;
 	private Integer orderstatus;
@@ -112,6 +113,12 @@ public class Adminorderview extends BaseEntity<Long> {
 	}
 	public void setFilmticketcode(String filmticketcode) {
 		this.filmticketcode = filmticketcode;
+	}
+	public String getTicketinfocode() {
+		return ticketinfocode;
+	}
+	public void setTicketinfocode(String ticketinfocode) {
+		this.ticketinfocode = ticketinfocode;
 	}
 	public String getPrintno() {
 		return printno;

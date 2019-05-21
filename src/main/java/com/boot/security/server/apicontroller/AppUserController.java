@@ -422,7 +422,7 @@ public class AppUserController {
 				cinemaTicket.setStatus(String.valueOf(adminorderview.getOrderstatus()));
 				}
 				cinemaTicket.setMobilePhone(adminorderview.getMobilephone());
-				cinemaTicket.setTicketInfoCode(adminorderview.getTicketInfoCode());
+				cinemaTicket.setTicketInfoCode(adminorderview.getTicketinfocode());
 //				adminorderviewList.add(adminorderview);
 				queryCinemaTicketReply.getData().getTicket().add(cinemaTicket);
 
