@@ -173,6 +173,9 @@ public class QueryFilmSessionsReply extends BaseReply{
 						private String ScreenCode;
 						private String FeatureNo;
 						private String StartTime;
+						private String StartDate;
+						private String BeginTime;
+						private String IsToday;
 						private String PlaythroughFlag;
 						private String Sequence;
 						private String LowestPrice;
@@ -203,6 +206,24 @@ public class QueryFilmSessionsReply extends BaseReply{
 						}
 						public void setStartTime(String startTime) {
 							StartTime = startTime;
+						}
+						public String getStartDate() {
+							return StartDate;
+						}
+						public void setStartDate(String startDate) {
+							StartDate = startDate;
+						}
+						public String getBeginTime() {
+							return BeginTime;
+						}
+						public void setBeginTime(String beginTime) {
+							BeginTime = beginTime;
+						}
+						public String getIsToday() {
+							return IsToday;
+						}
+						public void setIsToday(String isToday) {
+							IsToday = isToday;
 						}
 						public String getPlaythroughFlag() {
 							return PlaythroughFlag;

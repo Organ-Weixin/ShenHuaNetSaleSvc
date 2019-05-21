@@ -42,4 +42,7 @@ public interface MembercardDao {
     
     @Select("select * from membercard where (ExpireDate >now() or ExpireDate is null) and openid is not null and find_in_set(cinemacode,#{cinemacodes})")
     List<Membercard> getByCinemaCodes(String cinemacodes);
+    
+    @Select("select * from membercard t where t.cinemacode = #{cinemacode} and t.openid = #{openid} and t.status =1")
+    List<Membercard> getByCinemaCodeAndOpenID(@Param("cinemacode") String cinemacode,@Param("openid") String openid);
 }

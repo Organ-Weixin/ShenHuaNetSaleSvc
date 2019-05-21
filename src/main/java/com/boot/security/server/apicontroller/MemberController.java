@@ -32,6 +32,9 @@ import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.apicontroller.reply.QueryCardLevelReply.QueryCardLevelReplyCard;
 import com.boot.security.server.apicontroller.reply.QueryCardLevelReply.QueryCardLevelReplyCard.QueryCardLevelReplyCardLeve;
+import com.boot.security.server.apicontroller.reply.QueryMemberCardByOpenIDReply.QueryMemberCardByOpenIDReplyOpenIDCard;
+import com.boot.security.server.apicontroller.reply.QueryMemberCardByOpenIDReply.QueryMemberCardByOpenIDReplyOpenIDCard.QueryMemberCardByOpenIDReplyOpenIDMemberCard;
+import com.boot.security.server.apicontroller.reply.QueryMemberCardByOpenIDReply;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.QueryMemberCardByPhoneReplyMemberCardByPhone.QueryMemberCardByPhoneReplyPhone;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Cinemapaymentsettings;
@@ -396,6 +399,70 @@ public class MemberController {
 	}
 	//endregion
 	
+	//region 查询用户已绑定的会员卡信息(本地已绑定)
+	@GetMapping("/QueryMemberCardByOpenID/{Username}/{Password}/{CinemaCode}/{OpenID}")
+	@ApiOperation(value = "查询用户已绑定的会员卡信息(本地已绑定)")
+	public QueryMemberCardByOpenIDReply QueryMemberCardByOpenID(@PathVariable String Username,@PathVariable String Password,
+			@PathVariable String CinemaCode,@PathVariable String OpenID){
+		QueryMemberCardByOpenIDReply queryMemberCardByOpenIDReply = new QueryMemberCardByOpenIDReply();
+		//校验参数
+		if (!ReplyExtension.RequestInfoGuard(queryMemberCardByOpenIDReply, Username, Password, CinemaCode, OpenID))
+        {
+            return queryMemberCardByOpenIDReply;
+        }
+		//获取用户信息(渠道)
+        Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+        if (UserInfo == null)
+        {
+        	queryMemberCardByOpenIDReply.SetUserCredentialInvalidReply();
+            return queryMemberCardByOpenIDReply;
+        }
+        //验证影院是否存在且可访问
+        Cinema cinema = _cinemaService.getByCinemaCode(CinemaCode);
+        if (cinema == null)
+        {
+        	queryMemberCardByOpenIDReply.SetCinemaInvalidReply();
+            return queryMemberCardByOpenIDReply;
+        }
+        List<Membercard> memberCardList = _memberCardService.getByCinemaCodeAndOpenId(CinemaCode, OpenID);
+        QueryMemberCardByOpenIDReplyOpenIDCard data = new QueryMemberCardByOpenIDReplyOpenIDCard();
+        if(memberCardList.size()>0){
+        	data.setCinemaCode(CinemaCode);
+        	data.setMemberPhoneCount(String.valueOf(memberCardList.size()));
+        	List<QueryMemberCardByOpenIDReplyOpenIDMemberCard> cardReplyList = new ArrayList<>();
+        	QueryMemberCardByOpenIDReplyOpenIDMemberCard cardReply = new QueryMemberCardByOpenIDReplyOpenIDMemberCard();
+        	for(Membercard memberCard: memberCardList){
+        		if(memberCard.getBalance()!=null){
+        			cardReply.setBalance(String.valueOf(memberCard.getBalance()));
+        		}
+        		if(memberCard.getBirthday()!=null){
+        			cardReply.setBirthday(String.valueOf(memberCard.getBirthday()));
+        		}
+        		cardReply.setCardNo(memberCard.getCardNo());
+        		cardReply.setCreditNum(memberCard.getCreditNum());
+        		if(memberCard.getExpireDate()!=null){
+        			cardReply.setExpireDate(String.valueOf(memberCard.getExpireDate()));
+        		}
+        		cardReply.setLevelCode(memberCard.getLevelCode());
+        		cardReply.setLevelName(memberCard.getLevelName());
+        		cardReply.setMobilePhone(memberCard.getMobilePhone());
+        		cardReply.setOpenID(memberCard.getOpenId());
+        		if(memberCard.getScore()!=null){
+        			cardReply.setScore(String.valueOf(memberCard.getScore()));
+        		}
+        		cardReply.setSex(memberCard.getSex());
+        		if(memberCard.getStatus()!=null){
+        			cardReply.setStatus(String.valueOf(memberCard.getStatus()));
+        		}
+        		cardReply.setUserName(memberCard.getUserName());
+        		cardReplyList.add(cardReply);
+        	}
+        	data.setMemberCard(cardReplyList);
+        }
+        queryMemberCardByOpenIDReply.setData(data);
+        queryMemberCardByOpenIDReply.SetSuccessReply();
+		return queryMemberCardByOpenIDReply;
+	}
 	//region 异步接收微信支付返回(会员卡注册充值不需要更新订单表，可以为空)
 	public void WxPayNotify() throws Exception{
 		

@@ -297,6 +297,13 @@ public class SessionController {
 					if(session.getStartTime()!=null){
 						sessionReply.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(session.getStartTime()));
 					}
+					sessionReply.setStartDate(new SimpleDateFormat("MM-dd").format(session.getStartTime()));
+					sessionReply.setBeginTime(new SimpleDateFormat("HH:mm").format(session.getStartTime()));
+					if(new SimpleDateFormat("yyyyMMdd").format(session.getStartTime()).equals(new SimpleDateFormat("yyyyMMdd").format(new Date()))){
+						sessionReply.setIsToday("true");
+					}else{
+						sessionReply.setIsToday("false");
+					}
 					sessionReplyList.add(sessionReply);
 				}
 				filmReply.setSession(sessionReplyList);
@@ -309,5 +316,4 @@ public class SessionController {
 			
 		return queryFilmSessionsReply;
 	}
-	
 }
