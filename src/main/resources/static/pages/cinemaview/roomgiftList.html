@@ -18,20 +18,13 @@
 	                   			<td>
 		                   			<form class="form-inline" onsubmit="return false">
 										<div class="form-group">
-											<select class="form-control input-sm" id="Cinema" style="width:150px;" >
-												<option value="">影院</option>
-											</select>
-											<select class="form-control input-sm" id="Type" style="width:150px;">
-												<option value="">类型</option>
-											</select>
-											<input id="GoodsName" type="text" class="form-control" placeholder="卖品名称">
-											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
+											<h2>放映厅实物礼物列表：</h2>
 										</div>
 									</form>
 	                   			</td>
 	                   			<td align="right">
-	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='getNewGoods.html'">
-                                      <i class="layui-icon">&#xe608;</i> 重新获取影院卖品
+	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addRoomgift.html'">
+                                      <i class="layui-icon">&#xe608;</i> 新增奖品
                                     </button>
 	                   			</td>
 	                   		</tr> 
@@ -47,16 +40,11 @@
                                 </tr>                       
                                 <tr>
 									<th>#</th>
-									<th>影院名称</th>
-									<th>编码</th>
-									<th>图片</th>
+									<th>礼物图片</th>
 									<th>名称</th>
-									<th>类型</th>
-									<th>标准价</th>
-									<th>销售价</th>
-									<th>库存</th>
-									<th>状态</th>
-									<th>是否推荐</th>
+									<th>描述</th>
+									<th>每组数量</th>
+									<th>每场最大发送组数</th>
 									<th>操作</th>
                                 </tr>
                             </thead>
@@ -65,14 +53,25 @@
                         </table>
                     </div>
                 </div>
+                
+                <div class="form-actions">
+					<div class="row" align="center">
+						<div class="col-md-12">
+							<button class="btn btn-primary" type="submit" onclick="update()">
+								<i class="fa fa-save"></i> 保存
+							</button>
+							<button class="btn btn-primary" onclick="location.href='cinemaviewList.html'">返回</button>
+						</div>
+					</div>
+				</div>
             </div>
         </div>
     </div>
-	<!--显示图片层-->
+    <!--显示图片层-->
     <div id="MyDiv" style="display: none;position: absolute;top: 20%;left: 40%;width: 80%;height: 80%;z-index: 1001;overflow: auto;-moz-opacity: 0.8;opacity: .80;filter: alpha(opacity=80)">
         <img id="personcardimage2" />
     </div>
-	
+
 <script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
 <script type="text/javascript" src="../../js/jq.js"></script>
 <script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
@@ -93,12 +92,10 @@
 	                "url": "/js/plugin/datatables/Chinese.lang"
 	            },
 	        	"ajax": {
-	        		"url" : "/goodss",
+	        		"url" : "/roomgifts",
 	        		"type":"get",
 	        		"data":function(d){
-	    				d.CinemaCode = $("#Cinema").val();
-	    				d.GoodsType = $("#Type").val();
-	    				d.GoodsName = $("#GoodsName").val();
+	    				d.id = $("#id").val();
 	    			}
 	        	},
 	        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
@@ -109,54 +106,32 @@
 							return meta.row + 1 + meta.settings._iDisplayStart;
 							}
 					},
-					{"data" : "cinemaName", "defaultContent" : ""},
-					{"data" : "goodsCode", "defaultContent" : ""},
 					{
-						"data" : "goodsPic", 
+						"data" : "image", 
 						"defaultContent" : "",
 						"render": function (data, type, row) {
-	                		var goodsPic = row['goodsPic'];
-	                      	var img = "<img class='pic' style='width:32px;height: 32px;' src='"+goodsPic+"' title='"+goodsPic+"' >";
+	                		var image = row['image'];
+	                      	var img = "<img class='pic' style='width:32px;height: 32px;' src='"+image+"' title='"+image+"' >";
 	                      	
 	                        return img;
 	                  	}
 					},
-					{"data" : "goodsName", "defaultContent" : ""},
-					{"data" : "goodsType", "defaultContent" : ""},
-					{"data" : "standardPrice", "defaultContent" : ""},
-					{"data" : "settlePrice", "defaultContent" : ""},
-					{"data" : "stockCount", "defaultContent" : ""},
-					{
-						"data" : "goodsStatus", 
-						"defaultContent" : "",
-						"render": function (data, type, row) {
-	                		var flag = row['goodsStatus']? "上架":"下架";
-	                      	
-	                        return flag;
-	                  	}
-					},
-					{
-						"data" : "isRecommand", 
-						"defaultContent" : "",
-						"render": function (data, type, row) {
-	                		var flag = row['isRecommand']? "是":"否";
-	                      	
-	                        return flag;
-	                  	}
-					},
+					{"data" : "giftName", "defaultContent" : ""},
+					{"data" : "giftDesc", "defaultContent" : ""},
+					{"data" : "sendNumber", "defaultContent" : ""},
+					{"data" : "groupNumber", "defaultContent" : ""},
 					{ 
-						"data": "", 
-						"defaultContent": "",
-						"orderable":false,
-				        "render": function (data, type, row) {
-	             		           var id = row['id'];
-	             		           var href = "updateGoods.html?id=" + id;
-	                               var edit = buttonEdit(href, "", pers);
-	             		           var del = buttonDel(id, "", pers);
-	             		           
-	                               return edit + del;
-	               	            }		
-					},
+									"data": "", 
+									"defaultContent": "",
+									"orderable":false,
+							        "render": function (data, type, row) {
+	                		           var id = row['id'];
+	                		           var href = "updateRoomgift.html?id=" + id;
+	                                   var edit = buttonEdit(href, "", pers);
+	                		           var del = buttonDel(id, "", pers);
+	                                   return edit + del;
+	                  	            }		
+								},
 	                
 	            ],
 	           "order": [[ 0, "asc" ]]
@@ -170,12 +145,12 @@
 	//鼠标移入、移出
 	$('tbody').on('mouseover','.pic', function () {
 		document.getElementById("personcardimage2").src = $(this).attr('title');
-        document.getElementById('MyDiv').style.display = 'block';
+	    document.getElementById('MyDiv').style.display = 'block';
 		
 	});
 	$('tbody').on('mouseout','.pic', function () {
 		document.getElementById('MyDiv').style.display = 'none';
-
+	
 	});
 	
 	function del(id){
@@ -184,7 +159,7 @@
 	    }, function() {
 	    	$.ajax({
 	            type : 'delete',
-	            url : '/goodss/'+id,
+	            url : '/roomgifts/'+id,
 	            success : function(data) {
 	                example.ajax.reload();
 	                layer.msg("删除成功");
@@ -193,24 +168,6 @@
 	        
 	        layer.close(1);
 	    });
-	}
-	
-	//获取影院
-	getCinema();
-	function getCinema(){
-		$.ajax({
-	        type:"get",
-	        url:"/cinemas/getCinemas",
-	        success:function(data){
-				for(var i=0; i<data.length;i++){
-					var option = "<option value="+data[i].code+">"+data[i].name+"</option>";
-					$("#Cinema").append(option);
-				}
-	        },
-	        error:function(){
-	            J.alert('Error');
-	        }
-	    })
 	}
 	
 	$("#searchBt").click(function(){

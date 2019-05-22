@@ -14,12 +14,13 @@ import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.stereotype.Component;
 
 import com.boot.security.server.apicontroller.reply.BaseReply;
 import com.boot.security.server.apicontroller.reply.QueryScreenRoomReply.ScreenRoom;
@@ -40,6 +41,7 @@ import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.apicontroller.reply.RoomGiftReply;
 import com.boot.security.server.apicontroller.reply.RoomGiftReply.RoomGiftResult;
 
+@Component
 @ServerEndpoint(value="/webSocket/chat/{cinemaCode}/{roomCode}/{giftCode}/{giftType}/{actionType}/{openid}", configurator = WebSocketCfg.class)
 public class ChatRoomServer {
 
@@ -64,7 +66,7 @@ public class ChatRoomServer {
 	private CouponsgroupServiceImpl couponsgroupService;
 	
 	@OnOpen
-    public BaseReply connect(@PathVariable String roll,@PathVariable String roomCode,@PathVariable String openid, Session session){
+    public BaseReply connect(@PathParam("roomCode") String roomCode,@PathParam("openid") String openid, Session session){
 		BaseReply reply = new BaseReply();
 		if (!rooms.containsKey(roomCode)) { //房间暂未开启
 			reply.ErrorMessage = "房间暂未开启";
@@ -88,7 +90,7 @@ public class ChatRoomServer {
 	}
 	
 	@OnClose
-    public void disConnect(@PathVariable String roomCode,@PathVariable String openid, Session session) {
+    public void disConnect(@PathParam("roomCode") String roomCode,@PathParam("openid") String openid, Session session) {
         if(rooms.containsKey(roomCode) && rooms.get(roomCode).contains(session)){
             rooms.get(roomCode).remove(session);
             System.out.println(openid+"退出了"+roomCode+"号房间");
@@ -96,8 +98,8 @@ public class ChatRoomServer {
     }
 	
 	@OnMessage
-    public RoomGiftReply receiveMsg(@PathVariable String cinemaCode,@PathVariable String roomCode,@PathVariable String giftCode,@PathVariable String giftType,
-    		@PathVariable String actionType,@PathVariable String openid, Session session) throws Exception {
+    public RoomGiftReply receiveMsg(@PathParam("cinemaCode") String cinemaCode,@PathParam("roomCode") String roomCode,@PathParam("giftCode") String giftCode,
+    		@PathParam("giftType") String giftType,	@PathParam("actionType") String actionType,@PathParam("openid") String openid, Session session) throws Exception {
 		RoomGiftReply reply = new RoomGiftReply();
 		//验证影院是否存在且可访问
 		Cinema cinema=_cinemaService.getByCinemaCode(cinemaCode);
@@ -267,7 +269,11 @@ public class ChatRoomServer {
 					return reply;
 				}
 			}
-		} else {
+		} else if("3".equals(actionType)){	//发消息时，giftcode传的是消息内容
+			sendMessagetoRoom(roomCode,giftCode);
+			reply.SetSuccessReply();
+			return reply;
+		}else {
 			reply.ErrorMessage = "操作类型actionType 传值不对";
 			return reply;
 		}
@@ -280,13 +286,6 @@ public class ChatRoomServer {
         log.error("websocket发生错误："+t.toString());
     }
 	
-	//发送消息给指定用户
-    public void sendMessage(String Openid,String msg) throws Exception{
-        Session session = OpenidSession.get(Openid);
-        if(session.isOpen()){
-            session.getBasicRemote().sendText(msg);
-        }
-    }
 	
     public  void sendMessagetoRoom(String roomCode, String msg) throws Exception {
         for (Session session : rooms.get(roomCode)) {

@@ -93,12 +93,12 @@ public class GoodsController {
     	return goodsDao.getGoodsByCinemaCode(cinemacodes);
     }
     
-    @PostMapping("/queryGoods")
+    @PostMapping("/queryGoods/{code}")
     @ApiOperation(value = "重新获取影院卖品")
-    public QueryGoodsReply queryGoods(@RequestBody Map<String,Object> map){
+    public QueryGoodsReply queryGoods(@PathVariable String code){
     	String UserName = "MiniProgram";
     	String Password = "6BF477EBCC446F54E6512AFC0E976C41";
-		QueryGoodsReply reply =NetSaleSvcCore.getInstance().QueryGoods(UserName, Password, map.get("cinemaCode").toString());
+		QueryGoodsReply reply =NetSaleSvcCore.getInstance().QueryGoods(UserName, Password, code);
 		
 		return reply;
     	

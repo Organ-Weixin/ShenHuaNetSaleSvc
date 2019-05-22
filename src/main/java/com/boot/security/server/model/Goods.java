@@ -1,6 +1,8 @@
 package com.boot.security.server.model;
 
-public class Goods extends BaseEntity<Long> {
+import java.util.Date;
+
+public class Goods {
 
 	private Long Id;
 	private String CinemaCode;
@@ -20,6 +22,9 @@ public class Goods extends BaseEntity<Long> {
 	private Integer GoodsStatus;
 	private Integer IsRecommand;
 	private Integer IsPackage;
+	private Date Updated;
+	
+	private String CinemaName;
 
 	public Long getId() {
 		return Id;
@@ -129,5 +134,17 @@ public class Goods extends BaseEntity<Long> {
 	public void setIsPackage(Integer IsPackage) {
 		this.IsPackage = IsPackage;
 	}
-
+	public String getCinemaName() {
+		return CinemaName;
+	}
+	public void setCinemaName(String cinemaName) {
+		CinemaName = cinemaName;
+	}
+	public Date getUpdated() {
+		return Updated;
+	}
+	public void setUpdated(Date updated) {
+		Updated = updated;
+	}
+	
 }

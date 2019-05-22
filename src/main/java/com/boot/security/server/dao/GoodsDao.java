@@ -36,7 +36,7 @@ public interface GoodsDao {
     int update(Goods goods);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into goods(Id, CinemaCode, UserId, GoodsCode, GoodsName, GoodsType, StandardPrice, SettlePrice, GoodsPic, StockCount, GoodsDesc, UnitName, ShowSeqNo, IsDiscount, GoodsKey, GoodsStatus, IsRecommand, IsPackage) values(#{Id}, #{CinemaCode}, #{UserId}, #{GoodsCode}, #{GoodsName}, #{GoodsType}, #{StandardPrice}, #{SettlePrice}, #{GoodsPic}, #{StockCount}, #{GoodsDesc}, #{UnitName}, #{ShowSeqNo}, #{IsDiscount}, #{GoodsKey}, #{GoodsStatus}, #{IsRecommand}, #{IsPackage})")
+    @Insert("insert into goods(Id, CinemaCode, UserId, GoodsCode, GoodsName, GoodsType, StandardPrice, SettlePrice, GoodsPic, StockCount, GoodsDesc, UnitName, ShowSeqNo, IsDiscount, GoodsKey, GoodsStatus, IsRecommand, IsPackage, Updated) values(#{Id}, #{CinemaCode}, #{UserId}, #{GoodsCode}, #{GoodsName}, #{GoodsType}, #{StandardPrice}, #{SettlePrice}, #{GoodsPic}, #{StockCount}, #{GoodsDesc}, #{UnitName}, #{ShowSeqNo}, #{IsDiscount}, #{GoodsKey}, #{GoodsStatus}, #{IsRecommand}, #{IsPackage}, #{Updated})")
     int save(Goods goods);
     
     int count(@Param("params") Map<String, Object> params);

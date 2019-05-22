@@ -47,6 +47,16 @@
 		${params.orderBy}
 		limit #{offset}, #{limit}
 	</select>
+	
+	<select id="goodscount" resultType="int">
+		select count(1) from cinema t left join goods g on t.code = g.CinemaCode 
+		<include refid="whereByroleId" />
+	</select>
+
+	<select id="goodslist" resultType="Cinema">
+		select t.*,g.updated from cinema t left join goods g on t.code = g.CinemaCode 
+		<include refid="whereByroleId" />
+	</select>
 
 	<select id="getCinemasByUser" resultType="Cinema">
 		select * from cinema t
