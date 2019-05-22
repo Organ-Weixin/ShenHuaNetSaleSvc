@@ -13,7 +13,10 @@
 			</if>
 			<if test="params.PickUpCode != null and params.PickUpCode != ''">
 				and PickUpCode = #{params.PickUpCode} 
-			</if>
+			</if>  
+			<if test="params.OrderCode != null and params.OrderCode != ''">
+				and OrderCode = #{params.OrderCode} 
+			</if> 
 			<if test="params.Created != null and params.Created != ''">
 				and Created like concat('%', #{params.Created}, '%')  
 			</if>

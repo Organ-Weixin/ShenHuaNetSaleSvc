@@ -934,7 +934,6 @@ public class ReplyExtension {
 				reply.SetNecessaryParamMissReply("OpenID");
 				return false;
 			}
-			
 			return true;
 		}
 		//region QueryFilmReply
@@ -963,4 +962,25 @@ public class ReplyExtension {
 	        return true;
 	    }
 	//endregion
+		
+		//region  查询用户的小食
+		public static boolean RequestInfoGuard(QueryCinemaGoodsReply reply,String Username,String Password,String CinemaCode,String OpenID){
+			if (Username==null || "".equals(Username)) {
+				reply.SetNecessaryParamMissReply("UserName");
+				return false;
+			}
+			if (Password==null || "".equals(Password)) {
+				reply.SetNecessaryParamMissReply("Password");
+				return false;
+			}
+			if (CinemaCode==null || "".equals(CinemaCode)) {
+				reply.SetNecessaryParamMissReply("CinemaCode");
+				return false;
+			}
+			if(OpenID == null || "".equals(OpenID)){
+				reply.SetNecessaryParamMissReply("OpenID");
+				return false;
+			}
+			return true;
+		}
 }

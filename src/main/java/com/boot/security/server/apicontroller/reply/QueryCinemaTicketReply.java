@@ -31,7 +31,7 @@ public class QueryCinemaTicketReply extends BaseReply{
 			private String FilmName;//影片名称//oNCc65EhjU4Hia7iatDY9lkvwV24
 			private Date SessionDateTime;//放映计划时间
 			private String CinemaName;//影院名称
-			private String Dimensional;//影片类型（2D/3D）
+			private String Version;//影片版本（2D/3D）
 			private String ScreenName;//影厅名称
 			private String SeatName;//座位名称
 			private String TicketInfoCode;//二维码
@@ -62,13 +62,12 @@ public class QueryCinemaTicketReply extends BaseReply{
 			public void setCinemaName(String cinemaName) {
 				CinemaName = cinemaName;
 			}
-			public String getDimensional() {
-				return Dimensional;
+			public String getVersion() {
+				return Version;
 			}
-			public void setDimensional(String dimensional) {
-				Dimensional = dimensional;
+			public void setVersion(String version) {
+				Version = version;
 			}
-			
 			public String getScreenName() {
 				return ScreenName;
 			}

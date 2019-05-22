@@ -2,7 +2,6 @@ package com.boot.security.server.apicontroller;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +20,10 @@ import com.boot.security.server.apicontroller.reply.MobilePhoneRegisterReply;
 import com.boot.security.server.apicontroller.reply.MobilePhoneRegisterReply.MobilePhoneRegisterBean;
 import com.boot.security.server.apicontroller.reply.QueryRoomGiftRecordReply.QueryRoomGiftRecord;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
+import com.boot.security.server.apicontroller.reply.QueryCinemaGoodsReply;
 import com.boot.security.server.apicontroller.reply.QueryCinemaTicketReply;
-import com.boot.security.server.apicontroller.reply.QueryCinemaTicketReply.QueryCinemaTicket;
 import com.boot.security.server.apicontroller.reply.QueryCinemaTicketReply.QueryCinemaTicket.CinemaTicket;
+import com.boot.security.server.apicontroller.reply.QueryCinemaGoodsReply.QueryCinemaGoodsReplyGoods.QueryCinemaGoods;
 import com.boot.security.server.apicontroller.reply.QueryRoomGiftRecordReply;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.apicontroller.reply.RoomGiftInput;
@@ -35,21 +35,23 @@ import com.boot.security.server.apicontroller.reply.UserLoginReply.UserLoginResu
 import com.boot.security.server.apicontroller.reply.UserPhoneInput;
 import com.boot.security.server.apicontroller.reply.UserWXResult;
 import com.boot.security.server.dao.AdminorderviewDao;
-import com.boot.security.server.dao.OrderseatdetailsDao;
+import com.boot.security.server.dao.GoodsorderdetailsviewDao;
 import com.boot.security.server.model.Adminorderview;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaMiniProgramAccounts;
-import com.boot.security.server.model.Orders;
-import com.boot.security.server.model.Orderseatdetails;
+import com.boot.security.server.model.Filminfo;
+import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Roomgiftuser;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
+import com.boot.security.server.modelView.Goodsorderdetailsview;
 import com.boot.security.server.service.impl.CinemaMiniProgramAccountsServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
-import com.boot.security.server.service.impl.OrderServiceImpl;
+import com.boot.security.server.service.impl.FilminfoServiceImpl;
+import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.RoomgiftuserServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
@@ -79,9 +81,13 @@ public class AppUserController {
 	@Autowired
 	private RoomgiftuserServiceImpl roomgiftuserService;
 	@Autowired
-	private ScreeninfoServiceImpl _screeninfoService;
+	private FilminfoServiceImpl _filminfoServiceImpl;
 	@Autowired
 	private  AdminorderviewDao adminorderviewDao;
+	@Autowired
+	private  GoodsorderdetailsviewDao goodsorderdetailsviewDao;
+	@Autowired
+	private  GoodsOrderServiceImpl _goodsOrderService;
 	@PostMapping("/UserLogin")
 	@ApiOperation(value = "用户登陆")
 	public UserLoginReply UserLogin(@RequestBody UserLoginInput userinput){
@@ -365,8 +371,8 @@ public class AppUserController {
 		return reply;
 	}
 	@GetMapping("/QueryCinemaTicket/{UserName}/{Password}/{CinemaCode}/{OpenID}")
-	@ApiOperation(value = "查询用户电影票")
-	public QueryCinemaTicketReply aa(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
+	@ApiOperation(value = "查询用户购买的电影票记录")
+	public QueryCinemaTicketReply QueryCinemaTicket(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String OpenID){
 		QueryCinemaTicketReply queryCinemaTicketReply=new QueryCinemaTicketReply();
 		// 校验参数
@@ -392,7 +398,6 @@ public class AppUserController {
 			return queryCinemaTicketReply;
 		}
 		List<Adminorderview> adminorderviewList=adminorderviewDao.getByCinemaCode(CinemaCode);
-		List<Screeninfo> screeninfo=_screeninfoService.getByCinemaCode(CinemaCode);
 		queryCinemaTicketReply.setData(queryCinemaTicketReply.new QueryCinemaTicket());
 		if(adminorderviewList==null||adminorderviewList.size()==0){
 			queryCinemaTicketReply.getData().setCount(0);
@@ -410,9 +415,13 @@ public class AppUserController {
 				cinemaTicket.setOrderCode(adminorderview.getSubmitordercode());
 				cinemaTicket.setCreated(adminorderview.getCreated());
 				cinemaTicket.setMobilePhone(adminorderview.getMobilephone());
-				Screeninfo scr=new Screeninfo();
-				cinemaTicket.setDimensional(scr.getType());
-				screeninfo.add(scr);
+				List<Filminfo> filminfo=_filminfoServiceImpl.getFilmByFilmName(adminorderview.getFilmname());
+				for(Filminfo filmi:filminfo){
+					CinemaTicket cinematicket =queryCinemaTicketReply.getData().new  CinemaTicket();
+					cinematicket.setVersion(filmi.getVersion());
+					queryCinemaTicketReply.getData().getTicket().add(cinematicket);
+					System.out.println("55555555555=:"+filmi.getVersion());
+				}
 				cinemaTicket.setAddress(cinema.getAddress());
 				cinemaTicket.setCinemaPhone(cinema.getCinemaPhone());
 				if(adminorderview.getSaleprice()!=null){
@@ -423,7 +432,6 @@ public class AppUserController {
 				}
 				cinemaTicket.setMobilePhone(adminorderview.getMobilephone());
 				cinemaTicket.setTicketInfoCode(adminorderview.getTicketinfocode());
-//				adminorderviewList.add(adminorderview);
 				queryCinemaTicketReply.getData().getTicket().add(cinemaTicket);
 
 			}
@@ -431,8 +439,64 @@ public class AppUserController {
 		queryCinemaTicketReply.SetSuccessReply();
 		return queryCinemaTicketReply;
 	}
-	
-	
+	@GetMapping("/QueryCinemaGoods/{UserName}/{Password}/{CinemaCode}/{OpenID}")
+	@ApiOperation(value = "查询用户购买的小食记录")
+	public QueryCinemaGoodsReply QueryCinemaGoods(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
+			@PathVariable String OpenID){
+		QueryCinemaGoodsReply queryCinemaGoodsReply=new QueryCinemaGoodsReply();
+		// 校验参数
+		if (!ReplyExtension.RequestInfoGuard(queryCinemaGoodsReply, UserName, Password, CinemaCode, OpenID)) {
+			return queryCinemaGoodsReply;
+		}
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
+		if (UserInfo == null) {
+			queryCinemaGoodsReply.SetUserCredentialInvalidReply();
+			return queryCinemaGoodsReply;
+		}
+		//验证影院是否存在且可访问
+		Cinema cinema=_cinemaService.getByCinemaCode(CinemaCode);
+		if(cinema == null){
+			queryCinemaGoodsReply.SetCinemaInvalidReply();
+			return queryCinemaGoodsReply;
+		}
+		//验证用户OpenId是否存在
+		Ticketusers ticketuser = _ticketusersService.getByopenids(OpenID);
+		if(ticketuser == null){
+			queryCinemaGoodsReply.SetOpenIDNotExistReply();
+			return queryCinemaGoodsReply;
+		}
+		List<Goodsorderdetailsview> goodsorderdetailsviewList=goodsorderdetailsviewDao.getByCinemaCode(CinemaCode);
+		queryCinemaGoodsReply.setData(queryCinemaGoodsReply.new QueryCinemaGoodsReplyGoods());
+		if(goodsorderdetailsviewList==null||goodsorderdetailsviewList.size()==0){
+			queryCinemaGoodsReply.getData().setCount(0);
+		}else{
+			queryCinemaGoodsReply.getData().setCount(goodsorderdetailsviewList.size());
+			queryCinemaGoodsReply.getData().setGood(new ArrayList<QueryCinemaGoods>());
+			for(Goodsorderdetailsview goodview:goodsorderdetailsviewList){
+				QueryCinemaGoods queryCinemaGoods=queryCinemaGoodsReply.getData().new QueryCinemaGoods();
+			queryCinemaGoods.setGoodsName(goodview.getGoodsName());
+			if(goodview.getGoodsCount()!=null){
+			queryCinemaGoods.setGoodsCount(String.valueOf(goodview.getGoodsCount()));	
+			}
+			queryCinemaGoods.setPickUpCode(goodview.getPickUpCode());
+			queryCinemaGoods.setCinemaName(goodview.getCinemaName());
+			queryCinemaGoods.setAddress(cinema.getAddress());
+			if(goodview.getSubTotalSettleAmount()!=null){
+			queryCinemaGoods.setSubTotalSettleAmount(String.valueOf(goodview.getSubTotalSettleAmount()));
+			}
+			queryCinemaGoods.setCreated(goodview.getCreated());
+			queryCinemaGoods.setMobilePhone(goodview.getMobilePhone());
+			if(goodview.getOrderStatus()!=null){
+			queryCinemaGoods.setStatus(String.valueOf(goodview.getOrderStatus()));
+			}
+			queryCinemaGoods.setOrderCode(goodview.getOrderCode());
+			queryCinemaGoodsReply.getData().getGood().add(queryCinemaGoods);
+			}
+		}
+		queryCinemaGoodsReply.SetSuccessReply();
+		return queryCinemaGoodsReply;
+	}
 	
 	
 	
