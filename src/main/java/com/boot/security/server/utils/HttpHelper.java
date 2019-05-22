@@ -41,6 +41,7 @@ import net.sf.json.JSONObject;
  */
 public class HttpHelper {
 
+	//region sendPostByHttpUrlConnection String data
 	/**
 	 * POST请求
 	 *
@@ -114,7 +115,9 @@ public class HttpHelper {
 		}
 		return resultBuffer.toString();
 	}
-
+	//endregion
+	
+	//region sendPostByHttpUrlConnection Map<String, Object> params
 	/**
 	 * POST请求
 	 *
@@ -191,7 +194,52 @@ public class HttpHelper {
 
 		return resultBuffer.toString();
 	}
+	//endregion
 
+	//region sendGetByHttpUrlConnection
+		public static String sendGetByHttpUrlConnection(String urlStr, Map<String, Object> params, String charset) {
+			StringBuffer resultBuffer = null;
+			// 构建请求参数
+			String sbParams = JoiningTogetherParams(params);
+			HttpURLConnection con = null;
+			BufferedReader br = null;
+			try {
+				URL url = null;
+				if (sbParams != null && sbParams.length() > 0) {
+					url = new URL(urlStr + "?" + sbParams);
+				} else {
+					url = new URL(urlStr);
+				}
+				con = (HttpURLConnection) url.openConnection();
+				con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+				con.connect();
+				resultBuffer = new StringBuffer();
+				br = new BufferedReader(new InputStreamReader(con.getInputStream(), charset));
+				String temp;
+				while ((temp = br.readLine()) != null) {
+					resultBuffer.append(temp);
+				}
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			} finally {
+				if (br != null) {
+					try {
+						br.close();
+					} catch (IOException e) {
+						br = null;
+						throw new RuntimeException(e);
+					} finally {
+						if (con != null) {
+							con.disconnect();
+							con = null;
+						}
+					}
+				}
+			}
+			return resultBuffer.toString();
+		}
+	
+	//region sendPostByUrlConnection
 	public static String sendPostByUrlConnection(String urlStr, Map<String, Object> params, String charset) {
 		StringBuffer resultBuffer = null;
 		// 构建请求参数
@@ -251,49 +299,12 @@ public class HttpHelper {
 		}
 		return resultBuffer.toString();
 	}
+	//endregion
 
-	public static String sendGetByHttpUrlConnection(String urlStr, Map<String, Object> params, String charset) {
-		StringBuffer resultBuffer = null;
-		// 构建请求参数
-		String sbParams = JoiningTogetherParams(params);
-		HttpURLConnection con = null;
-		BufferedReader br = null;
-		try {
-			URL url = null;
-			if (sbParams != null && sbParams.length() > 0) {
-				url = new URL(urlStr + "?" + sbParams);
-			} else {
-				url = new URL(urlStr);
-			}
-			con = (HttpURLConnection) url.openConnection();
-			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
-			con.connect();
-			resultBuffer = new StringBuffer();
-			br = new BufferedReader(new InputStreamReader(con.getInputStream(), charset));
-			String temp;
-			while ((temp = br.readLine()) != null) {
-				resultBuffer.append(temp);
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					br = null;
-					throw new RuntimeException(e);
-				} finally {
-					if (con != null) {
-						con.disconnect();
-						con = null;
-					}
-				}
-			}
-		}
-		return resultBuffer.toString();
-	}
-
+	
+	//endregion
+	
+	//region sendGetByUrlConnection
 	public static String sendGetByUrlConnection(String urlStr, Map<String, Object> params, String charset) {
 		StringBuffer resultBuffer = null;
 		// 构建请求参数
@@ -334,11 +345,14 @@ public class HttpHelper {
 		}
 		return resultBuffer.toString();
 	}
+	//endregion
 
+	//region httpClientPost
 	public static String httpClientPost(String urlStr, Map<String, String> params, String charset) {
 		StringBuffer resultBuffer = null;
 		HttpClient client = new DefaultHttpClient();
 		HttpPost httpPost = new HttpPost(urlStr);
+		//httpPost.addHeader("Content-Type", "application/json;charset=utf-8");
 		// 构建请求参数
 		List<NameValuePair> list = new ArrayList<NameValuePair>();
 		Iterator<Entry<String, String>> iterator = params.entrySet().iterator();
@@ -355,7 +369,7 @@ public class HttpHelper {
 			HttpResponse response = client.execute(httpPost);
 			// 读取服务器响应数据
 			resultBuffer = new StringBuffer();
-			br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+			br = new BufferedReader(new InputStreamReader(response.getEntity().getContent(),"UTF-8"));
 			String temp;
 			while ((temp = br.readLine()) != null) {
 				resultBuffer.append(temp);
@@ -374,7 +388,9 @@ public class HttpHelper {
 		}
 		return resultBuffer.toString();
 	}
-
+	//endregion
+	
+	//region httpClientGet
 	public static String httpClientGet(String urlStr, Map<String, Object> params, String charset) {
 		StringBuffer resultBuffer = null;
 		HttpClient client = new DefaultHttpClient();
@@ -420,7 +436,9 @@ public class HttpHelper {
 		}
 		return resultBuffer.toString();
 	}
+	//endregion
 
+	//region sendSocketPost
 	public static String sendSocketPost(String urlStr, Map<String, Object> params, String charset) {
 		String result = "";
 		// 构建请求参数
@@ -514,7 +532,9 @@ public class HttpHelper {
 		}
 		return result;
 	}
+	//endregion
 
+	//region sendSocketGet
 	public static String sendSocketGet(String urlStr, Map<String, Object> params, String charset) {
 		String result = "";
 		// 构建请求参数
@@ -608,7 +628,9 @@ public class HttpHelper {
 		}
 		return result;
 	}
+	//endregion
 
+	//region readLine
 	private static String readLine(InputStream is, int contentLength, String charset) throws IOException {
 		List<Byte> lineByte = new ArrayList<Byte>();
 		byte tempByte;
@@ -632,7 +654,9 @@ public class HttpHelper {
 		}
 		return new String(resutlBytes, charset);
 	}
+	//endregion
 
+	//region JoiningTogetherParams
 	private static String JoiningTogetherParams(Map<String, Object> params) {
 		StringBuffer sbParams = new StringBuffer();
 		if (params != null && params.size() > 0) {
@@ -646,7 +670,9 @@ public class HttpHelper {
 		}
 		return "";
 	}
-	
+	//endregion
+
+	//region sendHttp
 	//调用趣满满接口用到
 	public static JSONObject sendHttp(Map<String,Object> map,String url) throws IOException{
         CloseableHttpClient client = HttpClients.createDefault();
@@ -667,4 +693,5 @@ public class HttpHelper {
         
         return json;
     }
+	//endregion
 }

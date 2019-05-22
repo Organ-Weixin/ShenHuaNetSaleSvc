@@ -15,6 +15,8 @@ import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -163,11 +165,12 @@ public class FilminfoController {
         map.put("ak","fCWHp1a9QdsHwfPbHZ20LGLzgpKHEGrc");
         map.put("output","json");
         String JsonStr=HttpHelper.sendGetByUrlConnection(UrlAddress, map,"UTF-8");
-        System.out.println(JsonStr);
+        //log.info("抓取影片返回："+JsonStr);
+        //System.out.println(JsonStr);
         BaiduFilmInfomation baidufilm=new Gson().fromJson(JsonStr,BaiduFilmInfomation.class);
         for(Movie movie: baidufilm.getResult().getMovie()){
         	List<Filminfo> films=_filmInfoService.getFilmByFilmName(movie.getMovie_name());
-        	System.out.println(new Gson().toJson(films));
+        	//System.out.println(new Gson().toJson(films));
         	if(films!=null&&films.size()>0){
         		for(Filminfo film:films){
             		if(film.getVersion()==null||film.getVersion().equals("")){

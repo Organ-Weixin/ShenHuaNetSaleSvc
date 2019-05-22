@@ -326,7 +326,7 @@ public static QueryNewSessionsReply.QueryNewSessionsReplyNewSessions.QueryNewSes
 		goods.setStockCount(entity.getStockCount());
 		goods.setGoodsDesc(entity.getGoodsDesc());
 		goods.setUnitName(entity.getUnitName());
-		goods.setShowSeqNo(entity.getShowSeqNo());
+		goods.setShowSeqNo(entity.getShowSeqNo()==null?0:entity.getShowSeqNo());
 		goods.setIsDiscount(entity.getIsDiscount()==1?"是":"否");
 		goods.setGoodsStatus(entity.getGoodsStatus()==1?"上架":"下架");
 		goods.setIsRecommand(entity.getIsRecommand()==1?"是":"否");

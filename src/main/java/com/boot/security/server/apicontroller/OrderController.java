@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -57,12 +58,14 @@ import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Screeninfo;
+import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemapaymentsettingsServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
+import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.HttpHelper;
@@ -90,6 +93,8 @@ public class OrderController {
 	CinemapaymentsettingsServiceImpl _cinemapaymentsettingsService;
 	@Autowired
 	CouponsServiceImpl _couponsService;
+	@Autowired
+	SessioninfoServiceImpl _sessioninfoService;
 	@Autowired
     private HttpServletRequest request;
 	
@@ -396,10 +401,23 @@ public class OrderController {
                 }
             }
         }
+        //价格计算
+        Sessioninfo sessioninfo=_sessioninfoService.getBySessionCode(order.getOrderBaseInfo().getUserId() ,order.getOrderBaseInfo().getCinemaCode(),order.getOrderBaseInfo().getSessionCode());
+        
         //更新订单信息
-        ModelMapper.MapFrom(order, QueryJson);
+        order.getOrderBaseInfo().setTotalConponPrice(QueryJson.getSeats().stream().mapToDouble(PrePayOrderQueryJsonSeat::getReductionPrice).sum());
+        for(Orderseatdetails seat:order.getOrderSeatDetails()){
+        	List<PrePayOrderQueryJsonSeat> seatinfo = QueryJson.getSeats().stream()
+					.filter((PrePayOrderQueryJsonSeat s) -> seat.getSeatCode().equals(s.getSeatCode()))
+					.collect(Collectors.toList());
+        	if(seatinfo!=null){
+        		seat.setConponCode(seatinfo.get(0).getCouponsCode());
+        		seat.setConponPrice(seatinfo.get(0).getReductionPrice());
+        	}
+        }
+        
         _orderService.Update(order);
-        //准备参数
+        //准备支付参数
         String WxpayAppId=cinemapaymentsettings.getWxpayAppId();
         String strbody = cinemapaymentsettings.getCinemaName() + "-" + StringUtil.leftPad(String.valueOf(order.getOrderBaseInfo().getSessionTime().getMonth()+1), 2, "0")
         + "月" + StringUtil.leftPad(String.valueOf(order.getOrderBaseInfo().getSessionTime().getDay()), 2, "0") + "日" + new SimpleDateFormat("HH:mm").format(order.getOrderBaseInfo().getSessionTime()) + " " + order.getOrderBaseInfo().getFilmName()
