@@ -11,6 +11,7 @@ public class Goodsorderdetailsview  {
 	private String CinemaCode;
 	private String CinemaName;
 	private String PickUpCode;
+	private String OrderCode;
 	private Double SettlePrice;
 	private Integer GoodsCount;
 	private Double SubTotalSettleAmount;
@@ -59,6 +60,12 @@ public class Goodsorderdetailsview  {
 	}
 	public void setPickUpCode(String pickUpCode) {
 		PickUpCode = pickUpCode;
+	}
+	public String getOrderCode() {
+		return OrderCode;
+	}
+	public void setOrderCode(String orderCode) {
+		OrderCode = orderCode;
 	}
 	public Double getSettlePrice() {
 		return SettlePrice;
