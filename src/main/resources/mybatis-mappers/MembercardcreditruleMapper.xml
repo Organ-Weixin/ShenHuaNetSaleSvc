@@ -26,6 +26,9 @@
 			<if test="params.LevelName != null and params.LevelName != ''">
 				and LevelName = #{params.LevelName} 
 			</if>
+			<if test="params.CreateTime != null and params.CreateTime != ''">
+				and CreateTime = #{params.CreateTime} 
+			</if>
 			<if test="params.Credit != null and params.Credit != ''">
 				and Credit = #{params.Credit} 
 			</if>
@@ -34,6 +37,9 @@
 			</if>
 			<if test="params.RuleDescription != null and params.RuleDescription != ''">
 				and RuleDescription = #{params.RuleDescription} 
+			</if>
+			<if test="params.UpdateTime != null and params.UpdateTime != ''">
+				and UpdateTime = #{params.UpdateTime} 
 			</if>
 			<if test="params.Status != null and params.Status != ''">
 				and Status = #{params.Status} 
@@ -78,6 +84,9 @@
 			<if test="LevelName != null">
 				LevelName = #{LevelName}, 
 			</if>
+			<if test="CreateTime != null">
+				CreateTime = #{CreateTime}, 
+			</if>
 			<if test="Credit != null">
 				Credit = #{Credit}, 
 			</if>
@@ -86,6 +95,9 @@
 			</if>
 			<if test="RuleDescription != null">
 				RuleDescription = #{RuleDescription}, 
+			</if>
+			<if test="UpdateTime != null">
+				Status = #{Status}, 
 			</if>
 			<if test="Status != null">
 				Status = #{Status}, 

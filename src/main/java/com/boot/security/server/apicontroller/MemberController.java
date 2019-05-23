@@ -250,9 +250,6 @@ public class MemberController {
             return queryMemberCardByPhoneReply;
         }
         List<Membercard> membercards = _memberCardService.getByCinemaCodeAndMobilePhone(CinemaCode, MobilePhone);
-        for(int i=0; i<membercards.size(); i++){
-        	
-        }
         queryMemberCardByPhoneReply.setData(queryMemberCardByPhoneReply.new QueryMemberCardByPhoneReplyMemberCardByPhone());
         if(membercards==null || membercards.size()==0){
         	queryMemberCardByPhoneReply.getData().setMemberPhoneCount(0);

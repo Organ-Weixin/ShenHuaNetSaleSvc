@@ -75,7 +75,8 @@
 <script type="text/javascript" src="../../js/dict.js"></script>
 <script type="text/javascript">
 var pers = checkPermission();
-var mCardLevelStatus = showDictSelect("status", "mCardLevelStatus", true);
+var ruleType = showDictSelect("ruleType", "ruleType", true);
+var enabled = showDictSelect("status", "enabled", true);
 
 	//获取登陆人信息
 	initUser();
@@ -135,16 +136,20 @@ function init(){
 						return meta.row + 1 + meta.settings._iDisplayStart;
 						}
 				},
-				{"data" : "cinemaCode", "defaultContent" : ""},
-				{"data" : "ruleName", "defaultContent" : ""},
-				{"data" : "createTime", "defaultContent" : ""},
-				{"data" : "ruleType", "defaultContent" : ""},
-				{"data" : "levelName", "defaultContent" : ""},
-				{"data" : "credit", "defaultContent" : ""},
-				{"data" : "updateTime", "defaultContent" : ""},
+				{"data" : "cinemaCode", "defaultContent" : "","orderable":false},
+				{"data" : "ruleName", "defaultContent" : "","orderable":false},
+				{"data" : "createTime", "defaultContent" : "","orderable":false},
+				{"data" : "ruleType", "defaultContent" : "","orderable":false,
+					"render": function (data, type, row) {
+                    	return ruleType[data];
+                  	}						
+				},
+				{"data" : "levelName", "defaultContent" : "","orderable":false},
+				{"data" : "credit", "defaultContent" : "","orderable":false},
+				{"data" : "updateTime", "defaultContent" : "","orderable":false},
 				{"data" : "status", "defaultContent" : "","orderable":false,
 					"render": function (data, type, row) {
-                    	return mCardLevelStatus[data];
+                    	return enabled[data];
                   	}						
 				},
 				{ 

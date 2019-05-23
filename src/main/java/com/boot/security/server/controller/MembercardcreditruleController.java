@@ -41,6 +41,9 @@ public class MembercardcreditruleController {
             // 拼接成字符串
             ruleCode += (c + "");
         }
+    	if(membercardcreditrule.getEffectiveDays()==null){
+    		membercardcreditrule.setEffectiveDays(9999);
+    	}
     	membercardcreditrule.setRuleCode(ruleCode);
     	membercardcreditrule.setCreateTime(new Date());
         membercardcreditruleDao.save(membercardcreditrule);

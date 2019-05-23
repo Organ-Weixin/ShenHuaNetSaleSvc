@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<link rel="stylesheet" type="text/css" media="screen" href="../../../css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" media="screen" href="../../../css/dataTables.bootstrap.min.css">
-<link rel="stylesheet" href="../../../layui/css/layui.css" media="all" />
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="../../layui/css/layui.css" media="all" />
 </head>
 <body>
     <div>
@@ -64,13 +64,13 @@
 </body>
 </html>
 
-<script type="text/javascript" src="../../../js/libs/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="../../../js/jq.js"></script>
-<script type="text/javascript" src="../../../js/plugin/datatables/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="../../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
-<script type="text/javascript" src="../../../layui/layui.js"></script>
-<script type="text/javascript" src="../../../js/my/permission.js"></script>
-<script type="text/javascript" src="../../../js/dict.js"></script>
+<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/jq.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript" src="../../js/my/permission.js"></script>
+<script type="text/javascript" src="../../js/dict.js"></script>
 <script type="text/javascript">
 window.onload=function(){
 	//获取登陆人信息
@@ -105,7 +105,7 @@ window.onload=function(){
 	}
 }
 var pers = checkPermission();
-var Whether = showDictSelect("isUseWxpay", "Whether", true);
+var whether = showDictSelect("isUseWxpay", "whether", true);
 
 var example;
 function init(){
@@ -140,7 +140,7 @@ function init(){
 				{"data" : "cinemaName", "defaultContent" : "","orderable":false},
 				{"data" : "isPrePay", "defaultContent" : "","orderable":false,
 					"render":function(data, type, row){
-						return Whether[data];
+						return whether[data];
 					}					
 				},
 				{"data" : "surplusPayment", "defaultContent" : "","orderable":false},

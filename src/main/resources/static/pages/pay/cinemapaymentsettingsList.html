@@ -104,7 +104,7 @@ window.onload=function(){
 	}
 }
 var pers = checkPermission();
-var Whether = showDictSelect("isUseWxpay", "Whether", true);
+var whether = showDictSelect("isUseWxpay", "whether", true);
 
 var example;
 function init(){
@@ -139,12 +139,12 @@ function init(){
 				{"data" : "cinemaName", "defaultContent" : "","orderable":false},
 				{"data" : "isUseWxpay", "defaultContent" : "","orderable":false,
 					"render":function(data, type, row){
-						return Whether[data];
+						return whether[data];
 					}					
 				},
 				{"data" : "isUserMemberCard", "defaultContent" : "","orderable":false,
 					"render":function(data, type, row){
-						return Whether[data];
+						return whether[data];
 					}	
 				},
 				{ 

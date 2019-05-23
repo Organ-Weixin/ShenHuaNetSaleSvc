@@ -252,7 +252,7 @@ public class Dy1905Interface implements ICTMSInterface {
 		String getCinemaSession = HttpHelper.httpClientPost(userCinema.getUrl()+"/GetCinemaAllSession", param,"UTF-8");
 		Gson gson = new GsonBuilder().setDateFormat("HH:mm").create();
 		Dy1905GetCinemaAllSessionResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(getCinemaSession,"GetCinemaSessionResult"), Dy1905GetCinemaAllSessionResult.class);
-		
+		QueryFilm(userCinema, StartDate, EndDate);
 		String getFeatureFilmResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/GetFeatureFilm", param,"UTF-8");
 		Gson filmgson = new Gson();
 		Dy1905GetFeatureFilmResult Dy1905FilmReply = filmgson.fromJson(XmlToJsonUtil.xmltoJson(getFeatureFilmResult,"GetFeatureFilmResult"),Dy1905GetFeatureFilmResult.class);
