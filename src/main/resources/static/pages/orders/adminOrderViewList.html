@@ -24,7 +24,7 @@
 											 <select class="form-control" style="width:180px;" id="company">
 												<option value="">渠道</option>
 											</select>  -->
-											 <select class="form-control" style="width:180px;" id="orderstatus">
+											 <select class="form-control" style="width:180px;" id="orderStatus">
 												<option value="">全部</option>
 												<option value="1">新建</option>
 												<option value="2">已锁座</option>
@@ -106,7 +106,7 @@
 <script type="text/javascript">
 var pers = checkPermission();
 
-var OrderStatusEnum = showDictSelect("orderStatus", "OrderStatusEnum", true);
+var orderStatusEnum = showDictSelect("orderstatus", "orderStatusEnum", true);
 var payType = showDictSelect("paytype", "payType", true);
 
 var example;
@@ -130,7 +130,7 @@ function init(){
         			var end = en.replace(/-/g,'');
         			d.starttime = start;
         			d.endtime = end;
-    				d.orderstatus = $("#orderstatus").val();
+    				d.orderstatus = $("#orderStatus").val();
     				d.submitordercode = $("#submitOrderCode").val();
     				d.cinemacode = $("#cinemacodes").val();
     			}
@@ -193,7 +193,7 @@ function init(){
 				{"data" : "mobilephone", "defaultContent" : "","orderable":false},
 				{"data" : "orderstatus", "defaultContent" : "","orderable":false,
 					"render": function (data, type, row) {
-                    	return OrderStatusEnum[data];
+                    	return orderStatusEnum[data];
                   	}	
 				},
 				/* { 
@@ -258,7 +258,7 @@ function del(id){
     });
 }
 
-$("#orderstatus").blur(function(){
+$("#orderStatus").blur(function(){
 	example.ajax.reload();
 })
 $("#searchBt").click(function(){

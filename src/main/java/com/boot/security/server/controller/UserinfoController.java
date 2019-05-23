@@ -37,7 +37,6 @@ public class UserinfoController {
 	private UserinfoDao userinfoDao;
 	
 	@GetMapping
-	@PreAuthorize("hasAuthority('sys:userinfo:query')")
 	@ApiOperation(value="获取接入商列表")
 	public PageTableResponse list(PageTableRequest request) {
 		
@@ -58,7 +57,6 @@ public class UserinfoController {
 	
 	@GetMapping("/{id}")
     @ApiOperation(value = "根据id获取")
-	@PreAuthorize("hasAuthority('sys:user:query')")
     public Userinfo getUserInfo(@PathVariable Long id) {
 		Userinfo userinfo=userinfoDao.getById(id);
 		
@@ -67,7 +65,6 @@ public class UserinfoController {
 	
 	@PutMapping
     @ApiOperation(value = "修改")
-	@PreAuthorize("hasAuthority('sys:userinfo:add')")
     public Userinfo updateUserInfo(@RequestBody Userinfo userinfo) {
         userinfoDao.update(userinfo);
         
@@ -76,7 +73,6 @@ public class UserinfoController {
 	
 	@PostMapping
     @ApiOperation(value = "新增")
-	@PreAuthorize("hasAuthority('sys:userinfo:add')")
     public Userinfo addUserInfo(@RequestBody Userinfo userinfo) {
         String userName = userinfo.getUserName();
         Userinfo u = userinfoDao.selcectByUserName(userName);
@@ -90,7 +86,6 @@ public class UserinfoController {
 	
 	@DeleteMapping("/{id}")
     @ApiOperation(value = "删除")
-	@PreAuthorize("hasAuthority('sys:userinfo:delete')")
     public void deleteUserInfo(@PathVariable Long id) {
 		userinfoDao.delete(id);
         

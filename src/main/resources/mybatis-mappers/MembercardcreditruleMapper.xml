@@ -29,6 +29,9 @@
 			<if test="params.Credit != null and params.Credit != ''">
 				and Credit = #{params.Credit} 
 			</if>
+			<if test="params.EffectiveDays != null and params.EffectiveDays != ''">
+				and EffectiveDays = #{params.EffectiveDays} 
+			</if>
 			<if test="params.RuleDescription != null and params.RuleDescription != ''">
 				and RuleDescription = #{params.RuleDescription} 
 			</if>
@@ -77,6 +80,9 @@
 			</if>
 			<if test="Credit != null">
 				Credit = #{Credit}, 
+			</if>
+			<if test="EffectiveDays != null">
+				EffectiveDays = #{EffectiveDays}, 
 			</if>
 			<if test="RuleDescription != null">
 				RuleDescription = #{RuleDescription}, 

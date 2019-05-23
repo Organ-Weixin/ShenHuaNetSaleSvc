@@ -137,11 +137,10 @@ public class ModelMapper {
 			membercard.setBirthday(new SimpleDateFormat("yyyy-MM-dd").format(entity.getBirthday()));
 		}
 		membercard.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").format(entity.getExpireDate()));
-		if(entity.getStatus().equals("0")){
-			membercard.setStatus("未绑定");
-		}
-		if(entity.getStatus().equals("1")){
-			membercard.setStatus("已绑定");
+		if(entity.getStatus()!=null){
+			membercard.setStatus(String.valueOf(entity.getStatus()));
+		}else{
+			membercard.setStatus("0");
 		}
 		return membercard;
 	}

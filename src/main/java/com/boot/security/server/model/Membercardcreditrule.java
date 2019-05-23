@@ -13,6 +13,7 @@ public class Membercardcreditrule extends BaseEntity<Long> {
 	private String LevelCode;
 	private String LevelName;
 	private String Credit;
+	private Integer EffectiveDays;
 	private String RuleDescription;
 	private Date UpdateTime;
 	private Integer Status;
@@ -76,6 +77,12 @@ public class Membercardcreditrule extends BaseEntity<Long> {
 	}
 	public void setCredit(String Credit) {
 		this.Credit = Credit;
+	}
+	public Integer getEffectiveDays() {
+		return EffectiveDays;
+	}
+	public void setEffectiveDays(Integer effectiveDays) {
+		EffectiveDays = effectiveDays;
 	}
 	public String getRuleDescription() {
 		return RuleDescription;

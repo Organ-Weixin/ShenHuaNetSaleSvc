@@ -825,23 +825,35 @@ public class Dy1905Interface implements ICTMSInterface {
 			com.boot.security.server.api.ctms.reply.Dy1905MemberInfoResult.ResBean.CardInfoBean cardInfo = Dy1905Reply.getMemberInfoResult().getCardInfo();
 			if(Dy1905Reply.getMemberInfoResult().getResultCode().equals("0")){
 				Membercard membercard = memberCardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
-				Membercard membercardM = new Membercard();
-				membercardM.setCinemaCode(userCinema.getCinemaCode());
-				membercardM.setCardPassword(CardPassword);
-				membercardM.setMobilePhone(cardInfo.getMobile());
-				membercardM.setLevelCode(cardInfo.getCardLevelNo());
-				membercardM.setLevelName(cardInfo.getCardLevel());
-				membercardM.setUserName(cardInfo.getUsername());
-				membercardM.setCardNo(cardInfo.getCardNo());
-				membercardM.setBalance(cardInfo.getBalance());
-				Date ExpireDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Long.valueOf(cardInfo.getExpireDate()) * 1000)));  
-				membercardM.setExpireDate(ExpireDate);
-				membercardM.setStatus(0);
 				if(membercard==null){
+					Membercard membercardM = new Membercard();
+					membercardM.setCinemaCode(userCinema.getCinemaCode());
+					membercardM.setCardPassword(CardPassword);
+					membercardM.setMobilePhone(cardInfo.getMobile());
+					membercardM.setLevelCode(cardInfo.getCardLevelNo());
+					membercardM.setLevelName(cardInfo.getCardLevel());
+					membercardM.setUserName(cardInfo.getUsername());
+					membercardM.setCardNo(cardInfo.getCardNo());
+					membercardM.setBalance(cardInfo.getBalance());
+					Date ExpireDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Long.valueOf(cardInfo.getExpireDate()) * 1000)));  
+					membercardM.setExpireDate(ExpireDate);
+					membercardM.setStatus(0);
+					membercardM.setCreateTime(new Date());
 					memberCardService.Save(membercardM);
 				}else{
-					membercardM.setId(membercard.getId());
-					memberCardService.Update(membercardM);
+					membercard.setCinemaCode(userCinema.getCinemaCode());
+					membercard.setCardPassword(CardPassword);
+					membercard.setMobilePhone(cardInfo.getMobile());
+					membercard.setLevelCode(cardInfo.getCardLevelNo());
+					membercard.setLevelName(cardInfo.getCardLevel());
+					membercard.setUserName(cardInfo.getUsername());
+					membercard.setCardNo(cardInfo.getCardNo());
+					membercard.setBalance(cardInfo.getBalance());
+					Date ExpireDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Long.valueOf(cardInfo.getExpireDate()) * 1000)));  
+					membercard.setExpireDate(ExpireDate);
+					membercard.setStatus(0);
+					membercard.setCreateTime(new Date());
+					memberCardService.Update(membercard);
 				}
 				reply.Status = StatusEnum.Success;
 			}else{
@@ -1137,7 +1149,7 @@ public class Dy1905Interface implements ICTMSInterface {
 					goods.setCinemaCode(userCinema.getCinemaCode());
 					goods.setUserId(userCinema.getUserId());
 					goods.setIsDiscount(0);
-					goods.setGoodsStatus(0);
+					goods.setGoodsStatus(1);
 					goods.setIsPackage(0);
 					goods.setIsRecommand(0);
 					Dy1905ModelMapper.MaptoEntity(dy1905good, goods);

@@ -8,6 +8,9 @@
 			<if test="params.Id != null and params.Id != ''">
 				and Id = #{params.Id} 
 			</if>
+			<if test="params.OpenId != null and params.OpenId != ''">
+				and OpenId = #{params.OpenId} 
+			</if>
 			<if test="params.CinemaCode != null and params.CinemaCode != ''">
 				and (CinemaCode = #{params.CinemaCode} or find_in_set(CinemaCode,#{params.CinemaCode}))
 			</if>
@@ -49,6 +52,9 @@
 			</if>
 			<if test="params.CreateTime != null and params.CreateTime != ''">
 				and CreateTime = #{params.CreateTime} 
+			</if>
+			<if test="params.Updated != null and params.Updated != ''">
+				and Updated = #{params.Updated} 
 			</if>
 			<if test="params.Status != null and params.Status != ''">
 				and Status = #{params.Status} 
@@ -116,6 +122,12 @@
 			</if>
 			<if test="CreateTime != null">
 				CreateTime = #{CreateTime}, 
+			</if>
+			<if test="Updated != null">
+				Updated = #{Updated}, 
+			</if>
+			<if test="OpenId != null">
+				OpenId = #{OpenId}, 
 			</if>
 			<if test="Status != null">
 				Status = #{Status}, 
