@@ -32,8 +32,11 @@ public class GoodstypeController {
     @PostMapping
     @ApiOperation(value = "保存")
     public Goodstype save(@RequestBody Goodstype goodstype) {
-        goodstypeDao.save(goodstype);
-
+    	String[] cinemacodes = goodstype.getCinemaCode().split(",");
+    	for(int i=0; i<cinemacodes.length; i++){
+    		goodstype.setCinemaCode(cinemacodes[i]);
+    		goodstypeDao.save(goodstype);
+    	}
         return goodstype;
     }
 
@@ -73,5 +76,11 @@ public class GoodstypeController {
     @ApiOperation(value = "删除")
     public void delete(@PathVariable Long id) {
         goodstypeDao.delete(id);
+    }
+    
+    @GetMapping("/getTypes/{cinemaCode}")
+    @ApiOperation(value = "根据影院获取商品类型")
+    public List<Goodstype> getByCinemaCode(@PathVariable String cinemaCode) {
+        return goodstypeDao.getByCinemaCode(cinemaCode);
     }
 }

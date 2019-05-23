@@ -24,7 +24,8 @@ public class Goods {
 	private Integer IsPackage;
 	private Date Updated;
 	
-	private String CinemaName;
+	private String CinemaName;	//后台需要
+	private String TypeName;
 
 	public Long getId() {
 		return Id;
@@ -145,6 +146,12 @@ public class Goods {
 	}
 	public void setUpdated(Date updated) {
 		Updated = updated;
+	}
+	public String getTypeName() {
+		return TypeName;
+	}
+	public void setTypeName(String typeName) {
+		TypeName = typeName;
 	}
 	
 }

@@ -18,19 +18,17 @@
 	                   			<td>
 		                   			<form class="form-inline" onsubmit="return false">
 										<div class="form-group">
-											<input type="hidden" id="CinemaCode" name="cinemaCode">
-											<input id="GoodsName" type="text" class="form-control" placeholder="商品名称">
-											<select class="form-control input-sm" id="GoodsType" style="width:150px;">
-												<option value="">商品分类</option>
+											影院：
+											<select class="form-control input-sm" id="CinemaCode" style="width:150px;" >
+												<option value="33111001" selected="selected">神画新天地影城</option>
 											</select>
-											
 											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
 										</div>
 									</form>
 	                   			</td>
 	                   			<td align="right">
-	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='cinemagoodsList.html'">
-                                      <i class="layui-icon">&#xe608;</i> 返回
+	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addGoodstype.html'">
+                                      <i class="layui-icon">&#xe608;</i> 新建类型
                                     </button>
 	                   			</td>
 	                   		</tr> 
@@ -46,13 +44,9 @@
                                 </tr>                       
                                 <tr>
 									<th>#</th>
-									<th>影院名称</th>
+									<th>类型名称</th>
 									<th>图片</th>
-									<th>名称</th>
-									<th>零售价</th>
-									<th>结算价</th>
-									<th>展示顺序</th>
-									<th>分类</th>
+									<th>排序</th>
 									<th>操作</th>
                                 </tr>
                             </thead>
@@ -64,11 +58,7 @@
             </div>
         </div>
     </div>
-	<!--显示图片层-->
-    <div id="MyDiv" style="display: none;position: absolute;top: 20%;left: 40%;width: 80%;height: 80%;z-index: 1001;overflow: auto;-moz-opacity: 0.8;opacity: .80;filter: alpha(opacity=80)">
-        <img id="personcardimage2" />
-    </div>
-	
+
 <script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
 <script type="text/javascript" src="../../js/jq.js"></script>
 <script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
@@ -76,22 +66,11 @@
 <script type="text/javascript" src="../../layui/layui.js"></script>
 <script type="text/javascript" src="../../js/my/permission.js"></script>
 <script type="text/javascript">
-	function getUrlParam(name) {//封装方法    
-		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象    
-		var r = window.location.search.substr(1).match(reg); //匹配目标参数    
-		if (r != null) {
-			return unescape(r[2]);    
-		}
-		
-		return null; //返回参数值
-	}
-	
 	var pers = checkPermission();
 	
 	var example;
+	init();
 	function init(){
-		var cinemaCode = getUrlParam('cinemaCode');
-		$("#CinemaCode").val(cinemaCode);
 		example = 
 	    	$('#dt-table').DataTable({
 	        	"searching": false,
@@ -101,12 +80,10 @@
 	                "url": "/js/plugin/datatables/Chinese.lang"
 	            },
 	        	"ajax": {
-	        		"url" : "/goodss",
+	        		"url" : "/goodstypes",
 	        		"type":"get",
 	        		"data":function(d){
 	    				d.CinemaCode = $("#CinemaCode").val();
-	    				d.GoodsType = $("#Type").val();
-	    				d.GoodsName = $("#GoodsName").val();
 	    			}
 	        	},
 	        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
@@ -117,54 +94,38 @@
 							return meta.row + 1 + meta.settings._iDisplayStart;
 							}
 					},
-					{"data" : "cinemaName", "defaultContent" : ""},
+					{"data" : "typeName", "defaultContent" : ""},
 					{
-						"data" : "goodsPic", 
+						"data" : "typePic", 
 						"defaultContent" : "",
 						"render": function (data, type, row) {
-	                		var goodsPic = row['goodsPic'];
-	                      	var img = "<img class='pic' style='width:32px;height: 32px;' src='"+goodsPic+"' title='"+goodsPic+"' >";
+	                		var typePic = row['typePic'];
+	                      	var img = "<img class='pic' style='width:32px;height: 32px;' src='"+typePic+"' title='"+typePic+"' >";
 	                      	
 	                        return img;
 	                  	}
 					},
-					{"data" : "goodsName", "defaultContent" : ""},
-					{"data" : "standardPrice", "defaultContent" : ""},
-					{"data" : "settlePrice", "defaultContent" : ""},
-					{"data" : "showSeqNo", "defaultContent" : ""},
-					{"data" : "goodsType", "defaultContent" : ""},
+					{"data" : "typeCode", "defaultContent" : ""},
 					{ 
-						"data": "", 
-						"defaultContent": "",
-						"orderable":false,
-				        "render": function (data, type, row) {
-	             		           var id = row['id'];
-	             		           var href = "updateGoods.html?id=" + id;
-	                               var edit = buttonEdit(href, "", pers);
-	             		           var del = buttonDel(id, "", pers);
-	             		           
-	                               return edit + del;
-	               	            }		
+									"data": "", 
+									"defaultContent": "",
+									"orderable":false,
+							        "render": function (data, type, row) {
+	                		           var id = row['id'];
+	                		           var href = "updateGoodstype.html?id=" + id;
+	                                   var edit = buttonEdit(href, "", pers);
+	                		           var del = buttonDel(id, "", pers);
+	                                   return edit + del;
+	                  	            }		
 					},
 	                
 	            ],
-	           "order": [[ 0, "asc" ]]
+	           "order": [[ 3, "asc" ]]
 	        } );
 	}
 	
 	layui.use('layer', function(){
 	    var layer = layui.layer;
-	});
-	
-	//鼠标移入、移出
-	$('tbody').on('mouseover','.pic', function () {
-		document.getElementById("personcardimage2").src = $(this).attr('title');
-        document.getElementById('MyDiv').style.display = 'block';
-		
-	});
-	$('tbody').on('mouseout','.pic', function () {
-		document.getElementById('MyDiv').style.display = 'none';
-
 	});
 	
 	function del(id){
@@ -173,7 +134,7 @@
 	    }, function() {
 	    	$.ajax({
 	            type : 'delete',
-	            url : '/goodss/'+id,
+	            url : '/goodstypes/'+id,
 	            success : function(data) {
 	                example.ajax.reload();
 	                layer.msg("删除成功");
@@ -184,27 +145,28 @@
 	    });
 	}
 	
-	//根据影院查询商品类型
-	getgoodsType();
-	function getgoodsType(){
-		$.ajax({
-	        type:"get",
-	        url:"/goodstypes/getTypes/"+$("#CinemaCode").val(),
-	        success:function(data){
-	        	alert(data);
-				for(var i=0; i<data.length;i++){
-					var option = "<option value="+data[i].typeCode+">"+data[i].typeName+"</option>";
-					$("#GoodsType").append(option);
-				}
-	        }
-	    })
-	}
-	
 	$("#searchBt").click(function(){
 		example.ajax.reload();
 	});
 	
-	init();
+	
+	//获取影院
+	getCinema();
+	function getCinema(){
+		$.ajax({
+	        type:"get",
+	        url:"/cinemas/getCinemas",
+	        success:function(data){
+				for(var i=0; i<data.length;i++){
+					var option = "<option value="+data[i].code+">"+data[i].name+"</option>";
+					$("#CinemaCode").append(option);
+				}
+	        },
+	        error:function(){
+	            J.alert('Error');
+	        }
+	    })
+	}
 </script>
 </body>
 </html>

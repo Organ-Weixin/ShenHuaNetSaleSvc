@@ -48,15 +48,31 @@
 		limit #{offset}, #{limit}
 	</select>
 	
+	
 	<select id="goodscount" resultType="int">
-		select count(1) from cinema t left join goods g on t.code = g.CinemaCode 
-		<include refid="whereByroleId" />
+		select count(1) from (select t.* from cinema t left join goods g on t.code = g.CinemaCode <include refid="whereByrole" /> GROUP BY t.code)c 
+		<include refid="where" />
+	</select>
+	
+	<select id="goodslist" resultType="Cinema">
+		select c.* from (select t.*,g.updated AS GoodsUpdated from cinema t left join goods g on t.code = g.CinemaCode <include refid="whereByrole" /> GROUP BY t.code)c   
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit} 
 	</select>
 
-	<select id="goodslist" resultType="Cinema">
-		select t.*,g.updated from cinema t left join goods g on t.code = g.CinemaCode 
-		<include refid="whereByroleId" />
-	</select>
+	<sql id="whereByrole">
+		<where>
+			<if test="params.roleId == 1 ">
+				t.Code in (select cinemaCode from sys_user) 
+			</if>
+			<if test="params.roleId != 1 ">
+				t.Code in (select CinemaCode from sys_user sy where  sy.id = #{params.id}  or  sy.createUserId = #{params.roleId}) 
+			</if>
+		</where>
+	</sql>
+
+
 
 	<select id="getCinemasByUser" resultType="Cinema">
 		select * from cinema t

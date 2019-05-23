@@ -14,6 +14,9 @@
 			<if test="params.GoodsType != null and params.GoodsType != ''">
 				and GoodsType = #{params.GoodsType} 
 			</if>
+			<if test="params.TypeName != null and params.TypeName != ''">
+				and t.TypeName = #{params.TypeName} 
+			</if>
 			<if test="params.GoodsStatus != null and params.GoodsStatus != ''">
 				and GoodsStatus = #{params.GoodsStatus} 
 			</if>
@@ -23,28 +26,21 @@
 	
 
 	<select id="count" resultType="int">
-		select count(1) from (select g.*,c.Name AS CinemaName	from goods g
-							  left join cinema c on g.CinemaCode=c.code <include refid="whereByroleId" />) t
+		select count(1) from (select g.*,c.Name AS CinemaName,gt.typeName	from goods g	
+								left join cinema c on g.CinemaCode=c.code 
+								left join goodstype gt on g.cinemaCode=gt.cinemaCode group by g.goodsCode) t
 		<include refid="where" />
 	</select>
 
 	<select id="list" resultType="Goods">
-		select * from (select g.*,c.Name AS CinemaName	from goods g
-						left join cinema c on g.CinemaCode=c.code <include refid="whereByroleId" />) t
+		select t.* from (select g.*,c.Name AS CinemaName,gt.typeName	from goods g	
+						left join cinema c on g.CinemaCode=c.code 
+						left join goodstype gt on g.cinemaCode=gt.cinemaCode group by g.goodsCode) t
 		<include refid="where" />
 		${params.orderBy}
 		limit #{offset}, #{limit}
 	</select>
-	<sql id="whereByroleId">
-		<where>
-			<if test="params.roleId == 1 ">
-				g.cinemaCode in (select cinemaCode from sys_user) 
-			</if>
-			<if test="params.roleId != 1 ">
-				g.cinemaCode in (select CinemaCode from sys_user sy  where sy.id = #{params.id}  or  sy.createUserId = #{params.roleId})
-			</if>
-		</where>
-	</sql>
+	
 
 	<update id="update">
 		update goods t

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<h1>新建分类类型</h1>
+			<input type="hidden" name="cinemaCode"  id="CinemaCode"/>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>分类编码：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='typeCode' id='TypeCode' data-bv-notempty='true' data-bv-notempty-message='分类编码 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>分类名称：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='typeName' id='TypeName' data-bv-notempty='true' data-bv-notempty-message='分类名称 不能为空'>
+				</div>
+			</div>
+			<div class="form-group">
+			    <input type="hidden" name="typePic"  id="TypePic"/>
+				<label class="col-md-2 control-label">分类图标：</label>
+				<div class="col-md-10">
+					<div class="layui-upload-drag" id="pic"></div>
+					<img class="" src="" id="preview" width="118" height="118">
+				    <p id="resultMsg"></p>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>同步到其他影城：</label>
+				<div class='col-md-10'>
+					<input type='radio' name='Cinema' id='AllCinema' >全部影城
+					<input type='radio' name='Cinema' id='Cinema' >选择影城<font style='color: red'> *至少选择一家影城</font>
+					<div class='form-control' id="CinameCheckbox">
+						<!-- 追加影院的复选框 -->
+					</div>
+				</div>
+			</div>
+
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="location.href='goodstypeList.html'">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="add()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+
+<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/jq.js"></script>
+<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
+<script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript">
+	
+		layui.use([ "jquery", "upload", "form", "layer", "element" ],function() {
+			var $ = layui.$, element = layui.element, layer = layui.layer, upload = layui.upload, form = layui.form;
+			//拖拽上传
+			var uploadInst = upload.render({
+					elem : '#pic',
+					url : '/filminfos/upload/filmImage',
+					size : 500,
+					before : function(obj) {
+						//预读本地文件示例，不支持ie8
+						obj.preview(function(index,file, result) {
+							$('#preview').attr('src',result); //图片链接（base64）
+						});
+					},
+					done : function(res) {
+						//如果上传失败
+						if (res.code > 0) {
+							return layer.msg('上传失败');
+						}
+						//上传成功
+						//打印后台传回的地址: 把地址放入一个隐藏的input中, 和表单一起提交到后台, 此处略..
+						console.log(res.data.src);
+						$("#TypePic").val(res.data.src);//将地址存储好
+						window.parent.uploadHeadImage(res.data.src);
+						var resultMsg = $('#resultMsg');
+						resultMsg.html('<span style="color: #8f8f8f;">上传成功!!!</span>');
+					},
+					error : function() {
+						//演示失败状态，并实现重传
+						var resultMsg = $('#resultMsg');
+						resultMsg
+								.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
+						resultMsg.find('.demo-reload').on(
+								'click', function() {
+									uploadInst.upload();
+								});
+					}
+				});
+			element.init();
+		});
+		
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		});
+		
+		//单选
+		$("#AllCinema").click(function(){
+			$("[name='checkbox']").prop("checked",true);//全选
+			$("#AllCinema").prop("checked",true);
+		})
+		
+		$("#Cinema").click(function(){
+			$("[name='checkbox']").prop("checked",false);//取消全选
+			$("#AllCinema").prop("checked",false);
+		})
+		
+		
+		function add() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+
+		  //获取选中 多选框的值
+		    var str=[]; 
+	        $("[name='checkbox'][checked]").each(function(){ 
+//	            str+=$(this).val()+"/r/n"; 
+	            str.push($(this).val());
+	        }) 
+		    $("#CinemaCode").val(str);
+	        
+		    var formdata = $("#form").serializeObject();
+		alert(JSON.stringify(formdata));
+			$.ajax({
+				type : 'post',
+				url : '/goodstypes',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("添加成功", {shift: -1, time: 1000}, function(){
+                        location.href = "goodstypeList.html";
+                    });
+				}
+			});
+		}
+		
+		//获取影院
+		getCinema();
+		function getCinema(){
+			$.ajax({
+		        type:"get",
+		        url:"/cinemas/getCinemas",
+		        success:function(data){
+					for(var i=0; i<data.length;i++){
+						var input = "<input type='checkbox' name='checkbox' value="+data[i].code+" />&nbsp;&nbsp;"+data[i].name;
+						$("#CinameCheckbox").append(input);
+						
+					}
+		        },
+		        error:function(){
+		            J.alert('Error');
+		        }
+		    })
+		}
+		
+	</script>
+</body>
+</html>

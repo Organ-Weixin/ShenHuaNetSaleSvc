@@ -785,7 +785,7 @@ public class CxInterface implements ICTMSInterface {
 	public CTMSQueryGoodsReply QueryGoods(Usercinemaview userCinema) throws Exception {
 		CTMSQueryGoodsReply reply=new CTMSQueryGoodsReply();
 		CxQueryMerchandiseResult cxReply=cxService.QueryMerchandise(userCinema);
-		if(cxReply.getQueryMerchandiseResult().getResultCode().equals("0")){
+		if("0".equals(cxReply.getQueryMerchandiseResult().getResultCode())){
 			List<MerBean> Mers=cxReply.getQueryMerchandiseResult().getMers().getMer();
 			if(Mers.size()>0){
 				List<Goods> goodsList=new ArrayList<Goods>();

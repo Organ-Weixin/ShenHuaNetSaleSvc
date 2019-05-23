@@ -84,23 +84,19 @@
 					{"data" : "code", "defaultContent" : ""},
 					{"data" : "name", "defaultContent" : ""},
 					{"data" : "cinemaPhone", "defaultContent" : ""},
-					{"data" : "updated", "defaultContent" : ""},
+					{"data" : "goodsUpdated", "defaultContent" : ""},
 					{ 
-									"data": "", 
-									"defaultContent": "",
-									"orderable":false,
-							        "render": function (data, type, row) {
-//	                		           var id = row['id'];
-	                		           var code = row['code'];
-//	                		           var href = "updateCinema.html?id=" + id;
-//	                                   var edit = buttonEdit(href, "", pers);
-//	                		           var del = buttonDel(id, "", pers);
-	                		           var update = "<button style='color:blue; background-color:transparent; border:0' onclick='updategoods("+code+")'>更新</button>&nbsp;&nbsp;&nbsp;&nbsp";
-	                		           var details = "<button style='color:blue; background-color:transparent; border:0' onclick='details("+code+")'>详情</button>";
+								"data": "", 
+								"defaultContent": "",
+								"orderable":false,
+						       "render": function (data, type, row) {
+	                		   var code = row['code'];
+               		           var update = "<button style='color:blue; background-color:transparent; border:0' onclick='updategoods("+code+")'>更新</button>&nbsp;&nbsp;&nbsp;&nbsp";
+               		           var details = "<button style='color:blue; background-color:transparent; border:0' onclick='details("+code+")'>详情</button>";
 
-									   return update + details;
-	                  	            }		
-								},
+							   return update + details;
+                	          }		
+					},
 	                
 	            ],
 	           "order": [[ 0, "asc" ]]
@@ -132,6 +128,10 @@
 			});
 	        layer.close(1);
 	    });
+	}
+	
+	function details(code){
+		window.location.href='goodsList.html?cinemaCode='+code;
 	}
 	
 	$("#searchBt").click(function(){

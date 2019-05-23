@@ -8,63 +8,31 @@
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 	<form class="form-horizontal" onsubmit="return false" id="form">
 		<fieldset>
-			<h2>商品信息</h2>
+			<h1>分类信息</h1>
 			<input type="hidden" id="Id" name="id">
-			<input type="hidden" id="CinemaCode" name="cinemaCode">
 			<div class='form-group'>
-				<label class='col-md-2 control-label'>商品分类：</label>
-				<div class='col-md-10' id='typeradio'>
-					
+				<label class='col-md-2 control-label'>分类名称：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='typeName' id='TypeName' data-bv-notempty='true' data-bv-notempty-message='分类名称 不能为空'>
 				</div>
 			</div>
 			<div class="form-group">
-			    <input type="hidden" name="goodsPic"  id="GoodsPic"/>
-				<label class="col-md-2 control-label">商品图片：</label>
+			    <input type="hidden" name="typePic"  id="TypePic"/>
+				<label class="col-md-2 control-label">分类图标：</label>
 				<div class="col-md-10">
 					<div class="layui-upload-drag" id="pic"></div>
 					<img class="" src="" id="preview" width="118" height="118">
 				    <p id="resultMsg"></p>
 				</div>
 			</div>
-			<div class='form-group'>
-				<label class='col-md-2 control-label'>商品名称：</label>
-				<div class='col-md-10'>
-					<input class='form-control' type='text' name='goodsName' id='GoodsName' readonly='readonly'>
-				</div>
-			</div>
-			<div class='form-group'>
-				<label class='col-md-2 control-label'>零售价：</label>
-				<div class='col-md-10'>
-					<input class='form-control' type='text' name='standardPrice' id='StandardPrice'  readonly='readonly'>
-				</div>
-			</div>
-			<div class='form-group'>
-				<label class='col-md-2 control-label'>结算价：</label>
-				<div class='col-md-10'>
-					<input class='form-control' type='text' name='settlePrice' id='SettlePrice'  readonly='readonly'>
-				</div>
-			</div>
-			
-			<div class='form-group' style="display: none;">
-				<label class='col-md-2 control-label'>状态：</label>
-				<div class='col-md-10'>
-					<input class='form-control' type='text' name='goodsStatus' id='GoodsStatus' value='1'>
-				</div>
-			</div>
-			<div class='form-group'>
-				<label class='col-md-2 control-label'>展示顺序：</label>
-				<div class='col-md-10'>
-					<input class='form-control' type='text' name='showSeqNo' id='ShowSeqNo' >
-				</div>
-			</div>
-			
+
 			<div class="form-actions">
 				<div class="row" align="center">
 					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="location.href='goodstypeList.html'">返回</button>
 						<button class="btn btn-primary" type="submit" onclick="update()">
 							<i class="fa fa-save"></i> 保存
 						</button>
-						<button class="btn btn-primary" id="goback" >返回</button>
 					</div>
 				</div>
 			</div>
@@ -79,11 +47,6 @@
 <script type="text/javascript" src="../../js/common.js"></script>
 <script type="text/javascript" src="../../layui/layui.js"></script>
 <script type="text/javascript">
-
-		//返回卖品列表页面
-		$("#goback").click(function(){
-			window.location.href="goodsList.html?cinemaCode="+$("#CinemaCode").val();
-		});
 
 		layui.use([ "jquery", "upload", "form", "layer", "element" ],function() {
 			var $ = layui.$, element = layui.element, layer = layui.layer, upload = layui.upload, form = layui.form;
@@ -106,7 +69,7 @@
 						//上传成功
 						//打印后台传回的地址: 把地址放入一个隐藏的input中, 和表单一起提交到后台, 此处略..
 						console.log(res.data.src);
-						$("#GoodsPic").val(res.data.src);//将地址存储好
+						$("#TypePic").val(res.data.src);//将地址存储好
 						window.parent.uploadHeadImage(res.data.src);
 						var resultMsg = $('#resultMsg');
 						resultMsg.html('<span style="color: #8f8f8f;">上传成功!!!</span>');
@@ -124,6 +87,7 @@
 				});
 			element.init();
 		});
+
 		layui.use(['layer','laydate'], function(){
 		    var layer = layui.layer;
 		});
@@ -132,31 +96,15 @@
 		
 		function initData(){
 			var id = getUrlParam("id");
-			alert(id);
 			if(id != ""){
 				$.ajax({
 					type : 'get',
-					url : '/goodss/'+id,
+					url : '/goodstypes/'+id,
 					async : false,
 					success : function(data) {
 						$('#Id').val(data.id);
-						$('#CinemaCode').val(data.cinemaCode);
-						$('#UserId').val(data.userId);
-						$('#GoodsCode').val(data.goodsCode);
-						$('#GoodsName').val(data.goodsName);
-						$('#GoodsType').val(data.goodsType);
-						$('#StandardPrice').val(data.standardPrice);
-						$('#SettlePrice').val(data.settlePrice);
-						$('#GoodsPic').val(data.goodsPic);
-						$('#preview').attr('src',data.goodsPic);
-						
-						$('#GoodsDesc').val(data.goodsDesc);
-						$('#ShowSeqNo').val(data.showSeqNo);
-						$('#IsDiscount').val(data.isDiscount);
-						$('#GoodsKey').val(data.goodsKey);
-						$('#GoodsStatus').val(data.goodsStatus);
-						$('#IsRecommand').val(data.isRecommand);
-						$('#IsPackage').val(data.isPackage);
+						$('#TypeName').val(data.typeName);
+						$('#TypePic').val(data.typePic);
 
 					}
 				});
@@ -175,34 +123,17 @@
 
 			$.ajax({
 				type : 'put',
-				url : '/goodss',
+				url : '/goodstypes',
 				contentType: "application/json; charset=utf-8",  
 				data : JSON.stringify(formdata),
 				success : function(data) {
 					layer.msg("修改成功", {shift: -1, time: 1000}, function(){
-                        location.href = "goodsList.html?cinemaCode="+$("#CinemaCode").val();
+                        location.href = "goodstypeList.html";
                     });
 				}
 			});
 		}
 		
-		//获取影院的商品分类
-		getCinema();
-		function getCinema(){
-			$.ajax({
-		        type:"get",
-		        url:"/goodstypes/getTypes/"+$('#CinemaCode').val(),
-		        success:function(data){
-					for(var i=0; i<data.length;i++){
-						var input = "<input type='radio' name='radio' value="+data[i].typeCode+" />"+data[i].typeName;
-						$("#typeradio").append(input);
-					}
-		        },
-		        error:function(){
-		            J.alert('Error');
-		        }
-		    })
-		}
 	</script>
 </body>
 </html>

@@ -1,7 +1,6 @@
 package com.boot.security.server.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,12 +18,10 @@ import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
-import com.boot.security.server.utils.UserUtil;
 import com.boot.security.server.api.core.NetSaleSvcCore;
 import com.boot.security.server.api.core.QueryGoodsReply;
 import com.boot.security.server.dao.GoodsDao;
 import com.boot.security.server.model.Goods;
-import com.boot.security.server.model.SysUser;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -60,10 +57,6 @@ public class GoodsController {
     @GetMapping
     @ApiOperation(value = "列表")
     public PageTableResponse list(PageTableRequest request) {
-    	//获取当前登陆人信息
-    	SysUser sysuser = UserUtil.getLoginUser();
-    	request.getParams().put("id", sysuser.getId());
-    	request.getParams().put("roleId", sysuser.getRoleId());
     	
         return new PageTableHandler(new CountHandler() {
 
@@ -93,12 +86,12 @@ public class GoodsController {
     	return goodsDao.getGoodsByCinemaCode(cinemacodes);
     }
     
-    @PostMapping("/queryGoods/{code}")
+    @PostMapping("/queryGoods/{cinemacode}")
     @ApiOperation(value = "重新获取影院卖品")
-    public QueryGoodsReply queryGoods(@PathVariable String code){
+    public QueryGoodsReply queryGoods(@PathVariable String cinemacode){
     	String UserName = "MiniProgram";
     	String Password = "6BF477EBCC446F54E6512AFC0E976C41";
-		QueryGoodsReply reply =NetSaleSvcCore.getInstance().QueryGoods(UserName, Password, code);
+		QueryGoodsReply reply =NetSaleSvcCore.getInstance().QueryGoods(UserName, Password, cinemacode);
 		
 		return reply;
     	

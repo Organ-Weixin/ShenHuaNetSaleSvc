@@ -94,6 +94,7 @@ public class CxModelMapper {
     	entity.setGoodsStatus(0);
     	entity.setIsRecommand(0);
     	entity.setIsPackage(0);
+    	entity.setUpdated(new Date());
     	return entity;
     }
 }
