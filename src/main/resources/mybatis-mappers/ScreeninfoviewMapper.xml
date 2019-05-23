@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.boot.security.server.dao.ScreeninfoviewDao">
 
-	<sql id="where">
+	<sql id="where"> 
 		<where>
 			<if test="params.Id != null and params.Id != ''">
 				and Id = #{params.Id} 
