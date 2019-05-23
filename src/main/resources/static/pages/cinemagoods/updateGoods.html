@@ -12,6 +12,7 @@
 			<input type="hidden" id="Id" name="id">
 			<input type="hidden" id="CinemaCode" name="cinemaCode">
 			<div class='form-group'>
+				<input type="hidden" name="goodsType"  id="GoodsType"/>
 				<label class='col-md-2 control-label'>商品分类：</label>
 				<div class='col-md-10' id='typeradio'>
 					
@@ -197,9 +198,6 @@
 						var input = "<input type='radio' name='radio' value="+data[i].typeCode+" />"+data[i].typeName;
 						$("#typeradio").append(input);
 					}
-		        },
-		        error:function(){
-		            J.alert('Error');
 		        }
 		    })
 		}

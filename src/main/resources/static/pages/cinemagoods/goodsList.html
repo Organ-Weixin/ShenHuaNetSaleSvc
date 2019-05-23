@@ -19,8 +19,9 @@
 		                   			<form class="form-inline" onsubmit="return false">
 										<div class="form-group">
 											<input type="hidden" id="CinemaCode" name="cinemaCode">
+											<input type="hidden" id="GoodsType" name="goodsType">
 											<input id="GoodsName" type="text" class="form-control" placeholder="商品名称">
-											<select class="form-control input-sm" id="GoodsType" style="width:150px;">
+											<select class="form-control input-sm" id="Type" style="width:150px;">
 												<option value="">商品分类</option>
 											</select>
 											
@@ -89,6 +90,7 @@
 	var pers = checkPermission();
 	
 	var example;
+	init();
 	function init(){
 		var cinemaCode = getUrlParam('cinemaCode');
 		$("#CinemaCode").val(cinemaCode);
@@ -107,6 +109,7 @@
 	    				d.CinemaCode = $("#CinemaCode").val();
 	    				d.GoodsType = $("#Type").val();
 	    				d.GoodsName = $("#GoodsName").val();
+	    				
 	    			}
 	        	},
 	        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
@@ -132,7 +135,7 @@
 					{"data" : "standardPrice", "defaultContent" : ""},
 					{"data" : "settlePrice", "defaultContent" : ""},
 					{"data" : "showSeqNo", "defaultContent" : ""},
-					{"data" : "goodsType", "defaultContent" : ""},
+					{"data" : "typeName", "defaultContent" : ""},
 					{ 
 						"data": "", 
 						"defaultContent": "",
@@ -189,12 +192,11 @@
 	function getgoodsType(){
 		$.ajax({
 	        type:"get",
-	        url:"/goodstypes/getTypes/"+$("#CinemaCode").val(),
+	        url:"/goodstypes/getTypes/"+getUrlParam('cinemaCode'),
 	        success:function(data){
-	        	alert(data);
 				for(var i=0; i<data.length;i++){
 					var option = "<option value="+data[i].typeCode+">"+data[i].typeName+"</option>";
-					$("#GoodsType").append(option);
+					$("#Type").append(option);
 				}
 	        }
 	    })
@@ -204,7 +206,7 @@
 		example.ajax.reload();
 	});
 	
-	init();
+	
 </script>
 </body>
 </html>
