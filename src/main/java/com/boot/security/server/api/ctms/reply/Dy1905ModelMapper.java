@@ -1,6 +1,5 @@
 package com.boot.security.server.api.ctms.reply;
 
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -100,6 +99,7 @@ public class Dy1905ModelMapper {
     	entity.setGoodsPic(model.getImage());
     	entity.setStockCount(model.getStockCount() ==null?0 : Integer.valueOf(model.getStockCount()));
     	entity.setGoodsDesc(model.getDetail());
+    	entity.setUpdated(new Date());
     	return entity;
     }
 }

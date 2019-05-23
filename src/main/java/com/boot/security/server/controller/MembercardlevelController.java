@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.security.server.page.table.PageTableRequest;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
+import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.dao.MembercardlevelDao;
@@ -28,6 +30,8 @@ public class MembercardlevelController {
 
     @Autowired
     private MembercardlevelDao membercardlevelDao;
+    @Autowired
+    private MemberCardLevelServiceImpl memberCardLevelService;
 
     @PostMapping
     @ApiOperation(value = "保存")
@@ -73,5 +77,17 @@ public class MembercardlevelController {
     @ApiOperation(value = "删除")
     public void delete(@PathVariable Long id) {
         membercardlevelDao.delete(id);
+    }
+    
+    @RequestMapping("/changeStatus")
+    @ApiOperation(value = "改变会员卡类别状态")
+    public int changeStatus(@RequestParam("status") Integer status,@RequestParam("id") Long id){
+    	return memberCardLevelService.changeStatus(status, id);
+    }
+    
+    @RequestMapping("/getCanUseByCinemaCode")
+    @ApiOperation(value = "通过影院编码获取启用的会员卡类别")
+    public List<Membercardlevel> getCanUseByCinemaCode(@RequestParam("cinemacode") String cinemacode){
+    	return memberCardLevelService.getCanUseByCinemaCode(cinemacode);
     }
 }

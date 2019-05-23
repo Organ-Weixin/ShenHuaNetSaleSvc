@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.boot.security.server.dao.MembercardlevelDao">
+<mapper namespace="com.boot.security.server.dao.MembercardcreditruleDao">
 
 	<sql id="where">
 		<where>
@@ -9,7 +9,16 @@
 				and Id = #{params.Id} 
 			</if>
 			<if test="params.CinemaCode != null and params.CinemaCode != ''">
-				and (CinemaCode = #{params.CinemaCode} or find_in_set(CinemaCode,#{params.CinemaCode}))
+				and CinemaCode = #{params.CinemaCode} 
+			</if>
+			<if test="params.RuleCode != null and params.RuleCode != ''">
+				and RuleCode = #{params.RuleCode} 
+			</if>
+			<if test="params.RuleName != null and params.RuleName != ''">
+				and RuleName = #{params.RuleName} 
+			</if>
+			<if test="params.RuleType != null and params.RuleType != ''">
+				and RuleType = #{params.RuleType} 
 			</if>
 			<if test="params.LevelCode != null and params.LevelCode != ''">
 				and LevelCode = #{params.LevelCode} 
@@ -17,32 +26,33 @@
 			<if test="params.LevelName != null and params.LevelName != ''">
 				and LevelName = #{params.LevelName} 
 			</if>
-			<if test="params.CardCostFee != null and params.CardCostFee != ''">
-				and CardCostFee = #{params.CardCostFee} 
+			<if test="params.Credit != null and params.Credit != ''">
+				and Credit = #{params.Credit} 
 			</if>
-			<if test="params.MemberFee != null and params.MemberFee != ''">
-				and MemberFee = #{params.MemberFee} 
+			<if test="params.RuleDescription != null and params.RuleDescription != ''">
+				and RuleDescription = #{params.RuleDescription} 
 			</if>
 			<if test="params.Status != null and params.Status != ''">
 				and Status = #{params.Status} 
 			</if>
+		
 		</where>
 	</sql>
 
 	<select id="count" resultType="int">
-		select count(1) from membercardlevel t
+		select count(1) from membercardcreditrule t
 		<include refid="where" />
 	</select>
 
-	<select id="list" resultType="Membercardlevel">
-		select * from membercardlevel t
+	<select id="list" resultType="Membercardcreditrule">
+		select * from membercardcreditrule t
 		<include refid="where" />
 		${params.orderBy}
 		limit #{offset}, #{limit}
 	</select>
 
 	<update id="update">
-		update membercardlevel t
+		update membercardcreditrule t
 		<set>
 			<if test="Id != null">
 				Id = #{Id}, 
@@ -50,19 +60,28 @@
 			<if test="CinemaCode != null">
 				CinemaCode = #{CinemaCode}, 
 			</if>
+			<if test="RuleCode != null">
+				RuleCode = #{RuleCode}, 
+			</if>
+			<if test="RuleName != null">
+				RuleName = #{RuleName}, 
+			</if>
+			<if test="RuleType != null">
+				RuleType = #{RuleType}, 
+			</if>
 			<if test="LevelCode != null">
 				LevelCode = #{LevelCode}, 
 			</if>
 			<if test="LevelName != null">
 				LevelName = #{LevelName}, 
 			</if>
-			<if test="CardCostFee != null">
-				CardCostFee = #{CardCostFee}, 
+			<if test="Credit != null">
+				Credit = #{Credit}, 
 			</if>
-			<if test="MemberFee != null">
-				MemberFee = #{MemberFee}, 
+			<if test="RuleDescription != null">
+				RuleDescription = #{RuleDescription}, 
 			</if>
-			<if test="LevelName != null">
+			<if test="Status != null">
 				Status = #{Status}, 
 			</if>
 

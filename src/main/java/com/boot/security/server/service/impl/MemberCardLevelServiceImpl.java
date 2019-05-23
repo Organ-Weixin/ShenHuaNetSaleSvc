@@ -39,4 +39,16 @@ public class MemberCardLevelServiceImpl implements MemberCardLevelService {
 		return membercardlevelDao.getByCinemaCodeAndLevelCode(cinemacode, levelcode);
 	}
 
+	@Override
+	public int changeStatus(Integer status, Long id) {
+		// TODO Auto-generated method stub
+		return membercardlevelDao.changeStatus(status, id);
+	}
+
+	@Override
+	public List<Membercardlevel> getCanUseByCinemaCode(String cinemacode) {
+		// TODO Auto-generated method stub
+		return membercardlevelDao.getCanUseByCinemaCode(cinemacode);
+	}
+
 }

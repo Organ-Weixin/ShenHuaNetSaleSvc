@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.boot.security.server.model.Membercardlevel;
 
@@ -33,10 +34,16 @@ public interface MembercardlevelDao {
     int update(Membercardlevel membercardlevel);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into membercardlevel(CinemaCode, LevelCode, LevelName,CardCostFee,MemberFee) values(#{CinemaCode}, #{LevelCode}, #{LevelName},#{CardCostFee},#{MemberFee})")
+    @Insert("insert into membercardlevel(CinemaCode, LevelCode, LevelName, CardCostFee, MemberFee, Status) values(#{CinemaCode}, #{LevelCode}, #{LevelName}, #{CardCostFee}, #{MemberFee}, #{Status})")
     int save(Membercardlevel membercardlevel);
     
     int count(@Param("params") Map<String, Object> params);
 
     List<Membercardlevel> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    
+    @Update("update membercardlevel set status = #{status} where id = #{id}")
+    int changeStatus(@Param("status") Integer status,@Param("id") Long id);
+    
+    @Select("select * from membercardlevel t where t.cinemacode = #{cinemacode} and t.status =1")
+    List<Membercardlevel> getCanUseByCinemaCode(String cinemacode);
 }

@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaAllSessionResult.ResBean.SessionsBean.SessionBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaAllSessionResult.ResBean.SessionsBean.SessionBean.FilmsBean.SessionFilmBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaResult.ResBean.CinemasBean.CinemaBean;
@@ -72,9 +69,6 @@ public class Dy1905Interface implements ICTMSInterface {
 	MemberCardLevelServiceImpl memberCardLevelService = SpringUtil.getBean(MemberCardLevelServiceImpl.class);
 	GoodsServiceImpl goodsService = SpringUtil.getBean(GoodsServiceImpl.class);
 	GoodsOrderServiceImpl goodsOrderService = SpringUtil.getBean(GoodsOrderServiceImpl.class);
-	
-	protected static Logger log = LoggerFactory.getLogger(Dy1905Interface.class);
-	
 	/*
 	 * 查询影院信息（完成）
 	 * */
@@ -94,9 +88,7 @@ public class Dy1905Interface implements ICTMSInterface {
 		param.put("pAppCode",userCinema.getDefaultUserName());
 		param.put("pCinemaID",userCinema.getCinemaId());
 		param.put("pVerifyInfo",pVerifyInfo);
-		//log.info("1905请求参数："+new Gson().toJson(param));
 		String getScreenResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/GetScreen",param,"UTF-8");
-		//log.info("1905原始返回："+getScreenResult);
 		Gson gson = new Gson();
 		Dy1905GetScreenResult Dy1905Reply=gson.fromJson(XmlToJsonUtil.xmltoJson(getScreenResult,"GetScreenResult"), Dy1905GetScreenResult.class);
 		if (Dy1905Reply.getGetScreenResult().getResultCode().equals("0"))
@@ -1004,6 +996,7 @@ public class Dy1905Interface implements ICTMSInterface {
 				for(LevelBean Level :Dy1905Level){
 					Membercardlevel membercardlevel = new Membercardlevel();
 					membercardlevel.setCinemaCode(userCinema.getCinemaCode());
+					membercardlevel.setStatus(0);
 					Dy1905ModelMapper.MaptoEntity(Level, membercardlevel);
 					newmembercardlevelList.add(membercardlevel);
 				}

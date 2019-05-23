@@ -24,7 +24,7 @@
 											<!-- id：
 											<input id="id" type="text" class="form-control" placeholder="id"> -->
 											<select class="form-control" style="width:180px;float:left;margin-left:1%" name="cinema" id="cinemaName">
-												<option value="">全部优惠券</option>
+												<option value="">选择影院</option>
 											</select>
 											<!-- <button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button> -->
 										</div>
@@ -110,8 +110,8 @@
 <script type="text/javascript" src="../../js/dict.js"></script>
 <script type="text/javascript">
 var pers = checkPermission();
-var CouponsType = showDictSelect("couponsType", "CouponsType", true);
-var CGroupStatus = showDictSelect("status", "CGroupStatus", true);
+var couponsType = showDictSelect("couponsType", "couponsType", true);
+var enabled = showDictSelect("status", "enabled", true);
 
 //获取登陆人信息
 initUser();
@@ -174,7 +174,7 @@ function init(){
 				},
 				{"data" : "couponsType", "defaultContent" : "","orderable":false,
 					"render": function (data, type, row) {
-                    	return CouponsType[data];
+                    	return couponsType[data];
                   	}						
 				},
 				{"data" : "couponsName", "defaultContent" : "","orderable":false},
@@ -194,7 +194,7 @@ function init(){
 				},
 				{"data" : "status", "defaultContent" : "","orderable":false,
 					"render": function (data, type, row) {
-                    	return CGroupStatus[data];
+                    	return enabled[data];
                   	}
 				},
 				{"data" : "reductionPrice", "defaultContent" : "","orderable":false,

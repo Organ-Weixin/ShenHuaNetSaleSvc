@@ -1,8 +1,5 @@
 package com.boot.security.server.model;
 
-import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class SysUser extends BaseEntity<Long> {
 

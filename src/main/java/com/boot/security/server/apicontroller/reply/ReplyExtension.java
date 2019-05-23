@@ -983,4 +983,24 @@ public class ReplyExtension {
 			}
 			return true;
 		}
+		//region QueryMemberCardLevelReply
+		public static boolean RequestInfoGuard(QueryMemberCardLevelReply reply, String Username, String Password, String CinemaCode)
+	    {
+	        if (Username == null || "".equals(Username))
+	        {
+	            reply.SetNecessaryParamMissReply("UserName");
+	            return false;
+	        }
+	        if (Password == null || "".equals(Password))
+	        {
+	            reply.SetNecessaryParamMissReply("Password");
+	            return false;
+	        }
+	        if (CinemaCode == null || "".equals(CinemaCode))
+	        {
+	            reply.SetNecessaryParamMissReply("CinemaCode");
+	            return false;
+	        }
+	        return true;
+	    }
 }

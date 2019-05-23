@@ -52,7 +52,7 @@
 			</if>
 			<if test="params.filmticketcode != null and params.filmticketcode != ''">
 				and filmticketcode = #{params.filmticketcode} 
-			</if>ticketinfocode
+			</if>
 			<if test="params.ticketinfocode != null and params.ticketinfocode != ''">
 				and ticketinfocode = #{params.ticketinfocode} 
 			</if>

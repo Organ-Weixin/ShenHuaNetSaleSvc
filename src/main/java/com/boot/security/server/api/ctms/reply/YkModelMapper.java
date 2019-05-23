@@ -118,24 +118,5 @@ public class YkModelMapper {
 		}
 		return entity;
 	}
-	
-	//用户登陆信息转为entity
-	public static Ticketusers MapToEntity(UserWXResult model,Ticketusers entity){
-		entity.setNickName(model.getNickName());
-		entity.setSex(model.getGender());
-		entity.setCountry(model.getCountry());
-		entity.setProvince(model.getProvince());
-		entity.setCity(model.getCity());
-		entity.setHeadImgUrl(model.getAvatarUrl());
-		entity.setLanguage(model.getLanguage());
-		if(model.getOpenId() == null ){
-			entity.setIsActive(0);
-		} else {
-			entity.setIsActive(1);
-			entity.setCreated(new Date());
-		}
-		
-		return entity;
-	}
 		
 }

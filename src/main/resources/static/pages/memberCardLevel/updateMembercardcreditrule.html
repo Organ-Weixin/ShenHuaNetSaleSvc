@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<input type="hidden" id="id" name="id">
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院名称</label>
+				<div class='col-md-10'>
+					<input type="hidden" id="cinemaName" name="cinemaName">
+					<select id="cinemaSelect" class="form-control input-sm" name="cinemaCode" data-bv-notempty='true' data-bv-notempty-message='请选择影院'>
+						<option value="">请选择影院...</option>
+					</select>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>充值规则名称</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='RuleName' type='text' name='ruleName' id='RuleName' data-bv-notempty='true' data-bv-notempty-message='充值规则名称不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>规则类型</label>
+				<div class='col-md-10'>
+					<input type="text" name="ruleType" id="RuleType">
+					<input type="radio" value="1" name="ruleTypeRadio">&nbsp;开卡规则
+					<input type="radio" value="2" name="ruleTypeRadio" style="margin-left:1%">&nbsp;充值规则
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>会员卡</label>
+				<div class='col-md-10'>
+					<input type="hidden" id="LevelName" name="levelName">
+					<select id="LevelCode" class="form-control input-sm" name="levelCode" data-bv-notempty='true' data-bv-notempty-message='请选择会员卡'>
+						<option>选择会员卡...</option>
+					</select>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>充值金额(起充金额、售价)</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='credit' id='Credit' data-bv-notempty='true' data-bv-notempty-message='充值金额不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>规则描述</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='ruleDescription' id='RuleDescription'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>状态</label>
+				<div class='col-md-10'>
+					<select class="form-control input-sm" id="StatusSelect" name="status">
+						<option value="1">启用</option>
+						<option value="0">不启用</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="location.href='membercardcreditruleList.html'">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="update()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript">
+	
+	//获取登陆人信息
+	initUser();
+	function initUser(){
+		$.ajax({
+			type : 'get',
+			url : '/users/current',
+			async : false,
+			success : function(data) {
+				$("#userId").val(data.id);
+				$("#roleId").val(data.roleId);
+				getCinemaCodes(data.id,data.roleId);
+			}
+		});
+	}
+	function getCinemaCodes(id,roleId){
+		$.ajax({
+			url:'/users/getCinemaName',
+			data:{"id":id,"roleId":roleId},
+			type:'post',
+			success:function(data){
+				for(var i=0; i<data.length; i++){
+					var option = "<option value='"+data[i].cinemaCode+"' title='"+data[i].cinemaName+"'>"+data[i].cinemaName+"</option>";
+					$("#cinemaSelect").append(option);
+				}
+			}
+		})
+	}
+	
+	$("#cinemaSelect").blur(function(){
+		getMemberCardLevel($(this).val());
+	});
+	$("#cinemaSelect").click(function(){
+		var first = $("#LevelCode option:first").text();
+		$("#LevelCode").html("<option>"+first+"</option>");
+	});
+	$("#LevelCode").blur(function(){
+		$("#LevelName").val($("#LevelCode").find("option:selected").attr('title'));
+	});
+	$("input:radio[name='ruleTypeRadio']").click(function(){
+		$("#RuleType").val($("input:radio[name='ruleTypeRadio']:checked").val());
+	});
+	
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		});
+		
+		initData();
+		
+		function initData(){
+			var id = getUrlParam("id");
+			if(id != ""){
+				$.ajax({
+					type : 'get',
+					url : '/membercardcreditrules/'+id,
+					async : false,
+					success : function(data) {
+						$('#CinemaCode').val(data.cinemaCode);
+						$('#RuleName').val(data.ruleName);
+						$('#RuleType').val(data.ruleType);
+						$('#LevelCode').val(data.levelCode);
+						$('#Credit').val(data.credit);
+						$('#RuleDescription').val(data.ruleDescription);
+						$('#Status').val(data.status);
+
+					}
+				});
+			}
+		}
+
+		function update() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var formdata = $("#form").serializeObject();
+
+			$.ajax({
+				type : 'put',
+				url : '/membercardcreditrules',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("修改成功", {shift: -1, time: 1000}, function(){
+                        location.href = "membercardcreditruleList.html";
+                    });
+				}
+			});
+		}
+		
+	</script>
+</body>
+</html>

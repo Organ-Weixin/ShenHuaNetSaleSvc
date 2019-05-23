@@ -36,6 +36,9 @@ import com.boot.security.server.apicontroller.reply.QueryMemberCardByOpenIDReply
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByOpenIDReply.QueryMemberCardByOpenIDReplyOpenIDCard.QueryMemberCardByOpenIDReplyOpenIDMemberCard;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByOpenIDReply;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.QueryMemberCardByPhoneReplyMemberCardByPhone.QueryMemberCardByPhoneReplyPhone;
+import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelReply.QueryMemberCardLevelReplyMemberCard;
+import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelReply.QueryMemberCardLevelReplyMemberCard.QueryMemberCardLevelReplyMemberCardLevel;
+import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelReply;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Cinemapaymentsettings;
 import com.boot.security.server.model.Membercard;
@@ -462,6 +465,57 @@ public class MemberController {
         queryMemberCardByOpenIDReply.setData(data);
         queryMemberCardByOpenIDReply.SetSuccessReply();
 		return queryMemberCardByOpenIDReply;
+	}
+	
+	@GetMapping("/QueryMemberCardLevel/{Username}/{Password}/{CinemaCode}")
+	@ApiOperation(value = "本地已启用会员卡类别")
+	public QueryMemberCardLevelReply QueryMemberCardLevel(@PathVariable String Username,@PathVariable String Password,
+			@PathVariable String CinemaCode){
+		QueryMemberCardLevelReply queryMemberCardLevelReply = new QueryMemberCardLevelReply();
+		//校验参数
+		if (!ReplyExtension.RequestInfoGuard(queryMemberCardLevelReply, Username, Password, CinemaCode))
+        {
+            return queryMemberCardLevelReply;
+        }
+		//获取用户信息(渠道)
+        Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+        if (UserInfo == null)
+        {
+        	queryMemberCardLevelReply.SetUserCredentialInvalidReply();
+            return queryMemberCardLevelReply;
+        }
+        //验证影院是否存在且可访问
+        Cinema cinema = _cinemaService.getByCinemaCode(CinemaCode);
+        if (cinema == null)
+        {
+        	queryMemberCardLevelReply.SetCinemaInvalidReply();
+            return queryMemberCardLevelReply;
+        }
+        List<Membercardlevel> membercardlevelList = _memberCardLevelService.getCanUseByCinemaCode(CinemaCode);
+        QueryMemberCardLevelReplyMemberCard data = new QueryMemberCardLevelReplyMemberCard();
+        List<QueryMemberCardLevelReplyMemberCardLevel> levelReplyList = new ArrayList<QueryMemberCardLevelReplyMemberCardLevel>();
+         if(membercardlevelList.size()>0){
+	        data.setCinemaCode(CinemaCode);
+	        for(Membercardlevel membercardlevel: membercardlevelList){
+	        	QueryMemberCardLevelReplyMemberCardLevel levelReply = new QueryMemberCardLevelReplyMemberCardLevel();
+	        	levelReply.setLevelCode(membercardlevel.getLevelCode());
+	        	levelReply.setLevelName(membercardlevel.getLevelName());
+	        	if(membercardlevel.getCardCostFee()!=null){
+	        		levelReply.setCardCostFee(String.valueOf(membercardlevel.getCardCostFee()));
+	        	}
+	        	if(membercardlevel.getMemberFee()!=null){
+	        		levelReply.setMemberFee(String.valueOf(membercardlevel.getMemberFee()));
+	        	}
+	        	if(membercardlevel.getStatus()!=null){
+	        		levelReply.setStatus(String.valueOf(membercardlevel.getStatus()));
+	        	}
+	        	levelReplyList.add(levelReply);
+	       }
+	       data.setLevel(levelReplyList);
+        }
+        queryMemberCardLevelReply.setData(data);
+        queryMemberCardLevelReply.SetSuccessReply();
+		return queryMemberCardLevelReply;
 	}
 	//region 异步接收微信支付返回(会员卡注册充值不需要更新订单表，可以为空)
 	public void WxPayNotify() throws Exception{
