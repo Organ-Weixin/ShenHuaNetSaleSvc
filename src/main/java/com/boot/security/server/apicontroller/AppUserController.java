@@ -23,7 +23,9 @@ import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.QueryCinemaGoodsReply;
 import com.boot.security.server.apicontroller.reply.QueryCinemaTicketReply;
 import com.boot.security.server.apicontroller.reply.QueryCinemaTicketReply.QueryCinemaTicket.CinemaTicket;
+import com.boot.security.server.apicontroller.reply.QueryMovieSeenReply;
 import com.boot.security.server.apicontroller.reply.QueryCinemaGoodsReply.QueryCinemaGoodsReplyGoods.QueryCinemaGoods;
+import com.boot.security.server.apicontroller.reply.QueryMovieSeenReply.QueryMovieSeenReplySeen.QueryMovieSeen;
 import com.boot.security.server.apicontroller.reply.QueryRoomGiftRecordReply;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.apicontroller.reply.RoomGiftInput;
@@ -86,8 +88,6 @@ public class AppUserController {
 	private  AdminorderviewDao adminorderviewDao;
 	@Autowired
 	private  GoodsorderdetailsviewDao goodsorderdetailsviewDao;
-	@Autowired
-	private  GoodsOrderServiceImpl _goodsOrderService;
 	@PostMapping("/UserLogin")
 	@ApiOperation(value = "用户登陆")
 	public UserLoginReply UserLogin(@RequestBody UserLoginInput userinput){
@@ -346,8 +346,7 @@ public class AppUserController {
 			reply.SetOpenIDNotExistReply();
 			return reply;
 		}
-		
-		List<Roomgiftuser>  roomgiftuserlist = roomgiftuserService.getByOpenid(input.getOpenID());
+		List<Roomgiftuser>  roomgiftuserlist = roomgiftuserService.getByOpenid(input.getOpenID(),input.getCinemaCode());
 		List<QueryRoomGiftRecord> data = new ArrayList<QueryRoomGiftRecord>();
 		for(Roomgiftuser roomgiftuser : roomgiftuserlist){
 			QueryRoomGiftRecord record = new QueryRoomGiftRecord();
@@ -419,6 +418,7 @@ public class AppUserController {
 				for(Filminfo filmi:filminfo){
 					CinemaTicket cinematicket =queryCinemaTicketReply.getData().new  CinemaTicket();
 					cinematicket.setVersion(filmi.getVersion());
+					cinemaTicket.setImage(filmi.getImage());
 					queryCinemaTicketReply.getData().getTicket().add(cinematicket);
 					System.out.println("55555555555=:"+filmi.getVersion());
 				}
@@ -482,6 +482,7 @@ public class AppUserController {
 			queryCinemaGoods.setPickUpCode(goodview.getPickUpCode());
 			queryCinemaGoods.setCinemaName(goodview.getCinemaName());
 			queryCinemaGoods.setAddress(cinema.getAddress());
+			queryCinemaGoods.setCinemaPhone(cinema.getCinemaPhone());
 			if(goodview.getSubTotalSettleAmount()!=null){
 			queryCinemaGoods.setSubTotalSettleAmount(String.valueOf(goodview.getSubTotalSettleAmount()));
 			}
@@ -497,15 +498,58 @@ public class AppUserController {
 		queryCinemaGoodsReply.SetSuccessReply();
 		return queryCinemaGoodsReply;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	//QueryMovieSeenReply
+	@GetMapping("/QueryMovieSeen/{UserName}/{Password}/{CinemaCode}/{OpenID}")
+	@ApiOperation(value = "查询用户看过的电影记录")
+	public QueryMovieSeenReply QueryMovieSeen(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
+			@PathVariable String OpenID){
+		QueryMovieSeenReply queryMovieSeenReply=new QueryMovieSeenReply();
+		// 校验参数
+		if (!ReplyExtension.RequestInfoGuard(queryMovieSeenReply, UserName, Password, CinemaCode, OpenID)) {
+			return queryMovieSeenReply;
+		}
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
+		if (UserInfo == null) {
+			queryMovieSeenReply.SetUserCredentialInvalidReply();
+			return queryMovieSeenReply;
+		}
+		//验证影院是否存在且可访问
+		Cinema cinema=_cinemaService.getByCinemaCode(CinemaCode);
+		if(cinema == null){
+			queryMovieSeenReply.SetCinemaInvalidReply();
+			return queryMovieSeenReply;
+		}
+		//验证用户OpenId是否存在
+		Ticketusers ticketuser = _ticketusersService.getByopenids(OpenID);
+		if(ticketuser == null){
+			queryMovieSeenReply.SetOpenIDNotExistReply();
+			return queryMovieSeenReply;
+		}
+		List<Adminorderview> adminorderviewList=adminorderviewDao.getByCinemaCode(CinemaCode);
+		queryMovieSeenReply.setData(queryMovieSeenReply.new QueryMovieSeenReplySeen());
+		if(adminorderviewList==null||adminorderviewList.size()==0){
+			queryMovieSeenReply.getData().setCount(0);
+		}else{
+			queryMovieSeenReply.getData().setCount(adminorderviewList.size());
+			queryMovieSeenReply.getData().setSeen(new ArrayList<QueryMovieSeen>());
+			for(Adminorderview adminorderview:adminorderviewList){
+				QueryMovieSeen queryMovieSeen=queryMovieSeenReply.getData().new QueryMovieSeen();
+				queryMovieSeen.setFilmName(adminorderview.getFilmname());
+				List<Filminfo> filminfoList=_filminfoServiceImpl.getFilmByFilmName(adminorderview.getFilmname());
+				for(Filminfo filminfo:filminfoList){
+					QueryMovieSeen querymovieseen=queryMovieSeenReply.getData().new QueryMovieSeen();
+					querymovieseen.setCast(filminfo.getCast());
+					querymovieseen.setPublishDate(filminfo.getPublishDate());
+					querymovieseen.setArea(filminfo.getArea());
+					querymovieseen.setImage(filminfo.getImage());
+					queryMovieSeenReply.getData().getSeen().add(querymovieseen);
+				}
+				queryMovieSeenReply.getData().getSeen().add(queryMovieSeen);
+			}
+		}
+		queryMovieSeenReply.SetSuccessReply();
+		return queryMovieSeenReply;
+	}
 	
 }
