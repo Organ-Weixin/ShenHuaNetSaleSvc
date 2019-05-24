@@ -32,7 +32,7 @@ public interface GoodscomponentsDao {
     int update(Goodscomponents goodscomponents);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into goodscomponents(Id,PackageCode, GoodsCode, GoodsName, GoodsCount, UnitName) values(#{Id},#{PackageCode}, #{GoodsCode}, #{GoodsName}, #{GoodsCount}, #{UnitName})")
+    @Insert("insert into goodscomponents(CinemaCode,PackageCode, PackageName, GoodsCode, GoodsName, GoodsCount, GoodsCommend, Status, Sort, UnitName) values(#{CinemaCode}, #{PackageCode}, #{PackageName}, #{GoodsCode}, #{GoodsName}, #{GoodsCount}, #{GoodsCommend}, #{Status}, #{Sort}, #{UnitName})")
     int save(Goodscomponents goodscomponents);
     
     int count(@Param("params") Map<String, Object> params);

@@ -1,59 +1,106 @@
 package com.boot.security.server.model;
 
 public class Goodscomponents extends BaseEntity<Long> {
+	
 	private Long Id;
+	private String CinemaCode;
 	private String PackageCode;// 套餐编码=卖品编码
-	private String GoodsCode;// 套餐卖品编码
-	private String GoodsName;// 套餐卖品名称
-	private Integer GoodsCount;// 套餐卖品库存
-	private String UnitName;// 套餐卖品单位名称
-
+	private String PackageName;
+	private String PackagePic; 
+	private String GoodsCode;
+	private String GoodsName;
+	private Integer GoodsCount;
+	private String GoodsCommend;
+	private Integer Status;
+	private Integer Sort;
+	private String UnitName;
+	
+	private String RecommendCode;	//后台需要
+	private String RecommendName;
+	
 	public Long getId() {
 		return Id;
 	}
-
-	public void setId(Long Id) {
-		this.Id = Id;
+	public void setId(Long id) {
+		Id = id;
 	}
-
+	public String getCinemaCode() {
+		return CinemaCode;
+	}
+	public void setCinemaCode(String cinemaCode) {
+		CinemaCode = cinemaCode;
+	}
 	public String getPackageCode() {
 		return PackageCode;
 	}
-
 	public void setPackageCode(String packageCode) {
 		PackageCode = packageCode;
 	}
-
+	public String getPackageName() {
+		return PackageName;
+	}
+	public void setPackageName(String packageName) {
+		PackageName = packageName;
+	}
+	public String getPackagePic() {
+		return PackagePic;
+	}
+	public void setPackagePic(String packagePic) {
+		PackagePic = packagePic;
+	}
 	public String getGoodsCode() {
 		return GoodsCode;
 	}
-
-	public void setGoodsCode(String GoodsCode) {
-		this.GoodsCode = GoodsCode;
+	public void setGoodsCode(String goodsCode) {
+		GoodsCode = goodsCode;
 	}
-
 	public String getGoodsName() {
 		return GoodsName;
 	}
-
-	public void setGoodsName(String GoodsName) {
-		this.GoodsName = GoodsName;
+	public void setGoodsName(String goodsName) {
+		GoodsName = goodsName;
 	}
-
 	public Integer getGoodsCount() {
 		return GoodsCount;
 	}
-
-	public void setGoodsCount(Integer GoodsCount) {
-		this.GoodsCount = GoodsCount;
+	public void setGoodsCount(Integer goodsCount) {
+		GoodsCount = goodsCount;
 	}
-
+	public String getGoodsCommend() {
+		return GoodsCommend;
+	}
+	public void setGoodsCommend(String goodsCommend) {
+		GoodsCommend = goodsCommend;
+	}
+	public Integer getStatus() {
+		return Status;
+	}
+	public void setStatus(Integer status) {
+		Status = status;
+	}
+	public Integer getSort() {
+		return Sort;
+	}
+	public void setSort(Integer sort) {
+		Sort = sort;
+	}
 	public String getUnitName() {
 		return UnitName;
 	}
-
-	public void setUnitName(String UnitName) {
-		this.UnitName = UnitName;
+	public void setUnitName(String unitName) {
+		UnitName = unitName;
 	}
-
+	public String getRecommendCode() {
+		return RecommendCode;
+	}
+	public void setRecommendCode(String recommendCode) {
+		RecommendCode = recommendCode;
+	}
+	public String getRecommendName() {
+		return RecommendName;
+	}
+	public void setRecommendName(String recommendName) {
+		RecommendName = recommendName;
+	}
+	
 }

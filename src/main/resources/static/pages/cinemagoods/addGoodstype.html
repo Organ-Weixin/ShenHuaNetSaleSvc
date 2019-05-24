@@ -35,8 +35,8 @@
 				<label class='col-md-2 control-label'>同步到其他影城：</label>
 				<div class='col-md-10'>
 					<input type='radio' name='Cinema' id='AllCinema' >全部影城
-					<input type='radio' name='Cinema' id='Cinema' >选择影城<font style='color: red'> *至少选择一家影城</font>
-					<div class='form-control' id="CinameCheckbox">
+					<input type='radio' name='Cinema' id='Cinema' checked='checked'>选择影城<font style='color: red'> *至少选择一家影城</font>
+					<div class='form-control' id="CinameCheckbox" >
 						<!-- 追加影院的复选框 -->
 					</div>
 				</div>
@@ -128,27 +128,31 @@
 			   return;
 		    }
 
-		  //获取选中 多选框的值
+		  	//获取选中 多选框的值
 		    var str=[]; 
-	        $("[name='checkbox'][checked]").each(function(){ 
-//	            str+=$(this).val()+"/r/n"; 
+		    $('input[name="checkbox"]:checked').each(function(){
 	            str.push($(this).val());
-	        }) 
+	            console.log($(this).val());
+	        })
 		    $("#CinemaCode").val(str);
-	        
-		    var formdata = $("#form").serializeObject();
-		alert(JSON.stringify(formdata));
-			$.ajax({
-				type : 'post',
-				url : '/goodstypes',
-				contentType: "application/json; charset=utf-8",  
-				data : JSON.stringify(formdata),
-				success : function(data) {
-					layer.msg("添加成功", {shift: -1, time: 1000}, function(){
-                        location.href = "goodstypeList.html";
-                    });
-				}
-			});
+		     
+			if(str == null || str.length == 0){
+				alert("至少选择一家影城");
+			} else {
+				var formdata = $("#form").serializeObject();
+				$.ajax({
+					type : 'post',
+					url : '/goodstypes',
+					contentType: "application/json; charset=utf-8",  
+					data : JSON.stringify(formdata),
+					success : function(data) {
+						layer.msg("添加成功", {shift: -1, time: 1000}, function(){
+	                        location.href = "goodstypeList.html";
+	                    });
+					}
+				});
+			}
+		    
 		}
 		
 		//获取影院

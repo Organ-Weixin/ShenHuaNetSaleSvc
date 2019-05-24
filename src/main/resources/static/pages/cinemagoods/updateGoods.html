@@ -133,7 +133,6 @@
 		
 		function initData(){
 			var id = getUrlParam("id");
-			alert(id);
 			if(id != ""){
 				$.ajax({
 					type : 'get',
@@ -158,7 +157,6 @@
 						$('#GoodsStatus').val(data.goodsStatus);
 						$('#IsRecommand').val(data.isRecommand);
 						$('#IsPackage').val(data.isPackage);
-
 					}
 				});
 			}
@@ -171,7 +169,7 @@
 		    if(!bootstrapValidator.isValid()){
 			   return;
 		    }
-		    
+		    $('#GoodsType').val($('input:radio:checked').val());
 		    var formdata = $("#form").serializeObject();
 
 			$.ajax({
@@ -195,9 +193,10 @@
 		        url:"/goodstypes/getTypes/"+$('#CinemaCode').val(),
 		        success:function(data){
 					for(var i=0; i<data.length;i++){
-						var input = "<input type='radio' name='radio' value="+data[i].typeCode+" />"+data[i].typeName;
+						var input = "<input type='radio' name='radio' value="+data[i].typeCode+" />"+data[i].typeName+"&nbsp;&nbsp;";
 						$("#typeradio").append(input);
 					}
+					$("input:radio[value='"+$('#GoodsType').val()+"']").attr('checked','true');
 		        }
 		    })
 		}
