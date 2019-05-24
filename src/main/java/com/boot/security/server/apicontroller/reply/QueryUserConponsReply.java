@@ -1,5 +1,6 @@
 package com.boot.security.server.apicontroller.reply;
 
+import java.util.Date;
 import java.util.List;
 
 public class QueryUserConponsReply extends BaseReply{
@@ -34,7 +35,8 @@ public class QueryUserConponsReply extends BaseReply{
 			private String Price;
 			private String ConponCode;
 			private String SnackCode;
-			private String ValidityDate;
+			private String EffectiveDate;
+			private String ExpireDate; 
 			private String Status;
 			private String UseDate;
 			private String ReceivedDate;
@@ -88,11 +90,17 @@ public class QueryUserConponsReply extends BaseReply{
 			public void setSnackCode(String snackCode) {
 				SnackCode = snackCode;
 			}
-			public String getValidityDate() {
-				return ValidityDate;
+			public String getEffectiveDate() {
+				return EffectiveDate;
 			}
-			public void setValidityDate(String validityDate) {
-				ValidityDate = validityDate;
+			public void setEffectiveDate(String effectiveDate) {
+				EffectiveDate = effectiveDate;
+			}
+			public String getExpireDate() {
+				return ExpireDate;
+			}
+			public void setExpireDate(String expireDate) {
+				ExpireDate = expireDate;
 			}
 			public String getStatus() {
 				return Status;

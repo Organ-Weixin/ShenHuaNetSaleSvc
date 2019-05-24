@@ -116,7 +116,6 @@ public class ConponController {
 			queryUserConponsReply.getData().setConponCount(0);
 		}else{
 			queryUserConponsReply.getData().setConponCount(coupons.size());
-			queryUserConponsReply.getData().setConponCount(couponsgroup.size());
 			queryUserConponsReply.getData().setConpons(new ArrayList<QueryUserConponsBean>());
 			for(Coupons coupon:coupons){
 				QueryUserConponsBean queryUserConponsBean=queryUserConponsReply.getData().new QueryUserConponsBean();
@@ -125,7 +124,6 @@ public class ConponController {
 				    for (int i = 0; i < couponsgroup.size(); i++) { 
 				    	Couponsgroup cou=couponsgroup.get(i);
 				    String CouponsType=String.valueOf(cou.getCouponsType());
-//				    System.out.println("222===="+cou.getCouponsType());
 				    queryUserConponsBean.setTypeCode(CouponsType);
 				    String ReductionPrice=String.valueOf(cou.getReductionPrice());
 				    queryUserConponsBean.setPrice(ReductionPrice);

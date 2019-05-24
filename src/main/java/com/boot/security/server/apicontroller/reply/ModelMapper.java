@@ -249,7 +249,8 @@ public static QueryNewSessionsReply.QueryNewSessionsReplyNewSessions.QueryNewSes
 		userConpon.setGroupCode(entity.getGroupCode());
 		userConpon.setOpenID(entity.getOpenID());
 		userConpon.setConponCode(entity.getCouponsCode());
-		userConpon.setValidityDate(String.valueOf(entity.getExpireDate()));
+		userConpon.setEffectiveDate(new SimpleDateFormat("yyyy-MM-dd").format(entity.getEffectiveDate()));
+		userConpon.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").format(entity.getExpireDate()));
 		userConpon.setStatus(String.valueOf(entity.getStatus()));
 		userConpon.setUseDate(String.valueOf(entity.getUsedDate()));
 		userConpon.setReceivedDate(String.valueOf(entity.getReceiveDate()));
