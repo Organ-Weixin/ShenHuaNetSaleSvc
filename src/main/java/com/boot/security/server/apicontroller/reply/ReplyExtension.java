@@ -212,8 +212,8 @@ public class ReplyExtension {
     }
 	//endregion
 		
-	//region QueryBanner 图片
-	public static boolean RequestInfoGuard(QueryBannerReply reply, String Username, String Password, String CinemaCode) {
+	//region QueryActivitysReply 获取活动轮播图片
+	public static boolean RequestInfoGuard(QueryActivitysReply reply, String Username, String Password, String CinemaCode) {
         if (Username == null || "".equals(Username)) {
             reply.SetNecessaryParamMissReply("UserName");
             return false;
@@ -226,7 +226,6 @@ public class ReplyExtension {
             reply.SetNecessaryParamMissReply("CinemaCode");
             return false;
         }
-        
         return true;
     }
 	//endregion
@@ -1003,4 +1002,26 @@ public class ReplyExtension {
 	        }
 	        return true;
 	    }
+		
+		//region  查询用户看过的电影
+		public static boolean RequestInfoGuard(QueryMovieSeenReply reply,String Username,String Password,String CinemaCode,String OpenID){
+			if (Username==null || "".equals(Username)) {
+				reply.SetNecessaryParamMissReply("UserName");
+				return false;
+			}
+			if (Password==null || "".equals(Password)) {
+				reply.SetNecessaryParamMissReply("Password");
+				return false;
+			}
+			if (CinemaCode==null || "".equals(CinemaCode)) {
+				reply.SetNecessaryParamMissReply("CinemaCode");
+				return false;
+			}
+			if(OpenID == null || "".equals(OpenID)){
+				reply.SetNecessaryParamMissReply("OpenID");
+				return false;
+			}
+			return true;
+		}
+		//endregion
 }

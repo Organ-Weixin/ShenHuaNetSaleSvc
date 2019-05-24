@@ -41,5 +41,9 @@ public class ActivityServiceImpl implements ActivityService{
 	public List<Activity> list(Map<String, Object> params, Integer offset, Integer limit) {
 		return activityDao.list(params, offset, limit);
 	}
+	@Override
+	public List<Activity> getByCinemaCode(String cinemacode) {
+		return activityDao.getByCinemaCode(cinemacode);
+	}
 
 }

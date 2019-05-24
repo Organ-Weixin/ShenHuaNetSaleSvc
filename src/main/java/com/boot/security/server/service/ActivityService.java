@@ -11,4 +11,6 @@ public interface ActivityService {
     int save(Activity activity);
     int count(Map<String, Object> params);
     List<Activity> list(Map<String, Object> params,Integer offset,Integer limit);
+    List<Activity> getByCinemaCode(String  cinemacode);
+
 }
