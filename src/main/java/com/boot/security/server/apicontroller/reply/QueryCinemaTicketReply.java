@@ -28,9 +28,10 @@ public class QueryCinemaTicketReply extends BaseReply{
 			Ticket = ticket;
 		}
 		public   class CinemaTicket{
-			private String FilmName;//影片名称//oNCc65EhjU4Hia7iatDY9lkvwV24
+			private String FilmName;//影片名称//
 			private Date SessionDateTime;//放映计划时间
 			private String CinemaName;//影院名称
+			private String Image;//电影海报
 			private String Version;//影片版本（2D/3D）
 			private String ScreenName;//影厅名称
 			private String SeatName;//座位名称
@@ -42,7 +43,6 @@ public class QueryCinemaTicketReply extends BaseReply{
 			private String OrderCode;//订单号
 			private Date Created;//购买时间
 			private String MobilePhone;//手机号
-		//	private String TicketHint;//观影须知
 			private String Status;//电影票状态
 			public String getFilmName() {
 				return FilmName;
@@ -61,6 +61,12 @@ public class QueryCinemaTicketReply extends BaseReply{
 			}
 			public void setCinemaName(String cinemaName) {
 				CinemaName = cinemaName;
+			}
+			public String getImage() {
+				return Image;
+			}
+			public void setImage(String image) {
+				Image = image;
 			}
 			public String getVersion() {
 				return Version;
@@ -128,12 +134,6 @@ public class QueryCinemaTicketReply extends BaseReply{
 			public void setMobilePhone(String mobilePhone) {
 				MobilePhone = mobilePhone;
 			}
-	/*		public String getTicketHint() {
-				return TicketHint;
-			}
-			public void setTicketHint(String ticketHint) {
-				TicketHint = ticketHint;
-			}*/
 			public String getStatus() {
 				return Status;
 			}
