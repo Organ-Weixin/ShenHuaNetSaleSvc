@@ -34,6 +34,7 @@ public class QueryCinemaGoodsReply extends BaseReply{
 			private String PickUpCode;//取货码
 			private String CinemaName;//影院名称
 			private String Address;//影院地址
+			private String CinemaPhone;//影院电话
 			private String SubTotalSettleAmount;//实付金额
 			private String OrderCode;//订单号
 			private Date Created;//购买时间
@@ -68,6 +69,12 @@ public class QueryCinemaGoodsReply extends BaseReply{
 			}
 			public void setAddress(String address) {
 				Address = address;
+			}
+			public String getCinemaPhone() {
+				return CinemaPhone;
+			}
+			public void setCinemaPhone(String cinemaPhone) {
+				CinemaPhone = cinemaPhone;
 			}
 			public String getSubTotalSettleAmount() {
 				return SubTotalSettleAmount;
