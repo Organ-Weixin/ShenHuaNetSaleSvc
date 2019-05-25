@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<input type="hidden" id="id" name="id">
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院编码</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='cinemaCode' id='CinemaCode' readonly="readonly">
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>卡类别编码</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='levelCode' id='LevelCode' readonly="readonly">
+				</div>
+			</div>
+			<div class='form-group' id="OpenTypeDisplay">
+				<input type="hidden" id="RuleType" name="ruleType">
+				<input type="hidden" id="RuleCode" name="ruleCode">
+				<input type="hidden" id="OpenType">
+				<label class='col-md-2 control-label'>开卡规则</label>
+				<div class='col-md-10'>
+					<select id="OpenTypeSelect" class="form-control input-sm" data-bv-notempty='true' data-bv-notempty-message='请选择开卡规则'>
+						<option value="">选择开卡规则...</option>
+					</select>
+				</div>
+			</div>
+			<div class='form-group' id="RechargeTypeDisplay">
+				<input type="hidden" id="RechargeType">
+				<label class='col-md-2 control-label'>充值规则</label>
+				<div class='col-md-10' id="RechargeTypeDiv">
+				</div>
+			</div>
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="location.href='membercardlevelList.html'">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="add()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript">
+	window.onload=function(){
+		$.ajax({
+			url:'/choosemembercardcreditrules/getByLevelCode',
+			data:{"cinemacode":cinemaCode,"levelcode":levelCode},
+			type:'post',
+			success:function(data){
+				if(data.length>0){
+					$("#CinemaCode").val(data[0].cinemaCode);
+					$("#LevelCode").val(data[0].levelCode);
+					var RuleType = [];
+					var RechargeType = [];
+					for(var i=0; i<data.length; i++){
+						RuleType.push(data[i].ruleType);
+						if(data[i].ruleType==1){
+							$("#OpenType").val(data[i].ruleCode);
+							$("#OpenTypeSelect").val(data[i].ruleCode);
+						}else{
+							RechargeType.push(data[i].ruleCode);
+							$("input:checkbox[name='rechargeTypeRadio'][value='" + data[i].ruleCode + "']").prop("checked", "checked");
+						}
+					}
+					$("#RuleType").val(RuleType);
+					$("#RechargeType").val(RechargeType);
+				}else{
+					$("#CinemaCode").val(cinemaCode);
+					$("#LevelCode").val(levelCode);
+				}
+			}
+		});
+	}
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		});
+		
+		var cinemaCode = getUrlParam("cinemaCode");
+		var levelCode = getUrlParam("levelCode");
+		
+		initData();
+		
+		function initData(){
+			$.ajax({
+				url:'/membercardcreditrules/getOpenTypeByLevelCode',
+				data:{"cinemacode":cinemaCode,"levelcode":levelCode},
+				type:'post',
+				success:function(data){
+					if(data.length>0){
+						for(var i=0; i<data.length; i++){
+							var option = "<option value='"+data[i].ruleCode+"' title='"+data[i].ruleType+"'>"+data[i].ruleName+"</option>";
+							$("#OpenTypeSelect").append(option);
+						} 
+					}else{
+						$("#OpenTypeDisplay").hide();
+					}
+				}
+			});
+			$.ajax({
+				url:'/membercardcreditrules/getRechargeTypeByLevelCode',
+				data:{"cinemacode":cinemaCode,"levelcode":levelCode},
+				type:'post',
+				success:function(data){
+					if(data.length>0){
+						for(var i=0; i<data.length; i++){
+							var checkbox = "<input type='checkbox' name='rechargeTypeRadio' value='"+data[i].ruleCode+"' title='"+data[i].ruleType+"' style='margin-left:15px;margin-right:5px'>"+data[i].ruleName+"";
+							$("#RechargeTypeDiv").append(checkbox);
+						}
+					}else{
+						$("#RechargeTypeDisplay").hide();
+					}
+				}
+			});
+		}
+
+		function add() {
+			var openVal = $("#OpenTypeSelect").val();
+			var openType = $("#OpenTypeSelect").find("option:checked").attr('title');
+			var rechargeVal = [];
+			var rechargeType = [];
+			$("input:checkbox[name='rechargeTypeRadio']:checked").each(function(){
+				rechargeVal.push($(this).val());
+				rechargeType.push($(this).attr('title'));
+			});
+			if(openVal!=null&&openVal!=""){
+				$("#RuleType").val(openType+","+rechargeType);
+			}else{
+				$("#RuleType").val(rechargeType);
+			}
+			if(openType!=null&&openType!=""){
+				$("#RuleCode").val(openVal+","+rechargeVal);
+			}else{
+				$("#RuleCode").val(rechargeVal);
+			}
+			
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var formdata = $("#form").serializeObject();
+			
+			if($("#RuleCode").val()!=null&&$("#RuleCode").val()!=""&&$("#RuleType").val()!=null&&$("#RuleType").val()!=""){
+				$.ajax({
+					type : 'post',
+					url : '/choosemembercardcreditrules',
+					contentType: "application/json; charset=utf-8",  
+					data : JSON.stringify(formdata),
+					success : function(data) {
+						layer.msg("操作成功", {shift: -1, time: 1000}, function(){
+	                        location.href = "membercardlevelList.html";
+	                    });
+					}
+				});
+			}else{
+				layer.msg("信息未完善");
+			}
+		}
+		
+	</script>
+</body>
+</html>

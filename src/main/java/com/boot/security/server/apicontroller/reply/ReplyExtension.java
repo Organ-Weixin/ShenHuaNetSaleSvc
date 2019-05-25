@@ -211,7 +211,6 @@ public class ReplyExtension {
         return true;
     }
 	//endregion
-		
 	//region QueryActivitysReply 获取活动轮播图片
 	public static boolean RequestInfoGuard(QueryActivitysReply reply, String Username, String Password, String CinemaCode) {
         if (Username == null || "".equals(Username)) {
@@ -526,59 +525,7 @@ public class ReplyExtension {
 		return true;
 	}
 	//endregion
-		
-	//region查询影片场次信息 QuerySessionsReply
-	public static boolean RequestInfoGuard(QuerySessionsReply reply,String UserName,String Password,String CinemaCode,String StartDate,String EndDate){
-		if (UserName == null || "".equals(UserName)) {
-			reply.SetNecessaryParamMissReply("UserName");
-			return false;
-		}
-		if(Password == null || "".equals(Password)){
-			reply.SetNecessaryParamMissReply("Password");
-			return false;
-		}
-		if(CinemaCode == null || "".equals(CinemaCode)){
-			reply.SetNecessaryParamMissReply("CinemaCode");
-			return false;
-		}
-		if(StartDate == null || "".equals(StartDate)){
-			reply.SetNecessaryParamMissReply("StartDate");
-			return false;
-		}
-		if(EndDate == null || "".equals(EndDate)){
-			reply.SetNecessaryParamMissReply("EndDate");
-			return false;
-		}
-		return true;
-		
-	}
-	//endregion
 	
-	//region查询影片场次信息-新    QueryNewSessionsReply
-		public static boolean RequestInfoGuard(QueryNewSessionsReply reply,String UserName,String Password,String CinemaCode,String StartDate,String EndDate){
-			if (UserName == null || "".equals(UserName)) {
-				reply.SetNecessaryParamMissReply("UserName");
-				return false;
-			}
-			if(Password == null || "".equals(Password)){
-				reply.SetNecessaryParamMissReply("Password");
-				return false;
-			}
-			if(CinemaCode == null || "".equals(CinemaCode)){
-				reply.SetNecessaryParamMissReply("CinemaCode");
-				return false;
-			}
-			if(StartDate == null || "".equals(StartDate)){
-				reply.SetNecessaryParamMissReply("StartDate");
-				return false;
-			}
-			if(EndDate == null || "".equals(EndDate)){
-				reply.SetNecessaryParamMissReply("EndDate");
-				return false;
-			}
-			return true;
-		}
-		//endregion
 		
 	//region 获取订单场次信息
 	public static boolean RequestInfoGuard(QueryOrderSessionReply reply, String Username, String Password, String CinemaCode,String SessionCode)
@@ -1002,7 +949,31 @@ public class ReplyExtension {
 	        }
 	        return true;
 	    }
-		
+		//region QueryMemberCardLevelReply
+		public static boolean RequestInfoGuard(QueryMemberCardLevelRuleReply reply, String Username, String Password, String CinemaCode, String LevelCode)
+	    {
+	        if (Username == null || "".equals(Username))
+	        {
+	            reply.SetNecessaryParamMissReply("UserName");
+	            return false;
+	        }
+	        if (Password == null || "".equals(Password))
+	        {
+	            reply.SetNecessaryParamMissReply("Password");
+	            return false;
+	        }
+	        if (CinemaCode == null || "".equals(CinemaCode))
+	        {
+	            reply.SetNecessaryParamMissReply("CinemaCode");
+	            return false;
+	        }
+	        if (LevelCode == null || "".equals(LevelCode))
+	        {
+	            reply.SetNecessaryParamMissReply("LevelCode");
+	            return false;
+	        }
+	        return true;
+	    }
 		//region  查询用户看过的电影
 		public static boolean RequestInfoGuard(QueryMovieSeenReply reply,String Username,String Password,String CinemaCode,String OpenID){
 			if (Username==null || "".equals(Username)) {
@@ -1023,5 +994,4 @@ public class ReplyExtension {
 			}
 			return true;
 		}
-		//endregion
 }

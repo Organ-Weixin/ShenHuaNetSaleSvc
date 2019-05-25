@@ -30,4 +30,13 @@ public interface MembercardcreditruleDao {
     int count(@Param("params") Map<String, Object> params);
 
     List<Membercardcreditrule> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    
+    @Select("select * from membercardcreditrule t where t.cinemacode = #{cinemacode} and t.levelcode =#{levelcode} and t.ruletype =1 and t.status =1")
+    List<Membercardcreditrule> getOpenTypeByLevelCode(@Param("cinemacode") String cinemacode,@Param("levelcode") String levelcode);
+    
+    @Select("select * from membercardcreditrule t where t.cinemacode = #{cinemacode} and t.levelcode =#{levelcode} and t.ruletype =2 and t.status =1")
+    List<Membercardcreditrule> getRechargeTypeByLevelCode(@Param("cinemacode") String cinemacode,@Param("levelcode") String levelcode);
+    
+    @Select("select * from membercardcreditrule t where t.rulecode = #{rulecode} and t.status =1")
+    Membercardcreditrule getByRuleCode(String rulecode);
 }

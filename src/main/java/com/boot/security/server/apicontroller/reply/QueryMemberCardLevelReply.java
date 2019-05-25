@@ -32,6 +32,12 @@ public class QueryMemberCardLevelReply extends BaseReply{
 			private String levelName;
 			private String CardCostFee;
 			private String MemberFee;
+			private String RuleCode;
+			private String RuleName;
+			private String RuleType;
+			private String Credit;
+			private String EffectiveDays;
+			private String RuleDescription;
 			private String Status;
 			public String getLevelCode() {
 				return levelCode;
@@ -56,6 +62,42 @@ public class QueryMemberCardLevelReply extends BaseReply{
 			}
 			public void setMemberFee(String memberFee) {
 				MemberFee = memberFee;
+			}
+			public String getRuleCode() {
+				return RuleCode;
+			}
+			public void setRuleCode(String ruleCode) {
+				RuleCode = ruleCode;
+			}
+			public String getRuleName() {
+				return RuleName;
+			}
+			public void setRuleName(String ruleName) {
+				RuleName = ruleName;
+			}
+			public String getRuleType() {
+				return RuleType;
+			}
+			public void setRuleType(String ruleType) {
+				RuleType = ruleType;
+			}
+			public String getCredit() {
+				return Credit;
+			}
+			public void setCredit(String credit) {
+				Credit = credit;
+			}
+			public String getEffectiveDays() {
+				return EffectiveDays;
+			}
+			public void setEffectiveDays(String effectiveDays) {
+				EffectiveDays = effectiveDays;
+			}
+			public String getRuleDescription() {
+				return RuleDescription;
+			}
+			public void setRuleDescription(String ruleDescription) {
+				RuleDescription = ruleDescription;
 			}
 			public String getStatus() {
 				return Status;

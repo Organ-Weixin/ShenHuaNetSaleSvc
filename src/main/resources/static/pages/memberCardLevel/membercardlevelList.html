@@ -152,9 +152,13 @@ function init(){
 						        "render": function (data, type, row) {
                 		           var id = row['id'];
                 		           var status = row['status'];
+                		           var cinemaCode = row['cinemaCode'];
+                		           var levelCode = row['levelCode'];
                 		           var change = "";
+                		           var set = "";
                 		           if(status==1){
                 		        	   change = "停用";
+                		        	   set = "<button class='chooseRule' style='margin-right:5%' value='"+cinemaCode+"' title='"+levelCode+"'>选择卡规则</button>"
                 		           }
                 		           else{
                 		        	   status == 0;
@@ -166,7 +170,7 @@ function init(){
                 		           var del = buttonDel(id, "", pers);
                 		           
                                    return edit + del; */
-                                   return upda;
+                                   return upda + set;
                   	            }		
 							},
                 
@@ -211,6 +215,9 @@ $("#tbody").on('click','.change',function(){
 			window.location.href="membercardlevelList.html";
 		}
 	}); 
+});
+$("#tbody").on('click','.chooseRule',function(){
+	window.location.href="updateChoosemembercardcreditrule.html?cinemaCode="+$(this).val()+"&levelCode="+$(this).attr('title');
 });
 
 $("#searchBt").click(function(){

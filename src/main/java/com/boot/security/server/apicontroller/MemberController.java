@@ -38,18 +38,25 @@ import com.boot.security.server.apicontroller.reply.QueryMemberCardByOpenIDReply
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.QueryMemberCardByPhoneReplyMemberCardByPhone.QueryMemberCardByPhoneReplyPhone;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelReply.QueryMemberCardLevelReplyMemberCard;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelReply.QueryMemberCardLevelReplyMemberCard.QueryMemberCardLevelReplyMemberCardLevel;
+import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelRuleReply.QueryMemberCardLevelRuleReplyMemberCard;
+import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelRuleReply.QueryMemberCardLevelRuleReplyMemberCard.QueryMemberCardLevelRuleReplyMemberCardRule;
+import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelRuleReply;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelReply;
+import com.boot.security.server.model.Choosemembercardcreditrule;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Cinemapaymentsettings;
 import com.boot.security.server.model.Membercard;
+import com.boot.security.server.model.Membercardcreditrule;
 import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
+import com.boot.security.server.service.impl.ChoosemembercardcreditruleServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.CinemapaymentsettingsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
+import com.boot.security.server.service.impl.MembercardcreditruleServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
@@ -78,6 +85,10 @@ public class MemberController {
     private HttpServletRequest request;
 	@Autowired
 	private MemberCardLevelServiceImpl _memberCardLevelService;
+	@Autowired
+	private ChoosemembercardcreditruleServiceImpl _choosemembercardcreditruleService;
+	@Autowired
+	private MembercardcreditruleServiceImpl _membercardcreditruleService;
 	
 	//region 会员卡登陆
 	@GetMapping("/LoginCard/{Username}/{Password}/{CinemaCode}/{OpenID}/{CardNo}/{CardPassword}")
@@ -209,7 +220,7 @@ public class MemberController {
 	//endregion
 	
 	//region 会员卡注册
-	@GetMapping("/CardRegister/{Username}/{Password}/{OpenID}/{CinemaCode}/{CardPassword}/{LevelCode}/{InitialAmount}/{CardUserName}/{MobilePhone}/{IDNumber}/{Sex}")
+	@GetMapping("/CardRegister/{Username}/{Password}/{CinemaCode}/{OpenID}/{CardPassword}/{LevelCode}/{InitialAmount}/{CardUserName}/{MobilePhone}/{IDNumber}/{Sex}")
 	@ApiOperation(value = "会员卡注册")
 	public CardRegisterReply CardRegister(@PathVariable String Username,@PathVariable String Password,String OpenID,@PathVariable String CinemaCode,
 			@PathVariable String CardPassword,@PathVariable String LevelCode,@PathVariable String InitialAmount,@PathVariable String CardUserName,
@@ -349,7 +360,7 @@ public class MemberController {
 	//endregion
 	
 	//region 预支付会员卡注册(准备支付参数)
-	@GetMapping("/PrePayCardCharge/{Username}/{Password}/{CinemaCode}/{OpenID}/{InitialAmount}")
+	@GetMapping("/PrePayCardRegister/{Username}/{Password}/{CinemaCode}/{OpenID}/{InitialAmount}")
 	@ApiOperation(value = "预支付会员卡注册(准备支付参数)")
 	public PrePayParametersReply PrePayCardRegister(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String OpenID,@PathVariable String InitialAmount){
@@ -394,7 +405,7 @@ public class MemberController {
         String WxpayMchId = cinemapaymentsettings.getWxpayMchId();
         String WxpayKey = cinemapaymentsettings.getWxpayKey();
         String notify_url = "https://xc.80piao.com:8443/Api/Member/WxPayNotify";
-        String out_trade_no = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + CinemaCode + ((Math.random()*9+1)*100000);//随机的六位数字
+        String out_trade_no = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + CinemaCode + (int)((Math.random()*9+1)*100000);//随机的六位数字
         String time_expire =new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(new Date() .getTime() + 900000));
         Double totalPrice = Double.valueOf(InitialAmount);
         String total_fee = String.valueOf(totalPrice * 100);//以分为单位
@@ -433,26 +444,23 @@ public class MemberController {
         	data.setCinemaCode(CinemaCode);
         	data.setMemberPhoneCount(String.valueOf(memberCardList.size()));
         	List<QueryMemberCardByOpenIDReplyOpenIDMemberCard> cardReplyList = new ArrayList<>();
-        	QueryMemberCardByOpenIDReplyOpenIDMemberCard cardReply = new QueryMemberCardByOpenIDReplyOpenIDMemberCard();
         	for(Membercard memberCard: memberCardList){
-        		if(memberCard.getBalance()!=null){
-        			cardReply.setBalance(String.valueOf(memberCard.getBalance()));
-        		}
+        		QueryMemberCardByOpenIDReplyOpenIDMemberCard cardReply = new QueryMemberCardByOpenIDReplyOpenIDMemberCard();
+        		cardReply.setBalance(memberCard.getBalance());
         		if(memberCard.getBirthday()!=null){
-        			cardReply.setBirthday(String.valueOf(memberCard.getBirthday()));
+        			cardReply.setBirthday(new SimpleDateFormat("yyyy-MM-dd").format(memberCard.getBirthday()));
         		}
         		cardReply.setCardNo(memberCard.getCardNo());
+        		cardReply.setCardPassword(memberCard.getCardPassword());
         		cardReply.setCreditNum(memberCard.getCreditNum());
         		if(memberCard.getExpireDate()!=null){
-        			cardReply.setExpireDate(String.valueOf(memberCard.getExpireDate()));
+        			cardReply.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").format(memberCard.getExpireDate()));
         		}
         		cardReply.setLevelCode(memberCard.getLevelCode());
         		cardReply.setLevelName(memberCard.getLevelName());
         		cardReply.setMobilePhone(memberCard.getMobilePhone());
         		cardReply.setOpenID(memberCard.getOpenId());
-        		if(memberCard.getScore()!=null){
-        			cardReply.setScore(String.valueOf(memberCard.getScore()));
-        		}
+        		cardReply.setScore(memberCard.getScore());
         		cardReply.setSex(memberCard.getSex());
         		if(memberCard.getStatus()!=null){
         			cardReply.setStatus(String.valueOf(memberCard.getStatus()));
@@ -468,7 +476,7 @@ public class MemberController {
 	}
 	
 	@GetMapping("/QueryMemberCardLevel/{Username}/{Password}/{CinemaCode}")
-	@ApiOperation(value = "本地已启用会员卡类别")
+	@ApiOperation(value = "本地已启用会员卡类别及开卡规则")
 	public QueryMemberCardLevelReply QueryMemberCardLevel(@PathVariable String Username,@PathVariable String Password,
 			@PathVariable String CinemaCode){
 		QueryMemberCardLevelReply queryMemberCardLevelReply = new QueryMemberCardLevelReply();
@@ -509,6 +517,19 @@ public class MemberController {
 	        	if(membercardlevel.getStatus()!=null){
 	        		levelReply.setStatus(String.valueOf(membercardlevel.getStatus()));
 	        	}
+	        	//会员卡类别规则
+	        	Choosemembercardcreditrule choosemembercardcreditrule =  _choosemembercardcreditruleService.getOpenTypeByLevelCode(CinemaCode, membercardlevel.getLevelCode());
+	        	if(choosemembercardcreditrule!=null&&choosemembercardcreditrule.getRuleCode()!=null&&choosemembercardcreditrule.getRuleCode()!=""){
+	        		Membercardcreditrule membercardcreditrule = _membercardcreditruleService.getByRuleCode(choosemembercardcreditrule.getRuleCode());
+	        		if(membercardcreditrule!=null){
+	        			levelReply.setCredit(membercardcreditrule.getCredit());
+	        			levelReply.setEffectiveDays(membercardcreditrule.getEffectiveDays());
+	        			levelReply.setRuleCode(membercardcreditrule.getRuleCode());
+	        			levelReply.setRuleName(membercardcreditrule.getRuleName());
+	        			levelReply.setRuleDescription(membercardcreditrule.getRuleDescription());
+	        			levelReply.setRuleType(membercardcreditrule.getRuleType());
+	        		}
+	        	}
 	        	levelReplyList.add(levelReply);
 	       }
 	       data.setLevel(levelReplyList);
@@ -517,9 +538,68 @@ public class MemberController {
         queryMemberCardLevelReply.SetSuccessReply();
 		return queryMemberCardLevelReply;
 	}
+	@GetMapping("/QueryMemberCardLevelRule/{Username}/{Password}/{CinemaCode}/{LevelCode}")
+	@ApiOperation(value = "会员卡类别充值规则")
+	public QueryMemberCardLevelRuleReply QueryMemberCardLevelRule(@PathVariable String Username,@PathVariable String Password,
+			@PathVariable String CinemaCode,@PathVariable String LevelCode){
+		QueryMemberCardLevelRuleReply queryMemberCardLevelRuleReply = new QueryMemberCardLevelRuleReply();
+		//校验参数
+		if (!ReplyExtension.RequestInfoGuard(queryMemberCardLevelRuleReply, Username, Password, CinemaCode, LevelCode))
+        {
+            return queryMemberCardLevelRuleReply;
+        }
+		//获取用户信息(渠道)
+        Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+        if (UserInfo == null)
+        {
+        	queryMemberCardLevelRuleReply.SetUserCredentialInvalidReply();
+            return queryMemberCardLevelRuleReply;
+        }
+        //验证影院是否存在且可访问
+        Cinema cinema = _cinemaService.getByCinemaCode(CinemaCode);
+        if (cinema == null)
+        {
+        	queryMemberCardLevelRuleReply.SetCinemaInvalidReply();
+            return queryMemberCardLevelRuleReply;
+        }
+        //验证会员卡类别是否存在且可用
+        Membercardlevel membercardlevel = _memberCardLevelService.getByCinemaCodeAndLevelCode(CinemaCode, LevelCode);
+        if(membercardlevel==null){
+        	queryMemberCardLevelRuleReply.SetCardLevelInvalidReply();
+        	return queryMemberCardLevelRuleReply;
+        }else{
+        	if(membercardlevel.getStatus()!=1){
+        		queryMemberCardLevelRuleReply.SetCardLevelInvalidReply();
+            	return queryMemberCardLevelRuleReply;
+        	}
+        }
+    	List<Choosemembercardcreditrule> choosemembercardcreditruleList =  _choosemembercardcreditruleService.getRechargeTypeListByLevelCode(CinemaCode, membercardlevel.getLevelCode());
+    	QueryMemberCardLevelRuleReplyMemberCard data = new QueryMemberCardLevelRuleReplyMemberCard();
+    	data.setCinemaCode(CinemaCode);
+    	data.setLevelCode(LevelCode);
+    	data.setLevelName(membercardlevel.getLevelName());
+    	List<QueryMemberCardLevelRuleReplyMemberCardRule> ruleReplyList = new ArrayList<QueryMemberCardLevelRuleReplyMemberCardRule>();
+    	if(choosemembercardcreditruleList.size()>0){
+			for(Choosemembercardcreditrule choosemembercardcreditrule : choosemembercardcreditruleList){
+				Membercardcreditrule membercardcreditrule = _membercardcreditruleService.getByRuleCode(choosemembercardcreditrule.getRuleCode());
+				QueryMemberCardLevelRuleReplyMemberCardRule ruleReply = new QueryMemberCardLevelRuleReplyMemberCardRule();
+				ruleReply.setRuleCode(membercardcreditrule.getRuleCode());
+				ruleReply.setRuleType(membercardcreditrule.getRuleType());
+				ruleReply.setCredit(membercardcreditrule.getCredit());
+				ruleReplyList.add(ruleReply);
+			}
+			data.setRule(ruleReplyList);
+		}
+    	queryMemberCardLevelRuleReply.setData(data);
+    	queryMemberCardLevelRuleReply.SetSuccessReply();
+    	return queryMemberCardLevelRuleReply;
+	}
 	//region 异步接收微信支付返回(会员卡注册充值不需要更新订单表，可以为空)
 	public void WxPayNotify() throws Exception{
 		
+	}
+	public static void main(String[] args) {
+		System.out.println(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "12345678" + (int)((Math.random()*9+1)*100000));
 	}
 	//endregion
 }

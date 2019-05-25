@@ -111,6 +111,12 @@ public class SessioninfoServiceImpl implements SessioninfoService{
 	public List<Sessioninfo> getByCinemaCodeAndFilmCode(String cinemacode, String filmcode) {
 		return sessioninfoDao.getByCinemaCodeAndFilmCode(cinemacode, filmcode);
 	}
+
+	@Override
+	public List<Sessioninfo> getByCinemaCodeAndFilmCodeAndTime(String cinemacode, String filmcode, String startdate,
+			String enddate) {
+		return sessioninfoDao.getByCinemaCodeAndFilmCodeAndTime(cinemacode, filmcode, startdate, enddate);
+	}
 	
 	
 }

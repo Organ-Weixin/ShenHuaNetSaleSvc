@@ -16,23 +16,19 @@ import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply;
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions;
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions.QueryFilmSessionsReplyFilm;
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions.QueryFilmSessionsReplyFilm.QueryFilmSessionsReplySession;
-import com.boot.security.server.apicontroller.reply.QueryNewSessionsReply;
-import com.boot.security.server.apicontroller.reply.QueryNewSessionsReply.QueryNewSessionsReplyNewSessions.QueryNewSessionsReplyFilm;
 import com.boot.security.server.apicontroller.reply.QueryOrderSessionReply;
 import com.boot.security.server.apicontroller.reply.QueryOrderSessionReply.QueryOrderSessionReplyOrderSession;
-import com.boot.security.server.apicontroller.reply.QuerySessionsReply;
-import com.boot.security.server.apicontroller.reply.QuerySessionsReply.QuerySessionsReplySessions.QuerySessionsReplySession;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
-import com.boot.security.server.dao.SessioninfoDao;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
+import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
+import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
-import com.google.gson.Gson;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -46,172 +42,9 @@ public class SessionController {
 	@Autowired
 	private SessioninfoServiceImpl _sessionInfoService;
 	@Autowired
-	private SessioninfoDao  sessioninfoDao;
-	@Autowired
 	private FilminfoServiceImpl _filminfoService;
-	@GetMapping("/QuerySessions/{UserName}/{Password}/{CinemaCode}/{StartDate}/{EndDate}")
-	@ApiOperation(value="获取影片场次信息")
-	public QuerySessionsReply QuerySessions(@PathVariable String UserName, @PathVariable String Password,@PathVariable String CinemaCode,@PathVariable String StartDate,@PathVariable String EndDate) throws ParseException 
-	{
-		QuerySessionsReply querySessionsReply=new QuerySessionsReply();
-		//校验参数
-		if(!ReplyExtension.RequestInfoGuard(querySessionsReply, UserName, Password, CinemaCode, StartDate, EndDate))
-		{
-			return querySessionsReply;
-		}
-		//获取用户信息(渠道)
-		Userinfo UserInfo=_userInfoService.getByUserCredential(UserName, Password);
-		if(UserInfo == null){
-			querySessionsReply.SetUserCredentialInvalidReply();
-			return querySessionsReply;
-		}
-		//验证影院是否存在且可访问
-		Cinema cinema=_cinemaService.getByCinemaCode(CinemaCode);
-		if(cinema == null){
-			querySessionsReply.SetCinemaInvalidReply();
-			return querySessionsReply;
-		}
-		//验证排期是否存在
-		List<Sessioninfo> sessionfo=_sessionInfoService.getByCinemaStartDateEndDate(CinemaCode, StartDate, EndDate);
-		if(sessionfo == null){
-			querySessionsReply.SetSessionInvalidReply();
-			return querySessionsReply;
-		}
-		//验证开始时间和结束时间是否正确
-		Date Start=new SimpleDateFormat("yyyy-MM-dd").parse(StartDate);
-		Date End=new SimpleDateFormat("yyyy-MM-dd").parse(EndDate);
-		if(Start == null){
-			querySessionsReply.SetStartDateInvalidReply();
-			return querySessionsReply;
-		}
-		if(End == null){
-			querySessionsReply.SetEndDateInvalidReply();
-			return querySessionsReply;
-		}
-		if(Start.getTime() > End.getTime()){
-			querySessionsReply.SetDateInvalidReply();
-			return querySessionsReply;
-		}
-		List<Sessioninfo> sessionList=sessioninfoDao.getByCinemaStartDateEndDate(CinemaCode, StartDate, EndDate);
-		querySessionsReply.setSessions(querySessionsReply.new QuerySessionsReplySessions());
-		if(sessionList != null && sessionList.size() > 0){
-			querySessionsReply.getSessions().setSession(new ArrayList<QuerySessionsReplySession>());
-			for(Sessioninfo sessioninfo:sessionList){
-				QuerySessionsReplySession replySession=querySessionsReply.getSessions().new QuerySessionsReplySession();
-				ModelMapper.MapFrom(replySession, sessioninfo);
-				querySessionsReply.getSessions().setCinemaCode(CinemaCode);
-				querySessionsReply.getSessions().getSession().add(replySession);
-			}
-		}
-		querySessionsReply.SetSuccessReply();
-		return querySessionsReply;
-	
-	}
-	///////
-	@GetMapping("/QueryNewSessions/{UserName}/{Password}/{CinemaCode}/{StartDate}/{EndDate}")
-	@ApiOperation(value="获取影片场次信息-新")
-	public  QueryNewSessionsReply QueryNewSessions(@PathVariable String UserName, @PathVariable String Password,@PathVariable String CinemaCode,@PathVariable String StartDate,@PathVariable String EndDate) throws ParseException{
-		QueryNewSessionsReply queryNewSessionsReply=new QueryNewSessionsReply();
-		//校验参数
-		if(!ReplyExtension.RequestInfoGuard(queryNewSessionsReply, UserName, Password, CinemaCode, StartDate, EndDate))
-		{
-			return queryNewSessionsReply;
-		}
-		// 获取用户信息(渠道)
-		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
-		if (UserInfo == null) {
-			queryNewSessionsReply.SetUserCredentialInvalidReply();
-			return queryNewSessionsReply;
-		}
-		// 验证影院是否存在且可访问
-		Cinema cinema = _cinemaService.getByCinemaCode(CinemaCode);
-		if (cinema == null) {
-			queryNewSessionsReply.SetCinemaInvalidReply();
-			return queryNewSessionsReply;
-		}
-		// 验证排期是否存在
-		List<Sessioninfo> sessionfo = _sessionInfoService.getByCinemaStartDateEndDate(CinemaCode, StartDate, EndDate);
-		if (sessionfo == null) {
-			queryNewSessionsReply.SetSessionInvalidReply();
-			return queryNewSessionsReply;
-		}
-		//验证开始时间和结束时间是否正确
-		Date Start=new SimpleDateFormat("yyyy-MM-dd").parse(StartDate);
-		Date End=new SimpleDateFormat("yyyy-MM-dd").parse(EndDate);
-		if(Start == null){
-			queryNewSessionsReply.SetStartDateInvalidReply();
-			return queryNewSessionsReply;
-		}
-		if(End == null){
-			queryNewSessionsReply.SetEndDateInvalidReply();
-			return queryNewSessionsReply;
-		}
-		if(Start.getTime() > End.getTime()){
-			queryNewSessionsReply.SetDateInvalidReply();
-			return queryNewSessionsReply;
-		}
-		// 根据影片名称分组，去除影片重复数据
-		/*List<Sessioninfo> sessions = _sessioninfoService.getByCCodeGroupByFilm(userCinema.getUserId(),
-				userCinema.getCinemaCode(), StartDate, EndDate);*/
-		List<Sessioninfo>  sessionList=sessioninfoDao.getByFilmName(CinemaCode,String.valueOf(StartDate),String.valueOf(EndDate));
-		queryNewSessionsReply.setFilms(queryNewSessionsReply.new QueryNewSessionsReplyNewSessions());
-		if(sessionList!=null && sessionList.size()>0){
-			queryNewSessionsReply.getFilms().setFilm(new ArrayList<QueryNewSessionsReplyFilm>());
-			for(Sessioninfo sessioninfo:sessionList){
-				QueryNewSessionsReplyFilm replySession=queryNewSessionsReply.getFilms().new QueryNewSessionsReplyFilm();
-				ModelMapper.MapFrom(replySession, sessioninfo);
-				queryNewSessionsReply.getFilms().setCinemaCode(CinemaCode);
-				queryNewSessionsReply.getFilms().getFilm().add(replySession);
-				List<Sessioninfo> films = _sessionInfoService.getByCinemafilm(CinemaCode, sessioninfo.getFilmCode());
-				
-			}
-		}
-		queryNewSessionsReply.SetSuccessReply();
-		return queryNewSessionsReply;
-	}
-	///////
-//	获取订单场次信息
-	@GetMapping("/QueryOrderSession/{UserName}/{Password}/{CinemaCode}/{SessionCode}")
-	@ApiOperation(value = "获取订单场次信息")
-	public QueryOrderSessionReply QueryOrderSession(@PathVariable String UserName, @PathVariable String Password,
-			@PathVariable String CinemaCode, @PathVariable String SessionCode) {
-		QueryOrderSessionReply queryOrderSessionReply = new QueryOrderSessionReply();
-		// 校验参数
-		if (!ReplyExtension.RequestInfoGuard(queryOrderSessionReply, UserName, Password, CinemaCode, SessionCode)) {
-			return queryOrderSessionReply;
-		}
-		// 获取用户信息(渠道)
-		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
-		if (UserInfo == null) {
-			queryOrderSessionReply.SetUserCredentialInvalidReply();
-			return queryOrderSessionReply;
-		}
-		// 验证影院是否存在且可访问
-		Cinema cinema = _cinemaService.getByCinemaCode(CinemaCode);
-		if (cinema == null) {
-			queryOrderSessionReply.SetCinemaInvalidReply();
-			return queryOrderSessionReply;
-		}
-		// 验证场次是否存在
-		Sessioninfo sessionfo = _sessionInfoService.getSessionCode(CinemaCode, SessionCode);
-		if (sessionfo == null) {
-			queryOrderSessionReply.SetSessionInvalidReply();
-			return queryOrderSessionReply;
-		}
-		queryOrderSessionReply.setData(queryOrderSessionReply.new QueryOrderSessionReplyOrderSession());
-			QueryOrderSessionReplyOrderSession orderSession = queryOrderSessionReply.new QueryOrderSessionReplyOrderSession();
-			ModelMapper.MapFrom1(orderSession, sessionfo);
-//			System.out.println("获取订单场次信息返回"+new Gson().toJson(orderSession));
-			queryOrderSessionReply.setData(orderSession);
-		queryOrderSessionReply.SetSuccessReply();
-		return queryOrderSessionReply;
-	}
-
-	@GetMapping("/QuerySessionSeat/{UserName}/{Password}/{CinemaCode}/{SessionCode}/{Status}")
-	@ApiOperation(value = "获取场次座位信息")
-	public QuerySessionSeatReply QuerySessionSeat(@PathVariable String UserName, @PathVariable String Password,@PathVariable String CinemaCode,@PathVariable String SessionCode,@PathVariable String Status){
-		return NetSaleSvcCore.getInstance().QuerySessionSeat(UserName, Password, CinemaCode, SessionCode, Status);
-	}
+	@Autowired
+	private ScreeninfoServiceImpl _screeninfoService;
 	@GetMapping("/QueryFilmSessions/{UserName}/{Password}/{CinemaCode}/{StartDate}/{EndDate}")
 	@ApiOperation(value = "获取场次影片信息")
 	public QueryFilmSessionsReply QueryFilmSessions(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
@@ -274,7 +107,7 @@ public class SessionController {
 					filmReply.setType(filminfo.getType());
 					filmReply.setVersion(filminfo.getVersion());
 				}
-				List<Sessioninfo> sessionList = _sessionInfoService.getByCinemaCodeAndFilmCode(film.getCCode(), filmcode);
+				List<Sessioninfo> sessionList = _sessionInfoService.getByCinemaCodeAndFilmCodeAndTime(film.getCCode(), filmcode, StartDate, EndDate);
 				List<QueryFilmSessionsReplySession> sessionReplyList = new ArrayList<QueryFilmSessionsReplySession>();
 				for(Sessioninfo session :sessionList){
 					QueryFilmSessionsReplySession sessionReply = new QueryFilmSessionsReplySession();
@@ -297,12 +130,16 @@ public class SessionController {
 					if(session.getStartTime()!=null){
 						sessionReply.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(session.getStartTime()));
 					}
+					Screeninfo screeninfo = _screeninfoService.getByScreenCode(session.getCCode(), session.getScreenCode());
+					if(screeninfo!=null){
+						sessionReply.setScreenName(screeninfo.getSName());
+					}
 					sessionReply.setStartDate(new SimpleDateFormat("MM-dd").format(session.getStartTime()));
 					sessionReply.setBeginTime(new SimpleDateFormat("HH:mm").format(session.getStartTime()));
 					if(new SimpleDateFormat("yyyyMMdd").format(session.getStartTime()).equals(new SimpleDateFormat("yyyyMMdd").format(new Date()))){
-						sessionReply.setIsToday("true");
+						sessionReply.setIsToday(true);
 					}else{
-						sessionReply.setIsToday("false");
+						sessionReply.setIsToday(false);
 					}
 					sessionReplyList.add(sessionReply);
 				}
@@ -315,5 +152,47 @@ public class SessionController {
 		queryFilmSessionsReply.SetSuccessReply();
 			
 		return queryFilmSessionsReply;
+	}
+	//	获取订单场次信息
+	@GetMapping("/QueryOrderSession/{UserName}/{Password}/{CinemaCode}/{SessionCode}")
+	@ApiOperation(value = "获取订单场次信息")
+	public QueryOrderSessionReply QueryOrderSession(@PathVariable String UserName, @PathVariable String Password,
+			@PathVariable String CinemaCode, @PathVariable String SessionCode) {
+		QueryOrderSessionReply queryOrderSessionReply = new QueryOrderSessionReply();
+		// 校验参数
+		if (!ReplyExtension.RequestInfoGuard(queryOrderSessionReply, UserName, Password, CinemaCode, SessionCode)) {
+			return queryOrderSessionReply;
+		}
+		// 获取用户信息(渠道)
+		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
+		if (UserInfo == null) {
+			queryOrderSessionReply.SetUserCredentialInvalidReply();
+			return queryOrderSessionReply;
+		}
+		// 验证影院是否存在且可访问
+		Cinema cinema = _cinemaService.getByCinemaCode(CinemaCode);
+		if (cinema == null) {
+			queryOrderSessionReply.SetCinemaInvalidReply();
+			return queryOrderSessionReply;
+		}
+		// 验证场次是否存在
+		Sessioninfo sessionfo = _sessionInfoService.getSessionCode(CinemaCode, SessionCode);
+		if (sessionfo == null) {
+			queryOrderSessionReply.SetSessionInvalidReply();
+			return queryOrderSessionReply;
+		}
+		queryOrderSessionReply.setData(queryOrderSessionReply.new QueryOrderSessionReplyOrderSession());
+			QueryOrderSessionReplyOrderSession orderSession = queryOrderSessionReply.new QueryOrderSessionReplyOrderSession();
+			ModelMapper.MapFrom1(orderSession, sessionfo);
+//			System.out.println("获取订单场次信息返回"+new Gson().toJson(orderSession));
+			queryOrderSessionReply.setData(orderSession);
+		queryOrderSessionReply.SetSuccessReply();
+		return queryOrderSessionReply;
+	}
+
+	@GetMapping("/QuerySessionSeat/{UserName}/{Password}/{CinemaCode}/{SessionCode}/{Status}")
+	@ApiOperation(value = "获取场次座位信息")
+	public QuerySessionSeatReply QuerySessionSeat(@PathVariable String UserName, @PathVariable String Password,@PathVariable String CinemaCode,@PathVariable String SessionCode,@PathVariable String Status){
+		return NetSaleSvcCore.getInstance().QuerySessionSeat(UserName, Password, CinemaCode, SessionCode, Status);
 	}
 }

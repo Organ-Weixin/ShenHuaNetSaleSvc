@@ -171,11 +171,12 @@ public class QueryFilmSessionsReply extends BaseReply{
 					public static class QueryFilmSessionsReplySession{
 						private String SessionCode;
 						private String ScreenCode;
+						private String ScreenName;
 						private String FeatureNo;
 						private String StartTime;
 						private String StartDate;
 						private String BeginTime;
-						private String IsToday;
+						private Boolean IsToday;
 						private String PlaythroughFlag;
 						private String Sequence;
 						private String LowestPrice;
@@ -194,6 +195,12 @@ public class QueryFilmSessionsReply extends BaseReply{
 						}
 						public void setScreenCode(String screenCode) {
 							ScreenCode = screenCode;
+						}
+						public String getScreenName() {
+							return ScreenName;
+						}
+						public void setScreenName(String screenName) {
+							ScreenName = screenName;
 						}
 						public String getFeatureNo() {
 							return FeatureNo;
@@ -219,10 +226,10 @@ public class QueryFilmSessionsReply extends BaseReply{
 						public void setBeginTime(String beginTime) {
 							BeginTime = beginTime;
 						}
-						public String getIsToday() {
+						public Boolean getIsToday() {
 							return IsToday;
 						}
-						public void setIsToday(String isToday) {
+						public void setIsToday(Boolean isToday) {
 							IsToday = isToday;
 						}
 						public String getPlaythroughFlag() {

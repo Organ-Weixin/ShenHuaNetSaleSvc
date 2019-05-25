@@ -9,7 +9,7 @@
 				and Id = #{params.Id} 
 			</if>
 			<if test="params.GroupCode != null and params.GroupCode != ''">
-				and GroupCode = #{params.GroupCode} or find_in_set(GroupCode,#{params.GroupCode})
+				and (GroupCode = #{params.GroupCode} or find_in_set(GroupCode,#{params.GroupCode}))
 			</if>
 			<if test="params.CustomerType != null and params.CustomerType != ''">
 				and CustomerType = #{params.CustomerType} 

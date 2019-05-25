@@ -38,8 +38,9 @@ public class QueryMemberCardByOpenIDReply extends BaseReply{
 			private String OpenID;
 			private String MobilePhone;
 			private String CardNo;
-			private String Balance;
-			private String Score;
+			private String CardPassword;
+			private Double Balance;
+			private Integer Score;
 			private String LevelCode;
 			private String LevelName;
 			private String UserName;
@@ -66,16 +67,22 @@ public class QueryMemberCardByOpenIDReply extends BaseReply{
 			public void setCardNo(String cardNo) {
 				CardNo = cardNo;
 			}
-			public String getBalance() {
+			public String getCardPassword() {
+				return CardPassword;
+			}
+			public void setCardPassword(String cardPassword) {
+				CardPassword = cardPassword;
+			}
+			public Double getBalance() {
 				return Balance;
 			}
-			public void setBalance(String balance) {
+			public void setBalance(Double balance) {
 				Balance = balance;
 			}
-			public String getScore() {
+			public Integer getScore() {
 				return Score;
 			}
-			public void setScore(String score) {
+			public void setScore(Integer score) {
 				Score = score;
 			}
 			public String getLevelCode() {

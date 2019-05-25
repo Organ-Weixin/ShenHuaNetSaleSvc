@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.security.server.page.table.PageTableRequest;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
+import com.boot.security.server.service.impl.MembercardcreditruleServiceImpl;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.dao.MembercardcreditruleDao;
@@ -29,6 +31,8 @@ public class MembercardcreditruleController {
 
     @Autowired
     private MembercardcreditruleDao membercardcreditruleDao;
+    @Autowired
+    private MembercardcreditruleServiceImpl membercardcreditruleService;
 
     @PostMapping
     @ApiOperation(value = "保存")
@@ -42,7 +46,10 @@ public class MembercardcreditruleController {
             ruleCode += (c + "");
         }
     	if(membercardcreditrule.getEffectiveDays()==null){
-    		membercardcreditrule.setEffectiveDays(9999);
+    		membercardcreditrule.setEffectiveDays("长期有效");
+    	}
+    	if(membercardcreditrule.getRuleName()==null||membercardcreditrule.getRuleName()==""){
+    		membercardcreditrule.setRuleName("充值"+membercardcreditrule.getCredit());
     	}
     	membercardcreditrule.setRuleCode(ruleCode);
     	membercardcreditrule.setCreateTime(new Date());
@@ -89,7 +96,16 @@ public class MembercardcreditruleController {
     public void delete(@PathVariable Long id) {
         membercardcreditruleDao.delete(id);
     }
-    public static void main(String[] args) {
-		
-	}
+    
+    @RequestMapping("/getOpenTypeByLevelCode")
+    @ApiOperation(value = "通过卡类别编码获取开卡规则")
+    public List<Membercardcreditrule> getOpenTypeByLevelCode(@RequestParam("cinemacode") String cinemacode,@RequestParam("levelcode") String levelcode){
+    	return membercardcreditruleService.getOpenTypeByLevelCode(cinemacode, levelcode);
+    }
+    
+    @RequestMapping("/getRechargeTypeByLevelCode")
+    @ApiOperation(value = "通过卡类别编码获取开卡规则")
+    public List<Membercardcreditrule> getRechargeTypeByLevelCode(@RequestParam("cinemacode") String cinemacode,@RequestParam("levelcode") String levelcode){
+    	return membercardcreditruleService.getRechargeTypeByLevelCode(cinemacode, levelcode);
+    }
 }

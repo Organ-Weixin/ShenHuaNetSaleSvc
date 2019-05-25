@@ -1,6 +1,5 @@
 package com.boot.security.server.apicontroller.reply;
 
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,7 +20,6 @@ import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply.
 import com.boot.security.server.apicontroller.reply.QueryScreenInfoReply.QueryScreensReplyScreenInfo;
 import com.boot.security.server.apicontroller.reply.QueryScreenSeatsReply.QueryScreenSeatsReplyScreenSeats;
 import com.boot.security.server.apicontroller.reply.QueryScreensReply.QueryScreensReplyScreens.QueryScreensReplyScreen;
-import com.boot.security.server.apicontroller.reply.QuerySessionsReply.QuerySessionsReplySessions.QuerySessionsReplySession.QuerySessionsReplyFilms.QuerySessionsReplyFilm;
 import com.boot.security.server.apicontroller.reply.QueryUsingConponsReply.ConponData.ConponBean;
 import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.Couponsgroup;
@@ -39,8 +37,6 @@ import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Ticketusers;
-//import com.boot.security.server.apicontroller.reply.QueryNewSessionsReply.QueryNewSessionsReplyNewSessions.QueryNewSessionsReplyFilm.QueryNewSessionsReplySessions.QueryNewSessionsReplyPrices;
-import com.boot.security.server.apicontroller.reply.QueryNewSessionsReply.QueryNewSessionsReplyNewSessions.QueryNewSessionsReplyFilm.QueryNewSessionsReplySessions.QueryNewSessionsReplySession;
 public class ModelMapper {
 	public static QueryScreensReplyScreen MapFrom(QueryScreensReplyScreen screen, Screeninfo entity)
     {
@@ -143,60 +139,6 @@ public class ModelMapper {
 			membercard.setStatus("0");
 		}
 		return membercard;
-	}
-	public static QuerySessionsReply.QuerySessionsReplySessions.QuerySessionsReplySession MapFrom(QuerySessionsReply.QuerySessionsReplySessions.QuerySessionsReplySession session, Sessioninfo entity)
-    {
-        session.setScreenCode(Integer.valueOf(entity.getScreenCode()));
-        session.setCode(entity.getSCode());
-        session.setFeatureNo(entity.getFeatureNo());
-        session.setStartTime(entity.getStartTime());
-        session.setPlaythroughFlag(entity.getPlaythroughFlag());
-		session.setFilms(session.new QuerySessionsReplyFilms());
-		session.getFilms().setFilm(new ArrayList<QuerySessionsReplyFilm>());
-		QuerySessionsReplyFilm film = session.getFilms().new QuerySessionsReplyFilm();
-		film.setCode(entity.getFilmCode());
-		film.setName(entity.getFilmName());
-		film.setDimensional(entity.getDimensional());
-		film.setDuration(entity.getDuration());
-		film.setSequence(entity.getSequence());
-		film.setLanguage(entity.getLanguage());
-		session.getFilms().getFilm().add(film);
-        session.setPrice(session.new QuerySessionsReplyPrices());
-        session.getPrice().setStandardPrice(new DecimalFormat("#.00").format(entity.getStandardPrice()));
-        session.getPrice().setLowestPrice(new DecimalFormat("#.00").format(entity.getLowestPrice()));
-        session.getPrice().setListingPrice(entity.getStandardPrice()==null?"0":new DecimalFormat("#.00").format(entity.getStandardPrice()));
-        return session;
-    }
-public static QueryNewSessionsReply.QueryNewSessionsReplyNewSessions.QueryNewSessionsReplyFilm MapFrom(QueryNewSessionsReply.QueryNewSessionsReplyNewSessions.QueryNewSessionsReplyFilm newSessions,Sessioninfo entity){
-	newSessions.setCode(entity.getFilmCode());
-	newSessions.setName(entity.getFilmName());
-	newSessions.setDimensional(entity.getDimensional());
-	newSessions.setDuration(entity.getDuration());
-	newSessions.setSequence(entity.getSequence());
-	newSessions.setLanguage(entity.getLanguage());
-	newSessions.setSessionns(newSessions.new QueryNewSessionsReplySessions());
-	newSessions.getSessionns().setSessionn(new ArrayList<QueryNewSessionsReplySession>());
-	QueryNewSessionsReplySession replysession=newSessions.getSessionns().new QueryNewSessionsReplySession();
-	if(entity.getScreenCode()!=null){
-	replysession.setScreenCode(Integer.valueOf(entity.getScreenCode()));
-	}
-	replysession.setCode(entity.getSCode());
-	replysession.setFeatureNo(entity.getFeatureNo());
-	replysession.setStartTime(entity.getStartTime());
-	replysession.setPlaythroughFlag(entity.getPlaythroughFlag());
-	if(entity.getStandardPrice()!=null){
-		replysession.setStandardPrice(String.valueOf(entity.getStandardPrice()));
-	}
-	if(entity.getLowestPrice()!=null){
-		replysession.setLowestPrice(String.valueOf(entity.getLowestPrice()));
-	}
-	if(entity.getListingPrice()!=null){
-		replysession.setListingPrice(String.valueOf(entity.getListingPrice()));
-	}
-//	newSessions.getPrice().setActivityPrice();
-//	newSessions.getPrice().setMemberPrice(entity.get);
-	newSessions.getSessionns().getSessionn().add(replysession);
-	return newSessions;
 	}
 	
 	public static QueryOrderSessionReply.QueryOrderSessionReplyOrderSession MapFrom1(QueryOrderSessionReply.QueryOrderSessionReplyOrderSession orderSession,Sessioninfo entity){

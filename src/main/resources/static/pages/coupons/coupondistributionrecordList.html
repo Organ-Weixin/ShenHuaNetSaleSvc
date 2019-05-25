@@ -19,8 +19,8 @@
 		                   			<form class="form-inline" onsubmit="return false">
 		                   			<input type="hidden" id="groupcodes">
 										<div class="form-group">
-											<select class="form-control" style="width:180px;" id="customerType">
-												<option value="">全部</option>
+											<select class="form-control" style="width:180px;" id="customerT">
+												<option value="">选择顾客</option>
 												<option value="1">所有用户</option>
 												<option value="2">会员</option>
 												<option value="3">活跃用户</option>
@@ -55,7 +55,7 @@
 									<th>发放数量</th>
 									<th>操作时间</th>
 									<th>状态</th>
-									<th>操作</th>
+									<!-- <th>操作</th> -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -78,8 +78,8 @@
 <script type="text/javascript" src="../../js/dict.js"></script>
 <script type="text/javascript">
 var pers = checkPermission();
-var resultStatus = showDictSelect("status", "resultStatus", true);
-var customerType = showDictSelect("customerType", "customerType", true);
+var operatingResult = showDictSelect("status", "operatingResult", true);
+var ticketUserType = showDictSelect("customerType", "ticketUserType", true);
 
 var example;
 function init(){
@@ -100,7 +100,7 @@ function init(){
         			}else{
         				d.GroupCode = $("#groupcodes").val();
         			}
-    				d.CustomerType = $("#customerType").val();
+    				d.CustomerType = $("#customerT").val();
     			}
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
@@ -110,21 +110,21 @@ function init(){
 						return meta.row + 1 + meta.settings._iDisplayStart;
 						}
 				},
-				{"data" : "groupCode", "defaultContent" : ""},
-				{"data" : "customerType", "defaultContent" : "",
+				{"data" : "groupCode", "defaultContent" : "","orderable":false},
+				{"data" : "customerType", "defaultContent" : "","orderable":false,
 					"render":function(data, type, row){
-						return customerType[data];					
+						return ticketUserType[data];					
 					}	
 				},
-				{"data" : "issuer", "defaultContent" : ""},
-				{"data" : "issuedNumber", "defaultContent" : ""},
-				{"data" : "issuedTime", "defaultContent" : ""},
-				{"data" : "status", "defaultContent" : "",
+				{"data" : "issuer", "defaultContent" : "","orderable":false},
+				{"data" : "issuedNumber", "defaultContent" : "","orderable":false},
+				{"data" : "issuedTime", "defaultContent" : "","orderable":false},
+				{"data" : "status", "defaultContent" : "","orderable":false,
 					"render":function(data, type, row){
-						return resultStatus[data];					
+						return operatingResult[data];					
 					}					
 				},
-				{ 
+				/* { 
 								"data": "", 
 								"defaultContent": "",
 								"orderable":false,
@@ -133,9 +133,9 @@ function init(){
                 		           var href = "updateCoupondistributionrecord.html?id=" + id;
                                    var edit = buttonEdit(href, "", pers);
                 		           var del = buttonDel(id, "", pers);
-                                   return edit + del;
+                                  return edit + del;
                   	            }		
-							},
+							}, */
                 
             ],
            "order": [[ 0, "asc" ]]
@@ -205,7 +205,7 @@ function del(id){
         layer.close(1);
     });
 }
-$("#customerType").blur(function(){
+$("#customerT").blur(function(){
 	example.ajax.reload();
 });
 $("#searchBt").click(function(){
