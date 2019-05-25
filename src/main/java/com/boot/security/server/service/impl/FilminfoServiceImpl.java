@@ -65,5 +65,10 @@ public class FilminfoServiceImpl implements FilminfoService{
 		// TODO Auto-generated method stub
 		return filminfoDao.list(params, offset, limit);
 	}
+
+	@Override
+	public List<Filminfo> getFilmByFilmCode(String filmcode) {
+		return filminfoDao.getFilmByFilmCode(filmcode);
+	}
 	
 }

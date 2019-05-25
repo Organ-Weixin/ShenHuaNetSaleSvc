@@ -24,4 +24,6 @@ public interface FilminfoService {
 	int count(@Param("params") Map<String, Object> params);
 	
 	List<Filminfo> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    List<Filminfo> getFilmByFilmCode(String filmcode);
+
 }

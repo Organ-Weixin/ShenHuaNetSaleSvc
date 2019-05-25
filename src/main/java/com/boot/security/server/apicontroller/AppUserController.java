@@ -39,6 +39,7 @@ import com.boot.security.server.apicontroller.reply.UserWXResult;
 import com.boot.security.server.dao.AdminorderviewDao;
 import com.boot.security.server.dao.GoodsorderdetailsDao;
 import com.boot.security.server.dao.GoodsorderdetailsviewDao;
+import com.boot.security.server.dao.MiniprogramordersviewDao;
 import com.boot.security.server.model.Adminorderview;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaMiniProgramAccounts;
@@ -46,6 +47,7 @@ import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
+import com.boot.security.server.model.Miniprogramordersview;
 import com.boot.security.server.model.Roomgiftuser;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.StatusEnum;
@@ -94,6 +96,8 @@ public class AppUserController {
 	private GoodsOrderServiceImpl _goodsOrderService;
 	@Autowired
 	private GoodsorderdetailsDao goodsorderdetailsDao;
+	@Autowired
+	private MiniprogramordersviewDao miniprogramordersviewDao;
 	
 	@PostMapping("/UserLogin")
 	@ApiOperation(value = "用户登陆")
@@ -403,42 +407,46 @@ public class AppUserController {
 			queryCinemaTicketReply.SetOpenIDNotExistReply();
 			return queryCinemaTicketReply;
 		}
-		List<Adminorderview> adminorderviewList=adminorderviewDao.getByCinemaCode(CinemaCode);
+	//	List<Adminorderview> adminorderviewList=adminorderviewDao.getByCinemaCode(CinemaCode);
+		List<Miniprogramordersview>  ordersviewList=miniprogramordersviewDao.getByCinemaCodeAndOpenID(CinemaCode, OpenID);
 		queryCinemaTicketReply.setData(queryCinemaTicketReply.new QueryCinemaTicket());
-		if(adminorderviewList==null||adminorderviewList.size()==0){
+		if(ordersviewList==null||ordersviewList.size()==0){
 			queryCinemaTicketReply.getData().setCount(0);
 		}else{
-			queryCinemaTicketReply.getData().setCount(adminorderviewList.size());
+			queryCinemaTicketReply.getData().setCount(ordersviewList.size());
 			queryCinemaTicketReply.getData().setTicket(new ArrayList<CinemaTicket>());
-			for(Adminorderview adminorderview:adminorderviewList){
+			for(Miniprogramordersview miniprogramordersview:ordersviewList){
 				CinemaTicket cinemaTicket =queryCinemaTicketReply.getData().new  CinemaTicket();
-				cinemaTicket.setFilmName(adminorderview.getFilmname());
-				cinemaTicket.setSessionDateTime(adminorderview.getSessiontime());
-				cinemaTicket.setCinemaName(adminorderview.getCinemaname());
-				cinemaTicket.setSeatName(adminorderview.getSeat());
-				cinemaTicket.setScreenName(adminorderview.getScreencode());
-				cinemaTicket.setPrintNo(adminorderview.getPrintno());
-				cinemaTicket.setOrderCode(adminorderview.getSubmitordercode());
-				cinemaTicket.setCreated(adminorderview.getCreated());
-				cinemaTicket.setMobilePhone(adminorderview.getMobilephone());
-				List<Filminfo> filminfo=_filminfoServiceImpl.getFilmByFilmName(adminorderview.getFilmname());
+				cinemaTicket.setFilmName(miniprogramordersview.getFilmName());
+				cinemaTicket.setSessionDateTime(miniprogramordersview.getSessionTime());
+				cinemaTicket.setCinemaName(miniprogramordersview.getCinemaName());
+				List<Filminfo> filminfo=_filminfoServiceImpl.getFilmByFilmCode(miniprogramordersview.getFilmCode());
 				for(Filminfo filmi:filminfo){
-					CinemaTicket cinematicket =queryCinemaTicketReply.getData().new  CinemaTicket();
-					cinematicket.setVersion(filmi.getVersion());
+				//	CinemaTicket cinematicket =queryCinemaTicketReply.getData().new  CinemaTicket();
+					cinemaTicket.setVersion(filmi.getVersion());
 					cinemaTicket.setImage(filmi.getImage());
-					queryCinemaTicketReply.getData().getTicket().add(cinematicket);
+				//	queryCinemaTicketReply.getData().getTicket().add(cinematicket);
 					System.out.println("55555555555=:"+filmi.getVersion());
+				}
+				cinemaTicket.setSeatName(miniprogramordersview.getSeatName());
+				cinemaTicket.setScreenName(miniprogramordersview.getScreenName());
+				cinemaTicket.setPrintNo(miniprogramordersview.getPrintNo());
+				cinemaTicket.setOrderCode(miniprogramordersview.getOrderCode());
+				cinemaTicket.setCreated(miniprogramordersview.getCreated());
+				cinemaTicket.setMobilePhone(miniprogramordersview.getMobilePhone());
+				if(miniprogramordersview.getTicketCount()!=null){
+				cinemaTicket.setTicketCount(String.valueOf(miniprogramordersview.getTicketCount()));
 				}
 				cinemaTicket.setAddress(cinema.getAddress());
 				cinemaTicket.setCinemaPhone(cinema.getCinemaPhone());
-				if(adminorderview.getSaleprice()!=null){
-				cinemaTicket.setPrice(String.valueOf(adminorderview.getSaleprice()));
+				if(miniprogramordersview.getTotalSalePrice()!=null){
+				cinemaTicket.setPrice(String.valueOf(miniprogramordersview.getTotalSalePrice()));
 				}
-				if(adminorderview.getOrderstatus()!=null){
-				cinemaTicket.setStatus(String.valueOf(adminorderview.getOrderstatus()));
+				if(miniprogramordersview.getOrderStatus()!=null){
+				cinemaTicket.setStatus(String.valueOf(miniprogramordersview.getOrderStatus()));
 				}
-				cinemaTicket.setMobilePhone(adminorderview.getMobilephone());
-				cinemaTicket.setTicketInfoCode(adminorderview.getTicketinfocode());
+				cinemaTicket.setMobilePhone(miniprogramordersview.getMobilePhone());
+				cinemaTicket.setTicketInfoCode(miniprogramordersview.getTicketInfoCode());
 				queryCinemaTicketReply.getData().getTicket().add(cinemaTicket);
 
 			}
@@ -537,24 +545,24 @@ public class AppUserController {
 			queryMovieSeenReply.SetOpenIDNotExistReply();
 			return queryMovieSeenReply;
 		}
-		List<Adminorderview> adminorderviewList=adminorderviewDao.getByCinemaCode(CinemaCode);
+		List<Miniprogramordersview>  ordersviewList=miniprogramordersviewDao.getByCinemaCodeAndOpenID(CinemaCode, OpenID);
 		queryMovieSeenReply.setData(queryMovieSeenReply.new QueryMovieSeenReplySeen());
-		if(adminorderviewList==null||adminorderviewList.size()==0){
+		if(ordersviewList==null||ordersviewList.size()==0){
 			queryMovieSeenReply.getData().setCount(0);
 		}else{
-			queryMovieSeenReply.getData().setCount(adminorderviewList.size());
+			queryMovieSeenReply.getData().setCount(ordersviewList.size());
 			queryMovieSeenReply.getData().setSeen(new ArrayList<QueryMovieSeen>());
-			for(Adminorderview adminorderview:adminorderviewList){
+			for(Miniprogramordersview miniprogramordersview:ordersviewList){
 				QueryMovieSeen queryMovieSeen=queryMovieSeenReply.getData().new QueryMovieSeen();
-				queryMovieSeen.setFilmName(adminorderview.getFilmname());
-				List<Filminfo> filminfoList=_filminfoServiceImpl.getFilmByFilmName(adminorderview.getFilmname());
+				queryMovieSeen.setFilmName(miniprogramordersview.getFilmName());
+				List<Filminfo> filminfoList=_filminfoServiceImpl.getFilmByFilmCode(miniprogramordersview.getFilmCode());
 				for(Filminfo filminfo:filminfoList){
-					QueryMovieSeen querymovieseen=queryMovieSeenReply.getData().new QueryMovieSeen();
-					querymovieseen.setCast(filminfo.getCast());
-					querymovieseen.setPublishDate(filminfo.getPublishDate());
-					querymovieseen.setArea(filminfo.getArea());
-					querymovieseen.setImage(filminfo.getImage());
-					queryMovieSeenReply.getData().getSeen().add(querymovieseen);
+				//QueryMovieSeen querymovieseen=queryMovieSeenReply.getData().new QueryMovieSeen();
+					queryMovieSeen.setCast(filminfo.getCast());
+					queryMovieSeen.setPublishDate(filminfo.getPublishDate());
+					queryMovieSeen.setArea(filminfo.getArea());
+					queryMovieSeen.setImage(filminfo.getImage());
+					//queryMovieSeenReply.getData().getSeen().add(querymovieseen);
 				}
 				queryMovieSeenReply.getData().getSeen().add(queryMovieSeen);
 			}
