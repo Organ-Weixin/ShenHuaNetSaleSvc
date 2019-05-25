@@ -1,23 +1,26 @@
 package com.boot.security.server.model;
 
-public class Goodscomponents extends BaseEntity<Long> {
-	
+public class Goodscomponents {
+
 	private Long Id;
 	private String CinemaCode;
-	private String PackageCode;// 套餐编码=卖品编码
+	private String PackageCode;
 	private String PackageName;
-	private String PackagePic; 
+	private String PackagePic;
 	private String GoodsCode;
 	private String GoodsName;
 	private Integer GoodsCount;
-	private String GoodsCommend;
+	private Double GoodsStandardPrice;
+	private Double GoodsSettlePrice;
+	private Double PackageStandardPrice;
+	private Double PackageSettlePrice;
+	private String RecommendCode;
 	private Integer Status;
 	private Integer Sort;
 	private String UnitName;
-	
-	private String RecommendCode;	//后台需要
-	private String RecommendName;
-	
+		
+	private String RecommendName;	//后台需要
+
 	public Long getId() {
 		return Id;
 	}
@@ -66,11 +69,35 @@ public class Goodscomponents extends BaseEntity<Long> {
 	public void setGoodsCount(Integer goodsCount) {
 		GoodsCount = goodsCount;
 	}
-	public String getGoodsCommend() {
-		return GoodsCommend;
+	public Double getGoodsStandardPrice() {
+		return GoodsStandardPrice;
 	}
-	public void setGoodsCommend(String goodsCommend) {
-		GoodsCommend = goodsCommend;
+	public void setGoodsStandardPrice(Double goodsStandardPrice) {
+		GoodsStandardPrice = goodsStandardPrice;
+	}
+	public Double getGoodsSettlePrice() {
+		return GoodsSettlePrice;
+	}
+	public void setGoodsSettlePrice(Double goodsSettlePrice) {
+		GoodsSettlePrice = goodsSettlePrice;
+	}
+	public Double getPackageStandardPrice() {
+		return PackageStandardPrice;
+	}
+	public void setPackageStandardPrice(Double packageStandardPrice) {
+		PackageStandardPrice = packageStandardPrice;
+	}
+	public Double getPackageSettlePrice() {
+		return PackageSettlePrice;
+	}
+	public void setPackageSettlePrice(Double packageSettlePrice) {
+		PackageSettlePrice = packageSettlePrice;
+	}
+	public String getRecommendCode() {
+		return RecommendCode;
+	}
+	public void setRecommendCode(String recommendCode) {
+		RecommendCode = recommendCode;
 	}
 	public Integer getStatus() {
 		return Status;
@@ -90,17 +117,10 @@ public class Goodscomponents extends BaseEntity<Long> {
 	public void setUnitName(String unitName) {
 		UnitName = unitName;
 	}
-	public String getRecommendCode() {
-		return RecommendCode;
-	}
-	public void setRecommendCode(String recommendCode) {
-		RecommendCode = recommendCode;
-	}
 	public String getRecommendName() {
 		return RecommendName;
 	}
 	public void setRecommendName(String recommendName) {
 		RecommendName = recommendName;
 	}
-	
 }

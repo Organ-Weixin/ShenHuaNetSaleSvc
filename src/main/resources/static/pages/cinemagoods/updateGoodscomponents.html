@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<input type="hidden" id="Id" name="id">
+			<input type="hidden" id="CinemaCode" name="cinemaCode">
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>套餐名称：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='packageName' id='PackageName' data-bv-notempty='true' data-bv-notempty-message='套餐名称 不能为空'>
+				</div>
+			</div>
+			<div class="form-group">
+			    <input type="hidden" name="packagePic"  id="PackagePic"/>
+				<label class="col-md-2 control-label">套餐图片：</label>
+				<div class="col-md-10">
+					<div class="layui-upload-drag" id="pic"></div>
+					<img class="" src="" id="preview" width="118" height="118">
+				    <p id="resultMsg"></p>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>零售价：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='packageStandardPrice' id='PackageStandardPrice' >
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>结算价：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='packageSettlePrice' id='PackageSettlePrice' >
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>推荐类型：</label>
+				<div class='col-md-10'>
+					<select class="form-control" name= 'recommendCode' id="RecommendCode" style="width:150px;" >
+						<option value="">选择推荐类型</option>
+						<option value="1">单票推荐</option>
+						<option value="2">双票推荐</option>
+						<option value="3">多票推荐</option>
+					</select>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>是否上架：</label>
+				<div class='col-md-10'>
+					<select class="form-control" name="status" id="Status" style="width:150px;" >
+						<option value="1" >上架</option>
+						<option value="0" >下架</option>
+					</select>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>排序：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='sort' id='Sort' >
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>可选商品列表：</label>
+				<div class='col-md-10'>
+					<button class="btn btn-primary" id="getGoods">选择商品</button>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>已选商品：</label>
+				<div class='col-md-10' id='Selectedgoods'>
+					
+				</div>
+			</div>
+
+
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="goback()">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="update()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+
+<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/jq.js"></script>
+<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
+<script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript">
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		});
+		
+		initData();
+		function initData(){
+//			var id = getUrlParam("id");
+			var cinemaCode = getUrlParam("cinemaCode");
+			var packageCode = getUrlParam("packageCode");
+			alert(packageCode);
+			if(packageCode != ""){
+				$.ajax({
+					type : 'get',
+					url : '/goodscomponentss/getByPackageCode/'+cinemaCode+'/'+packageCode,
+					async : false,
+					success : function(data) {
+						for(var i=0; i<data.length;i++){
+							alert(data[i]);
+							$('#Id').val(data[i].id);
+							$('#CinemaCode').val(data[i].cinemaCode);
+							$('#PackageCode').val(data[i].packageCode);
+							$('#PackageName').val(data[i].packageName);
+							$('#PackagePic').val(data[i].packagePic);
+							$('#GoodsCode').val(data[i].goodsCode);
+							$('#GoodsName').val(data[i].goodsName);
+							$('#GoodsCount').val(data[i].goodsCount);
+							$('#GoodsStandardPrice').val(data[i].goodsStandardPrice);
+							$('#GoodsSettlePrice').val(data[i].goodsSettlePrice);
+							$('#PackageStandardPrice').val(data[i].packageStandardPrice);
+							$('#PackageSettlePrice').val(data[i].packageSettlePrice);
+							$('#RecommendCode').val(data[i].recommendCode);
+							$('#Status').val(data[i].status);
+							$('#Sort').val(data[i].sort);
+							
+							var input = "<input type='text' class='selectGoods' id="+data[i].id+" value="+data[i].goodsName+" />";
+							$("#Selectedgoods").append(input);
+						}
+						
+					}
+				});
+			}
+		}
+		
+		//返回上一页面
+		function goback(){
+			window.location.href = 'goodscomponentsList.html?cinemaCode='+$('#CinemaCode').val();
+		}
+
+		function update() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var formdata = $("#form").serializeObject();
+
+			$.ajax({
+				type : 'put',
+				url : '/goodscomponentss',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("修改成功", {shift: -1, time: 1000}, function(){
+                        location.href = 'goodscomponentsList.html?cinemaCode='+$('#CinemaCode').val();
+                    });
+				}
+			});
+		}
+		
+	</script>
+</body>
+</html>

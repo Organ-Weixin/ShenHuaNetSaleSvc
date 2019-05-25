@@ -42,6 +42,12 @@ public class GoodscomponentsController {
     public Goodscomponents get(@PathVariable Long id) {
         return goodscomponentsDao.getById(id);
     }
+    
+    @GetMapping("/getByPackageCode/{cinemaCode}/{packageCode}")
+    @ApiOperation(value = "根据套餐编码获取")
+    public List<Goodscomponents> getByPackageCode(@PathVariable String cinemaCode, @PathVariable String packageCode) {
+        return goodscomponentsDao.getByPackageCode(cinemaCode, packageCode);
+    }
 
     @PutMapping
     @ApiOperation(value = "修改")
@@ -73,5 +79,11 @@ public class GoodscomponentsController {
     @ApiOperation(value = "删除")
     public void delete(@PathVariable Long id) {
         goodscomponentsDao.delete(id);
+    }
+    
+    @DeleteMapping("/deleteByPackageCode/{cinemaCode}/{packageCode}")
+    @ApiOperation(value = "根据套餐编码删除")
+    public void deleteByPackageCode(@PathVariable String cinemaCode, @PathVariable String packageCode) {
+        goodscomponentsDao.deleteByPackageCode(cinemaCode, packageCode);
     }
 }

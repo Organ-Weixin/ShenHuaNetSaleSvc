@@ -8,11 +8,17 @@
 			<if test="params.Id != null and params.Id != ''">
 				and Id = #{params.Id} 
 			</if>
+			<if test="params.CinemaCode != null and params.CinemaCode != ''">
+				and CinemaCode = #{params.CinemaCode} 
+			</if>
 			<if test="params.PackageCode != null and params.PackageCode != ''">
 				and PackageCode = #{params.PackageCode} 
 			</if>
 			<if test="params.PackageName != null and params.PackageName != ''">
 				and PackageName = #{params.PackageName} 
+			</if>
+			<if test="params.PackagePic != null and params.PackagePic != ''">
+				and PackagePic = #{params.PackagePic} 
 			</if>
 			<if test="params.GoodsCode != null and params.GoodsCode != ''">
 				and GoodsCode = #{params.GoodsCode} 
@@ -23,8 +29,20 @@
 			<if test="params.GoodsCount != null and params.GoodsCount != ''">
 				and GoodsCount = #{params.GoodsCount} 
 			</if>
-			<if test="params.GoodsCommend != null and params.GoodsCommend != ''">
-				and GoodsCommend = #{params.GoodsCommend} 
+			<if test="params.GoodsStandardPrice != null and params.GoodsStandardPrice != ''">
+				and GoodsStandardPrice = #{params.GoodsStandardPrice} 
+			</if>
+			<if test="params.GoodsSettlePrice != null and params.GoodsSettlePrice != ''">
+				and GoodsSettlePrice = #{params.GoodsSettlePrice} 
+			</if>
+			<if test="params.PackageStandardPrice != null and params.PackageStandardPrice != ''">
+				and PackageStandardPrice = #{params.PackageStandardPrice} 
+			</if>
+			<if test="params.PackageSettlePrice != null and params.PackageSettlePrice != ''">
+				and PackageSettlePrice = #{params.PackageSettlePrice} 
+			</if>
+			<if test="params.RecommendCode != null and params.RecommendCode != ''">
+				and RecommendCode = #{params.RecommendCode} 
 			</if>
 			<if test="params.Status != null and params.Status != ''">
 				and Status = #{params.Status} 
@@ -40,12 +58,12 @@
 	</sql>
 
 	<select id="count" resultType="int">
-		select count(1) from goodscomponents t
+		select count(1) from (select gc.*,gr.recommendName from goodscomponents gc left join goodsrecommend gr on gc.recommendCode=gr.recommendCode)t
 		<include refid="where" />
 	</select>
 
 	<select id="list" resultType="Goodscomponents">
-		select * from goodscomponents t
+		select * from (select gc.*,gr.recommendName from goodscomponents gc left join goodsrecommend gr on gc.recommendCode=gr.recommendCode)t
 		<include refid="where" />
 		${params.orderBy}
 		limit #{offset}, #{limit}
@@ -57,11 +75,17 @@
 			<if test="Id != null">
 				Id = #{Id}, 
 			</if>
+			<if test="CinemaCode != null">
+				CinemaCode = #{CinemaCode}, 
+			</if>
 			<if test="PackageCode != null">
 				PackageCode = #{PackageCode}, 
 			</if>
 			<if test="PackageName != null">
 				PackageName = #{PackageName}, 
+			</if>
+			<if test="PackagePic != null">
+				PackagePic = #{PackagePic}, 
 			</if>
 			<if test="GoodsCode != null">
 				GoodsCode = #{GoodsCode}, 
@@ -72,8 +96,20 @@
 			<if test="GoodsCount != null">
 				GoodsCount = #{GoodsCount}, 
 			</if>
-			<if test="GoodsCommend != null">
-				GoodsCommend = #{GoodsCommend}, 
+			<if test="GoodsStandardPrice != null">
+				GoodsStandardPrice = #{GoodsStandardPrice}, 
+			</if>
+			<if test="GoodsSettlePrice != null">
+				GoodsSettlePrice = #{GoodsSettlePrice}, 
+			</if>
+			<if test="PackageStandardPrice != null">
+				PackageStandardPrice = #{PackageStandardPrice}, 
+			</if>
+			<if test="PackageSettlePrice != null">
+				PackageSettlePrice = #{PackageSettlePrice}, 
+			</if>
+			<if test="RecommendCode != null">
+				RecommendCode = #{RecommendCode}, 
 			</if>
 			<if test="Status != null">
 				Status = #{Status}, 

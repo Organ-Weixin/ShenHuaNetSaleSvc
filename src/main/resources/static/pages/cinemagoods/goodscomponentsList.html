@@ -21,11 +21,12 @@
 											影院：
 											<select class="form-control input-sm" id="CinemaCode" style="width:150px;" >
 												<option value="">影院</option>
+												<!-- <option value="33111001" selected="selected">神画新天地影城</option> -->
 											</select>
 											<input id="PackageName" type="text" class="form-control" placeholder="套餐名称">
 											<select class="form-control input-sm" id="RecommendCode" style="width:150px;" >
 												<option value="">推荐类型</option>
-												<option value="1">单品推荐</option>
+												<option value="1">单票推荐</option>
 												<option value="2">双票推荐</option>
 												<option value="3">多票推荐</option>
 											</select>
@@ -39,7 +40,7 @@
 									</form>
 	                   			</td>
 	                   			<td align="right">
-	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addGoodscomponents.html'">
+	                   				<button class="layui-btn layui-btn-sm" onclick="addPackage()">
                                       <i class="layui-icon">&#xe608;</i> 添加
                                     </button>
 	                   			</td>
@@ -80,12 +81,27 @@
 <script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
 <script type="text/javascript" src="../../js/my/permission.js"></script>
 <script type="text/javascript">
-	var pers = checkPermission();
 	
+	//新增套餐
+	function addPackage(){
+		window.location.href='addGoodscomponents.html?cinemaCode='+$("#CinemaCode").val();
+	}
+	
+	var pers = checkPermission();
+	var code;
 	var example;
+	init();
 	function init(){
+		var url = window.location.href;
+		console.log(url);
+		if(url.indexOf("?") != -1){
+			code = getUrlParam('cinemaCode');
+			
+		} 
+		
 		example = 
 	    	$('#dt-table').DataTable({
 	        	"searching": false,
@@ -106,50 +122,61 @@
 	        	},
 	        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
 	            "columns": [
-			        {				"data" : null, 
-			            			"defaultContent" : "",
-									"render" : function(data, type, full, meta){
-										return meta.row + 1 + meta.settings._iDisplayStart;
-									}
+			        {				
+			        		"data" : null, 
+	            			"defaultContent" : "",
+							"render" : function(data, type, full, meta){
+								return meta.row + 1 + meta.settings._iDisplayStart;
+							}
 					},
-					{"data" : "packageCode", "defaultContent" : ""},
+					{
+							"data" : "packagePic", 
+							"defaultContent" : "",
+							"render": function (data, type, row) {
+		                		var packagePic = row['packagePic'];
+		                      	var img = "<img class='pic' style='width:40px;height: 40px;' src='"+packagePic+"' title='"+packagePic+"' >";
+		                      	
+		                        return img;
+		                  	}
+					},
 					{"data" : "packageName", "defaultContent" : ""},
-					{"data" : "goodsCode", "defaultContent" : ""},
-					{"data" : "goodsName", "defaultContent" : ""},
-					
+					{"data" : "packageStandardPrice", "defaultContent" : ""},
+					{"data" : "packageSettlePrice", "defaultContent" : ""},
 					{"data" : "recommendName", "defaultContent" : ""},
 					{"data" : "sort", "defaultContent" : ""},
-					{"data" : "status", "defaultContent" : ""},
 					{
-									"data" : "status", 
-									"defaultContent" : "",
-									"render": function (data, type, row) {
-				                		var status = row['status'];
-				                		var str = "";
-				                      	if(status == 1){
-				                      		str = "已上架";
-				                      	} else {
-				                      		str = "下架";
-				                      	}
-				                      	
-				                        return str;
-				                  	}
+							"data" : "status", 
+							"defaultContent" : "",
+							"render": function (data, type, row) {
+		                		var status = row['status'];
+		                		var str = "";
+		                      	if(status == 1){
+		                      		str = "已上架";
+		                      	} else {
+		                      		str = "下架";
+		                      	}
+		                        return str;
+		                  	}
 					},
 					{ 
-									"data": "", 
-									"defaultContent": "",
-									"orderable":false,
-							        "render": function (data, type, row) {
-	                		           var id = row['id'];
-	                		           var href = "updateGoodscomponents.html?id=" + id;
-	                                   var edit = buttonEdit(href, "", pers);
-	                		           var del = buttonDel(id, "", pers);
-	                                   return edit + del;
-	                  	            }		
-								},
+							"data": "", 
+							"defaultContent": "",
+							"orderable":false,
+				        	"render": function (data, type, row) {
+               		            var id = row['id'];
+               		        	var cinemaCode = row['cinemaCode'];
+               		     		var packageCode = row['packageCode'];
+//               		           var href = "updateGoodscomponents.html?id=" + id;
+//                               var edit = buttonEdit(href, "", pers);
+//               		           var del = buttonDel(id, "", pers);
+               		           	var edit = "<button style='color:blue; background-color:transparent; border:0' onclick='updatePackage("+cinemaCode+","+packageCode+")'>编辑</button>&nbsp;&nbsp;&nbsp;";
+               		         	var del = "<button style='color:blue; background-color:transparent; border:0' onclick='delPackage("+cinemaCode+","+packageCode+")'>删除</button>";
+                                return edit + del;
+                 	            }		
+					},
 	                
 	            ],
-	           "order": [[ 0, "asc" ]]
+	           "order": [[ 6, "asc" ]]
 	        } );
 	}
 	
@@ -157,13 +184,18 @@
 	    var layer = layui.layer;
 	});
 	
-	function del(id){
+	function updatePackage(cinemaCode,packageCode){
+		window.location.href='updateGoodscomponents.html?cinemaCode='+cinemaCode+'&packageCode='+packageCode;
+	}
+	
+	function delPackage(cinemaCode,packageCode){
+		alert(packageCode);
 		layer.confirm('确定要删除吗？', {
 	        btn : [ '确定', '取消' ]
 	    }, function() {
 	    	$.ajax({
 	            type : 'delete',
-	            url : '/goodscomponentss/'+id,
+	            url : '/goodscomponentss/deleteByPackageCode/'+cinemaCode+'/'+packageCode,
 	            success : function(data) {
 	                example.ajax.reload();
 	                layer.msg("删除成功");
@@ -177,6 +209,7 @@
 	//获取影院
 	getCinema();
 	function getCinema(){
+		
 		$.ajax({
 	        type:"get",
 	        url:"/cinemas/getCinemas",
@@ -184,6 +217,7 @@
 				for(var i=0; i<data.length;i++){
 					var option = "<option value="+data[i].code+">"+data[i].name+"</option>";
 					$("#CinemaCode").append(option);
+					
 				}
 	        }
 	        
@@ -194,7 +228,11 @@
 		example.ajax.reload();
 	});
 	
-	init();
+	window.onload = function(){
+		$("#CinemaCode").find("option[value='"+code+"']").attr("selected","selected");
+		example.ajax.reload();
+	}
+	
 </script>
 </body>
 </html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="../../layui/css/layui.css" media="all" />
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<input type="hidden" name="cinemaCode"  id="CinemaCode"/>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>套餐编码：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='packageCode' id='PackageCode' data-bv-notempty='true' data-bv-notempty-message='套餐编码 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>套餐名称：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='packageName' id='PackageName' data-bv-notempty='true' data-bv-notempty-message='套餐名称 不能为空'>
+				</div>
+			</div>
+			<div class="form-group">
+			    <input type="hidden" name="packagePic"  id="PackagePic"/>
+				<label class="col-md-2 control-label">套餐图片：</label>
+				<div class="col-md-10">
+					<div class="layui-upload-drag" id="pic"></div>
+					<img class="" src="" id="preview" width="118" height="118">
+				    <p id="resultMsg"></p>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>零售价：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='packageStandardPrice' id='PackageStandardPrice' >
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>结算价：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='packageSettlePrice' id='PackageSettlePrice' >
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>推荐类型：</label>
+				<div class='col-md-10'>
+					<select class="form-control" name= 'recommendCode' id="RecommendCode" style="width:150px;" >
+						<option value="">选择推荐类型</option>
+						<option value="1">单票推荐</option>
+						<option value="2">双票推荐</option>
+						<option value="3">多票推荐</option>
+					</select>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>是否上架：</label>
+				<div class='col-md-10'>
+					<select class="form-control" name="status" id="Status" style="width:150px;" >
+						<option value="1" selected = "selected">上架</option>
+						<option value="0">下架</option>
+					</select>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>排序：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='sort' id='Sort' >
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>添加商品：</label>
+				<div class='col-md-10'>
+					<button class="btn btn-primary" id="getGoods">选择商品</button><font style='color: red'> *至少选择一个商品</font>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>已选商品：</label>
+				<div class='col-md-10' id='selectedgoods'>
+					
+				</div>
+			</div>
+
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="goback()">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="add()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+
+<!--选择商品页面  -->
+<div id="chooseDiv" style="background-color:lightgray;width:100%;height:800px;z-index:99;position: relative; background: rgba(0, 0, 0, 0.5);display:none">
+          <div style="margin-left:10%;margin-top:10%;background-color:white;width:70%;height:300px; opacity:1;z-index: 999;position:absolute;">
+               	
+	        	<div>
+	                <header style="height: 100%">
+	                    <div align="left">
+		                    <table style="width: 100%">
+		                   		<tr>
+		                   			<td>
+			                   			<form class="form-inline" onsubmit="return false">
+											<div class="form-group">
+												<input id="GoodsName" type="text" class="form-control" placeholder="商品名称">
+												<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>查询</button>
+											</div>
+										</form>
+		                   			</td>
+		                   		</tr> 
+		                    </table>
+						</div>
+	                </header>
+	                
+	                <div>
+	                    <div class="widget-body no-padding">
+	                        <table id="dt-table" class="table table-striped table-bordered table-hover" style="width:100%">
+	                            <thead>
+	                                <tr>
+	                                </tr>                       
+	                                <tr>
+										<th>#</th>
+										<th>选择</th>
+										<th>图片</th>
+										<th>商品名</th>
+										<th>零售价</th>
+										<th>结算价</th>
+										<th>商品描述</th>
+										<th>展示顺序</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                </div>
+	                <div class="form-actions">
+						<div class="row" align="center">
+							<div class="col-md-12">
+							    <button class="btn btn-primary" id="closePage" style="position: absolute;left:40%">关闭</button>
+								<button class="btn btn-primary" id="savePage"  style="position: absolute;left:50%">
+									<i class="fa fa-save"></i> 保存
+								</button>
+							</div>
+						</div>
+					</div>
+	            </div>
+       		</div>     	
+</div>
+    
+<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/jq.js"></script>
+<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="../../js/my/permission.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
+<script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript">
+	
+	layui.use([ "jquery", "upload", "form", "layer", "element" ],function() {
+		var $ = layui.$, element = layui.element, layer = layui.layer, upload = layui.upload, form = layui.form;
+		//拖拽上传
+		var uploadInst = upload.render({
+				elem : '#pic',
+				url : '/filminfos/upload/filmImage',
+				size : 500,
+				before : function(obj) {
+					//预读本地文件示例，不支持ie8
+					obj.preview(function(index,file, result) {
+						$('#preview').attr('src',result); //图片链接（base64）
+					});
+				},
+				done : function(res) {
+					//如果上传失败
+					if (res.code > 0) {
+						return layer.msg('上传失败');
+					}
+					//上传成功
+					//打印后台传回的地址: 把地址放入一个隐藏的input中, 和表单一起提交到后台, 此处略..
+					console.log(res.data.src);
+					$("#PackagePic").val(res.data.src);//将地址存储好
+					window.parent.uploadHeadImage(res.data.src);
+					var resultMsg = $('#resultMsg');
+					resultMsg.html('<span style="color: #8f8f8f;">上传成功!!!</span>');
+				},
+				error : function() {
+					//演示失败状态，并实现重传
+					var resultMsg = $('#resultMsg');
+					resultMsg
+							.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
+					resultMsg.find('.demo-reload').on(
+							'click', function() {
+								uploadInst.upload();
+							});
+				}
+			});
+		element.init();
+	});
+	
+	layui.use(['layer','laydate'], function(){
+	    var layer = layui.layer;
+	});
+
+	$("#CinemaCode").val(getUrlParam('cinemaCode'));
+	//返回上一页面
+	function goback(){
+		window.location.href = 'goodscomponentsList.html?cinemaCode='+$("#CinemaCode").val();
+	}
+	
+	function add() {
+		$('#form').bootstrapValidator();
+		var bootstrapValidator = $("#form").data('bootstrapValidator');
+		bootstrapValidator.validate();
+	    if(!bootstrapValidator.isValid()){
+		   return;
+	    }
+	    
+	    var formdata = $("#form").serializeObject();
+
+		$.ajax({
+			type : 'post',
+			url : '/goodscomponentss',
+			contentType: "application/json; charset=utf-8",  
+			data : JSON.stringify(formdata),
+			success : function(data) {
+				layer.msg("添加成功", {shift: -1, time: 1000}, function(){
+                       location.href = 'goodscomponentsList.html?cinemaCode='+$("#CinemaCode").val();
+                   });
+			}
+		});
+	}
+	
+	//选择商品-弹窗
+	$("#getGoods").click(function(){
+		$("#chooseDiv").show();
+	});
+	
+	$("#closePage").click(function(){
+		$("#chooseDiv").hide();
+	});
+	
+	getGoods();
+	var pers = checkPermission();
+	var example;
+	function getGoods(){
+		example = 
+	    	$('#dt-table').DataTable({
+	        	"searching": false,
+	        	"processing": false,
+	        	"serverSide" : true,
+	        	"language": {
+	                "url": "/js/plugin/datatables/Chinese.lang"
+	            },
+	        	"ajax": {
+	        		"url" : "/goodss",
+	        		"type":"get",
+	        		"data":function(d){
+	    				d.CinemaCode = $("#CinemaCode").val();
+	    				d.GoodsName = $("#GoodsName").val();
+	    			}
+	        	},
+	        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
+	            "columns": [
+		        	{			"data" : null, 
+		            			"defaultContent" : "",
+								"render" : function(data, type, full, meta){
+									return meta.row + 1 + meta.settings._iDisplayStart;
+								}
+					},
+					{
+								"data" : "", 
+								"defaultContent" : "",
+								"render": function (data, type, row) {
+			                		var checkbox = "<input type='checkbox' name='checkbox' />";
+			                		
+			                        return checkbox;
+			                  	}
+					},
+					{
+								"data" : "goodsPic", 
+								"defaultContent" : "",
+								"render": function (data, type, row) {
+			                		var goodsPic = row['goodsPic'];
+			                      	var img = "<img class='pic' style='width:40px;height: 40px;' src='"+goodsPic+"' title='"+goodsPic+"' >";
+			                      	
+			                        return img;
+			                  	}
+					},
+					{"data" : "goodsName", "defaultContent" : ""},
+					{"data" : "standardPrice", "defaultContent" : ""},
+					{"data" : "settlePrice", "defaultContent" : ""},
+					{"data" : "goodsDesc", "defaultContent" : ""},
+					{"data" : "showSeqNo", "defaultContent" : ""},
+	                
+	            ],
+	           "order": [[ 6, "asc" ]]
+	        } );
+	}
+	
+	$("#searchBt").click(function(){
+		example.ajax.reload();
+	});
+		
+</script>
+</body>
+</html>
