@@ -229,6 +229,7 @@ public class MemberController {
 			if(cardRegisterReply.Status.equals("Success")){
 				Membercard membercard = _memberCardService.getByCardNo(CinemaCode, cardRegisterReply.getCardNo());
 				membercard.setOpenId(OpenID);
+				membercard.setStatus(1);
 				_memberCardService.Update(membercard);
 			}
 		return cardRegisterReply; 
