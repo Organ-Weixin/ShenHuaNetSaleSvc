@@ -1003,20 +1003,21 @@ public class Dy1905Interface implements ICTMSInterface {
 			Gson gson = new Gson();
 			Dy1905MemberTypeListResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(MemberTypeListResult,"MemberTypeListResult"), Dy1905MemberTypeListResult.class);
 			List<LevelBean> Dy1905Level = Dy1905Reply.getMemberTypeListResult().getTypes().getType().get(0).getLevels().getLevel();
-			List<Membercardlevel> newmembercardlevelList = new ArrayList<Membercardlevel>();
 			if(Dy1905Reply.getMemberTypeListResult().getResultCode().equals("0")){
 				for(LevelBean Level :Dy1905Level){
-					Membercardlevel membercardlevel = new Membercardlevel();
-					membercardlevel.setCinemaCode(userCinema.getCinemaCode());
-					membercardlevel.setStatus(0);
-					Dy1905ModelMapper.MaptoEntity(Level, membercardlevel);
-					newmembercardlevelList.add(membercardlevel);
-				}
-				//删除会员卡等级信息
-				memberCardLevelService.deleteByCinemaCode(userCinema.getCinemaCode());
-				//循环插入会员卡等级信息
-				for(Membercardlevel newmembercardlevel :newmembercardlevelList){
-					memberCardLevelService.Save(newmembercardlevel);
+					Membercardlevel membercardlevel = memberCardLevelService.getByCinemaCodeAndLevelCode(userCinema.getCinemaCode(), Level.getLevelNo());
+					if(membercardlevel!=null){
+						membercardlevel = new Membercardlevel();
+						membercardlevel.setCinemaCode(userCinema.getCinemaCode());
+						Dy1905ModelMapper.MaptoEntity(Level, membercardlevel);
+						memberCardLevelService.update(membercardlevel);
+					}else{
+						membercardlevel = new Membercardlevel();
+						membercardlevel.setCinemaCode(userCinema.getCinemaCode());
+						membercardlevel.setStatus(0);
+						Dy1905ModelMapper.MaptoEntity(Level, membercardlevel);
+						memberCardLevelService.Save(membercardlevel);
+					}
 				}
 				reply.Status = StatusEnum.Success;
 			}else{

@@ -8,6 +8,8 @@ public interface MemberCardLevelService {
 	
 	int Save(Membercardlevel membercardlevel);
 	
+	int update(Membercardlevel membercardlevel);
+	
 	int deleteByCinemaCode(String cinemacode);
 	
 	List<Membercardlevel> getByCinemaCode(String cinemacode);

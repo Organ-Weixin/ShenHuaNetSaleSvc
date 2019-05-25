@@ -22,6 +22,12 @@ public class MemberCardLevelServiceImpl implements MemberCardLevelService {
 	}
 
 	@Override
+	public int update(Membercardlevel membercardlevel) {
+		// TODO Auto-generated method stub
+		return membercardlevelDao.update(membercardlevel);
+	}
+	
+	@Override
 	public int deleteByCinemaCode(String cinemacode) {
 		// TODO Auto-generated method stub
 		return membercardlevelDao.deleteByCinemaCode(cinemacode);

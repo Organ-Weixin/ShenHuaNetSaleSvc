@@ -24,7 +24,7 @@ public class Couponsgroup {
 	private String GoodsCodes;
 	private Integer IsShare;
 	private String Remark;
-	private String CanUseCinemaType;
+	private Integer CanUseCinemaType;
 	private String CinemaCodes;
 	private Integer Status;
 	private Integer CouponsNumber;
@@ -152,10 +152,10 @@ public class Couponsgroup {
 	public void setRemark(String Remark) {
 		this.Remark = Remark;
 	}
-	public String getCanUseCinemaType() {
+	public Integer getCanUseCinemaType() {
 		return CanUseCinemaType;
 	}
-	public void setCanUseCinemaType(String CanUseCinemaType) {
+	public void setCanUseCinemaType(Integer CanUseCinemaType) {
 		this.CanUseCinemaType = CanUseCinemaType;
 	}
 	public String getCinemaCodes() {
