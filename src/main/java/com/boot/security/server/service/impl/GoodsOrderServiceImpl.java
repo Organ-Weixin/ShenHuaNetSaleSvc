@@ -1,5 +1,7 @@
 package com.boot.security.server.service.impl;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +74,14 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
 	@Override
 	public int UpdateOrderBaseInfo(Goodsorders orderbase) {
 		return ordersDao.update(orderbase);
+	}
+	@Override
+	public List<Goodsorders> getByCinemaCode(String cinemacode) {
+		return ordersDao.getByCinemaCode(cinemacode);
+	}
+	@Override
+	public List<Goodsorders> getByCinemaCodeAndOpenID(String cinemacode, String openid) {
+		return ordersDao.getByCinemaCodeAndOpenID(cinemacode, openid);
 	}
 
 }

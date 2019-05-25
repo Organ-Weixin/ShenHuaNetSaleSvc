@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
 
 @Mapper
@@ -36,4 +37,10 @@ public interface GoodsordersDao {
     int count(@Param("params") Map<String, Object> params);
 
     List<Goodsorders> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    
+    @Select("select * from goodsorders t where t.cinemacode = #{cinemacode}")
+    List<Goodsorders> getByCinemaCode(String cinemacode);
+    
+    @Select("select * from goodsorders t where t.cinemacode = #{cinemacode} and t.openid=#{openid}")
+    List<Goodsorders> getByCinemaCodeAndOpenID(@Param("cinemacode")String cinemacode,@Param("openid")String openid);
 }
