@@ -31,6 +31,7 @@ public class QueryCinemaTicketReply extends BaseReply{
 			private String FilmName;//影片名称//
 			private Date SessionDateTime;//放映计划时间
 			private String CinemaName;//影院名称
+			private String TicketCount;//电影票数量
 			private String Image;//电影海报
 			private String Version;//影片版本（2D/3D）
 			private String ScreenName;//影厅名称
@@ -61,6 +62,12 @@ public class QueryCinemaTicketReply extends BaseReply{
 			}
 			public void setCinemaName(String cinemaName) {
 				CinemaName = cinemaName;
+			}
+			public String getTicketCount() {
+				return TicketCount;
+			}
+			public void setTicketCount(String ticketCount) {
+				TicketCount = ticketCount;
 			}
 			public String getImage() {
 				return Image;
