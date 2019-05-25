@@ -83,5 +83,4 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
 	public List<Goodsorders> getByCinemaCodeAndOpenID(String cinemacode, String openid) {
 		return ordersDao.getByCinemaCodeAndOpenID(cinemacode, openid);
 	}
-
 }

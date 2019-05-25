@@ -15,7 +15,6 @@ import com.boot.security.server.model.Goodsorders;
 
 @Mapper
 public interface GoodsordersDao {
-
     @Select("select * from goodsorders t where t.id = #{id}")
     Goodsorders getById(Long id);
     

@@ -472,7 +472,7 @@ public class AppUserController {
 		if(ticketuser == null){
 			queryCinemaGoodsReply.SetOpenIDNotExistReply();
 			return queryCinemaGoodsReply;
-		}
+		}   
 		List<Goodsorders> goodsordersList=_goodsOrderService.getByCinemaCodeAndOpenID(cinema.getCode(), ticketuser.getOpenID());
 		queryCinemaGoodsReply.setData(queryCinemaGoodsReply.new QueryCinemaGoodsReplyGoods());
 		if(goodsordersList==null||goodsordersList.size()==0){
@@ -509,7 +509,6 @@ public class AppUserController {
 		queryCinemaGoodsReply.SetSuccessReply();
 		return queryCinemaGoodsReply;
 		}
-		
 	//QueryMovieSeenReply
 	@GetMapping("/QueryMovieSeen/{UserName}/{Password}/{CinemaCode}/{OpenID}")
 	@ApiOperation(value = "查询用户看过的电影记录")

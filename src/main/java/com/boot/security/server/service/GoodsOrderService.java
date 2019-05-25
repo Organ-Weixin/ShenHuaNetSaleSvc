@@ -20,5 +20,4 @@ public interface GoodsOrderService {
 	int UpdateOrderBaseInfo(Goodsorders orderbase);
     List<Goodsorders> getByCinemaCode(String cinemacode);
     List<Goodsorders> getByCinemaCodeAndOpenID(String cinemacode,String openid);
-
 }
