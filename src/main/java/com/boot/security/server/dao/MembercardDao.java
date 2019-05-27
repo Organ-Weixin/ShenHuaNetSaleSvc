@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.boot.security.server.model.Membercard;
 
@@ -29,6 +30,9 @@ public interface MembercardDao {
 
     int update(Membercard membercard);
     
+    @Update("update membercard t set t.status = 0 where t.cinemacode = #{cinemacode} and t.cardno = #{cardno}")
+    int memberCardUnbind(@Param("cinemacode") String cinemacode,@Param("cardno") String cardno);
+    
     @Options(useGeneratedKeys = true, keyProperty = "id")
     @Insert("insert into membercard(Id, CinemaCode, CardNo, CardPassword, MobilePhone, LevelCode, LevelName, Score, Balance, UserName, Sex, CreditNum, Birthday, ExpireDate, CreateTime, Updated, Status) values(#{Id}, #{CinemaCode}, #{CardNo}, #{CardPassword}, #{MobilePhone}, #{LevelCode}, #{LevelName}, #{Score}, #{Balance}, #{UserName}, #{Sex}, #{CreditNum}, #{Birthday}, #{ExpireDate}, #{CreateTime}, #{Updated}, 0)")
     int save(Membercard membercard);
@@ -45,4 +49,7 @@ public interface MembercardDao {
     
     @Select("select * from membercard t where t.cinemacode = #{cinemacode} and t.openid = #{openid} and t.status =1")
     List<Membercard> getByCinemaCodeAndOpenID(@Param("cinemacode") String cinemacode,@Param("openid") String openid);
+    
+    @Select("select * from membercard t where t.cinemacode = #{cinemacode} and t.cardno = #{cardno} and t.cardpassword =#{cardpassword}")
+    Membercard checkMemberCard(@Param("cinemacode") String cinemacode,@Param("cardno") String cardno,@Param("cardpassword") String cardpassword);
 }

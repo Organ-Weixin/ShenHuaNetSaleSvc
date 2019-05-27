@@ -24,7 +24,7 @@ public interface MembercardcreditruleDao {
     int update(Membercardcreditrule membercardcreditrule);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into membercardcreditrule(Id, CinemaCode, RuleCode, RuleName, RuleType, LevelCode, LevelName, CreateTime, Credit, EffectiveDays, RuleDescription, UpdateTime, Status) values(#{Id}, #{CinemaCode}, #{RuleCode}, #{RuleName}, #{RuleType}, #{LevelCode}, #{LevelName}, #{CreateTime}, #{Credit}, #{EffectiveDays}, #{RuleDescription}, #{UpdateTime}, #{Status})")
+    @Insert("insert into membercardcreditrule(Id, CinemaCode, RuleCode, RuleName, RuleType, LevelCode, LevelName, CreateTime, Credit, GivenAmount, EffectiveDays, RuleDescription, UpdateTime, Status) values(#{Id}, #{CinemaCode}, #{RuleCode}, #{RuleName}, #{RuleType}, #{LevelCode}, #{LevelName}, #{CreateTime}, #{Credit}, #{GivenAmount}, #{EffectiveDays}, #{RuleDescription}, #{UpdateTime}, #{Status})")
     int save(Membercardcreditrule membercardcreditrule);
     
     int count(@Param("params") Map<String, Object> params);

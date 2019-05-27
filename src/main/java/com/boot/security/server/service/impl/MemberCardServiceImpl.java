@@ -31,7 +31,13 @@ public class MemberCardServiceImpl implements MemberCardService {
 		// TODO Auto-generated method stub
 		return membercardDao.update(membercard);
 	}
-
+	
+	@Override
+	public int memberCardUnbind(String cinemacode, String cardno) {
+		// TODO Auto-generated method stub
+		return membercardDao.memberCardUnbind(cinemacode, cardno);
+	}
+	
 	@Override
 	public List<Membercard> getByCinemaCodeAndMobilePhone(String cinemacode, String mobilephone) {
 		// TODO Auto-generated method stub
@@ -55,4 +61,11 @@ public class MemberCardServiceImpl implements MemberCardService {
 		// TODO Auto-generated method stub
 		return membercardDao.getByCinemaCodeAndOpenId(cinemacode, openid);
 	}
+
+	@Override
+	public Membercard checkMemberCard(String cinemacode, String cardno, String cardpassword) {
+		// TODO Auto-generated method stub
+		return membercardDao.checkMemberCard(cinemacode, cardno, cardpassword);
+	}
+
 }
