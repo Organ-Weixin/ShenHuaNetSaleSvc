@@ -826,20 +826,21 @@ public class Dy1905Interface implements ICTMSInterface {
 			if(Dy1905Reply.getMemberInfoResult().getResultCode().equals("0")){
 				Membercard membercard = memberCardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
 				if(membercard==null){
-					Membercard membercardM = new Membercard();
-					membercardM.setCinemaCode(userCinema.getCinemaCode());
-					membercardM.setCardPassword(CardPassword);
-					membercardM.setMobilePhone(cardInfo.getMobile());
-					membercardM.setLevelCode(cardInfo.getCardLevelNo());
-					membercardM.setLevelName(cardInfo.getCardLevel());
-					membercardM.setUserName(cardInfo.getUsername());
-					membercardM.setCardNo(cardInfo.getCardNo());
-					membercardM.setBalance(cardInfo.getBalance());
+					membercard = new Membercard();
+					membercard.setCinemaCode(userCinema.getCinemaCode());
+					membercard.setCardPassword(CardPassword);
+					membercard.setMobilePhone(cardInfo.getMobile());
+					membercard.setLevelCode(cardInfo.getCardLevelNo());
+					membercard.setLevelName(cardInfo.getCardLevel());
+					membercard.setUserName(cardInfo.getUsername());
+					membercard.setCardNo(cardInfo.getCardNo());
+					membercard.setBalance(cardInfo.getBalance());
 					Date ExpireDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Long.valueOf(cardInfo.getExpireDate()) * 1000)));  
-					membercardM.setExpireDate(ExpireDate);
-					membercardM.setStatus(0);
-					membercardM.setCreateTime(new Date());
-					memberCardService.Save(membercardM);
+					membercard.setExpireDate(ExpireDate);
+					membercard.setStatus(0);
+					membercard.setCreateTime(new Date());
+					membercard.setUpdated(new Date());
+					memberCardService.Save(membercard);
 				}else{
 					membercard.setCinemaCode(userCinema.getCinemaCode());
 					membercard.setCardPassword(CardPassword);
@@ -853,6 +854,7 @@ public class Dy1905Interface implements ICTMSInterface {
 					membercard.setExpireDate(ExpireDate);
 					membercard.setStatus(0);
 					membercard.setCreateTime(new Date());
+					membercard.setUpdated(new Date());
 					memberCardService.Update(membercard);
 				}
 				reply.Status = StatusEnum.Success;

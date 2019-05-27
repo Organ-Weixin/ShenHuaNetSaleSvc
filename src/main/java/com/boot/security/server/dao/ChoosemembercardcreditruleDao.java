@@ -42,4 +42,7 @@ public interface ChoosemembercardcreditruleDao {
     
     @Delete("delete from choosemembercardcreditrule where cinemacode = #{cinemacode} and levelcode =#{levelcode}")
     int deleteByLevelCode(@Param("cinemacode") String cinemacode,@Param("levelcode") String levelcode);
+    
+    @Select("select * from choosemembercardcreditrule t where t.cinemacode =#{cinemacode} and rulecode = #{rulecode}")
+    Choosemembercardcreditrule getByRuleCode(@Param("cinemacode") String cinemacode,@Param("rulecode") String rulecode);
 }

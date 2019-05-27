@@ -45,10 +45,10 @@ public class QueryFilmSessionsReply extends BaseReply{
 				private String Director;
 				private String Cast;
 				private String Introduction;
-				private String Score;
+				private Double Score;
 				private String Area;
 				private String Type;
-				private String Status;
+				private Integer Status;
 				private String Image;
 				private String Trailer;
 				private List<QueryFilmSessionsReplySession> session;
@@ -126,10 +126,10 @@ public class QueryFilmSessionsReply extends BaseReply{
 				public void setIntroduction(String introduction) {
 					Introduction = introduction;
 				}
-				public String getScore() {
+				public Double getScore() {
 					return Score;
 				}
-				public void setScore(String score) {
+				public void setScore(Double score) {
 					Score = score;
 				}
 				public String getArea() {
@@ -144,10 +144,10 @@ public class QueryFilmSessionsReply extends BaseReply{
 				public void setType(String type) {
 					Type = type;
 				}
-				public String getStatus() {
+				public Integer getStatus() {
 					return Status;
 				}
-				public void setStatus(String status) {
+				public void setStatus(Integer status) {
 					Status = status;
 				}
 				public String getImage() {
@@ -178,12 +178,14 @@ public class QueryFilmSessionsReply extends BaseReply{
 						private String BeginTime;
 						private Boolean IsToday;
 						private String PlaythroughFlag;
-						private String Sequence;
-						private String LowestPrice;
-						private String StandardPrice;
-						private String ListingPrice;
-						private String ActivityPrice;
-						private String MemberPrice;
+						private Integer Sequence;
+						private Double LowestPrice;
+						private Double StandardPrice;
+						private Double ListingPrice;
+						private Double ActivityPrice;
+						private Double MemberPrice;
+						private List<QueryFilmSessionsReplyPrice> Price;
+						private List<QueryFilmSessionsReplySettlePrice> SettlePrice;
 						public String getSessionCode() {
 							return SessionCode;
 						}
@@ -238,44 +240,103 @@ public class QueryFilmSessionsReply extends BaseReply{
 						public void setPlaythroughFlag(String playthroughFlag) {
 							PlaythroughFlag = playthroughFlag;
 						}
-						public String getSequence() {
+						public Integer getSequence() {
 							return Sequence;
 						}
-						public void setSequence(String sequence) {
+						public void setSequence(Integer sequence) {
 							Sequence = sequence;
 						}
-						public String getLowestPrice() {
+						public Double getLowestPrice() {
 							return LowestPrice;
 						}
-						public void setLowestPrice(String lowestPrice) {
+						public void setLowestPrice(Double lowestPrice) {
 							LowestPrice = lowestPrice;
 						}
-						public String getStandardPrice() {
+						public Double getStandardPrice() {
 							return StandardPrice;
 						}
-						public void setStandardPrice(String standardPrice) {
+						public void setStandardPrice(Double standardPrice) {
 							StandardPrice = standardPrice;
 						}
-						public String getListingPrice() {
+						public Double getListingPrice() {
 							return ListingPrice;
 						}
-						public void setListingPrice(String listingPrice) {
+						public void setListingPrice(Double listingPrice) {
 							ListingPrice = listingPrice;
 						}
-						public String getActivityPrice() {
+						public Double getActivityPrice() {
 							return ActivityPrice;
 						}
-						public void setActivityPrice(String activityPrice) {
+						public void setActivityPrice(Double activityPrice) {
 							ActivityPrice = activityPrice;
 						}
-						public String getMemberPrice() {
+						public Double getMemberPrice() {
 							return MemberPrice;
 						}
-						public void setMemberPrice(String memberPrice) {
+						public void setMemberPrice(Double memberPrice) {
 							MemberPrice = memberPrice;
 						}
-						
-					}
+						public List<QueryFilmSessionsReplyPrice> getPrice() {
+							return Price;
+						}
+						public void setPrice(List<QueryFilmSessionsReplyPrice> price) {
+							Price = price;
+						}
+						public List<QueryFilmSessionsReplySettlePrice> getSettlePrice() {
+							return SettlePrice;
+						}
+						public void setSettlePrice(List<QueryFilmSessionsReplySettlePrice> settlePrice) {
+							SettlePrice = settlePrice;
+						}
+						public static class QueryFilmSessionsReplyPrice{
+							private Double Mprice;
+							private Double Bprice;
+							private Double Tprice;
+							public Double getMprice() {
+								return Mprice;
+							}
+							public void setMprice(Double mprice) {
+								Mprice = mprice;
+							}
+							public Double getBprice() {
+								return Bprice;
+							}
+							public void setBprice(Double bprice) {
+								Bprice = bprice;
+							}
+							public Double getTprice() {
+								return Tprice;
+							}
+							public void setTprice(Double tprice) {
+								Tprice = tprice;
+							}
+							
+						}
+						public static class QueryFilmSessionsReplySettlePrice{
+							private Double MsettlePrice;
+							private Double BsettlePrice;
+							private Double TsettlePrice;
+							public Double getMsettlePrice() {
+								return MsettlePrice;
+							}
+							public void setMsettlePrice(Double msettlePrice) {
+								MsettlePrice = msettlePrice;
+							}
+							public Double getBsettlePrice() {
+								return BsettlePrice;
+							}
+							public void setBsettlePrice(Double bsettlePrice) {
+								BsettlePrice = bsettlePrice;
+							}
+							public Double getTsettlePrice() {
+								return TsettlePrice;
+							}
+							public void setTsettlePrice(Double tsettlePrice) {
+								TsettlePrice = tsettlePrice;
+							}
+							
+						}
+				}
 			}
 		}
 	

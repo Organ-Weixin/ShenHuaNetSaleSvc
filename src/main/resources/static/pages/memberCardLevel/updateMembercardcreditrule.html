@@ -49,6 +49,12 @@
 				</div>
 			</div>
 			<div class='form-group'>
+				<label class='col-md-2 control-label'>赠送金额</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='givenAmount' id='GivenAmount'>
+				</div>
+			</div>
+			<div class='form-group'>
 				<label class='col-md-2 control-label'>规则描述</label>
 				<div class='col-md-10'>
 					<input class='form-control' type='text' name='ruleDescription' id='RuleDescription'>
@@ -176,6 +182,7 @@
 						$("#LevelName").val(data.levelName);
 						$('#LevelCode').val(data.levelCode);
 						$('#Credit').val(data.credit);
+						$('#GivenAmount').val(data.givenAmount);
 						$('#RuleDescription').val(data.ruleDescription);
 						$('#StatusSelect').val(data.status);
 					}

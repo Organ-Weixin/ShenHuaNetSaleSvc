@@ -23,6 +23,9 @@
 			<if test="params.MemberFee != null and params.MemberFee != ''">
 				and MemberFee = #{params.MemberFee} 
 			</if>
+			<if test="params.PictureUrl != null and params.PictureUrl != ''">
+				and PictureUrl = #{params.PictureUrl} 
+			</if>
 			<if test="params.Status != null and params.Status != ''">
 				and Status = #{params.Status} 
 			</if>
@@ -61,6 +64,9 @@
 			</if>
 			<if test="MemberFee != null">
 				MemberFee = #{MemberFee}, 
+			</if>
+			<if test="PictureUrl != null">
+				PictureUrl = #{PictureUrl}, 
 			</if>
 			<if test="LevelName != null">
 				Status = #{Status}, 

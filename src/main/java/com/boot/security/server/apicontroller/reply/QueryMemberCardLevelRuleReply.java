@@ -43,25 +43,32 @@ public class QueryMemberCardLevelRuleReply extends BaseReply{
 		}
 		public static class QueryMemberCardLevelRuleReplyMemberCardRule{
 			private String RuleCode;
-			private String RuleType;
-			private String Credit;
+			private Integer RuleType;
+			private Double Credit;
+			private Double GivenAmount;
 			public String getRuleCode() {
 				return RuleCode;
 			}
 			public void setRuleCode(String ruleCode) {
 				RuleCode = ruleCode;
 			}
-			public String getRuleType() {
+			public Integer getRuleType() {
 				return RuleType;
 			}
-			public void setRuleType(String ruleType) {
+			public void setRuleType(Integer ruleType) {
 				RuleType = ruleType;
 			}
-			public String getCredit() {
+			public Double getCredit() {
 				return Credit;
 			}
-			public void setCredit(String credit) {
+			public void setCredit(Double credit) {
 				Credit = credit;
+			}
+			public Double getGivenAmount() {
+				return GivenAmount;
+			}
+			public void setGivenAmount(Double givenAmount) {
+				GivenAmount = givenAmount;
 			}
 			
 		}

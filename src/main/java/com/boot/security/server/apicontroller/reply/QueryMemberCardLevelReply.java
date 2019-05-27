@@ -30,15 +30,16 @@ public class QueryMemberCardLevelReply extends BaseReply{
 		public static class QueryMemberCardLevelReplyMemberCardLevel{
 			private String levelCode;
 			private String levelName;
-			private String CardCostFee;
-			private String MemberFee;
+			private Double CardCostFee;
+			private Double MemberFee;
 			private String RuleCode;
 			private String RuleName;
-			private String RuleType;
-			private String Credit;
+			private Integer RuleType;
+			private Double Credit;
+			private Double GivenAmount;
 			private String EffectiveDays;
 			private String RuleDescription;
-			private String Status;
+			private Integer Status;
 			public String getLevelCode() {
 				return levelCode;
 			}
@@ -50,18 +51,6 @@ public class QueryMemberCardLevelReply extends BaseReply{
 			}
 			public void setLevelName(String levelName) {
 				this.levelName = levelName;
-			}
-			public String getCardCostFee() {
-				return CardCostFee;
-			}
-			public void setCardCostFee(String cardCostFee) {
-				CardCostFee = cardCostFee;
-			}
-			public String getMemberFee() {
-				return MemberFee;
-			}
-			public void setMemberFee(String memberFee) {
-				MemberFee = memberFee;
 			}
 			public String getRuleCode() {
 				return RuleCode;
@@ -75,17 +64,35 @@ public class QueryMemberCardLevelReply extends BaseReply{
 			public void setRuleName(String ruleName) {
 				RuleName = ruleName;
 			}
-			public String getRuleType() {
+			public Double getCardCostFee() {
+				return CardCostFee;
+			}
+			public void setCardCostFee(Double cardCostFee) {
+				CardCostFee = cardCostFee;
+			}
+			public Double getMemberFee() {
+				return MemberFee;
+			}
+			public void setMemberFee(Double memberFee) {
+				MemberFee = memberFee;
+			}
+			public Integer getRuleType() {
 				return RuleType;
 			}
-			public void setRuleType(String ruleType) {
+			public void setRuleType(Integer ruleType) {
 				RuleType = ruleType;
 			}
-			public String getCredit() {
+			public Double getCredit() {
 				return Credit;
 			}
-			public void setCredit(String credit) {
+			public void setCredit(Double credit) {
 				Credit = credit;
+			}
+			public Double getGivenAmount() {
+				return GivenAmount;
+			}
+			public void setGivenAmount(Double givenAmount) {
+				GivenAmount = givenAmount;
 			}
 			public String getEffectiveDays() {
 				return EffectiveDays;
@@ -99,10 +106,10 @@ public class QueryMemberCardLevelReply extends BaseReply{
 			public void setRuleDescription(String ruleDescription) {
 				RuleDescription = ruleDescription;
 			}
-			public String getStatus() {
+			public Integer getStatus() {
 				return Status;
 			}
-			public void setStatus(String status) {
+			public void setStatus(Integer status) {
 				Status = status;
 			}
 			
