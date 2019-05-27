@@ -45,7 +45,7 @@
 			<div class="form-actions">
 				<div class="row" align="center">
 					<div class="col-md-12">
-					    <button class="btn btn-primary" onclick="location.href='goodstypeList.html'">返回</button>
+					    <button class="btn btn-primary" onclick="goback()">返回</button>
 						<button class="btn btn-primary" type="submit" onclick="add()">
 							<i class="fa fa-save"></i> 保存
 						</button>
@@ -119,6 +119,11 @@
 			$("#AllCinema").prop("checked",false);
 		})
 		
+		var cinemaCode = getUrlParam('cinemaCode');
+		//返回上一页面
+		function goback(){
+			window.location.href = 'goodstypeList.html?cinemaCode='+cinemaCode;
+		}
 		
 		function add() {
 			$('#form').bootstrapValidator();
@@ -132,7 +137,6 @@
 		    var str=[]; 
 		    $('input[name="checkbox"]:checked').each(function(){
 	            str.push($(this).val());
-	            console.log($(this).val());
 	        })
 		    $("#CinemaCode").val(str);
 		     
@@ -147,7 +151,7 @@
 					data : JSON.stringify(formdata),
 					success : function(data) {
 						layer.msg("添加成功", {shift: -1, time: 1000}, function(){
-	                        location.href = "goodstypeList.html";
+	                        location.href = 'goodstypeList.html?cinemaCode='+cinemaCode;
 	                    });
 					}
 				});

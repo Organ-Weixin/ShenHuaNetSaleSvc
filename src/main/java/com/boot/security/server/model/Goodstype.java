@@ -2,7 +2,7 @@ package com.boot.security.server.model;
 
 
 
-public class Goodstype extends BaseEntity<Long> {
+public class Goodstype {
 
 	private Long Id;
 	private String CinemaCode;
@@ -11,6 +11,8 @@ public class Goodstype extends BaseEntity<Long> {
 	private String TypeName;
 	private String TypeDesc;
 	private String TypePic;
+	
+	private String cinemaName; //后台需要
 
 	public Long getId() {
 		return Id;
@@ -55,5 +57,11 @@ public class Goodstype extends BaseEntity<Long> {
 	public void setTypePic(String TypePic) {
 		this.TypePic = TypePic;
 	}
-
+	public String getCinemaName() {
+		return cinemaName;
+	}
+	public void setCinemaName(String cinemaName) {
+		this.cinemaName = cinemaName;
+	}
+	
 }

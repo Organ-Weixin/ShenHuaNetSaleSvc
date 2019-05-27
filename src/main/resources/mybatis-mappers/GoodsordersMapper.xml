@@ -213,8 +213,8 @@
 			<if test="ErrorMessage != null">
 				ErrorMessage = #{ErrorMessage}, 
 			</if>
-			<if test="OPenID != null">
-				OPenID = #{OPenID}, 
+			<if test="OpenID != null">
+				OpenID = #{OpenID}, 
 			</if>
 
 		</set>

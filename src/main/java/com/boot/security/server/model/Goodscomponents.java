@@ -20,6 +20,7 @@ public class Goodscomponents {
 	private String UnitName;
 		
 	private String RecommendName;	//后台需要
+	private String cinemaName;
 
 	public Long getId() {
 		return Id;
@@ -123,4 +124,11 @@ public class Goodscomponents {
 	public void setRecommendName(String recommendName) {
 		RecommendName = recommendName;
 	}
+	public String getCinemaName() {
+		return cinemaName;
+	}
+	public void setCinemaName(String cinemaName) {
+		this.cinemaName = cinemaName;
+	}
+	
 }

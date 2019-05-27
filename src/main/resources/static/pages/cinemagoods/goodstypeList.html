@@ -28,7 +28,7 @@
 									</form>
 	                   			</td>
 	                   			<td align="right">
-	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addGoodstype.html'">
+	                   				<button class="layui-btn layui-btn-sm" onclick="addType()">
                                       <i class="layui-icon">&#xe608;</i> 新建类型
                                     </button>
 	                   			</td>
@@ -45,6 +45,7 @@
                                 </tr>                       
                                 <tr>
 									<th>#</th>
+									<th>影院名称</th>
 									<th>类型名称</th>
 									<th>图片</th>
 									<th>排序</th>
@@ -65,13 +66,26 @@
 <script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
 <script type="text/javascript" src="../../js/my/permission.js"></script>
 <script type="text/javascript">
+	//新增类型
+	function addType(){
+		window.location.href='addGoodstype.html?cinemaCode='+$("#CinemaCode").val();
+	}
+
 	var pers = checkPermission();
-	
 	var example;
+	var code;
 	init();
 	function init(){
+		var url = window.location.href;
+//		console.log(url);
+		if(url.indexOf("?") != -1){
+			code = getUrlParam('cinemaCode');
+			
+		}
+		
 		example = 
 	    	$('#dt-table').DataTable({
 	        	"searching": false,
@@ -95,6 +109,7 @@
 							return meta.row + 1 + meta.settings._iDisplayStart;
 							}
 					},
+					{"data" : "cinemaName", "defaultContent" : ""},
 					{"data" : "typeName", "defaultContent" : ""},
 					{
 						"data" : "typePic", 
@@ -150,6 +165,10 @@
 		example.ajax.reload();
 	});
 	
+	window.onload = function(){
+		$("#CinemaCode").find("option[value='"+code+"']").attr("selected","selected");
+		example.ajax.reload();
+	}
 	
 	//获取影院
 	getCinema();

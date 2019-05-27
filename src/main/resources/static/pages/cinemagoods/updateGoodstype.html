@@ -10,6 +10,7 @@
 		<fieldset>
 			<h1>分类信息</h1>
 			<input type="hidden" id="Id" name="id">
+			<input type="hidden" id="CinemaCode" name="cinemaCode">
 			<div class='form-group'>
 				<label class='col-md-2 control-label'>分类名称：</label>
 				<div class='col-md-10'>
@@ -29,7 +30,7 @@
 			<div class="form-actions">
 				<div class="row" align="center">
 					<div class="col-md-12">
-					    <button class="btn btn-primary" onclick="location.href='goodstypeList.html'">返回</button>
+					    <button class="btn btn-primary" onclick="goback()">返回</button>
 						<button class="btn btn-primary" type="submit" onclick="update()">
 							<i class="fa fa-save"></i> 保存
 						</button>
@@ -103,6 +104,7 @@
 					async : false,
 					success : function(data) {
 						$('#Id').val(data.id);
+						$('#CinemaCode').val(data.cinemaCode);
 						$('#TypeName').val(data.typeName);
 						$('#TypePic').val(data.typePic);
 
@@ -111,6 +113,11 @@
 			}
 		}
 
+		//返回上一页面
+		function goback(){
+			window.location.href = 'goodstypeList.html?cinemaCode='+$('#CinemaCode').val();
+		}
+		
 		function update() {
 			$('#form').bootstrapValidator();
 			var bootstrapValidator = $("#form").data('bootstrapValidator');
@@ -128,7 +135,7 @@
 				data : JSON.stringify(formdata),
 				success : function(data) {
 					layer.msg("修改成功", {shift: -1, time: 1000}, function(){
-                        location.href = "goodstypeList.html";
+                        location.href = 'goodstypeList.html?cinemaCode='+$('#CinemaCode').val();
                     });
 				}
 			});

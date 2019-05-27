@@ -98,6 +98,46 @@
 <script type="text/javascript" src="../../js/common.js"></script>
 <script type="text/javascript" src="../../layui/layui.js"></script>
 <script type="text/javascript">
+		layui.use([ "jquery", "upload", "form", "layer", "element" ],function() {
+			var $ = layui.$, element = layui.element, layer = layui.layer, upload = layui.upload, form = layui.form;
+			//拖拽上传
+			var uploadInst = upload.render({
+					elem : '#pic',
+					url : '/filminfos/upload/filmImage',
+					size : 500,
+					before : function(obj) {
+						//预读本地文件示例，不支持ie8
+						obj.preview(function(index,file, result) {
+							$('#preview').attr('src',result); //图片链接（base64）
+						});
+					},
+					done : function(res) {
+						//如果上传失败
+						if (res.code > 0) {
+							return layer.msg('上传失败');
+						}
+						//上传成功
+						//打印后台传回的地址: 把地址放入一个隐藏的input中, 和表单一起提交到后台, 此处略..
+						console.log(res.data.src);
+						$("#PackagePic").val(res.data.src);//将地址存储好
+						window.parent.uploadHeadImage(res.data.src);
+						var resultMsg = $('#resultMsg');
+						resultMsg.html('<span style="color: #8f8f8f;">上传成功!!!</span>');
+					},
+					error : function() {
+						//演示失败状态，并实现重传
+						var resultMsg = $('#resultMsg');
+						resultMsg
+								.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
+						resultMsg.find('.demo-reload').on(
+								'click', function() {
+									uploadInst.upload();
+								});
+					}
+				});
+			element.init();
+		});
+		
 		layui.use(['layer','laydate'], function(){
 		    var layer = layui.layer;
 		});
@@ -107,7 +147,7 @@
 //			var id = getUrlParam("id");
 			var cinemaCode = getUrlParam("cinemaCode");
 			var packageCode = getUrlParam("packageCode");
-			alert(packageCode);
+			
 			if(packageCode != ""){
 				$.ajax({
 					type : 'get',
@@ -115,12 +155,13 @@
 					async : false,
 					success : function(data) {
 						for(var i=0; i<data.length;i++){
-							alert(data[i]);
 							$('#Id').val(data[i].id);
 							$('#CinemaCode').val(data[i].cinemaCode);
 							$('#PackageCode').val(data[i].packageCode);
 							$('#PackageName').val(data[i].packageName);
 							$('#PackagePic').val(data[i].packagePic);
+							$('#preview').attr('src',data[i].packagePic);
+							
 							$('#GoodsCode').val(data[i].goodsCode);
 							$('#GoodsName').val(data[i].goodsName);
 							$('#GoodsCount').val(data[i].goodsCount);

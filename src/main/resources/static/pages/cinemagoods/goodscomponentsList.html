@@ -21,7 +21,7 @@
 											影院：
 											<select class="form-control input-sm" id="CinemaCode" style="width:150px;" >
 												<option value="">影院</option>
-												<!-- <option value="33111001" selected="selected">神画新天地影城</option> -->
+												<option value="33111001" selected="selected">神画新天地影城</option>
 											</select>
 											<input id="PackageName" type="text" class="form-control" placeholder="套餐名称">
 											<select class="form-control input-sm" id="RecommendCode" style="width:150px;" >
@@ -57,6 +57,7 @@
                                 </tr>                       
                                 <tr>
 									<th>#</th>
+									<th>影院名称</th>
 									<th>套餐图片</th>
 									<th>套餐名称</th>
 									<th>零售价</th>
@@ -96,7 +97,7 @@
 	init();
 	function init(){
 		var url = window.location.href;
-		console.log(url);
+//		console.log(url);
 		if(url.indexOf("?") != -1){
 			code = getUrlParam('cinemaCode');
 			
@@ -129,6 +130,7 @@
 								return meta.row + 1 + meta.settings._iDisplayStart;
 							}
 					},
+					{"data" : "cinemaName", "defaultContent" : ""},
 					{
 							"data" : "packagePic", 
 							"defaultContent" : "",

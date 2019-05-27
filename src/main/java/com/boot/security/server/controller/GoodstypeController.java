@@ -17,8 +17,10 @@ import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
+import com.boot.security.server.utils.UserUtil;
 import com.boot.security.server.dao.GoodstypeDao;
 import com.boot.security.server.model.Goodstype;
+import com.boot.security.server.model.SysUser;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -57,6 +59,11 @@ public class GoodstypeController {
     @GetMapping
     @ApiOperation(value = "列表")
     public PageTableResponse list(PageTableRequest request) {
+    	//获取当前登陆人信息
+    	SysUser sysuser = UserUtil.getLoginUser();
+    	request.getParams().put("id", sysuser.getId());
+    	request.getParams().put("roleId", sysuser.getRoleId());
+    	
         return new PageTableHandler(new CountHandler() {
 
             @Override

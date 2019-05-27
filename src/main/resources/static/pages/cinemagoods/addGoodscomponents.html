@@ -11,6 +11,7 @@
 	<form class="form-horizontal" onsubmit="return false" id="form">
 		<fieldset>
 			<input type="hidden" name="cinemaCode"  id="CinemaCode"/>
+			<input type="hidden" name="goodsCount"  id="GoodsCount"/>
 			<div class='form-group'>
 				<label class='col-md-2 control-label'>套餐编码：</label>
 				<div class='col-md-10'>
@@ -77,6 +78,7 @@
 				</div>
 			</div>
 			<div class='form-group'>
+				<input type="hidden" name="goodsCode"  id="GoodsCode"/>
 				<label class='col-md-2 control-label'>已选商品：</label>
 				<div class='col-md-10' id='selectedgoods'>
 					
@@ -216,6 +218,7 @@
 		window.location.href = 'goodscomponentsList.html?cinemaCode='+$("#CinemaCode").val();
 	}
 	
+	//新增套餐推荐
 	function add() {
 		$('#form').bootstrapValidator();
 		var bootstrapValidator = $("#form").data('bootstrapValidator');
@@ -225,7 +228,7 @@
 	    }
 	    
 	    var formdata = $("#form").serializeObject();
-
+console.log(JSON.stringify(formdata));
 		$.ajax({
 			type : 'post',
 			url : '/goodscomponentss',
@@ -242,68 +245,89 @@
 	//选择商品-弹窗
 	$("#getGoods").click(function(){
 		$("#chooseDiv").show();
+		var	example = 
+		    	$('#dt-table').DataTable({
+		        	"searching": false,
+		        	"processing": false,
+		        	"serverSide" : true,
+		        	"language": {
+		                "url": "/js/plugin/datatables/Chinese.lang"
+		            },
+		        	"ajax": {
+		        		"url" : "/goodss",
+		        		"type":"get",
+		        		"data":function(d){
+		    				d.CinemaCode = $("#CinemaCode").val();
+		    				d.GoodsName = $("#GoodsName").val();
+		    			}
+		        	},
+		        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
+		            "columns": [
+			        	{			"data" : null, 
+			            			"defaultContent" : "",
+									"render" : function(data, type, full, meta){
+										return meta.row + 1 + meta.settings._iDisplayStart;
+									}
+						},
+						{
+									"data" : "", 
+									"defaultContent" : "",
+									"render": function (data, type, row) {
+										var id = row['id'];
+										var goodsName = row['goodsName'];
+				                		var checkbox = "<input type='checkbox' name='checkbox' title="+id+" value="+goodsName+"/>";
+				                		
+				                        return checkbox;
+				                  	}
+						},
+						{
+									"data" : "goodsPic", 
+									"defaultContent" : "",
+									"render": function (data, type, row) {
+				                		var goodsPic = row['goodsPic'];
+				                      	var img = "<img class='goodsPic' style='width:40px;height: 40px;' src='"+goodsPic+"' title='"+goodsPic+"' >";
+				                      	
+				                        return img;
+				                  	}
+						},
+						{"data" : "goodsName", "defaultContent" : ""},
+						{"data" : "standardPrice", "defaultContent" : ""}, 
+						{"data" : "settlePrice", "defaultContent" : ""},
+						{"data" : "goodsDesc", "defaultContent" : ""},
+						{"data" : "showSeqNo", "defaultContent" : ""},
+		                
+		            ],
+		           "order": [[ 6, "asc" ]]
+		        });
 	});
 	
 	$("#closePage").click(function(){
 		$("#chooseDiv").hide();
 	});
 	
-	getGoods();
-	var pers = checkPermission();
-	var example;
-	function getGoods(){
-		example = 
-	    	$('#dt-table').DataTable({
-	        	"searching": false,
-	        	"processing": false,
-	        	"serverSide" : true,
-	        	"language": {
-	                "url": "/js/plugin/datatables/Chinese.lang"
-	            },
-	        	"ajax": {
-	        		"url" : "/goodss",
-	        		"type":"get",
-	        		"data":function(d){
-	    				d.CinemaCode = $("#CinemaCode").val();
-	    				d.GoodsName = $("#GoodsName").val();
-	    			}
-	        	},
-	        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
-	            "columns": [
-		        	{			"data" : null, 
-		            			"defaultContent" : "",
-								"render" : function(data, type, full, meta){
-									return meta.row + 1 + meta.settings._iDisplayStart;
-								}
-					},
-					{
-								"data" : "", 
-								"defaultContent" : "",
-								"render": function (data, type, row) {
-			                		var checkbox = "<input type='checkbox' name='checkbox' />";
-			                		
-			                        return checkbox;
-			                  	}
-					},
-					{
-								"data" : "goodsPic", 
-								"defaultContent" : "",
-								"render": function (data, type, row) {
-			                		var goodsPic = row['goodsPic'];
-			                      	var img = "<img class='pic' style='width:40px;height: 40px;' src='"+goodsPic+"' title='"+goodsPic+"' >";
-			                      	
-			                        return img;
-			                  	}
-					},
-					{"data" : "goodsName", "defaultContent" : ""},
-					{"data" : "standardPrice", "defaultContent" : ""},
-					{"data" : "settlePrice", "defaultContent" : ""},
-					{"data" : "goodsDesc", "defaultContent" : ""},
-					{"data" : "showSeqNo", "defaultContent" : ""},
-	                
-	            ],
-	           "order": [[ 6, "asc" ]]
-	        } );
+	//选好商品保存
+	$("#savePage").click(function(){
+//		var vals = [];
+	    $('input[name="checkbox"]:checked').each(function(){
+//	    	vals.push($(this).val());
+	    	console.log($(this).attr("title"));
+	    	var div = "<div class='form-inline' id="+$(this).attr('title')+">"+
+	    				"<input class='form-control' value="+$(this).val()+"  style='width:150px;'>&nbsp;&nbsp;"+
+	    				"<input class='form-control' type='number' value='1' min='1' max='99' style='width:150px;'>"+
+	    				"<button style='width:150px;color:blue; background-color:transparent; border:0' onclick='delgoods("+$(this).attr('title')+")'>删除</button>"+
+	    				"</div><br/>";
+//			$("#selectedgoods").append(inputgoods);
+//			$("#selectedgoods").append(inputNum);
+			$("#selectedgoods").append(div);
+        })
+	    $("[name='checkbox']").prop("checked",false);//取消全选
+	    $("#chooseDiv").hide();
+	});
+	
+	//删除选好的商品
+	function delgoods(id){
+		console.log($(this).parent());
+		$(this).parent().remove();
 	}
 	
 	$("#searchBt").click(function(){
