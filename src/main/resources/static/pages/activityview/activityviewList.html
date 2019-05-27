@@ -80,9 +80,6 @@
 <script type="text/javascript">
 var pers = checkPermission();
 var gradeCode = showDictSelect("gradeCode", "gradeCode", true); 
-
-
-
 var example;
 function init(){
 	example = 
@@ -105,8 +102,6 @@ function init(){
     				}else{
     					d.CinemaCode=$("#CinemaCode").val();
     				}
-    				
-
     			}
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
@@ -128,10 +123,24 @@ function init(){
                         return img;
                   	}
 				},
-				{"data" : "startDate", "defaultContent" : ""},
-				{"data" : "endDate", "defaultContent" : ""},
+				{"data" : "", "defaultContent" : "",
+				"render": function (data, type, row) {
+						var startDate=row['startDate'];
+						if(startDate!=null){
+							return startDate.substr(0,10);
+						}
+              	}		
+				},
+					{"data" : "", "defaultContent" : "",
+					"render": function (data, type, row) {
+						var endDate=row['endDate'];
+						if(endDate!=null){
+							return endDate.substr(0,10);
+						}
+              	}		
+				},
 				{"data" : "linkName", "defaultContent" : ""},
-					{"data" : "gradeCode", "defaultContent" : "",
+				{"data" : "gradeCode", "defaultContent" : "",
 					"render": function (data, type, row) {
                 	return gradeCode[data];
               	}		},

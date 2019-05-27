@@ -105,6 +105,12 @@
 			<if test="Name != null">
 				Name = #{Name}, 
 			</if>
+			<if test="Province != null">
+				Province = #{Province}, 
+			</if>
+			<if test="City != null">
+				City = #{City}, 
+			</if>
 			<if test="Address != null">
 				Address = #{Address}, 
 			</if>
