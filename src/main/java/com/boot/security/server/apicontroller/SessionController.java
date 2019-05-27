@@ -11,12 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.boot.security.server.api.core.NetSaleSvcCore;
 import com.boot.security.server.api.core.QuerySessionSeatReply;
-import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaAllSessionResult.ResBean.SessionsBean.SessionBean.FilmsBean.SessionFilmBean;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply;
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions;
-import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions.QueryFilmSessionsReplyFilm.QueryFilmSessionsReplySession.QueryFilmSessionsReplyPrice;
-import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions.QueryFilmSessionsReplyFilm.QueryFilmSessionsReplySession.QueryFilmSessionsReplySettlePrice;
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions.QueryFilmSessionsReplyFilm;
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions.QueryFilmSessionsReplyFilm.QueryFilmSessionsReplySession;
 import com.boot.security.server.apicontroller.reply.QueryOrderSessionReply;
@@ -24,7 +21,6 @@ import com.boot.security.server.apicontroller.reply.QueryOrderSessionReply.Query
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
-import com.boot.security.server.model.Qmmprice;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Userinfo;
@@ -103,41 +99,34 @@ public class SessionController {
 						filmReply.setPublishDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(filminfo.getPublishDate()));
 					}
 					filmReply.setPublisher(filminfo.getPublisher());
-					filmReply.setScore(filminfo.getScore());
-					filmReply.setStatus(filminfo.getStatus());
+					if(filminfo.getScore()!=null){
+						filmReply.setScore(String.valueOf(filminfo.getScore()));
+					}
+					filmReply.setStatus(String.valueOf(filminfo.getStatus()));
 					filmReply.setTrailer(filminfo.getTrailer());
 					filmReply.setType(filminfo.getType());
 					filmReply.setVersion(filminfo.getVersion());
 				}
 				List<Sessioninfo> sessionList = _sessionInfoService.getByCinemaCodeAndFilmCodeAndTime(film.getCCode(), filmcode, StartDate, EndDate);
 				List<QueryFilmSessionsReplySession> sessionReplyList = new ArrayList<QueryFilmSessionsReplySession>();
-				/*List<Sessioninfo> sessionQmmList = _sessionInfoService.getByCinemafilm(film.getCCode(), filmcode);
-				for(int i=0; i<sessionList.size(); i++){
-					for(int j=0; j<sessionQmmList.size();j++){
-						if(sessionList.get(i).getSCode().equals(sessionQmmList.get(j).getSCode())){
-							for(int m=0; m<sessionQmmList.get(j).getQmmprices().size(); m++){
-								QueryFilmSessionsReplyPrice price = new QueryFilmSessionsReplyPrice();
-								QueryFilmSessionsReplySettlePrice settlePrice = new QueryFilmSessionsReplySettlePrice();
-								price.setMprice(sessionQmmList.get(j).getQmmprices().get(j%m).getPrice());
-								price.setBprice(sessionQmmList.get(j).getQmmprices().get(j%m).getPrice());
-								price.setTprice(sessionQmmList.get(j).getQmmprices().get(j%m).getPrice());
-								settlePrice.setMsettlePrice(sessionQmmList.get(j).getQmmprices().get(j%m).getPrice());
-								settlePrice.setBsettlePrice(sessionQmmList.get(j).getQmmprices().get(j%m).getPrice());
-								settlePrice.setTsettlePrice(sessionQmmList.get(j).getQmmprices().get(j%m).getPrice());
-							}
-						}
-					}
-				}*/
 				for(Sessioninfo session :sessionList){
 					QueryFilmSessionsReplySession sessionReply = new QueryFilmSessionsReplySession();
 					sessionReply.setFeatureNo(session.getFeatureNo());
-					sessionReply.setListingPrice(session.getListingPrice());
-					sessionReply.setLowestPrice(session.getLowestPrice());
+					if(session.getListingPrice()!=null){
+						sessionReply.setListingPrice(String.valueOf(session.getListingPrice()));
+					}
+					if(session.getLowestPrice()!=null){
+						sessionReply.setLowestPrice(String.valueOf(session.getLowestPrice()));
+					}
 					sessionReply.setPlaythroughFlag(session.getPlaythroughFlag());
 					sessionReply.setScreenCode(session.getScreenCode());
-					sessionReply.setSequence(session.getSequence());
+					if(session.getSequence()!=null){
+						sessionReply.setSequence(String.valueOf(session.getSequence()));
+					}
 					sessionReply.setSessionCode(session.getSCode());
-					sessionReply.setStandardPrice(session.getStandardPrice());
+					if(session.getStandardPrice()!=null){
+						sessionReply.setStandardPrice(String.valueOf(session.getStandardPrice()));
+					}
 					if(session.getStartTime()!=null){
 						sessionReply.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(session.getStartTime()));
 					}

@@ -22,11 +22,6 @@
 											<select class="form-control" style="width:180px" name="cinema" id="cinemaName">
 												<option value="">选择影院</option>
 											</select>
-											<select class="form-control" style="width:180px" id="StatusSelect">
-												<option value="">状态</option>
-												<option value="1" selected="selected">已启用</option>
-												<option value="0">未启用</option>
-											</select>
 											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
 										</div>
 									</form>
@@ -132,7 +127,6 @@ function init(){
         			}else{
         				d.CinemaCode = $("#cinemaName").val();
         			}
-        			d.Status = $("#StatusSelect").val();
     			}
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
@@ -171,12 +165,12 @@ function init(){
                 		        	   change = "启用";
                 		           }
                 		           var upda = "<button class='change' title='"+status+"' value='"+id+"' style='margin-right:5%'>"+change+"</button>";
-                		           var pict = "<button class='pict' style='margin-right:5%' value='"+id+"'>添加卡图片</button>";;
-                		           /* 
-                		           var href = "updateMembercardlevel.html?id=" + id;
+                		           /* var href = "updateMembercardlevel.html?id=" + id;
+                                   var edit = buttonEdit(href, "", pers);
                 		           var del = buttonDel(id, "", pers);
+                		           
                                    return edit + del; */
-                                   return upda + pict + set;
+                                   return upda + set;
                   	            }		
 							},
                 
@@ -225,14 +219,10 @@ $("#tbody").on('click','.change',function(){
 $("#tbody").on('click','.chooseRule',function(){
 	window.location.href="updateChoosemembercardcreditrule.html?cinemaCode="+$(this).val()+"&levelCode="+$(this).attr('title');
 });
-$("#tbody").on('click','.pict',function(){
-	window.location.href="updateMembercardlevel.html?id="+$(this).val();
-});
+
 $("#searchBt").click(function(){
 	example.ajax.reload();
 });
-$("#StatusSelect").blur(function(){
-	example.ajax.reload();
-});
+
 init();
 </script>

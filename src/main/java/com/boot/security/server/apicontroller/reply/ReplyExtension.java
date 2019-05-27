@@ -994,34 +994,4 @@ public class ReplyExtension {
 			}
 			return true;
 		}
-		//region QueryMemberCardLevelReply
-		public static boolean RequestInfoGuard(MemberCardUnbindReply reply, String Username, String Password, String CinemaCode, String CardNo, String CardPassword)
-	    {
-	        if (Username == null || "".equals(Username))
-	        {
-	            reply.SetNecessaryParamMissReply("UserName");
-	            return false;
-	        }
-	        if (Password == null || "".equals(Password))
-	        {
-	            reply.SetNecessaryParamMissReply("Password");
-	            return false;
-	        }
-	        if (CinemaCode == null || "".equals(CinemaCode))
-	        {
-	            reply.SetNecessaryParamMissReply("CinemaCode");
-	            return false;
-	        }
-	        if (CardNo == null || "".equals(CardNo))
-	        {
-	            reply.SetNecessaryParamMissReply("CardNo");
-	            return false;
-	        }
-	        if (CardPassword == null || "".equals(CardPassword))
-	        {
-	            reply.SetNecessaryParamMissReply("CardPassword");
-	            return false;
-	        }
-	        return true;
-	    }
 }

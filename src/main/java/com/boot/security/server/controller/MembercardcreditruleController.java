@@ -45,14 +45,11 @@ public class MembercardcreditruleController {
             // 拼接成字符串
             ruleCode += (c + "");
         }
-    	if(membercardcreditrule.getEffectiveDays()==null||membercardcreditrule.getEffectiveDays()==""){
+    	if(membercardcreditrule.getEffectiveDays()==null){
     		membercardcreditrule.setEffectiveDays("长期有效");
     	}
     	if(membercardcreditrule.getRuleName()==null||membercardcreditrule.getRuleName()==""){
     		membercardcreditrule.setRuleName("充值"+membercardcreditrule.getCredit());
-    	}
-    	if(membercardcreditrule.getGivenAmount()==null){
-    		membercardcreditrule.setGivenAmount(0.00);
     	}
     	membercardcreditrule.setRuleCode(ruleCode);
     	membercardcreditrule.setCreateTime(new Date());

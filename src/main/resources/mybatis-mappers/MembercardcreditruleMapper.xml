@@ -9,7 +9,7 @@
 				and Id = #{params.Id} 
 			</if>
 			<if test="params.CinemaCode != null and params.CinemaCode != ''">
-				and (CinemaCode = #{params.CinemaCode} or find_in_set(CinemaCode,#{params.CinemaCode}))
+				and CinemaCode = #{params.CinemaCode} 
 			</if>
 			<if test="params.RuleCode != null and params.RuleCode != ''">
 				and RuleCode = #{params.RuleCode} 
@@ -31,9 +31,6 @@
 			</if>
 			<if test="params.Credit != null and params.Credit != ''">
 				and Credit = #{params.Credit} 
-			</if>
-			<if test="params.GivenAmount != null and params.GivenAmount != ''">
-				and GivenAmount = #{params.GivenAmount} 
 			</if>
 			<if test="params.EffectiveDays != null and params.EffectiveDays != ''">
 				and EffectiveDays = #{params.EffectiveDays} 
@@ -93,9 +90,6 @@
 			<if test="Credit != null">
 				Credit = #{Credit}, 
 			</if>
-			<if test="GivenAmount != null">
-				GivenAmount = #{GivenAmount}, 
-			</if>
 			<if test="EffectiveDays != null">
 				EffectiveDays = #{EffectiveDays}, 
 			</if>
@@ -103,7 +97,7 @@
 				RuleDescription = #{RuleDescription}, 
 			</if>
 			<if test="UpdateTime != null">
-				UpdateTime = #{UpdateTime}, 
+				Status = #{Status}, 
 			</if>
 			<if test="Status != null">
 				Status = #{Status}, 

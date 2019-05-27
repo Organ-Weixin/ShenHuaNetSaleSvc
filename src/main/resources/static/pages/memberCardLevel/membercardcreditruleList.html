@@ -50,7 +50,6 @@
 									<th>规则类别</th>
 									<th>会员卡类别名称</th>
 									<th>起充金额</th>
-									<th>赠送金额</th>
 									<th>修改时间</th>
 									<th>状态</th>
 									<th>操作</th>
@@ -127,11 +126,7 @@ function init(){
         		"url" : "/membercardcreditrules",
         		"type":"get",
         		"data":function(d){
-        			if($("#cinemaName").val()==null||$("#cinemaName").val()==""){
-        				d.CinemaCode = $("#cinemacodes").val();
-        			}else{
-        				d.CinemaCode = $("#cinemaName").val();
-        			}
+    				d.id = $("#id").val();
     			}
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
@@ -151,7 +146,6 @@ function init(){
 				},
 				{"data" : "levelName", "defaultContent" : "","orderable":false},
 				{"data" : "credit", "defaultContent" : "","orderable":false},
-				{"data" : "givenAmount", "defaultContent" : "","orderable":false},
 				{"data" : "updateTime", "defaultContent" : "","orderable":false},
 				{"data" : "status", "defaultContent" : "","orderable":false,
 					"render": function (data, type, row) {

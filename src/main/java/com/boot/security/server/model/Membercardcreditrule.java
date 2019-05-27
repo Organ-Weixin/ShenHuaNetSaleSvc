@@ -9,11 +9,10 @@ public class Membercardcreditrule extends BaseEntity<Long> {
 	private String RuleCode;
 	private String RuleName;
 	private Date CreateTime;
-	private Integer RuleType;
+	private String RuleType;
 	private String LevelCode;
 	private String LevelName;
-	private Double Credit;
-	private Double GivenAmount;
+	private String Credit;
 	private String EffectiveDays;
 	private String RuleDescription;
 	private Date UpdateTime;
@@ -55,10 +54,10 @@ public class Membercardcreditrule extends BaseEntity<Long> {
 	public void setUpdateTime(Date updateTime) {
 		UpdateTime = updateTime;
 	}
-	public Integer getRuleType() {
+	public String getRuleType() {
 		return RuleType;
 	}
-	public void setRuleType(Integer RuleType) {
+	public void setRuleType(String RuleType) {
 		this.RuleType = RuleType;
 	}
 	public String getLevelCode() {
@@ -73,17 +72,11 @@ public class Membercardcreditrule extends BaseEntity<Long> {
 	public void setLevelName(String LevelName) {
 		this.LevelName = LevelName;
 	}
-	public Double getCredit() {
+	public String getCredit() {
 		return Credit;
 	}
-	public void setCredit(Double Credit) {
+	public void setCredit(String Credit) {
 		this.Credit = Credit;
-	}
-	public Double getGivenAmount() {
-		return GivenAmount;
-	}
-	public void setGivenAmount(Double givenAmount) {
-		GivenAmount = givenAmount;
 	}
 	public String getEffectiveDays() {
 		return EffectiveDays;

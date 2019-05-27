@@ -6,7 +6,6 @@
 	<resultMap type="Sessioninfo" id="Films">
 		<result property="Id" column="Id"/>
 		<result property="CCode" column="CCode"/>
-		<result property="SCode" column="SCode"/>
 		<result property="ScreenCode" column="ScreenCode"/>
 		<result property="StartTime" column="StartTime"/>
 		<result property="FilmCode" column="FilmCode"/>
@@ -153,7 +152,7 @@
 	</select>
 	
 	<select id="getByCinemafilm" resultMap="Films">
-		select s.id,s.ccode,s.scode,s.ScreenCode,qs.screenName,s.filmCode,s.filmName,s.startTime,qs.dataType,qs.dataName,qs.price,qs.settlePrice,qs.minPrice  
+		select s.id,s.ccode,s.ScreenCode,qs.screenName,s.filmCode,s.filmName,s.startTime,qs.dataType,qs.dataName,qs.price,qs.settlePrice,qs.minPrice  
 		from (select ss.* from sessioninfo ss where ss.ccode=#{cinemacode} and ss.filmcode=#{filmcode}) s 
 		left join (select q.*,sc.scode from qmmprice q,screeninfo sc where q.cinemaCode = sc.ccode and q.screenName = sc.SName) qs
 		on s.CCode=qs.cinemaCode and s.ScreenCode=qs.scode and s.startTime=qs.showTime 

@@ -136,6 +136,23 @@
     	$(".inactive-info").mouseleave(function () {
         	$(".clues").css("display","none");
     	});
+		/* $("#addOpenID").click(function(){
+			var spanDiv = '<div style="width:100%;margin-top:2%">';
+			spanDiv = spanDiv + '<input class="form-control input" name="input" placeholder="输入用户手机号" type="text" style="width:30%;float:left">';
+			spanDiv = spanDiv + '<span class="delOpenID" style="margin-left:2%;margin-top:3px;font-size:20px;cursor:pointer">删除</span>';
+			spanDiv = spanDiv + '</div>';
+			$("#userDiv").append(spanDiv);
+		});
+		$("#userDiv").on('click','.delOpenID',function(){
+			$($(this).parent().remove());
+			var OpenID = [];
+			$("input[name='input']").each(
+				function(){
+					OpenID.push($(this).val());
+				}		
+			);
+			$("#OpenID").val(OpenID);
+		}) */
 		
 		//顾客群体
 		$("input:radio[name='customer']").click(function(){
@@ -162,6 +179,10 @@
 							$("#OpenID").val("");
 						}
 					}
+					/* if(data.length<=0){
+						layer.msg("该用户不存在，请重新输入");
+						$(this).val("");
+					} */
 				}
 			});
 		}
@@ -171,6 +192,25 @@
 		$("#OpenID").click(function(){
 			$("#CouponsSelect").val("");
 		});
+		/* $("#user").on('blur','.input',function(){
+			$.ajax({
+				url:'/ticketuserss/checkMobliePhone?mobilephone='+$(this).val(),
+				type:'post',
+				success:function(data){
+					if(data.length<=0){
+						layer.msg("该用户不存在，请重新输入");
+						$(this).val("");
+					}
+				}
+			});
+			var OpenID = [];
+			$("input[name='input']").each(
+				function(){
+					OpenID.push($(this).val());
+				}		
+			);
+			$("#OpenID").val(OpenID);
+		}); */
 		
 		function checkSubmit(){
 			if($("input:radio[name='customer']:checked").length<=0){
@@ -229,6 +269,17 @@
 				layer.msg("请输入正确的发放数量");
 			}
 		})
+		
+		/* $("input[name='input']").click(function(){
+			var OpenID = [];
+			$("input[name='input']").each(
+				function(){
+					OpenID.push($(this).val());
+				}		
+			);
+			$("#OpenID").val(OpenID);
+		}); */
+		
 		
 		function add() {
 			

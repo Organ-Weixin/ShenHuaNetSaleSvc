@@ -25,7 +25,6 @@ import com.boot.security.server.api.core.QueryCardTradeRecordReply;
 import com.boot.security.server.api.core.QueryDiscountReply;
 import com.boot.security.server.api.ctms.reply.Dy1905GetMemberCardByMobileReply;
 import com.boot.security.server.api.ctms.reply.Dy1905Interface;
-import com.boot.security.server.apicontroller.reply.MemberCardUnbindReply;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.PrePayParametersReply;
 import com.boot.security.server.apicontroller.reply.QueryCardLevelReply;
@@ -160,35 +159,10 @@ public class MemberController {
 	//endregion
 	
 	//region 会员卡充值
-	@GetMapping("/CardCharge/{Username}/{Password}/{CinemaCode}/{CardNo}/{CardPassword}/{ChargeType}/{RuleCode}/{ChargeAmount}")
+	@GetMapping("/CardCharge/{Username}/{Password}/{CinemaCode}/{CardNo}/{CardPassword}/{ChargeType}/{ChargeAmount}")
 	@ApiOperation(value = "会员卡充值")
 	public CardChargeReply CardCharge(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
-			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String ChargeType,
-			@PathVariable String RuleCode,@PathVariable String ChargeAmount){
-		CardChargeReply cardChargeReply = new CardChargeReply();
-		if(RuleCode==null||RuleCode==""){
-			cardChargeReply.SetCardChargeTypeInvalidReply();
-			return cardChargeReply;
-		}
-		Choosemembercardcreditrule choosemembercardcreditrule = _choosemembercardcreditruleService.getByRuleCode(CinemaCode, RuleCode);
-		if(choosemembercardcreditrule==null){
-			cardChargeReply.SetCardChargeTypeInvalidReply();
-			return cardChargeReply;
-		}
-		if(choosemembercardcreditrule.getRuleCode()==null){
-			cardChargeReply.SetCardChargeTypeInvalidReply();
-			return cardChargeReply;
-		}
-		Membercardcreditrule membercardcreditrule = _membercardcreditruleService.getByRuleCode(choosemembercardcreditrule.getRuleCode());
-		if(membercardcreditrule==null){
-			cardChargeReply.SetCardChargeTypeInvalidReply();
-			return cardChargeReply;
-		}
-		if(membercardcreditrule.getRuleCode()==null||membercardcreditrule.getStatus()!=1){
-			cardChargeReply.SetCardChargeTypeInvalidReply();
-			return cardChargeReply;
-		}
-		ChargeAmount = String.valueOf(membercardcreditrule.getCredit()+membercardcreditrule.getGivenAmount());
+			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String ChargeType,@PathVariable String ChargeAmount){
 		return new NetSaleSvcCore().CardCharge(Username, Password, CinemaCode, CardNo, CardPassword, ChargeType, ChargeAmount);
 	}
 	//endregion
@@ -246,37 +220,12 @@ public class MemberController {
 	//endregion
 	
 	//region 会员卡注册
-	@GetMapping("/CardRegister/{Username}/{Password}/{CinemaCode}/{OpenID}/{CardPassword}/{LevelCode}/{RuleCode}/{InitialAmount}/{CardUserName}/{MobilePhone}/{IDNumber}/{Sex}")
+	@GetMapping("/CardRegister/{Username}/{Password}/{CinemaCode}/{OpenID}/{CardPassword}/{LevelCode}/{InitialAmount}/{CardUserName}/{MobilePhone}/{IDNumber}/{Sex}")
 	@ApiOperation(value = "会员卡注册")
-	public CardRegisterReply CardRegister(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
-			@PathVariable String OpenID,@PathVariable String CardPassword,@PathVariable String LevelCode,
-			@PathVariable String RuleCode,@PathVariable String InitialAmount,@PathVariable String CardUserName,
+	public CardRegisterReply CardRegister(@PathVariable String Username,@PathVariable String Password,String OpenID,@PathVariable String CinemaCode,
+			@PathVariable String CardPassword,@PathVariable String LevelCode,@PathVariable String InitialAmount,@PathVariable String CardUserName,
 			@PathVariable String MobilePhone,@PathVariable String IDNumber,@PathVariable String Sex){
-			CardRegisterReply cardRegisterReply = new CardRegisterReply();
-			if(RuleCode==null||RuleCode==""){
-				cardRegisterReply.SetCardChargeTypeInvalidReply();
-				return cardRegisterReply;
-			}
-			Choosemembercardcreditrule choosemembercardcreditrule = _choosemembercardcreditruleService.getByRuleCode(CinemaCode, RuleCode);
-			if(choosemembercardcreditrule==null){
-				cardRegisterReply.SetCardChargeTypeInvalidReply();
-				return cardRegisterReply;
-			}
-			if(choosemembercardcreditrule.getRuleCode()==null){
-				cardRegisterReply.SetCardChargeTypeInvalidReply();
-				return cardRegisterReply;
-			}
-			Membercardcreditrule membercardcreditrule = _membercardcreditruleService.getByRuleCode(choosemembercardcreditrule.getRuleCode());
-			if(membercardcreditrule==null){
-				cardRegisterReply.SetCardChargeTypeInvalidReply();
-				return cardRegisterReply;
-			}
-			if(membercardcreditrule.getRuleCode()==null){
-				cardRegisterReply.SetCardChargeTypeInvalidReply();
-				return cardRegisterReply;
-			}
-			InitialAmount = String.valueOf(membercardcreditrule.getCredit()+membercardcreditrule.getGivenAmount());
-			cardRegisterReply = new NetSaleSvcCore().CardRegister(Username, Password, CinemaCode, CardPassword, LevelCode, InitialAmount, CardUserName, MobilePhone, IDNumber, Sex);
+			CardRegisterReply cardRegisterReply = new NetSaleSvcCore().CardRegister(Username, Password, CinemaCode, CardPassword, LevelCode, InitialAmount, CardUserName, MobilePhone, IDNumber, Sex);
 			if(cardRegisterReply.Status.equals("Success")){
 				Membercard membercard = _memberCardService.getByCardNo(CinemaCode, cardRegisterReply.getCardNo());
 				membercard.setOpenId(OpenID);
@@ -560,9 +509,15 @@ public class MemberController {
 	        	QueryMemberCardLevelReplyMemberCardLevel levelReply = new QueryMemberCardLevelReplyMemberCardLevel();
 	        	levelReply.setLevelCode(membercardlevel.getLevelCode());
 	        	levelReply.setLevelName(membercardlevel.getLevelName());
-	        	levelReply.setCardCostFee(membercardlevel.getCardCostFee());
-	        	levelReply.setMemberFee(membercardlevel.getMemberFee());
-	        	levelReply.setStatus(membercardlevel.getStatus());
+	        	if(membercardlevel.getCardCostFee()!=null){
+	        		levelReply.setCardCostFee(String.valueOf(membercardlevel.getCardCostFee()));
+	        	}
+	        	if(membercardlevel.getMemberFee()!=null){
+	        		levelReply.setMemberFee(String.valueOf(membercardlevel.getMemberFee()));
+	        	}
+	        	if(membercardlevel.getStatus()!=null){
+	        		levelReply.setStatus(String.valueOf(membercardlevel.getStatus()));
+	        	}
 	        	//会员卡类别规则
 	        	Choosemembercardcreditrule choosemembercardcreditrule =  _choosemembercardcreditruleService.getOpenTypeByLevelCode(CinemaCode, membercardlevel.getLevelCode());
 	        	if(choosemembercardcreditrule!=null&&choosemembercardcreditrule.getRuleCode()!=null&&choosemembercardcreditrule.getRuleCode()!=""){
@@ -632,7 +587,6 @@ public class MemberController {
 				ruleReply.setRuleCode(membercardcreditrule.getRuleCode());
 				ruleReply.setRuleType(membercardcreditrule.getRuleType());
 				ruleReply.setCredit(membercardcreditrule.getCredit());
-				ruleReply.setGivenAmount(membercardcreditrule.getGivenAmount());
 				ruleReplyList.add(ruleReply);
 			}
 			data.setRule(ruleReplyList);
@@ -640,43 +594,6 @@ public class MemberController {
     	queryMemberCardLevelRuleReply.setData(data);
     	queryMemberCardLevelRuleReply.SetSuccessReply();
     	return queryMemberCardLevelRuleReply;
-	}
-	@GetMapping("/MemberCardUnbind/{Username}/{Password}/{CinemaCode}/{CardNo}/{CardPassword}")
-	@ApiOperation(value = "会员卡解绑")
-	public MemberCardUnbindReply QueryMemberCardLevelRule(@PathVariable String Username,@PathVariable String Password,
-			@PathVariable String CinemaCode,@PathVariable String CardNo,@PathVariable String CardPassword){
-		MemberCardUnbindReply memberCardUnbindReply = new MemberCardUnbindReply();
-		//校验参数
-		if (!ReplyExtension.RequestInfoGuard(memberCardUnbindReply, Username, Password, CinemaCode, CardNo, CardPassword))
-        {
-            return memberCardUnbindReply;
-        }
-		//获取用户信息(渠道)
-        Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
-        if (UserInfo == null)
-        {
-        	memberCardUnbindReply.SetUserCredentialInvalidReply();
-            return memberCardUnbindReply;
-        }
-        //验证影院是否存在且可访问
-        Cinema cinema = _cinemaService.getByCinemaCode(CinemaCode);
-        if (cinema == null)
-        {
-        	memberCardUnbindReply.SetCinemaInvalidReply();
-            return memberCardUnbindReply;
-        }
-        //验证会员卡是否存在
-        Membercard membercard = _memberCardService.checkMemberCard(CinemaCode, CardNo, CardPassword);
-        if(membercard == null){
-        	memberCardUnbindReply.SetMemberCardInvalidReply();
-        	return memberCardUnbindReply;
-        }
-        if(_memberCardService.memberCardUnbind(membercard.getCinemaCode(), membercard.getCardNo())<=0){
-        	memberCardUnbindReply.SetMemberCardInvalidReply();
-        	return memberCardUnbindReply;
-        }
-        memberCardUnbindReply.SetSuccessReply();
-    	return memberCardUnbindReply;
 	}
 	//region 异步接收微信支付返回(会员卡注册充值不需要更新订单表，可以为空)
 	public void WxPayNotify() throws Exception{

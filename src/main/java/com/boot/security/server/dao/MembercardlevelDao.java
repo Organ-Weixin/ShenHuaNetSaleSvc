@@ -34,7 +34,7 @@ public interface MembercardlevelDao {
     int update(Membercardlevel membercardlevel);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into membercardlevel(CinemaCode, LevelCode, LevelName, CardCostFee, MemberFee, PictureUrl, Status) values(#{CinemaCode}, #{LevelCode}, #{LevelName}, #{CardCostFee}, #{MemberFee}, #{PictureUrl}, #{Status})")
+    @Insert("insert into membercardlevel(CinemaCode, LevelCode, LevelName, CardCostFee, MemberFee, Status) values(#{CinemaCode}, #{LevelCode}, #{LevelName}, #{CardCostFee}, #{MemberFee}, #{Status})")
     int save(Membercardlevel membercardlevel);
     
     int count(@Param("params") Map<String, Object> params);

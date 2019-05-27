@@ -9,7 +9,7 @@
 	<form class="form-horizontal" onsubmit="return false" id="form">
 		<fieldset>
 			<div class='form-group'>
-				<label class='col-md-2 control-label'>影院名称&nbsp;<font style="color:red;font-size:15px">*</font></label>
+				<label class='col-md-2 control-label'>影院名称</label>
 				<div class='col-md-10'>
 					<input type="hidden" id="cinemaName" name="cinemaName">
 					<select id="cinemaSelect" class="form-control input-sm" name="cinemaCode" data-bv-notempty='true' data-bv-notempty-message='请选择影院'>
@@ -24,7 +24,7 @@
 				</div>
 			</div>
 			<div class='form-group'>
-				<label class='col-md-2 control-label'>规则类型&nbsp;<font style="color:red;font-size:15px">*</font></label>
+				<label class='col-md-2 control-label'>规则类型</label>
 				<div class='col-md-10'>
 					<input type="hidden" name="ruleType" id="RuleType">
 					<input type="radio" value="1" name="ruleTypeRadio">&nbsp;开卡规则
@@ -32,7 +32,7 @@
 				</div>
 			</div>
 			<div class='form-group'>
-				<label class='col-md-2 control-label'>会员卡&nbsp;<font style="color:red;font-size:15px">*</font></label>
+				<label class='col-md-2 control-label'>会员卡</label>
 				<div class='col-md-10'>
 					<input type="hidden" id="LevelName" name="levelName">
 					<select id="LevelCode" class="form-control input-sm" name="levelCode" data-bv-notempty='true' data-bv-notempty-message='请选择会员卡'>
@@ -41,19 +41,13 @@
 				</div>
 			</div>
 			<div class='form-group'>
-				<label class='col-md-2 control-label'>充值金额(起充金额、售价)&nbsp;<font style="color:red;font-size:15px">*</font></label>
+				<label class='col-md-2 control-label'>充值金额(起充金额、售价)</label>
 				<div class='col-md-10'>
-					<input class='form-control' placeholder="会员卡开卡充值金额（会员卡固定开卡金额）" type='text' name='credit' id='Credit' data-bv-notempty='true' data-bv-notempty-message='充值金额不能为空'>
+					<input class='form-control' placeholder="会员卡开卡充值金额（会员卡固定开卡金额）" type='text' name='credit' id='Credit' data-bv-notempty='true' data-bv-notempty-message='Credit 不能为空'>
 				</div>
 			</div>
 			<div class='form-group'>
-				<label class='col-md-2 control-label'>赠送金额</label>
-				<div class='col-md-10'>
-					<input class='form-control' placeholder="赠送金额（不填默认为0）" type='text' name='givenAmount' id='GivenAmount'>
-				</div>
-			</div>
-			<div class='form-group'>
-				<label class='col-md-2 control-label'>有效时长</label>
+				<label class='col-md-2 control-label'>有效时长（天）</label>
 				<div class='col-md-10'>
 					<input class='form-control' placeholder="不填则默认为长期有效" type='text' name='effectiveDays' id='EffectiveDays'>
 				</div>
@@ -137,18 +131,7 @@
 	$("input:radio[name='ruleTypeRadio']").click(function(){
 		$("#RuleType").val($("input:radio[name='ruleTypeRadio']:checked").val());
 	});
-	$("#Credit").blur(function(){
-		var num = $(this).val();
-		if(!(/(^[1-9]\d*$)/.test(num))){
-			layer.msg("请输入正确的充值金额");
-		}
-	})
-	$("#GivenAmount").blur(function(){
-		var num = $(this).val();
-		if(!(/(^[1-9]\d*$)/.test(num))){
-			layer.msg("请输入正确的赠送金额");
-		}
-	})
+	
 	function getMemberCardLevel(cienmaCode){
 		$.ajax({
 			url:'/membercardlevels/getCanUseByCinemaCode?cinemacode='+cienmaCode,
