@@ -19,7 +19,7 @@ public class Couponsgroup {
 	private String TimePeriod;
 	private Integer LimitNum;
 	private Integer ReductionType;
-	private BigDecimal ReductionPrice;
+	private Double ReductionPrice;
 	private String FilmCodes;
 	private String GoodsCodes;
 	private Integer IsShare;
@@ -122,10 +122,10 @@ public class Couponsgroup {
 	public void setReductionType(Integer ReductionType) {
 		this.ReductionType = ReductionType;
 	}
-	public BigDecimal getReductionPrice() {
+	public Double getReductionPrice() {
 		return ReductionPrice;
 	}
-	public void setReductionPrice(BigDecimal ReductionPrice) {
+	public void setReductionPrice(Double ReductionPrice) {
 		this.ReductionPrice = ReductionPrice;
 	}
 	public String getFilmCodes() {

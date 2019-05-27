@@ -208,7 +208,7 @@ public class FilminfoController {
         	}
         	else
         	{
-        		Filminfo film=new Filminfo();
+        		/*Filminfo film=new Filminfo();
         		film.setFilmCode(" ");//影片编码不能为空，暂时传空格，手动更改
         		film.setFilmName(movie.getMovie_name());
         		film.setVersion(movie.getMovie_type());
@@ -223,7 +223,7 @@ public class FilminfoController {
         		film.setType(movie.getMovie_tags());
         		film.setStatus(0);
         		film.setImage(movie.getMovie_picture());
-        		_filmInfoService.save(film);
+        		_filmInfoService.save(film);*/
         	}
         }
         Map<String,Object> map2=new HashMap<>();

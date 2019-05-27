@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.boot.security.server.dao.CouponsDao;
+import com.boot.security.server.dao.CouponsgroupDao;
 import com.boot.security.server.model.Coupons;
+import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.service.CouponsService;
 
 @Service
@@ -17,6 +19,8 @@ public class CouponsServiceImpl implements CouponsService{
 	private static final Logger log = LoggerFactory.getLogger("adminLogger");
 	@Autowired
 	private CouponsDao couponsdao;
+	@Autowired
+	private CouponsgroupDao couponsgroupdao;
 	
 	@Override
 	public Coupons getByCouponsCode(String couponscode) {
@@ -55,4 +59,20 @@ public class CouponsServiceImpl implements CouponsService{
 		return couponsdao.getCanUseByGroupCode(groupcode);
 	}
 
+	@Override
+	public CouponsView getWithCouponsCode(String couponscode) {
+		// TODO Auto-generated method stub
+		CouponsView couponsview=new CouponsView();
+		couponsview.setCoupons(couponsdao.getByCouponsCode(couponscode));
+		couponsview.setCouponsgroup(couponsgroupdao.getByGroupCode(couponsview.getCoupons().getGroupCode()));
+		return couponsview;
+	}
+
+	@Override
+	public int update(CouponsView couponsview) {
+		// TODO Auto-generated method stub
+		couponsdao.update(couponsview.getCoupons());
+		couponsgroupdao.update(couponsview.getCouponsgroup());
+		return 1;//днЪБ
+	}
 }

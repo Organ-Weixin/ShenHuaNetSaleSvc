@@ -16,6 +16,9 @@ import com.boot.security.server.model.Priceplan;
 public interface PriceplanDao {
 	
 	int count(@Param("params") Map<String, Object> params);
+	
+	@Select("select * from priceplan where userid=#{userid} and CinemaCode=#{cinemacode} and (code =#{filmcode} or code=#{sessioncode})")
+	List<Priceplan> getByCode(@Param("userid") Long userid,@Param("cinemacode") String cinemacode,@Param("filmcode") String filmcode,@Param("sessioncode") String sessioncode);
 
     List<Priceplan> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
 

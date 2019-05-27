@@ -3,6 +3,7 @@ package com.boot.security.server.service;
 import java.util.List;
 
 import com.boot.security.server.model.Coupons;
+import com.boot.security.server.model.CouponsView;
 
 public interface CouponsService {
 	
@@ -16,7 +17,11 @@ public interface CouponsService {
 	
 	int update(Coupons coupons);
 	
+	int update(CouponsView couponsview);
+	
 	int deleteByGroupCode(String groupcode);
 
 	List<Coupons> getCanUseByGroupCode(String groupcode);
+	
+	CouponsView getWithCouponsCode(String couponscode);
 }
