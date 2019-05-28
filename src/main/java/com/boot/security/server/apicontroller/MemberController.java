@@ -1,8 +1,10 @@
 package com.boot.security.server.apicontroller;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -362,7 +364,7 @@ public class MemberController {
 	@GetMapping("/PrePayCardCharge/{Username}/{Password}/{CinemaCode}/{OpenID}/{ChargeAmount}")
 	@ApiOperation(value = "预支付会员卡充值(准备支付参数)")
 	public PrePayParametersReply PrePayCardCharge(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
-			@PathVariable String OpenID,@PathVariable String ChargeAmount){
+			@PathVariable String OpenID,@PathVariable String ChargeAmount) throws IOException{
 		PrePayParametersReply prePayParametersReply = new PrePayParametersReply();
 		//校验参数
 		if (!ReplyExtension.RequestInfoPrePayCardCharge(prePayParametersReply, Username, Password, CinemaCode, OpenID, ChargeAmount))
@@ -396,17 +398,18 @@ public class MemberController {
         	return prePayParametersReply;
         }
         //准备参数
+        Calendar cal=Calendar.getInstance();
         String WxpayAppId = cinemapaymentsettings.getWxpayAppId();
-        String strbody = cinemapaymentsettings.getCinemaName() + "-" + StringUtil.leftPad(String.valueOf(new Date().getMonth()+1), 2, "0")
-                + "月" + StringUtil.leftPad(String.valueOf(new Date().getDay()), 2, "0") + "日" + new SimpleDateFormat("HH:mm").format(new Date()) + " "
+        String strbody = cinemapaymentsettings.getCinemaName() + "-" + StringUtil.leftPad(String.valueOf(cal.get(Calendar.MONTH)+1), 2, "0")
+                + "月" + StringUtil.leftPad(String.valueOf(cal.get(Calendar.DATE)), 2, "0") + "日" + new SimpleDateFormat("HH:mm").format(new Date()) + " "
                 + " 会员卡充值（" + ChargeAmount + " 元）";
         String WxpayMchId = cinemapaymentsettings.getWxpayMchId();
         String WxpayKey = cinemapaymentsettings.getWxpayKey();
-        String notify_url = "https://xc.80piao.com:8443/Api/Member/WxPayNotify";
-        String out_trade_no = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + CinemaCode + ((Math.random()*9+1)*100000);//随机的六位数字
+        String notify_url = "https://xc.80piao.com:8443/Api/Member/WxPayNotify";//https://xc.80piao.com:8443/Api/Member/WxPayNotify
+        String out_trade_no = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + CinemaCode + (int)((Math.random()*9+1)*100000);//随机的六位数字
         String time_expire =new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(new Date() .getTime() + 900000));
         Double totalPrice = Double.valueOf(ChargeAmount);
-        String total_fee = String.valueOf(totalPrice * 100);//以分为单位
+        String total_fee = String.valueOf(Double.valueOf(totalPrice*100).intValue());//以分为单位
         return WxPayUtil.WxPayPrePay(request,prePayParametersReply, WxpayAppId, WxpayMchId, WxpayKey, strbody, notify_url, OpenID, out_trade_no, time_expire, total_fee);
 	}
 	//endregion
@@ -415,7 +418,7 @@ public class MemberController {
 	@GetMapping("/PrePayCardRegister/{Username}/{Password}/{CinemaCode}/{OpenID}/{InitialAmount}")
 	@ApiOperation(value = "预支付会员卡注册(准备支付参数)")
 	public PrePayParametersReply PrePayCardRegister(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
-			@PathVariable String OpenID,@PathVariable String InitialAmount){
+			@PathVariable String OpenID,@PathVariable String InitialAmount) throws IOException{
 		PrePayParametersReply prePayParametersReply = new PrePayParametersReply();
 		//校验参数
 		if (!ReplyExtension.RequestInfoPrePayCardRegister(prePayParametersReply, Username, Password, CinemaCode, OpenID, InitialAmount))
@@ -450,9 +453,10 @@ public class MemberController {
         	return prePayParametersReply;
         }
         //准备参数
+        Calendar cal=Calendar.getInstance();
         String WxpayAppId = cinemapaymentsettings.getWxpayAppId();
-        String strbody = cinemapaymentsettings.getCinemaName() + "-" + StringUtil.leftPad(String.valueOf(new Date().getMonth()+1), 2, "0")
-        + "月" + StringUtil.leftPad(String.valueOf(new Date().getDay()), 2, "0") + "日" + new SimpleDateFormat("HH:mm").format(new Date()) + " "
+        String strbody = cinemapaymentsettings.getCinemaName() + "-" + StringUtil.leftPad(String.valueOf(cal.get(Calendar.MONTH)+1), 2, "0")
+        + "月" + StringUtil.leftPad(String.valueOf(cal.get(Calendar.DATE)), 2, "0") + "日" + new SimpleDateFormat("HH:mm").format(new Date()) + " "
         + " 会员卡注册初始金额（" + InitialAmount + " 元）";
         String WxpayMchId = cinemapaymentsettings.getWxpayMchId();
         String WxpayKey = cinemapaymentsettings.getWxpayKey();
@@ -460,7 +464,7 @@ public class MemberController {
         String out_trade_no = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + CinemaCode + (int)((Math.random()*9+1)*100000);//随机的六位数字
         String time_expire =new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(new Date() .getTime() + 900000));
         Double totalPrice = Double.valueOf(InitialAmount);
-        String total_fee = String.valueOf(totalPrice * 100);//以分为单位
+        String total_fee = String.valueOf(Double.valueOf(totalPrice*100).intValue());//以分为单位
         return WxPayUtil.WxPayPrePay(request,prePayParametersReply, WxpayAppId, WxpayMchId, WxpayKey, strbody, notify_url, OpenID, out_trade_no, time_expire, total_fee);
 	}
 	//endregion
@@ -526,7 +530,9 @@ public class MemberController {
         queryMemberCardByOpenIDReply.SetSuccessReply();
 		return queryMemberCardByOpenIDReply;
 	}
+	//endregion
 	
+	//region 本地已启用会员卡类别及开卡规则
 	@GetMapping("/QueryMemberCardLevel/{Username}/{Password}/{CinemaCode}")
 	@ApiOperation(value = "本地已启用会员卡类别及开卡规则")
 	public QueryMemberCardLevelReply QueryMemberCardLevel(@PathVariable String Username,@PathVariable String Password,
@@ -584,6 +590,9 @@ public class MemberController {
         queryMemberCardLevelReply.SetSuccessReply();
 		return queryMemberCardLevelReply;
 	}
+	//endregion
+	
+	//region 会员卡类别充值规则
 	@GetMapping("/QueryMemberCardLevelRule/{Username}/{Password}/{CinemaCode}/{LevelCode}")
 	@ApiOperation(value = "会员卡类别充值规则")
 	public QueryMemberCardLevelRuleReply QueryMemberCardLevelRule(@PathVariable String Username,@PathVariable String Password,
@@ -682,6 +691,9 @@ public class MemberController {
 	public void WxPayNotify() throws Exception{
 		
 	}
+	//endregion
+	
+	//region
 	public static void main(String[] args) {
 		System.out.println(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "12345678" + (int)((Math.random()*9+1)*100000));
 	}

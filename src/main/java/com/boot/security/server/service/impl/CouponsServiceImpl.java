@@ -73,6 +73,6 @@ public class CouponsServiceImpl implements CouponsService{
 		// TODO Auto-generated method stub
 		couponsdao.update(couponsview.getCoupons());
 		couponsgroupdao.update(couponsview.getCouponsgroup());
-		return 1;//ÔÝÊ±
+		return 1;//æš‚æ—¶
 	}
 }

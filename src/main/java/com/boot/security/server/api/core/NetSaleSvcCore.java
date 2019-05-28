@@ -1966,6 +1966,11 @@ ScreenType,ListingPrice,LowestPrice))
 				goodsdetail.setGoodsCount(xmlgoods.get(0).getGoodsCount());
 			}
 		}
+		//把总金额更新到主表
+		orderBaseInfo.setTotalPrice(order.getOrderGoodsDetails().stream().mapToDouble(Goodsorderdetails::getStandardPrice).sum());
+		orderBaseInfo.setTotalSettlePrice(order.getOrderGoodsDetails().stream().mapToDouble(Goodsorderdetails::getSettlePrice).sum());
+		orderBaseInfo.setTotalFee(order.getOrderGoodsDetails().stream().mapToDouble(Goodsorderdetails::getChannelFee).sum());
+		
 		// TODO:满天星的订单属于会员卡支付的话暂时要求传入会员卡交易流水号
 		if (userCinema.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode()
 				&& order.getOrderBaseInfo().getOrderPayType()==OrderPayTypeEnum.MemberCardPay.getTypeCode() && order.getOrderBaseInfo().getPaySeqNo().isEmpty()) {

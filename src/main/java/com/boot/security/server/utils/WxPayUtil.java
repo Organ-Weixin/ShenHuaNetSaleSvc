@@ -1,6 +1,7 @@
 package com.boot.security.server.utils;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,9 +28,10 @@ public class WxPayUtil {
 	//region 准备支付参数
 	public static PrePayParametersReply WxPayPrePay(HttpServletRequest request, PrePayParametersReply reply,
 			String WxpayAppId, String WxpayMchId, String WxpayKey, String strbody, String NotifyUrl, String OpenId,
-			String TradeNo, String ExpireDate, String TotalFee) {
+			String TradeNo, String ExpireDate, String TotalFee) throws IOException {
 		String nonce_str = MD5Util.MD5Encode(String.valueOf(new Random().nextInt(1000)), "UTF-8");
-		Map<String, String> map = new HashMap<String, String>();
+		//System.out.println(StrUtil.getIpAddress(request));
+		Map<String, String> map = new TreeMap<String, String>();
 		map.put("appid", WxpayAppId);
 		map.put("body", strbody);// 商品信息
 		map.put("mch_id", WxpayMchId);
@@ -37,7 +39,7 @@ public class WxPayUtil {
 		map.put("notify_url", NotifyUrl);
 		map.put("openid", OpenId);
 		map.put("out_trade_no", TradeNo);// 商家交易号
-		map.put("spbill_create_ip", StrUtil.getIpAddress(request));
+		map.put("spbill_create_ip",StrUtil.getMyIP());//StrUtil.getIpAddress(request)
 		map.put("time_expire", ExpireDate);
 		map.put("total_fee", TotalFee);
 		map.put("trade_type", "JSAPI");
@@ -45,15 +47,18 @@ public class WxPayUtil {
 		map.put("sign", sign);
 		// 把参数组装成xml
 		String data = getXml(map);
+		System.out.println(data);
 		String UnifiedOrderUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 		String strPrepayXml = HttpHelper.sendPostByHttpUrlConnection(UnifiedOrderUrl, data, "UTF-8");
 		// 获取prepay_id
 		String strPrePayXml2 = strPrepayXml.replace("<![CDATA[", "").replace("]]>", "");
+		System.out.println("============="+strPrePayXml2);
 		Document document = XmlHelper.StringTOXml(strPrePayXml2);
-		String returncodeValue = XmlHelper.getNodeValue(document, "/xml/return_code");
-		String returnmsgValue = XmlHelper.getNodeValue(document, "/xml/return_msg");
+		String resultcodeValue = XmlHelper.getNodeValue(document, "/xml/result_code");
+		String errcodeValue=XmlHelper.getNodeValue(document, "/xml/err_code");
+		String errcodedesValue = XmlHelper.getNodeValue(document, "/xml/err_code_des");
 		String prepayidValue = XmlHelper.getNodeValue(document, "/xml/prepay_id");
-		if (returncodeValue.equals("SUCCESS")) {
+		if (resultcodeValue.equals("SUCCESS")) {
 			// 再定义一个map准备签名paysign
 			String timeStamp = String.valueOf(System.currentTimeMillis());
 			Map<String, String> map2 = new HashMap<String, String>();
@@ -72,8 +77,8 @@ public class WxPayUtil {
 			reply.SetSuccessReply();
 		} else {
 			reply.Status = "Failure";
-			reply.ErrorCode = returncodeValue;
-			reply.ErrorMessage = returnmsgValue;
+			reply.ErrorCode = errcodeValue;
+			reply.ErrorMessage = errcodedesValue;
 		}
 		return reply;
 	}
@@ -129,6 +134,7 @@ public class WxPayUtil {
 			sb.append(entry.getKey() + "=" + entry.getValue() + "&");
 		}
 		sb.append(key + "=" + value);
+		System.out.println(sb);
 		String sign = MD5Util.MD5Encode(sb.toString(), charset).toUpperCase();
 		return sign;
 	}

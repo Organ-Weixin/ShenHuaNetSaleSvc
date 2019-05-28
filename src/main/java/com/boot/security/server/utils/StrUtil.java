@@ -1,10 +1,23 @@
 package com.boot.security.server.utils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.UnknownHostException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.common.collect.Lists;
+
+import freemarker.template.utility.StringUtil;
 
 /**
  * 字符串转化工具类
@@ -53,25 +66,87 @@ public class StrUtil {
 
 		return buffer.toString();
 	}
+
+	/**
+	* 获取Ip地址，多级反向代理
+	* @param request
+	* @return
+	*/
+	public static String getIpAddress(HttpServletRequest request){
+			String ipAddress = request.getHeader("x-forwarded-for");  
+	        if(ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {  
+	            ipAddress = request.getHeader("Proxy-Client-IP");  
+	        }  
+	        if(ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {  
+	            ipAddress = request.getHeader("WL-Proxy-Client-IP");  
+	        }
+	        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {  
+	        	ipAddress = request.getHeader("HTTP_CLIENT_IP");  
+	        }  
+	        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {  
+	        	ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");  
+	        }
+	        if(ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {  
+	            ipAddress = request.getRemoteAddr();  
+	            if(ipAddress.equals("127.0.0.1") || ipAddress.equals("0:0:0:0:0:0:0:1")){  
+	                //根据网卡取本机配置的IP  
+	                InetAddress inet=null;  
+	                try {  
+	                    inet = InetAddress.getLocalHost();  
+	                } catch (UnknownHostException e) {  
+	                    e.printStackTrace();  
+	                }  
+	                ipAddress= inet.getHostAddress();  
+	            }  
+	        }  
+	        //对于通过多个代理的情况，第一个IP为客户端真实IP,多个IP按照','分割  
+	        if(ipAddress!=null && ipAddress.length()>15){ //"***.***.***.***".length() = 15  
+	            if(ipAddress.indexOf(",")>0){  
+	                ipAddress = ipAddress.substring(0,ipAddress.indexOf(","));  
+	            }  
+	        }  
+	        return ipAddress; 
+	}
 	
-	public static String getIpAddress(HttpServletRequest request) {  
-        String ip = request.getHeader("x-forwarded-for");  
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {  
-            ip = request.getHeader("Proxy-Client-IP");  
-        }  
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {  
-            ip = request.getHeader("WL-Proxy-Client-IP");  
-        }  
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {  
-            ip = request.getHeader("HTTP_CLIENT_IP");  
-        }  
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {  
-            ip = request.getHeader("HTTP_X_FORWARDED_FOR");  
-        }  
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {  
-            ip = request.getRemoteAddr();  
-        }  
-        return ip;  
+	/**
+	 * 取得外网ip
+	 * */
+	public static String getMyIP() throws IOException {
+        InputStream ins = null;
+        try {
+            String l = "http://2019.ip138.com/ic.asp";
+            URL url = new URL(l);
+            URLConnection con = url.openConnection();
+            ins = con.getInputStream();
+            InputStreamReader isReader = new InputStreamReader(ins, "gb2312");
+            BufferedReader bReader = new BufferedReader(isReader);
+            StringBuffer webContent = new StringBuffer();
+            String str = null;
+            while ((str = bReader.readLine()) != null) {
+                webContent.append(str);
+            }
+            //System.out.println(webContent);
+            int start = webContent.indexOf("[") + 1;
+            int end = webContent.indexOf("]");
+            return webContent.substring(start, end);
+        } finally {
+            if (ins != null) {
+                ins.close();
+            }
+        }
     }
+	
+	public static void main(String[] args) throws IOException {
+		//ip 61.130.73.126
+		Calendar cal=Calendar.getInstance(); 
+		int mi=cal.get(Calendar.MINUTE);    
+		//String day=String.valueOf(mi);
+	 	//String day=StringUtil.leftPad(String.valueOf(mi), 2, "0");
+	 	//System.out.println(day);
+		
+		String num= String.valueOf(Math.random()*9+1);
+		System.out.println(getMyIP());
+	}
+
 
 }

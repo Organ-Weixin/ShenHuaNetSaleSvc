@@ -356,7 +356,7 @@ public class OrderController {
 	//region 微信预支付订单（准备微信支付参数）
 	@RequestMapping(value="/PrePayOrder",method = RequestMethod.POST)
 	@ApiOperation(value = "预支付订单")
-	public PrePayParametersReply PrePayOrder(@RequestBody PrePayOrderQueryJson QueryJson) throws UnknownHostException{
+	public PrePayParametersReply PrePayOrder(@RequestBody PrePayOrderQueryJson QueryJson) throws IOException{
 		PrePayParametersReply prePayParametersReply=new PrePayParametersReply();
 		// 校验参数
 		if (!ReplyExtension.RequestInfoGuard(prePayParametersReply, QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getCinemaCode(), QueryJson.getOrderCode(),QueryJson.getSeats())) {
@@ -513,10 +513,12 @@ public class OrderController {
 		//更新订单
 		_orderService.Update(order);
 		// 准备支付参数
+		Calendar cal=Calendar.getInstance();
+		cal.setTime(order.getOrderBaseInfo().getSessionTime());
 		String WxpayAppId = cinemapaymentsettings.getWxpayAppId();
 		String strbody = cinemapaymentsettings.getCinemaName() + "-"
-				+ StringUtil.leftPad(String.valueOf(order.getOrderBaseInfo().getSessionTime().getMonth() + 1), 2, "0")
-				+ "月" + StringUtil.leftPad(String.valueOf(order.getOrderBaseInfo().getSessionTime().getDay()), 2, "0")
+				+ StringUtil.leftPad(String.valueOf(cal.get(Calendar.MONTH)+1), 2, "0")
+				+ "月" + StringUtil.leftPad(String.valueOf(cal.get(Calendar.DATE)), 2, "0")
 				+ "日" + new SimpleDateFormat("HH:mm").format(order.getOrderBaseInfo().getSessionTime()) + " "
 				+ order.getOrderBaseInfo().getFilmName() + " 电影票（" + order.getOrderBaseInfo().getTicketCount() + "张）";
 		String WxpayMchId = cinemapaymentsettings.getWxpayMchId();
@@ -528,7 +530,7 @@ public class OrderController {
 		String ExpireDate = new SimpleDateFormat("yyyyMMddHHmmss")
 				.format(order.getOrderBaseInfo().getAutoUnlockDatetime());
 		Double TotalPrice = order.getOrderBaseInfo().getTotalSalePrice();// 暂时的
-		String TotalFee = String.valueOf(TotalPrice * 100);// 商品金额，以分为单位
+		String TotalFee = String.valueOf(Double.valueOf(TotalPrice*100).intValue());// 商品金额，以分为单位
 		return WxPayUtil.WxPayPrePay(request, prePayParametersReply, WxpayAppId, WxpayMchId, WxpayKey, strbody,
 				NotifyUrl, OpenId, TradeNo, ExpireDate, TotalFee);
 	}
