@@ -9,7 +9,7 @@ public class Goodscomponents {
 	private String PackagePic;
 	private String GoodsCode;
 	private String GoodsName;
-	private Integer GoodsCount;
+	private String GoodsCount;
 	private Double GoodsStandardPrice;
 	private Double GoodsSettlePrice;
 	private Double PackageStandardPrice;
@@ -64,10 +64,10 @@ public class Goodscomponents {
 	public void setGoodsName(String goodsName) {
 		GoodsName = goodsName;
 	}
-	public Integer getGoodsCount() {
+	public String getGoodsCount() {
 		return GoodsCount;
 	}
-	public void setGoodsCount(Integer goodsCount) {
+	public void setGoodsCount(String goodsCount) {
 		GoodsCount = goodsCount;
 	}
 	public Double getGoodsStandardPrice() {

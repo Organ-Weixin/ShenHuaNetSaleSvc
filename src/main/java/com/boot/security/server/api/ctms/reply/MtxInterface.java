@@ -807,7 +807,7 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 								gcs.setPackageCode(getSPInfoBean.getSpno());
 								gcs.setGoodsCode(getSPInfoBean.getSpno());
 								gcs.setGoodsName(getSPInfoBean.getSpname());
-								gcs.setGoodsCount(Integer.valueOf(getSPInfoBean.getCount()));
+								gcs.setGoodsCount(getSPInfoBean.getCount());
 								gcs.setUnitName(getSPInfoBean.getUnitname());
 								if(_goodscomponentsService.getByGoodsCode(getSPInfoBean.getSpno())==null){
 									_goodscomponentsService.save(gcs);

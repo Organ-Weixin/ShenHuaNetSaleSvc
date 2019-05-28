@@ -171,8 +171,8 @@
 //               		           var href = "updateGoodscomponents.html?id=" + id;
 //                               var edit = buttonEdit(href, "", pers);
 //               		           var del = buttonDel(id, "", pers);
-               		           	var edit = "<button style='color:blue; background-color:transparent; border:0' onclick='updatePackage("+cinemaCode+","+packageCode+")'>编辑</button>&nbsp;&nbsp;&nbsp;";
-               		         	var del = "<button style='color:blue; background-color:transparent; border:0' onclick='delPackage("+cinemaCode+","+packageCode+")'>删除</button>";
+               		           	var edit = "<button style='color:blue; background-color:transparent; border:0' value="+cinemaCode+" title='"+packageCode+"' class='updatePackage'>编辑</button>&nbsp;&nbsp;&nbsp;";
+               		         	var del = "<button style='color:blue; background-color:transparent; border:0' value="+cinemaCode+" title='"+packageCode+"' class='delPackage'>删除</button>";
                                 return edit + del;
                  	            }		
 					},
@@ -186,12 +186,18 @@
 	    var layer = layui.layer;
 	});
 	
-	function updatePackage(cinemaCode,packageCode){
+	//编辑
+	$(document).on('click', '.updatePackage', function(){
+		var cinemaCode = $(this).val();
+		var packageCode = $(this).attr('title');
 		window.location.href='updateGoodscomponents.html?cinemaCode='+cinemaCode+'&packageCode='+packageCode;
-	}
+	});
 	
-	function delPackage(cinemaCode,packageCode){
-		alert(packageCode);
+	//删除
+	$(document).on('click', '.delPackage', function(){
+		var cinemaCode = $(this).val();
+		var packageCode = $(this).attr('title');
+		
 		layer.confirm('确定要删除吗？', {
 	        btn : [ '确定', '取消' ]
 	    }, function() {
@@ -206,7 +212,8 @@
 	        
 	        layer.close(1);
 	    });
-	}
+		
+	});
 	
 	//获取影院
 	getCinema();
