@@ -117,6 +117,16 @@ public class SessioninfoServiceImpl implements SessioninfoService{
 			String enddate) {
 		return sessioninfoDao.getByCinemaCodeAndFilmCodeAndTime(cinemacode, filmcode, startdate, enddate);
 	}
+
+	@Override
+	public List<Sessioninfo> getSessionDate(String cinemacode, String filmcode, String startdate, String enddate) {
+		return sessioninfoDao.getSessionDate(cinemacode, filmcode, startdate, enddate);
+	}
+
+	@Override
+	public List<Sessioninfo> getOneDaySession(String cinemacode, String filmcode, String sessiondate) {
+		return sessioninfoDao.getOneDaySession(cinemacode, filmcode, sessiondate);
+	}
 	
 	
 }

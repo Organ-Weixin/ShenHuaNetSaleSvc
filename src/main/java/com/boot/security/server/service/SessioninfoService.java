@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
 import com.boot.security.server.model.Sessioninfo;
 
 public interface SessioninfoService {
@@ -41,5 +39,9 @@ public interface SessioninfoService {
 	List<Sessioninfo> getByCinemaCodeAndFilmCode(String cinemacode,String filmcode);
 	
 	List<Sessioninfo> getByCinemaCodeAndFilmCodeAndTime(String cinemacode,String filmcode,String startdate,String enddate);
+	
+	List<Sessioninfo> getSessionDate(String cinemacode,String filmcode,String startdate,String enddate);
+	
+	List<Sessioninfo> getOneDaySession(String cinemacode,String filmcode,String sessiondate);
 
 }

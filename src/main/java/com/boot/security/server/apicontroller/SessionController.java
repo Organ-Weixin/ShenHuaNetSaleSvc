@@ -19,6 +19,11 @@ import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.Query
 import com.boot.security.server.apicontroller.reply.QueryOrderSessionReply;
 import com.boot.security.server.apicontroller.reply.QueryOrderSessionReply.QueryOrderSessionReplyOrderSession;
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions.QueryFilmSessionsReplyFilm.QueryFilmSessionsReplySession.QueryFilmSessionsReplySessionPrice;
+import com.boot.security.server.apicontroller.reply.QueryFimlSessionPriceReply.QueryFimlSessionPriceReplyFilm;
+import com.boot.security.server.apicontroller.reply.QueryFimlSessionPriceReply.QueryFimlSessionPriceReplyFilm.QueryFimlSessionPriceReplySessionDate;
+import com.boot.security.server.apicontroller.reply.QueryFimlSessionPriceReply.QueryFimlSessionPriceReplyFilm.QueryFimlSessionPriceReplySessionDate.QueryFimlSessionPriceReplySession;
+import com.boot.security.server.apicontroller.reply.QueryFimlSessionPriceReply.QueryFimlSessionPriceReplyFilm.QueryFimlSessionPriceReplySessionDate.QueryFimlSessionPriceReplySession.QueryFimlSessionPriceReplySessionPrice;
+import com.boot.security.server.apicontroller.reply.QueryFimlSessionPriceReply;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
@@ -204,5 +209,97 @@ public class SessionController {
 	@ApiOperation(value = "获取场次座位信息")
 	public QuerySessionSeatReply QuerySessionSeat(@PathVariable String UserName, @PathVariable String Password,@PathVariable String CinemaCode,@PathVariable String SessionCode,@PathVariable String Status){
 		return NetSaleSvcCore.getInstance().QuerySessionSeat(UserName, Password, CinemaCode, SessionCode, Status);
+	}
+	
+	@GetMapping("/QueryFimlSessionPrice/{UserName}/{Password}/{CinemaCode}/{FilmCode}/{StartDate}/{EndDate}")
+	@ApiOperation(value = "获取影片排期价格")
+	public QueryFimlSessionPriceReply QueryFimlSessionPrice(@PathVariable String UserName, @PathVariable String Password,@PathVariable String CinemaCode,
+			@PathVariable String FilmCode, @PathVariable String StartDate,@PathVariable String EndDate){
+		QueryFimlSessionPriceReply queryFimlSessionPriceReply = new QueryFimlSessionPriceReply();
+		// 校验参数
+		if (!ReplyExtension.RequestInfoGuard(queryFimlSessionPriceReply, UserName, Password, CinemaCode, FilmCode, StartDate, EndDate)) {
+			return queryFimlSessionPriceReply;
+		}
+		// 获取用户信息(渠道)
+		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
+		if (UserInfo == null) {
+			queryFimlSessionPriceReply.SetUserCredentialInvalidReply();
+			return queryFimlSessionPriceReply;
+		}
+		// 验证影院是否存在且可访问
+		Cinema cinema = _cinemaService.getByCinemaCode(CinemaCode);
+		if (cinema == null) {
+			queryFimlSessionPriceReply.SetCinemaInvalidReply();
+			return queryFimlSessionPriceReply;
+		}
+		QueryFimlSessionPriceReplyFilm data = new QueryFimlSessionPriceReplyFilm();
+		Filminfo filminfo = _filminfoService.getByFilmCode(FilmCode);
+		if(filminfo!=null){
+			data.setCinemaCode(CinemaCode);
+			data.setFilmCode(filminfo.getFilmCode());
+			data.setFilmName(filminfo.getFilmName());
+			data.setFilmType(filminfo.getType());
+			data.setCast(filminfo.getCast());
+			data.setDuration(filminfo.getDuration());
+			List<Sessioninfo> sessioninfoList = _sessionInfoService.getSessionDate(CinemaCode, FilmCode, StartDate, EndDate);
+			if(sessioninfoList.size()>0){
+				if(data.getDuration()==null||data.getDuration()==""){
+					if(sessioninfoList.get(0).getDuration()!=null){
+						data.setDuration(String.valueOf(sessioninfoList.get(0).getDuration()));
+					}
+				}
+				List<QueryFimlSessionPriceReplySessionDate> sessionDateReplyList = new ArrayList<QueryFimlSessionPriceReplySessionDate>();
+				for(Sessioninfo sessioninfo:sessioninfoList){
+					QueryFimlSessionPriceReplySessionDate sessionDateReply = new QueryFimlSessionPriceReplySessionDate();
+					sessionDateReply.setSessionDate(new SimpleDateFormat("yyyy-MM-dd").format(sessioninfo.getStartTime()));
+					sessionDateReplyList.add(sessionDateReply);
+					List<Sessioninfo> oneDateSessionList = _sessionInfoService.getOneDaySession(sessioninfo.getCCode(), sessioninfo.getFilmCode(), new SimpleDateFormat("yyyy-MM-dd").format(sessioninfo.getStartTime()));
+					List<QueryFimlSessionPriceReplySession> sessionReplyList = new ArrayList<QueryFimlSessionPriceReplySession>();
+					for(Sessioninfo oneDateSession:oneDateSessionList){
+						QueryFimlSessionPriceReplySession sessionReply = new QueryFimlSessionPriceReplySession();
+						sessionReply.setScreenCode(oneDateSession.getScreenCode());
+						sessionReply.setSessionCode(oneDateSession.getSCode());
+						Screeninfo screeninfo = _screeninfoService.getByScreenCode(oneDateSession.getCCode(), oneDateSession.getScreenCode());
+						if(screeninfo!=null){
+							sessionReply.setScreenName(screeninfo.getSName());
+						}
+						sessionReply.setLanguage(oneDateSession.getLanguage());
+						sessionReply.setSessionTime(new SimpleDateFormat("HH:mm").format(oneDateSession.getStartTime()));
+						if(data.getDuration()!=null&&data.getDuration()!=""&&oneDateSession.getStartTime()!=null){
+							String endtime = String.valueOf(oneDateSession.getStartTime().getTime()+Integer.valueOf(data.getDuration())*60*1000);
+							SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+							sessionReply.setEndTime(sdf.format(new Date(Long.parseLong(endtime))));
+						}
+						sessionReply.setSettlePrice(oneDateSession.getSettlePrice());
+						sessionReply.setStandardPrice(oneDateSession.getStandardPrice());
+						sessionReplyList.add(sessionReply);
+						List<Qmmprice> qmmpriceList = _qmmpriceService.getByCinemaCodeAndScreenName(oneDateSession.getCCode(), sessionReply.getScreenName(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(oneDateSession.getStartTime()));
+						List<QueryFimlSessionPriceReplySessionPrice> sessionPriceList = new ArrayList<QueryFimlSessionPriceReplySessionPrice>();
+						for(Qmmprice qmmprice:qmmpriceList){
+							QueryFimlSessionPriceReplySessionPrice sessionPrice = new QueryFimlSessionPriceReplySessionPrice();
+							if(qmmprice!=null){
+								sessionPrice.setTypeCode(qmmprice.getDataType());
+								sessionPrice.setTypeName(qmmprice.getDataName());
+								sessionPrice.setSettlePrice(qmmprice.getSettlePrice());
+								sessionPrice.setStandardPrice(qmmprice.getPrice());
+								sessionPriceList.add(sessionPrice);
+							}
+						}
+						sessionReply.setSessionPrice(sessionPriceList);
+						sessionDateReply.setSession(sessionReplyList);
+						data.setSessionDate(sessionDateReplyList);
+					}
+				}
+			}
+			queryFimlSessionPriceReply.setData(data);
+			queryFimlSessionPriceReply.SetSuccessReply();
+		}
+		return queryFimlSessionPriceReply;
+	}
+	public static void main(String[] args) {
+		String beginDate = String.valueOf(new Date().getTime()+420*60*1000);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String sd = sdf.format(new Date(Long.parseLong(beginDate)));
+		System.out.println(sd);
 	}
 }

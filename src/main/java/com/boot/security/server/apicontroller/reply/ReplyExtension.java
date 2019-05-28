@@ -929,6 +929,8 @@ public class ReplyExtension {
 			}
 			return true;
 		}
+		//endregion
+		
 		//region QueryMemberCardLevelReply
 		public static boolean RequestInfoGuard(QueryMemberCardLevelReply reply, String Username, String Password, String CinemaCode)
 	    {
@@ -949,6 +951,8 @@ public class ReplyExtension {
 	        }
 	        return true;
 	    }
+		//endregion
+		
 		//region QueryMemberCardLevelReply
 		public static boolean RequestInfoGuard(QueryMemberCardLevelRuleReply reply, String Username, String Password, String CinemaCode, String LevelCode)
 	    {
@@ -974,6 +978,8 @@ public class ReplyExtension {
 	        }
 	        return true;
 	    }
+		//endregion
+		
 		//region  查询用户看过的电影
 		public static boolean RequestInfoGuard(QueryMovieSeenReply reply,String Username,String Password,String CinemaCode,String OpenID){
 			if (Username==null || "".equals(Username)) {
@@ -994,6 +1000,8 @@ public class ReplyExtension {
 			}
 			return true;
 		}
+		//endregion
+		
 		//region QueryMemberCardLevelReply
 		public static boolean RequestInfoGuard(MemberCardUnbindReply reply, String Username, String Password, String CinemaCode, String CardNo, String CardPassword)
 	    {
@@ -1024,4 +1032,43 @@ public class ReplyExtension {
 	        }
 	        return true;
 	    }
+		//endregion
+		
+		//region QueryFimlSessionPriceReply
+		public static boolean RequestInfoGuard(QueryFimlSessionPriceReply reply, String Username, String Password, String CinemaCode, String FilmCode, String StartDate, String EndDate)
+	    {
+	        if (Username == null || "".equals(Username))
+	        {
+	            reply.SetNecessaryParamMissReply("Username");
+	            return false;
+	        }
+	        if (Password == null || "".equals(Password))
+	        {
+	            reply.SetNecessaryParamMissReply("Password");
+	            return false;
+	        }
+	        if (CinemaCode == null || "".equals(CinemaCode))
+	        {
+	            reply.SetNecessaryParamMissReply("CinemaCode");
+	            return false;
+	        }
+	        if (FilmCode == null || "".equals(FilmCode))
+	        {
+	            reply.SetNecessaryParamMissReply("FilmCode");
+	            return false;
+	        }
+	        if (StartDate == null || "".equals(StartDate))
+	        {
+	            reply.SetNecessaryParamMissReply("StartDate");
+	            return false;
+	        }
+	        if (EndDate == null || "".equals(EndDate))
+	        {
+	            reply.SetNecessaryParamMissReply("EndDate");
+	            return false;
+	        }
+	        return true;
+	    }
+		//endregion
+		
 }

@@ -215,14 +215,14 @@ public class Dy1905Interface implements ICTMSInterface {
 					filminfo = new Filminfo();
 					filminfo.setFilmCode(filmReply.getFilmCode());
 					filminfo.setFilmName(filmReply.getFilmName());
-					filminfo.setType(filmReply.getFilmType());
+					filminfo.setVersion(filmReply.getFilmType());
 					filminfo.setLanguage(filmReply.getLanguage());
 					filminfoService.save(filminfo);
 				}else{
 					filminfo = new Filminfo();
 					filminfo.setFilmCode(filmReply.getFilmCode());
 					filminfo.setFilmName(filmReply.getFilmName());
-					filminfo.setType(filmReply.getFilmType());
+					filminfo.setVersion(filmReply.getFilmType());
 					filminfo.setLanguage(filmReply.getLanguage());
 					filminfoService.update(filminfo);
 				}
