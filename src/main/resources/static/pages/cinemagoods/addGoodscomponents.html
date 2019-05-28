@@ -13,12 +13,6 @@
 			<input type="hidden" name="cinemaCode"  id="CinemaCode"/>
 			<input type="hidden" name="goodsCount"  id="GoodsCount"/>
 			<div class='form-group'>
-				<label class='col-md-2 control-label'>套餐编码：</label>
-				<div class='col-md-10'>
-					<input class='form-control' type='text' name='packageCode' id='PackageCode' data-bv-notempty='true' data-bv-notempty-message='套餐编码 不能为空'>
-				</div>
-			</div>
-			<div class='form-group'>
 				<label class='col-md-2 control-label'>套餐名称：</label>
 				<div class='col-md-10'>
 					<input class='form-control' type='text' name='packageName' id='PackageName' data-bv-notempty='true' data-bv-notempty-message='套餐名称 不能为空'>
@@ -143,17 +137,18 @@
 	                            </tbody>
 	                        </table>
 	                    </div>
-	                </div>
-	                <div class="form-actions">
-						<div class="row" align="center">
-							<div class="col-md-12">
-							    <button class="btn btn-primary" id="closePage" style="position: absolute;left:40%">关闭</button>
-								<button class="btn btn-primary" id="savePage"  style="position: absolute;left:50%">
-									<i class="fa fa-save"></i> 保存
-								</button>
+	                    <div class="form-actions">
+							<div class="row" align="center">
+								<div class="col-md-12">
+								    <button class="btn btn-primary" id="closePage" style="position: absolute;left:40%">关闭</button>
+									<button class="btn btn-primary" id="savePage"  style="position: absolute;left:50%">
+										<i class="fa fa-save"></i> 保存
+									</button>
+								</div>
 							</div>
 						</div>
-					</div>
+	                </div>
+	                
 	            </div>
        		</div>     	
 </div>
@@ -227,8 +222,14 @@
 		   return;
 	    }
 	    
+	    var counts = [];
+	    $("#selectedgoods>div").each(function(){
+	    	counts.push($(this).find("input[name='count']").val());
+        }); 
+	    $("#GoodsCode").val(JSON.stringify(json));
+	    $("#GoodsCount").val(counts);
 	    var formdata = $("#form").serializeObject();
-console.log(JSON.stringify(formdata));
+
 		$.ajax({
 			type : 'post',
 			url : '/goodscomponentss',
@@ -245,90 +246,108 @@ console.log(JSON.stringify(formdata));
 	//选择商品-弹窗
 	$("#getGoods").click(function(){
 		$("#chooseDiv").show();
-		var	example = 
-		    	$('#dt-table').DataTable({
-		        	"searching": false,
-		        	"processing": false,
-		        	"serverSide" : true,
-		        	"language": {
-		                "url": "/js/plugin/datatables/Chinese.lang"
-		            },
-		        	"ajax": {
-		        		"url" : "/goodss",
-		        		"type":"get",
-		        		"data":function(d){
-		    				d.CinemaCode = $("#CinemaCode").val();
-		    				d.GoodsName = $("#GoodsName").val();
-		    			}
-		        	},
-		        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
-		            "columns": [
-			        	{			"data" : null, 
-			            			"defaultContent" : "",
-									"render" : function(data, type, full, meta){
-										return meta.row + 1 + meta.settings._iDisplayStart;
-									}
-						},
-						{
-									"data" : "", 
-									"defaultContent" : "",
-									"render": function (data, type, row) {
-										var id = row['id'];
-										var goodsName = row['goodsName'];
-				                		var checkbox = "<input type='checkbox' name='checkbox' title="+id+" value="+goodsName+"/>";
-				                		
-				                        return checkbox;
-				                  	}
-						},
-						{
-									"data" : "goodsPic", 
-									"defaultContent" : "",
-									"render": function (data, type, row) {
-				                		var goodsPic = row['goodsPic'];
-				                      	var img = "<img class='goodsPic' style='width:40px;height: 40px;' src='"+goodsPic+"' title='"+goodsPic+"' >";
-				                      	
-				                        return img;
-				                  	}
-						},
-						{"data" : "goodsName", "defaultContent" : ""},
-						{"data" : "standardPrice", "defaultContent" : ""}, 
-						{"data" : "settlePrice", "defaultContent" : ""},
-						{"data" : "goodsDesc", "defaultContent" : ""},
-						{"data" : "showSeqNo", "defaultContent" : ""},
-		                
-		            ],
-		           "order": [[ 6, "asc" ]]
-		        });
+		
 	});
 	
 	$("#closePage").click(function(){
+		$("[name='checkbox']").prop("checked",false);//取消全选
 		$("#chooseDiv").hide();
 	});
 	
 	//选好商品保存
-	$("#savePage").click(function(){
-//		var vals = [];
+	var json=[];
+	$("#savePage").click(function(){	
 	    $('input[name="checkbox"]:checked').each(function(){
-//	    	vals.push($(this).val());
-	    	console.log($(this).attr("title"));
-	    	var div = "<div class='form-inline' id="+$(this).attr('title')+">"+
-	    				"<input class='form-control' value="+$(this).val()+"  style='width:150px;'>&nbsp;&nbsp;"+
-	    				"<input class='form-control' type='number' value='1' min='1' max='99' style='width:150px;'>"+
-	    				"<button style='width:150px;color:blue; background-color:transparent; border:0' onclick='delgoods("+$(this).attr('title')+")'>删除</button>"+
+	    	var div = "<div class='form-inline' name='goodsdiv' id="+$(this).attr('title')+">"+
+	    				"<input class='form-control' name='goodCode' code="+$(this).attr('code')+" value="+$(this).val()+"  style='width:200px;'>&nbsp;&nbsp;"+
+	    				"<input class='form-control' type='number' name='count' value='1' min='1' max='99' style='width:80px;'>"+
+	    				"<button style='width:150px;color:blue; background-color:transparent; border:0' onclick='delgoods(this)'>删除</button>"+
 	    				"</div><br/>";
-//			$("#selectedgoods").append(inputgoods);
-//			$("#selectedgoods").append(inputNum);
+
 			$("#selectedgoods").append(div);
+			json.push({
+				goodCode:$(this).attr('code'),
+				standardPrice:$(this).attr('staprice'),
+				settlePrice:$(this).attr('setprice'),
+				goodsName:$(this).val()
+   //             count:$("input[name='count']").val()
+            });
+			
         })
+        
 	    $("[name='checkbox']").prop("checked",false);//取消全选
 	    $("#chooseDiv").hide();
 	});
 	
 	//删除选好的商品
-	function delgoods(id){
-		console.log($(this).parent());
-		$(this).parent().remove();
+	function delgoods(Obj){
+		Obj.parentNode.parentNode.removeChild(Obj.parentNode);
+		
 	}
+	
+	
+	var	example;
+	showGoods();
+	function showGoods(){
+		example = 
+	    	$('#dt-table').DataTable({
+	        	"searching": false,
+	        	"processing": false,
+	        	"serverSide" : true,
+	        	"language": {
+	                "url": "/js/plugin/datatables/Chinese.lang"
+	            },
+	        	"ajax": {
+	        		"url" : "/goodss",
+	        		"type":"get",
+	        		"data":function(d){
+	    				d.CinemaCode = $("#CinemaCode").val();
+	    				d.GoodsName = $("#GoodsName").val();
+	    			}
+	        	},
+	        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
+	            "columns": [
+		        	{			"data" : null, 
+		            			"defaultContent" : "",
+								"render" : function(data, type, full, meta){
+									return meta.row + 1 + meta.settings._iDisplayStart;
+								}
+					},
+					{
+								"data" : "", 
+								"defaultContent" : "",
+								"render": function (data, type, row) {
+									var id = row['id'];
+									var goodsCode = row['goodsCode'];
+									var goodsName = row['goodsName'];
+									var staprice = row['standardPrice'];
+									var setprice = row['settlePrice'];
+			                		var checkbox = "<input type='checkbox' name='checkbox' title="+id+" code="+goodsCode+" value="+goodsName+" staprice="+staprice+" setprice="+setprice+" >";
+			                		
+			                        return checkbox;
+			                  	}
+					},
+					{
+								"data" : "goodsPic", 
+								"defaultContent" : "",
+								"render": function (data, type, row) {
+			                		var goodsPic = row['goodsPic'];
+			                      	var img = "<img class='goodsPic' style='width:40px;height: 40px;' src='"+goodsPic+"' title='"+goodsPic+"' >";
+			                      	
+			                        return img;
+			                  	}
+					},
+					{"data" : "goodsName", "defaultContent" : ""},
+					{"data" : "standardPrice", "defaultContent" : ""}, 
+					{"data" : "settlePrice", "defaultContent" : ""},
+					{"data" : "goodsDesc", "defaultContent" : ""},
+					{"data" : "showSeqNo", "defaultContent" : ""},
+	                
+	            ],
+	           "order": [[ 6, "asc" ]]
+	        });
+	}
+	
 	
 	$("#searchBt").click(function(){
 		example.ajax.reload();

@@ -23,6 +23,8 @@ import com.boot.security.server.model.Goodscomponents;
 import com.boot.security.server.model.SysUser;
 
 import io.swagger.annotations.ApiOperation;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 @RestController
 @RequestMapping("/goodscomponentss")
@@ -34,8 +36,21 @@ public class GoodscomponentsController {
     @PostMapping
     @ApiOperation(value = "保存")
     public Goodscomponents save(@RequestBody Goodscomponents goodscomponents) {
-        goodscomponentsDao.save(goodscomponents);
-
+    	String timestamp=String.valueOf(System.currentTimeMillis());
+    	String[] countlist = goodscomponents.getGoodsCount().split(",");
+    	
+    	JSONArray jsonArray = JSONArray.fromObject(goodscomponents.getGoodsCode());
+    	for(int i=0; i<jsonArray.size(); i++){
+    		JSONObject obj = JSONObject.fromObject(jsonArray.get(i));
+    		goodscomponents.setPackageCode(timestamp);
+    		goodscomponents.setGoodsCode(obj.get("goodCode").toString());
+    		goodscomponents.setGoodsName(obj.get("goodsName").toString());
+    		goodscomponents.setGoodsStandardPrice(Double.valueOf(obj.get("standardPrice").toString()));
+    		goodscomponents.setGoodsSettlePrice(Double.valueOf(obj.get("settlePrice").toString()));
+    		goodscomponents.setGoodsCount(countlist[i]);
+    		goodscomponentsDao.save(goodscomponents);
+    	}
+        
         return goodscomponents;
     }
 
@@ -54,7 +69,37 @@ public class GoodscomponentsController {
     @PutMapping
     @ApiOperation(value = "修改")
     public Goodscomponents update(@RequestBody Goodscomponents goodscomponents) {
-        goodscomponentsDao.update(goodscomponents);
+    	String cinemaCode = goodscomponents.getCinemaCode();
+    	String packageCode = goodscomponents.getPackageCode();
+    	String packageName = goodscomponents.getPackageName();
+    	String packagePic = goodscomponents.getPackagePic();
+    	Double packageStandardPrice = goodscomponents.getPackageStandardPrice();
+    	Double packageSettlePrice = goodscomponents.getPackageSettlePrice();
+    	String recommend = goodscomponents.getRecommendCode();
+    	Integer status = goodscomponents.getStatus();
+    	Integer sort = goodscomponents.getSort();
+    	
+    	goodscomponentsDao.deleteByPackageCode(cinemaCode, packageCode);
+    	JSONArray jsonArray = JSONArray.fromObject(goodscomponents.getGoodsCode());
+    	for(int i=0; i<jsonArray.size(); i++){
+    		JSONObject obj = JSONObject.fromObject(jsonArray.get(i));
+    		goodscomponents.setCinemaCode(cinemaCode);
+    		goodscomponents.setPackageCode(packageCode);
+    		goodscomponents.setPackageName(packageName);
+    		goodscomponents.setPackagePic(packagePic);
+    		goodscomponents.setGoodsCode(obj.get("goodCode").toString());
+    		goodscomponents.setGoodsName(obj.get("goodsName").toString());
+    		goodscomponents.setGoodsCount(obj.get("count").toString());
+    		goodscomponents.setGoodsStandardPrice(Double.valueOf(obj.get("standardPrice").toString()));
+    		goodscomponents.setGoodsSettlePrice(Double.valueOf(obj.get("settlePrice").toString()));
+    		goodscomponents.setPackageStandardPrice(packageStandardPrice);
+    		goodscomponents.setPackageSettlePrice(packageSettlePrice);
+    		goodscomponents.setRecommendCode(recommend);
+    		goodscomponents.setStatus(status);
+    		goodscomponents.setSort(sort);
+    		goodscomponentsDao.save(goodscomponents);
+    	}
+//        goodscomponentsDao.update(goodscomponents);
 
         return goodscomponents;
     }

@@ -10,6 +10,7 @@
 		<fieldset>
 			<input type="hidden" id="Id" name="id">
 			<input type="hidden" id="CinemaCode" name="cinemaCode">
+			<input type="hidden" id="PackageCode" name="packageCode">
 			<div class='form-group'>
 				<label class='col-md-2 control-label'>套餐名称：</label>
 				<div class='col-md-10'>
@@ -70,8 +71,9 @@
 				</div>
 			</div>
 			<div class='form-group'>
+				<input type="hidden" name="goodsCode"  id="GoodsCode"/>
 				<label class='col-md-2 control-label'>已选商品：</label>
-				<div class='col-md-10' id='Selectedgoods'>
+				<div class='col-md-10' id='selectedgoods'>
 					
 				</div>
 			</div>
@@ -92,9 +94,71 @@
 	</form>
 </div>
 
+<!--选择商品页面  -->
+<div id="chooseDiv" style="background-color:lightgray;width:100%;height:800px;z-index:99;position: relative; background: rgba(0, 0, 0, 0.5);display:none">
+          <div style="margin-left:10%;margin-top:10%;background-color:white;width:70%;height:300px; opacity:1;z-index: 999;position:absolute;">
+               	
+	        	<div>
+	                <header style="height: 100%">
+	                    <div align="left">
+		                    <table style="width: 100%">
+		                   		<tr>
+		                   			<td>
+			                   			<form class="form-inline" onsubmit="return false">
+											<div class="form-group">
+												<input id="GName" type="text" class="form-control" placeholder="商品名称">
+												<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>查询</button>
+											</div>
+										</form>
+		                   			</td>
+		                   		</tr> 
+		                    </table>
+						</div>
+	                </header>
+	                
+	                <div>
+	                    <div class="widget-body no-padding">
+	                        <table id="dt-table" class="table table-striped table-bordered table-hover" style="width:100%">
+	                            <thead>
+	                                <tr>
+	                                </tr>                       
+	                                <tr>
+										<th>#</th>
+										<th>选择</th>
+										<th>图片</th>
+										<th>商品名</th>
+										<th>零售价</th>
+										<th>结算价</th>
+										<th>商品描述</th>
+										<th>展示顺序</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                    <div class="form-actions">
+							<div class="row" align="center">
+								<div class="col-md-12">
+								    <button class="btn btn-primary" id="closePage" style="position: absolute;left:40%">关闭</button>
+									<button class="btn btn-primary" id="savePage"  style="position: absolute;left:50%">
+										<i class="fa fa-save"></i> 保存
+									</button>
+								</div>
+							</div>
+						</div>
+	                </div>
+	                
+	            </div>
+       		</div>     	
+</div>
+
 <script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
 <script type="text/javascript" src="../../js/jq.js"></script>
 <script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="../../js/my/permission.js"></script>
 <script type="text/javascript" src="../../js/common.js"></script>
 <script type="text/javascript" src="../../layui/layui.js"></script>
 <script type="text/javascript">
@@ -173,8 +237,14 @@
 							$('#Status').val(data[i].status);
 							$('#Sort').val(data[i].sort);
 							
-							var input = "<input type='text' class='selectGoods' id="+data[i].id+" value="+data[i].goodsName+" />";
-							$("#Selectedgoods").append(input);
+							var div = "<div class='form-inline' >"+
+		    				"<input class='form-control' name='goodCode' code="+data[i].goodsCode+" value="+data[i].goodsName+"  style='width:200px;'>&nbsp;&nbsp;"+
+		    				"<input class='form-control' type='number' name='count' value='1' min='1' max='99' style='width:80px;'>"+
+		    				"<input class='form-control' name='staprice'  value="+data[i].goodsStandardPrice+"  type='hidden'>"+
+		    				"<input class='form-control' name='setprice'  value="+data[i].goodsSettlePrice+"  type='hidden'>"+
+		    				"<button style='width:150px;color:blue; background-color:transparent; border:0' onclick='delgoods(this)'>删除</button>"+
+		    				"</div><br/>";
+							$("#selectedgoods").append(div);
 						}
 						
 					}
@@ -195,8 +265,19 @@
 			   return;
 		    }
 		    
+		    var codes = [];
+		    $("#selectedgoods>div").each(function(){
+		    	codes.push({
+					goodCode:$(this).find("input[name='goodCode']").attr('code'),
+					goodsName:$(this).find("input[name='goodCode']").val(),
+					standardPrice:$(this).find("input[name='staprice']").val(),
+					settlePrice:$(this).find("input[name='setprice']").val(),
+	             	count:$(this).find("input[name='count']").val()
+	            });
+	        });
+		    $('#GoodsCode').val(JSON.stringify(codes));
 		    var formdata = $("#form").serializeObject();
-
+console.log(JSON.stringify(formdata));
 			$.ajax({
 				type : 'put',
 				url : '/goodscomponentss',
@@ -209,6 +290,110 @@
 				}
 			});
 		}
+		
+		//选择商品-弹窗
+		$("#getGoods").click(function(){
+			$("#chooseDiv").show();
+			
+		});
+		
+		$("#closePage").click(function(){
+			$("[name='checkbox']").prop("checked",false);//取消全选
+			$("#chooseDiv").hide();
+		});
+		
+		//选好商品保存
+		$("#savePage").click(function(){	
+		    $('input[name="checkbox"]:checked').each(function(){
+		    	var div = "<div class='form-inline' name='goodsdiv' id="+$(this).attr('title')+">"+
+		    				"<input class='form-control' name='goodCode' code="+$(this).attr('code')+" value="+$(this).val()+"  style='width:200px;'>&nbsp;&nbsp;"+
+		    				"<input class='form-control' type='number' name='count' value='1' min='1' max='99' style='width:80px;'>"+
+		    				"<input class='form-control' name='staprice'  value="+$(this).attr('staprice')+"  type='hidden'>"+
+		    				"<input class='form-control' name='setprice'  value="+$(this).attr('setprice')+"  type='hidden'>"+
+		    				"<button style='width:150px;color:blue; background-color:transparent; border:0' onclick='delgoods(this)'>删除</button>"+
+		    				"</div><br/>";
+
+				$("#selectedgoods").append(div);
+				
+	        })
+	        
+		    $("[name='checkbox']").prop("checked",false);//取消全选
+		    $("#chooseDiv").hide();
+		});
+		
+		//删除选好的商品
+		function delgoods(Obj){
+			Obj.parentNode.parentNode.removeChild(Obj.parentNode);
+			
+		}
+		
+		
+		var	example;
+		showGoods();
+		function showGoods(){
+			example = 
+		    	$('#dt-table').DataTable({
+		        	"searching": false,
+		        	"processing": false,
+		        	"serverSide" : true,
+		        	"language": {
+		                "url": "/js/plugin/datatables/Chinese.lang"
+		            },
+		        	"ajax": {
+		        		"url" : "/goodss",
+		        		"type":"get",
+		        		"data":function(d){
+		    				d.CinemaCode = $("#CinemaCode").val();
+		    				d.GoodsName = $("#GName").val();
+		    			}
+		        	},
+		        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
+		            "columns": [
+			        	{			"data" : null, 
+			            			"defaultContent" : "",
+									"render" : function(data, type, full, meta){
+										return meta.row + 1 + meta.settings._iDisplayStart;
+									}
+						},
+						{
+									"data" : "", 
+									"defaultContent" : "",
+									"render": function (data, type, row) {
+										var id = row['id'];
+										var goodsCode = row['goodsCode'];
+										var goodsName = row['goodsName'];
+										var staprice = row['standardPrice'];
+										var setprice = row['settlePrice'];
+				                		var checkbox = "<input type='checkbox' name='checkbox' title="+id+" code="+goodsCode+" value="+goodsName+" staprice="+staprice+" setprice="+setprice+" >";
+				                		
+				                        return checkbox;
+				                  	}
+						},
+						{
+									"data" : "goodsPic", 
+									"defaultContent" : "",
+									"render": function (data, type, row) {
+				                		var goodsPic = row['goodsPic'];
+				                      	var img = "<img class='goodsPic' style='width:40px;height: 40px;' src='"+goodsPic+"' title='"+goodsPic+"' >";
+				                      	
+				                        return img;
+				                  	}
+						},
+						{"data" : "goodsName", "defaultContent" : ""},
+						{"data" : "standardPrice", "defaultContent" : ""}, 
+						{"data" : "settlePrice", "defaultContent" : ""},
+						{"data" : "goodsDesc", "defaultContent" : ""},
+						{"data" : "showSeqNo", "defaultContent" : ""},
+		                
+		            ],
+		           "order": [[ 6, "asc" ]]
+		        });
+		}
+		
+		
+		$("#searchBt").click(function(){
+			example.ajax.reload();
+		});
 		
 	</script>
 </body>
