@@ -30,4 +30,7 @@ public interface QmmpriceDao {
     //根据趣满满场次id查询
     @Select("select * from qmmprice t where t.showId = #{showId}")
     Qmmprice getByShowId(String showId);
+    
+    @Select("select * from qmmprice t where t.cinemacode = #{cinemacode} and t.screenName = #{screenname} and t.showtime = #{showtime}")
+    List<Qmmprice> getByCinemaCodeAndScreenName(@Param("cinemacode") String cinemacode,@Param("screenname") String screenname,@Param("showtime") String showtime);
 }

@@ -1,5 +1,7 @@
 package com.boot.security.server.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,11 @@ public class QmmpriceServiceImpl implements QmmpriceService {
 	@Override
 	public Qmmprice getByShowId(String showId) {
 		return qmmpricedao.getByShowId(showId);
+	}
+
+	@Override
+	public List<Qmmprice> getByCinemaCodeAndScreenName(String cinemacode, String screenname, String showtime) {
+		return qmmpricedao.getByCinemaCodeAndScreenName(cinemacode, screenname, showtime);
 	}
 
 }

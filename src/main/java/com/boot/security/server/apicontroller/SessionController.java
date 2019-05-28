@@ -18,14 +18,17 @@ import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.Query
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions.QueryFilmSessionsReplyFilm.QueryFilmSessionsReplySession;
 import com.boot.security.server.apicontroller.reply.QueryOrderSessionReply;
 import com.boot.security.server.apicontroller.reply.QueryOrderSessionReply.QueryOrderSessionReplyOrderSession;
+import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions.QueryFilmSessionsReplyFilm.QueryFilmSessionsReplySession.QueryFilmSessionsReplySessionPrice;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
+import com.boot.security.server.model.Qmmprice;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
+import com.boot.security.server.service.impl.QmmpriceServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
@@ -45,6 +48,8 @@ public class SessionController {
 	private FilminfoServiceImpl _filminfoService;
 	@Autowired
 	private ScreeninfoServiceImpl _screeninfoService;
+	@Autowired
+	private QmmpriceServiceImpl _qmmpriceService;
 	@GetMapping("/QueryFilmSessions/{UserName}/{Password}/{CinemaCode}/{StartDate}/{EndDate}")
 	@ApiOperation(value = "获取场次影片信息")
 	public QueryFilmSessionsReply QueryFilmSessions(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
@@ -112,21 +117,13 @@ public class SessionController {
 				for(Sessioninfo session :sessionList){
 					QueryFilmSessionsReplySession sessionReply = new QueryFilmSessionsReplySession();
 					sessionReply.setFeatureNo(session.getFeatureNo());
-					if(session.getListingPrice()!=null){
-						sessionReply.setListingPrice(String.valueOf(session.getListingPrice()));
-					}
-					if(session.getLowestPrice()!=null){
-						sessionReply.setLowestPrice(String.valueOf(session.getLowestPrice()));
-					}
+					sessionReply.setListingPrice(session.getListingPrice());
+					sessionReply.setLowestPrice(session.getLowestPrice());
 					sessionReply.setPlaythroughFlag(session.getPlaythroughFlag());
 					sessionReply.setScreenCode(session.getScreenCode());
-					if(session.getSequence()!=null){
-						sessionReply.setSequence(String.valueOf(session.getSequence()));
-					}
+					sessionReply.setSequence(session.getSequence());
 					sessionReply.setSessionCode(session.getSCode());
-					if(session.getStandardPrice()!=null){
-						sessionReply.setStandardPrice(String.valueOf(session.getStandardPrice()));
-					}
+					sessionReply.setStandardPrice(session.getStandardPrice());
 					if(session.getStartTime()!=null){
 						sessionReply.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(session.getStartTime()));
 					}
@@ -141,6 +138,19 @@ public class SessionController {
 					}else{
 						sessionReply.setIsToday(false);
 					}
+					List<Qmmprice> qmmpriceList = _qmmpriceService.getByCinemaCodeAndScreenName(session.getCCode(), sessionReply.getScreenName(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(session.getStartTime()));
+					List<QueryFilmSessionsReplySessionPrice> sessionPriceList = new ArrayList<QueryFilmSessionsReplySessionPrice>();
+					for(Qmmprice qmmprice:qmmpriceList){
+						QueryFilmSessionsReplySessionPrice sessionPrice = new QueryFilmSessionsReplySessionPrice();
+						if(qmmprice!=null){
+							sessionPrice.setTypeCode(qmmprice.getDataType());
+							sessionPrice.setTypeName(qmmprice.getDataName());
+							sessionPrice.setSettlePrice(qmmprice.getSettlePrice());
+							sessionPrice.setStandardPrice(qmmprice.getPrice());
+							sessionPriceList.add(sessionPrice);
+						}
+					}
+					sessionReply.setPrice(sessionPriceList);
 					sessionReplyList.add(sessionReply);
 				}
 				filmReply.setSession(sessionReplyList);
