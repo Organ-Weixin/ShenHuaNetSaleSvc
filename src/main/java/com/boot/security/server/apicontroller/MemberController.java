@@ -361,10 +361,10 @@ public class MemberController {
 	//endregion
 	
 	//region 预支付会员卡充值(准备支付参数)
-	@GetMapping("/PrePayCardCharge/{Username}/{Password}/{CinemaCode}/{OpenID}/{ChargeAmount}")
+	@GetMapping("/PrePayCardCharge/{Username}/{Password}/{CinemaCode}/{OpenID}/{RuleCode}/{ChargeAmount}")
 	@ApiOperation(value = "预支付会员卡充值(准备支付参数)")
 	public PrePayParametersReply PrePayCardCharge(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
-			@PathVariable String OpenID,@PathVariable String ChargeAmount) throws IOException{
+			@PathVariable String OpenID,@PathVariable String RuleCode,@PathVariable String ChargeAmount) throws IOException{
 		PrePayParametersReply prePayParametersReply = new PrePayParametersReply();
 		//校验参数
 		if (!ReplyExtension.RequestInfoPrePayCardCharge(prePayParametersReply, Username, Password, CinemaCode, OpenID, ChargeAmount))
@@ -397,6 +397,30 @@ public class MemberController {
         	prePayParametersReply.SetCinemaPaySettingInvalidReply();
         	return prePayParametersReply;
         }
+        if(RuleCode==null||RuleCode==""){
+        	prePayParametersReply.SetCardChargeTypeInvalidReply();
+			return prePayParametersReply;
+		}
+		Choosemembercardcreditrule choosemembercardcreditrule = _choosemembercardcreditruleService.getByRuleCode(CinemaCode, RuleCode);
+		if(choosemembercardcreditrule==null){
+			prePayParametersReply.SetCardChargeTypeInvalidReply();
+			return prePayParametersReply;
+		}
+		if(choosemembercardcreditrule.getRuleCode()==null){
+			prePayParametersReply.SetCardChargeTypeInvalidReply();
+			return prePayParametersReply;
+		}
+		Membercardcreditrule membercardcreditrule = _membercardcreditruleService.getByRuleCode(choosemembercardcreditrule.getRuleCode());
+		if(membercardcreditrule==null){
+			prePayParametersReply.SetCardChargeTypeInvalidReply();
+			return prePayParametersReply;
+		}
+		if(membercardcreditrule.getRuleCode()==null){
+			prePayParametersReply.SetCardChargeTypeInvalidReply();
+			return prePayParametersReply;
+		}
+		ChargeAmount = String.valueOf(membercardcreditrule.getCredit()+membercardcreditrule.getGivenAmount());
+        
         //准备参数
         Calendar cal=Calendar.getInstance();
         String WxpayAppId = cinemapaymentsettings.getWxpayAppId();
@@ -415,10 +439,10 @@ public class MemberController {
 	//endregion
 	
 	//region 预支付会员卡注册(准备支付参数)
-	@GetMapping("/PrePayCardRegister/{Username}/{Password}/{CinemaCode}/{OpenID}/{InitialAmount}")
+	@GetMapping("/PrePayCardRegister/{Username}/{Password}/{CinemaCode}/{OpenID}/{RuleCode}/{InitialAmount}")
 	@ApiOperation(value = "预支付会员卡注册(准备支付参数)")
 	public PrePayParametersReply PrePayCardRegister(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
-			@PathVariable String OpenID,@PathVariable String InitialAmount) throws IOException{
+			@PathVariable String OpenID,@PathVariable String RuleCode,@PathVariable String InitialAmount) throws IOException{
 		PrePayParametersReply prePayParametersReply = new PrePayParametersReply();
 		//校验参数
 		if (!ReplyExtension.RequestInfoPrePayCardRegister(prePayParametersReply, Username, Password, CinemaCode, OpenID, InitialAmount))
@@ -452,6 +476,30 @@ public class MemberController {
         	prePayParametersReply.SetCinemaPaySettingInvalidReply();
         	return prePayParametersReply;
         }
+        if(RuleCode==null||RuleCode==""){
+        	prePayParametersReply.SetCardChargeTypeInvalidReply();
+			return prePayParametersReply;
+		}
+		Choosemembercardcreditrule choosemembercardcreditrule = _choosemembercardcreditruleService.getByRuleCode(CinemaCode, RuleCode);
+		if(choosemembercardcreditrule==null){
+			prePayParametersReply.SetCardChargeTypeInvalidReply();
+			return prePayParametersReply;
+		}
+		if(choosemembercardcreditrule.getRuleCode()==null){
+			prePayParametersReply.SetCardChargeTypeInvalidReply();
+			return prePayParametersReply;
+		}
+		Membercardcreditrule membercardcreditrule = _membercardcreditruleService.getByRuleCode(choosemembercardcreditrule.getRuleCode());
+		if(membercardcreditrule==null){
+			prePayParametersReply.SetCardChargeTypeInvalidReply();
+			return prePayParametersReply;
+		}
+		if(membercardcreditrule.getRuleCode()==null){
+			prePayParametersReply.SetCardChargeTypeInvalidReply();
+			return prePayParametersReply;
+		}
+		InitialAmount = String.valueOf(membercardcreditrule.getCredit()+membercardcreditrule.getGivenAmount());
+        
         //准备参数
         Calendar cal=Calendar.getInstance();
         String WxpayAppId = cinemapaymentsettings.getWxpayAppId();
@@ -650,6 +698,9 @@ public class MemberController {
     	queryMemberCardLevelRuleReply.SetSuccessReply();
     	return queryMemberCardLevelRuleReply;
 	}
+	//endregion
+	
+	//region 会员卡解绑
 	@GetMapping("/MemberCardUnbind/{Username}/{Password}/{CinemaCode}/{CardNo}/{CardPassword}")
 	@ApiOperation(value = "会员卡解绑")
 	public MemberCardUnbindReply QueryMemberCardLevelRule(@PathVariable String Username,@PathVariable String Password,
@@ -687,6 +738,8 @@ public class MemberController {
         memberCardUnbindReply.SetSuccessReply();
     	return memberCardUnbindReply;
 	}
+	//endregion
+	
 	//region 异步接收微信支付返回(会员卡注册充值不需要更新订单表，可以为空)
 	public void WxPayNotify() throws Exception{
 		

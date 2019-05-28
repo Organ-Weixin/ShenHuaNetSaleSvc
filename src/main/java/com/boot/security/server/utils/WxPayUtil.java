@@ -25,7 +25,7 @@ import freemarker.template.utility.StringUtil;
 
 public class WxPayUtil {
 
-	//region 准备支付参数 
+	//region 准备支付参数
 	public static PrePayParametersReply WxPayPrePay(HttpServletRequest request, PrePayParametersReply reply,
 			String WxpayAppId, String WxpayMchId, String WxpayKey, String strbody, String NotifyUrl, String OpenId,
 			String TradeNo, String ExpireDate, String TotalFee) throws IOException {
