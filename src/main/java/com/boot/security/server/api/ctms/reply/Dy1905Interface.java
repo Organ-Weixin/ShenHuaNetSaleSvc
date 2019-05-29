@@ -272,13 +272,18 @@ public class Dy1905Interface implements ICTMSInterface {
 			if(dy1905Sessions.size()>0){
 				List<Sessioninfo> newSessions = new ArrayList<Sessioninfo>();
 				for (SessionBean cinemaplan : dy1905Sessions) {
-					Screeninfo screen = screeninfoService.getByScreenId(userCinema.getCinemaCode(), cinemaplan.getScreenNo());
-					Sessioninfo session = new Sessioninfo();// 先创建实例
-					Dy1905ModelMapper.MaptoEntity(cinemaplan,session);
-					session.setScreenCode(screen.getSCode());
-					session.setCCode(userCinema.getCinemaCode());
-					session.setUserID(userCinema.getUserId());
-					newSessions.add(session);
+					System.out.println("接口返回时间"+(cinemaplan.getSessionDate().getTime()+cinemaplan.getStartTime().getTime()));
+					System.out.println("开始时间"+StartDate.getTime());
+					System.out.println("结束时间"+EndDate.getTime());
+					if((cinemaplan.getSessionDate().getTime()+cinemaplan.getStartTime().getTime())>=StartDate.getTime()&&(cinemaplan.getSessionDate().getTime()+cinemaplan.getStartTime().getTime())<=(EndDate.getTime()+24*60*60*1000)){
+						Screeninfo screen = screeninfoService.getByScreenId(userCinema.getCinemaCode(), cinemaplan.getScreenNo());
+						Sessioninfo session = new Sessioninfo();// 先创建实例
+						Dy1905ModelMapper.MaptoEntity(cinemaplan,session);
+						session.setScreenCode(screen.getSCode());
+						session.setCCode(userCinema.getCinemaCode());
+						session.setUserID(userCinema.getUserId());
+						newSessions.add(session);
+					}
 				}
 			//删除旧的放映信息
 			Map<String,Object> params = new HashMap<String,Object>();
@@ -288,7 +293,9 @@ public class Dy1905Interface implements ICTMSInterface {
 				params.put("StartTime", new SimpleDateFormat("yyyy-MM-dd").format(StartDate));
 			}
 			if(EndDate!=null){
-				params.put("EndTime", new SimpleDateFormat("yyyy-MM-dd").format(EndDate));
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				String sd = sdf.format(new Date(Long.parseLong(String.valueOf(EndDate.getTime()+24*60*60*1000))));
+				params.put("EndTime", new SimpleDateFormat("yyyy-MM-dd").format(new SimpleDateFormat("yyyy-MM-dd").parse(sd)));
 			}
 			sessioninfoService.deleteByCinemaCode(params);
 			//添加新的放映信息

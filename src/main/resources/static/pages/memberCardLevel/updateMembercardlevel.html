@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<input type="hidden" id="Id" name="id">
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院编码</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='cinemaCode' id='CinemaCode' data-bv-notempty='true' data-bv-notempty-message='CinemaCode 不能为空' readonly="readonly">
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>会员卡等级编码</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='levelCode' id='LevelCode' data-bv-notempty='true' data-bv-notempty-message='LevelCode 不能为空' readonly="readonly">
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>会员卡等级名称</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='levelName' id='LevelName' data-bv-notempty='true' data-bv-notempty-message='LevelName 不能为空' readonly="readonly">
+				</div>
+			</div>
+			<div class="form-group">
+				 <input type="hidden" name="prictureUrl"  id="Image"/>
+				 <label class="col-md-2 control-label">会员卡图片</label>
+				 <div class="col-md-10">
+					<div class="layui-upload-drag" id="filmImage"></div>
+					<img class="layui-upload-img headImage" src="http://t.cn/RCzsdCq" id="preview" width="118" height="118">
+					<p id="resultMsg"></p>
+				 </div>
+			</div>
+
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="location.href='membercardlevelList.html'">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="update()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use([ "jquery", "upload", "form", "layer", "element" ],function() {
+			var $ = layui.$, element = layui.element, layer = layui.layer, upload = layui.upload, form = layui.form;
+			//拖拽上传
+			var uploadInst = upload.render({
+					elem : '#filmImage',
+					url : '/filminfos/upload/filmImage',
+					size : 500,
+					exts: 'jpg|png|gif|bmp|jpeg',
+					before : function(obj) {
+						//预读本地文件示例，不支持ie8
+						obj.preview(function(index,file, result) {
+							$('#preview').attr('src',result); //图片链接（base64）
+						});
+					},
+					done : function(res) {
+						//如果上传失败
+						if (res.code > 0) {
+							return layer.msg('上传失败');
+						}
+						//上传成功
+						//打印后台传回的地址: 把地址放入一个隐藏的input中, 和表单一起提交到后台, 此处略..
+						console.log(res.data.src);
+						$("#Image").val(res.data.src);//将地址存储好
+						window.parent.uploadHeadImage(res.data.src);
+						var resultMsg = $('#resultMsg');
+						resultMsg.html('<span style="color: #8f8f8f;">上传成功!!!</span>');
+					},
+					error : function() {
+						//演示失败状态，并实现重传
+						var resultMsg = $('#resultMsg');
+						resultMsg
+								.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
+						resultMsg.find('.demo-reload').on(
+								'click', function() {
+									uploadInst.upload();
+								});
+					}
+				});
+			element.init();
+		});
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		});
+		
+		initData();
+		
+		function initData(){
+			var id = getUrlParam("id");
+			if(id != ""){
+				$.ajax({
+					type : 'get',
+					url : '/membercardlevels/'+id,
+					async : false,
+					success : function(data) {
+						$('#Id').val(data.id);
+						$('#CinemaCode').val(data.cinemaCode);
+						$('#LevelCode').val(data.levelCode);
+						$('#LevelName').val(data.levelName);
+						$("#Image").val(data.prictureUrl);
+						$("#preview").prop("src",data.prictureUrl);
+					}
+				});
+			}
+		}
+
+		function update() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var formdata = $("#form").serializeObject();
+
+			$.ajax({
+				type : 'put',
+				url : '/membercardlevels',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("修改成功", {shift: -1, time: 1000}, function(){
+                        location.href = "membercardlevelList.html";
+                    });
+				}
+			});
+		}
+		
+	</script>
+</body>
+</html>

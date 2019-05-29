@@ -93,9 +93,9 @@ public class Dy1905ModelMapper {
     	entity.setGoodsCode(model.getSerial());
     	entity.setGoodsName(model.getName());
     	if(model.getPrice()!=null){
-    		entity.setStandardPrice((Double.valueOf(model.getPrice())));
+    		entity.setStandardPrice(Double.valueOf(model.getPrice()));
+    		entity.setSettlePrice(Double.valueOf(model.getPrice()));
     	}
-    	entity.setSettlePrice(0.00);
     	entity.setGoodsPic(model.getImage());
     	entity.setStockCount(model.getStockCount() ==null?0 : Integer.valueOf(model.getStockCount()));
     	entity.setGoodsDesc(model.getDetail());
