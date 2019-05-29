@@ -789,37 +789,44 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 					if (getSPInfosBean.getSellprice() != null) {
 						goo.setSettlePrice(Double.valueOf(getSPInfosBean.getSellprice()));
 					}
-//					goo.setGoodsPic(userCinema.getUrl());
-					goo.setStockCount(100);//给定100
-					goo.setGoodsDesc(getSPInfosBean.getSpname());
-					goo.setShowSeqNo(0);//默认0
-					goo.setUnitName(getSPInfosBean.getUnitname());
-					goo.setIsDiscount(0);//默认0
-					goo.setGoodsStatus(0);//默认0
-					goo.setIsRecommand(0);//默认0
+					//goo.setGoodsPic();//没有卖品图片
+					goo.setStockCount(999);//库存给定100
+					goo.setGoodsDesc(getSPInfosBean.getInfo());//卖品描述
+					goo.setShowSeqNo(0);//展示顺序 默认0
+					goo.setUnitName(getSPInfosBean.getUnitname());//卖品单位
+					goo.setIsDiscount(0);//是否享受会员卡优惠，1是；0 否 默认0
+					goo.setGoodsStatus(0);//卖品状态 
+					goo.setIsRecommand(0);//是否推荐  默认0
+					goo.setUpdated(new Date());//更新时间
 					if (getSPInfosBean.getComponents() != null && getSPInfosBean.getComponents().size() > 0) {
 //						System.err.println("获取到套餐，套餐:"+getSPInfosBean.getComponents());
-						goo.setIsPackage(1);
-				///////////
+						goo.setIsPackage(1);//是否套餐，1套餐
 							List<GetSPInfosBean.GetSPInfoBean> getSPInfoBeans=getSPInfosBean.getComponents();
 							for(GetSPInfoBean getSPInfoBean:getSPInfoBeans){
 								Goodscomponents gcs=new Goodscomponents();
-								gcs.setPackageCode(getSPInfoBean.getSpno());
+								gcs.setCinemaCode(userCinema.getCinemaCode());
+								gcs.setPackageCode(getSPInfosBean.getSpno());
+								gcs.setPackageName(getSPInfosBean.getSpname());
 								gcs.setGoodsCode(getSPInfoBean.getSpno());
 								gcs.setGoodsName(getSPInfoBean.getSpname());
 								gcs.setGoodsCount(getSPInfoBean.getCount());
+								if(getSPInfosBean.getSellprice()!=null){
+								gcs.setGoodsStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));
+								}
+								if(getSPInfosBean.getSellprice()!=null){
+								gcs.setPackageSettlePrice(Double.valueOf(getSPInfosBean.getSellprice())*Double.valueOf(getSPInfoBean.getCount()));
+								}
+								gcs.setStatus(1);
 								gcs.setUnitName(getSPInfoBean.getUnitname());
 								if(_goodscomponentsService.getByGoodsCode(getSPInfoBean.getSpno())==null){
 									_goodscomponentsService.save(gcs);
-//									System.out.println("插入套餐信息++++++：");
 								}else{
 									_goodscomponentsService.update(gcs);
-//									System.out.println("更新套餐信息============");
 								}
 							}
 
 					} else {
-						goo.setIsPackage(0);
+						goo.setIsPackage(0);//是否套餐，0非套餐
 					}
 					if (_goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(),
 							getSPInfosBean.getSpno()) == null) {
