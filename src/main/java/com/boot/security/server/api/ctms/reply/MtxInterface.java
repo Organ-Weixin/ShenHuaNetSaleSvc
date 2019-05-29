@@ -509,13 +509,21 @@ public class MtxInterface implements ICTMSInterface {
 		CTMSCardRegisterReply reply = new CTMSCardRegisterReply();
 		MtxRegisterCardResult mtxReply = mtxCardService.RegisterCard(userCinema, CardPassword, LevelCode, InitialAmount,
 				CardUserName, MobilePhone, IDNumber, Sex);
-//		System.out.println("带卡号的会员卡开户接口返回：" + new Gson().toJson(mtxReply));
+		System.out.println("带卡号的会员卡开户接口返回：" + new Gson().toJson(mtxReply));
 		if ("0".equals(mtxReply.getRegisterMemberReturn().getResultCode())) {
+			Membercard mem=new Membercard();
+			mem.setCinemaCode(userCinema.getCinemaCode());
+			mem.setCardPassword(CardPassword);
+			mem.setMobilePhone(MobilePhone);
+			mem.setLevelCode(LevelCode);
+			//mem.setBalance(Double.valueOf(InitialAmount));
+			mem.setUserName(CardUserName);
+			mem.setSex(Sex);
+			mem.setCreditNum(IDNumber);
+			mem.setCreateTime(new Date());
+			_memberCardService.Save(mem);
 			reply.setCardNo(mtxReply.getRegisterMemberReturn().getAccountNo());
 			reply.setBalance(Float.valueOf(InitialAmount));
-			Date newDate = new Date();
-			String lifeDate = "2030-02-02";
-			reply.setExpireDate(new SimpleDateFormat("yyyy-mm-dd").parse(lifeDate));
 			reply.setCreateTime(new Date());
 			reply.Status = StatusEnum.Success;
 		} else {
@@ -532,14 +540,14 @@ public class MtxInterface implements ICTMSInterface {
 			throws Exception {
 		CTMSLoginCardReply reply = new CTMSLoginCardReply();
 		MtxLoginCardResult mtxReply = mtxCardService.LoginCard(userCinema, CardNo, CardPassword);
-//		System.out.println("会员卡登录接口返回：" + new Gson().toJson(mtxReply));
+		System.out.println("会员卡登录接口返回：" + new Gson().toJson(mtxReply));
 		if ("0".equals(mtxReply.getLoginCardReturn().getResultCode())) {
 			// 添加会员卡信息
 			Membercard memcard = _memberCardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
 			if (memcard == null) {
 				Membercard mem = new Membercard();
 				mem.setCinemaCode(userCinema.getCinemaCode());
-				mem.setCardNo(CardNo);
+				mem.setCardNo(mtxReply.getLoginCardReturn().getCardId());
 				mem.setCardPassword(CardPassword);
 				mem.setMobilePhone(mtxReply.getLoginCardReturn().getPhoneNumber());
 				mem.setLevelCode(mtxReply.getLoginCardReturn().getAccLevelCode());
@@ -549,13 +557,16 @@ public class MtxInterface implements ICTMSInterface {
 				mem.setUserName(mtxReply.getLoginCardReturn().getMemberName());
 				mem.setSex(mtxReply.getLoginCardReturn().getSex());
 				mem.setCreditNum(mtxReply.getLoginCardReturn().getIdNnumber());
+				mem.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse(mtxReply.getLoginCardReturn().getBirthday()));
 				mem.setExpireDate(
 						new SimpleDateFormat("yyyy-MM-dd").parse(mtxReply.getLoginCardReturn().getExpirationTime()));
 				mem.setCreateTime(new Date());
-
 				mem.setStatus(Integer.valueOf(mtxReply.getLoginCardReturn().getAccStatus()));
 				// 插入保存
 				_memberCardService.Save(mem);
+			}else{
+				memcard.setUpdated(new Date());
+				_memberCardService.Update(memcard);
 			}
 			reply.Status = StatusEnum.Success;
 		} else {
@@ -750,12 +761,12 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 				mem.setLevelCode(memberTypeBean.getMemberType());
 				mem.setCinemaCode(userCinema.getCinemaCode());
 				membercardlevel.add(mem);
-			}
-			// 删除旧的会员卡等级
-			_memberCardLevelService.deleteByCinemaCode(userCinema.getCinemaCode());
-			// 插入或更新最新会员卡等级
-			for (Membercardlevel memlevel : membercardlevel) {
-				_memberCardLevelService.Save(memlevel);
+				if(membercardlevel==null){
+					mem.setStatus(0);
+					_memberCardLevelService.Save(mem);
+				}else{
+					_memberCardLevelService.update(mem);
+				}
 			}
 			reply.Status = StatusEnum.Success;
 		} else {
