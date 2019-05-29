@@ -36,6 +36,8 @@ public class Goodsorders extends BaseEntity<Long> {
 	private String CardPassword;
 	private String ErrorMessage;
 	private String OpenID;
+	private String CouponsCode;
+	private Double CouponsPrice;
 
 	public Long getId() {
 		return Id;
@@ -228,6 +230,18 @@ public class Goodsorders extends BaseEntity<Long> {
 	}
 	public void setOpenID(String openID) {
 		OpenID = openID;
+	}
+	public String getCouponsCode() {
+		return CouponsCode;
+	}
+	public void setCouponsCode(String couponsCode) {
+		CouponsCode = couponsCode;
+	}
+	public Double getCouponsPrice() {
+		return CouponsPrice;
+	}
+	public void setCouponsPrice(Double couponsPrice) {
+		CouponsPrice = couponsPrice;
 	}
 	
 

@@ -10,6 +10,7 @@ import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.Goodsorders;
 
 public interface GoodsOrderService {
+	Goodsorders getById(Long Id);
 	@Transactional(propagation = Propagation.REQUIRED)
 	int Insert(GoodsOrderView orderview);
 	@Transactional(propagation = Propagation.REQUIRED)

@@ -41,7 +41,7 @@ public class WxPayUtil {
 		map.put("out_trade_no", TradeNo);// 商家交易号
 		map.put("spbill_create_ip",StrUtil.getMyIP());//StrUtil.getIpAddress(request)
 		map.put("time_expire", ExpireDate);
-		map.put("total_fee", TotalFee);
+		map.put("total_fee", "1");//TotalFee
 		map.put("trade_type", "JSAPI");
 		String sign = getSign(map, "key", WxpayKey, "UTF-8");
 		map.put("sign", sign);
@@ -61,7 +61,7 @@ public class WxPayUtil {
 		if (resultcodeValue.equals("SUCCESS")) {
 			// 再定义一个map准备签名paysign
 			String timeStamp = String.valueOf(System.currentTimeMillis());
-			Map<String, String> map2 = new HashMap<String, String>();
+			Map<String, String> map2 = new TreeMap<String, String>();
 			map2.put("appId", WxpayAppId);
 			map2.put("timeStamp", timeStamp);
 			map2.put("nonceStr", nonce_str);

@@ -3,6 +3,7 @@ package com.boot.security.server.apicontroller.reply;
 import java.util.List;
 
 import com.boot.security.server.api.ctms.reply.Dy1905GetMemberCardByMobileReply;
+import com.boot.security.server.apicontroller.reply.PrePayGoodsOrderQueryJson.PrePayGoodsOrderQueryJsonGoods;
 import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson.PrePayOrderQueryJsonSeat;
 
 public class ReplyExtension {
@@ -1071,4 +1072,30 @@ public class ReplyExtension {
 	    }
 		//endregion
 		
+		//region PrePayParametersReply
+		public static boolean RequestInfoGuard2(PrePayParametersReply reply, String Username, String Password,
+				String CinemaCode, String OrderCode,List<PrePayGoodsOrderQueryJsonGoods> GoodsList) {
+			if (Username == null || "".equals(Username)) {
+				reply.SetNecessaryParamMissReply("Username");
+				return false;
+			}
+			if (Password == null || "".equals(Password)) {
+				reply.SetNecessaryParamMissReply("Password");
+				return false;
+			}
+			if (CinemaCode == null || "".equals(CinemaCode)) {
+				reply.SetNecessaryParamMissReply("CinemaCode");
+				return false;
+			}
+			if (OrderCode == null || "".equals(OrderCode)) {
+				reply.SetNecessaryParamMissReply("OrderCode");
+				return false;
+			}
+			if (GoodsList.size() <= 0) {
+				reply.SetNecessaryParamMissReply("GoodsList");
+				return false;
+			}
+			return true;
+		}
+		//endregion
 }

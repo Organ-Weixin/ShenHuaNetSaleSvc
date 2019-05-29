@@ -83,4 +83,9 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
 	public List<Goodsorders> getByCinemaCodeAndOpenID(String cinemacode, String openid) {
 		return ordersDao.getByCinemaCodeAndOpenID(cinemacode, openid);
 	}
+	@Override
+	public Goodsorders getById(Long Id) {
+		// TODO Auto-generated method stub
+		return ordersDao.getById(Id);
+	}
 }

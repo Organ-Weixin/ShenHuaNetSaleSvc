@@ -768,6 +768,21 @@ public class CxInterface implements ICTMSInterface {
 		CxPhoneNumRegResult cxReply=cxService.PhoneNumReg(userCinema, CardPassword, LevelCode, InitialAmount, CardUserName, MobilePhone, IDNumber, Sex);
 		if (cxReply.getPhoneNumRegResult().getResultCode().equals("0"))
         {
+			Membercard membercard = new Membercard();
+			membercard.setCinemaCode(userCinema.getCinemaCode());
+			membercard.setCardNo(MobilePhone);//辰星系统卡号就是手机号
+			membercard.setCardPassword(CardPassword);
+			membercard.setMobilePhone(MobilePhone);
+			membercard.setLevelCode(LevelCode);
+			Membercardlevel membercardlevel = _membercardlevelService.getByCinemaCodeAndLevelCode(userCinema.getCinemaCode(), LevelCode);
+			membercard.setLevelName(membercardlevel.getLevelName());
+			membercard.setUserName(CardUserName);
+			membercard.setSex(Sex);
+			membercard.setCreditNum(IDNumber);
+			membercard.setCreateTime(new Date());
+			membercard.setStatus(0);
+			_membercardService.Save(membercard);
+			
             reply.Status = StatusEnum.Success;
         }
         else

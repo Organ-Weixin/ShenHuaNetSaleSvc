@@ -1878,6 +1878,7 @@ ScreenType,ListingPrice,LowestPrice))
 		}
 		order.setOrderGoodsDetails(goodsDetails);
 		order.getOrderBaseInfo().setTotalPrice(order.getOrderGoodsDetails().stream().mapToDouble(Goodsorderdetails::getSubTotalAmount).sum());
+		order.getOrderBaseInfo().setTotalSettlePrice(order.getOrderGoodsDetails().stream().mapToDouble(Goodsorderdetails::getSubTotalSettleAmount).sum());
 		order.getOrderBaseInfo().setTotalFee(order.getOrderGoodsDetails().stream().mapToDouble(Goodsorderdetails::getChannelFee).sum());
 		return CreateGoodsOrder(createGoodsOrderReply, userCinema, order);
 	}

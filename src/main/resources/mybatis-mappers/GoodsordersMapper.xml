@@ -216,6 +216,12 @@
 			<if test="OpenID != null">
 				OpenID = #{OpenID}, 
 			</if>
+			<if test="CouponsCode != null">
+				CouponsCode = #{CouponsCode}, 
+			</if>
+			<if test="CouponsPrice != null">
+				CouponsPrice = #{CouponsPrice},
+			</if>
 
 		</set>
 
