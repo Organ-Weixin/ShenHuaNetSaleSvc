@@ -86,7 +86,6 @@ public class CommentController {
 		queryFilmCommentsReply.SetSuccessReply();
 		return queryFilmCommentsReply;
 	}
-	@SuppressWarnings("null")
 	@PostMapping("/SubmitFilmComment")
 	@ApiOperation(value="提交影片评论")
 	public SubmitFilmCommentReply SubmitFilmComment(@RequestBody  SubmitFilmCommentReplyJson sJson){
