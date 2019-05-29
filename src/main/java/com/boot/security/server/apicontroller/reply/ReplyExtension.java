@@ -228,9 +228,9 @@ public class ReplyExtension {
         return true;
     }
 	//endregion
-
-	//region CinemaChannelPlays 第三方场次价格
-	public static boolean RequestInfoGuard(CinemaChannelPlaysReply reply, String Username, String Password, String CinemaCode,String FilmCode) {
+	
+	//region QueryComponentsReply 商品推荐套餐
+	public static boolean RequestInfoGuard(QueryComponentsReply reply, String Username, String Password, String CinemaCode, String seatNum) {
         if (Username == null || "".equals(Username)) {
             reply.SetNecessaryParamMissReply("UserName");
             return false;
@@ -243,8 +243,8 @@ public class ReplyExtension {
             reply.SetNecessaryParamMissReply("CinemaCode");
             return false;
         }
-        if (FilmCode == null || "".equals(FilmCode)) {
-            reply.SetNecessaryParamMissReply("FilmCode");
+        if (seatNum == null || "".equals(seatNum)) {
+            reply.SetNecessaryParamMissReply("seatNum");
             return false;
         }
         return true;

@@ -39,6 +39,12 @@
 				</div>
 			</div>
 			<div class='form-group'>
+				<label class='col-md-2 control-label'>排序：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='sort' id='Sort' >
+				</div>
+			</div>
+			<div class='form-group'>
 				<label class='col-md-2 control-label'>推荐类型：</label>
 				<div class='col-md-10'>
 					<select class="form-control" name= 'recommendCode' id="RecommendCode" style="width:150px;" >
@@ -56,12 +62,6 @@
 						<option value="1" >上架</option>
 						<option value="0" >下架</option>
 					</select>
-				</div>
-			</div>
-			<div class='form-group'>
-				<label class='col-md-2 control-label'>排序：</label>
-				<div class='col-md-10'>
-					<input class='form-control' type='text' name='sort' id='Sort' >
 				</div>
 			</div>
 			<div class='form-group'>
@@ -277,7 +277,7 @@
 	        });
 		    $('#GoodsCode').val(JSON.stringify(codes));
 		    var formdata = $("#form").serializeObject();
-console.log(JSON.stringify(formdata));
+
 			$.ajax({
 				type : 'put',
 				url : '/goodscomponentss',

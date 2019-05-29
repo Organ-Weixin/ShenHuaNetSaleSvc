@@ -22,6 +22,10 @@ public interface GoodscomponentsDao {
     @Select("select * from goodscomponents t where t.CinemaCode = #{cinemacode} and t.PackageCode = #{packagecode}")
     List<Goodscomponents> getByPackageCode(@Param("cinemacode") String cinemacode,@Param("packagecode") String packagecode);
     
+    //根据推荐类型查询
+    @Select("select * from goodscomponents t where t.CinemaCode = #{cinemacode} and t.RecommendCode = #{recommendcode} group by packageCode")
+    List<Goodscomponents> getByRecommendCode(@Param("cinemacode") String cinemacode, @Param("recommendcode") String recommendcode);
+    
     @Select("select * from goodscomponents t where goodscode = #{goodscode}")
     Goodscomponents getByGoodsCode(String goodscode);
     

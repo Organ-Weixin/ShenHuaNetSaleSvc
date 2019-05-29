@@ -15,5 +15,7 @@ public interface QmmpriceService {
 	Qmmprice getByShowId(String showId);
 	
     List<Qmmprice> getByCinemaCodeAndScreenName(String cinemacode,String screenname,String showtime);
+    
+    List<Qmmprice> selectDataType();
 
 }

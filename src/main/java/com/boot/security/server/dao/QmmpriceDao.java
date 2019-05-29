@@ -4,6 +4,7 @@ package com.boot.security.server.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -23,6 +24,9 @@ public interface QmmpriceDao {
 
     int update(Qmmprice qmmprice);
     
+    @Delete("delete from qmmprice where id = #{id}")
+    int delete(Long id);
+    
     @Options(useGeneratedKeys = true, keyProperty = "id")
     @Insert("insert into qmmprice(cinemaCode, cinemaName, cinemaId, screenName, filmId, filmName, dataType, dataName, showId, showTime, price, settlePrice, minPrice, updated) values(#{cinemaCode}, #{cinemaName}, #{cinemaId}, #{screenName}, #{filmId}, #{filmName}, #{dataType}, #{dataName}, #{showId}, #{showTime}, #{price}, #{settlePrice}, #{minPrice}, #{updated})")
     int save(Qmmprice qmmprice);
@@ -33,4 +37,8 @@ public interface QmmpriceDao {
     
     @Select("select * from qmmprice t where t.cinemacode = #{cinemacode} and t.screenName = #{screenname} and t.showtime = #{showtime}")
     List<Qmmprice> getByCinemaCodeAndScreenName(@Param("cinemacode") String cinemacode,@Param("screenname") String screenname,@Param("showtime") String showtime);
+    
+    //查询所有第三方平台
+    @Select("select * from qmmprice group by dataType")
+    List<Qmmprice> getDataType();
 }

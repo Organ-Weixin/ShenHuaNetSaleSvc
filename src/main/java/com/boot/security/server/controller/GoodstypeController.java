@@ -1,5 +1,7 @@
 package com.boot.security.server.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +36,12 @@ public class GoodstypeController {
     @PostMapping
     @ApiOperation(value = "保存")
     public Goodstype save(@RequestBody Goodstype goodstype) {
+    	String str = new SimpleDateFormat("yyyymmddHHmmss").format(new Date());
+    	int num = (int)((Math.random()*9+1)*100000);
+    	str = str +String.valueOf(num);
     	String[] cinemacodes = goodstype.getCinemaCode().split(",");
     	for(int i=0; i<cinemacodes.length; i++){
+    		goodstype.setTypeCode(str);
     		goodstype.setCinemaCode(cinemacodes[i]);
     		goodstypeDao.save(goodstype);
     	}

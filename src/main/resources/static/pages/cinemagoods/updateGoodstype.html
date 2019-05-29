@@ -26,6 +26,12 @@
 				    <p id="resultMsg"></p>
 				</div>
 			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>排序：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='sort' id='Sort' >
+				</div>
+			</div>
 
 			<div class="form-actions">
 				<div class="row" align="center">
@@ -107,7 +113,8 @@
 						$('#CinemaCode').val(data.cinemaCode);
 						$('#TypeName').val(data.typeName);
 						$('#TypePic').val(data.typePic);
-
+						$('#Sort').val(data.sort);
+						$('#preview').attr('src',data.typePic);
 					}
 				});
 			}

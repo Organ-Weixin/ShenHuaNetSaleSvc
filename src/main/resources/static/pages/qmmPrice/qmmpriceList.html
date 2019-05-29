@@ -18,17 +18,27 @@
 	                   			<td>
 		                   			<form class="form-inline" onsubmit="return false">
 										<div class="form-group">
-											影院：
-											<select class="form-control input-sm" id="CinemaCode" style="width:150px;" >
-												<option value="" >选择影院</option>
+											<select class="form-control input-sm" id="cinemaCode" style="width:180px;" >
+												<option value="">影院名称</option>
 											</select>
+											<select class="form-control input-sm" id="dataType" style="width:100px;" >
+												<option value="">平台名称</option>
+											</select>
+											<input id="screenName" type="text" class="form-control" placeholder="影厅名称" style="width:100px;" >
+											<input id="filmName" type="text" class="form-control" placeholder="影片名称" style="width:100px;" >
+											<input id="startDate" type="text" class="form-control" placeholder="场次开始时间">
+											<input id="endDate" type="text" class="form-control" placeholder="场次结束时间">
 											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
+											<button id="emptyBt" class="layui-btn layui-btn-sm">清空</button>
 										</div>
 									</form>
 	                   			</td>
 	                   			<td align="right">
-	                   				<button class="layui-btn layui-btn-sm" onclick="addType()">
-                                      <i class="layui-icon">&#xe608;</i> 新建类型
+	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addQmmprice.html'">
+                                      <i class="layui-icon">&#xe608;</i> 添加
+                                    </button>
+                                    <button class="layui-btn layui-btn-sm" onclick="getNewData()">
+                                      <i class="layui-icon">&#xe608;</i> 同步趣满满数据
                                     </button>
 	                   			</td>
 	                   		</tr> 
@@ -45,9 +55,12 @@
                                 <tr>
 									<th>#</th>
 									<th>影院名称</th>
-									<th>类型名称</th>
-									<th>图片</th>
-									<th>排序</th>
+									<th>影厅名称</th>
+									<th>影片名称</th>
+									<th>平台名称</th>
+									<th>放映时间</th>
+									<th>零售价</th>
+									<th>结算价</th>
 									<th>操作</th>
                                 </tr>
                             </thead>
@@ -65,26 +78,13 @@
 <script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="../../layui/layui.js"></script>
-<script type="text/javascript" src="../../js/common.js"></script>
 <script type="text/javascript" src="../../js/my/permission.js"></script>
 <script type="text/javascript">
-	//新增类型
-	function addType(){
-		window.location.href='addGoodstype.html?cinemaCode='+$("#CinemaCode").val();
-	}
-
 	var pers = checkPermission();
+	
 	var example;
-	var code;
 	init();
 	function init(){
-		var url = window.location.href;
-//		console.log(url);
-		if(url.indexOf("?") != -1){
-			code = getUrlParam('cinemaCode');
-			
-		}
-		
 		example = 
 	    	$('#dt-table').DataTable({
 	        	"searching": false,
@@ -94,53 +94,61 @@
 	                "url": "/js/plugin/datatables/Chinese.lang"
 	            },
 	        	"ajax": {
-	        		"url" : "/goodstypes",
+	        		"url" : "/qmmprices",
 	        		"type":"get",
 	        		"data":function(d){
-	    				d.CinemaCode = $("#CinemaCode").val();
+	    				d.cinemaCode = $("#cinemaCode").val();
+	    				d.dataType = $("#dataType").val();
+	    				d.screenName = $("#screenName").val();
+	    				d.filmName = $("#filmName").val();
+	    				d.startDate = $("#startDate").val();
+	    				d.endDate = $("#endDate").val();
 	    			}
 	        	},
 	        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
 	            "columns": [
-	            	{	"data" : null, 
-	            		"defaultContent" : "",
-						"render" : function(data, type, full, meta){
-							return meta.row + 1 + meta.settings._iDisplayStart;
-							}
+	            	{	
+		            		"data" : null, 
+		            		"defaultContent" : "",
+							"render" : function(data, type, full, meta){
+								return meta.row + 1 + meta.settings._iDisplayStart;
+								}
 					},
 					{"data" : "cinemaName", "defaultContent" : ""},
-					{"data" : "typeName", "defaultContent" : ""},
-					{
-						"data" : "typePic", 
-						"defaultContent" : "",
-						"render": function (data, type, row) {
-	                		var typePic = row['typePic'];
-	                      	var img = "<img class='pic' style='width:50px;height: 50px;' src='"+typePic+"' title='"+typePic+"' >";
-	                      	
-	                        return img;
-	                  	}
-					},
-					{"data" : "sort", "defaultContent" : ""},
+					{"data" : "screenName", "defaultContent" : ""},
+					{"data" : "filmName", "defaultContent" : ""},
+					{"data" : "dataName", "defaultContent" : ""},
+					{"data" : "showTime", "defaultContent" : ""},
+					{"data" : "price", "defaultContent" : ""},
+					{"data" : "settlePrice", "defaultContent" : ""},
 					{ 
 									"data": "", 
 									"defaultContent": "",
 									"orderable":false,
 							        "render": function (data, type, row) {
 	                		           var id = row['id'];
-	                		           var href = "updateGoodstype.html?id=" + id;
+	                		           var href = "updateQmmprice.html?id=" + id;
 	                                   var edit = buttonEdit(href, "", pers);
 	                		           var del = buttonDel(id, "", pers);
 	                                   return edit + del;
 	                  	            }		
-					},
+								},
 	                
 	            ],
-	           "order": [[ 5, "asc" ]]
+	           "order": [[ 0, "asc" ]]
 	        } );
 	}
 	
-	layui.use('layer', function(){
+//	var layer;
+	layui.use(['layer','laydate'], function(){
 	    var layer = layui.layer;
+	    var laydate = layui.laydate;
+	    laydate.render({
+	       elem: '#startDate',
+	    });
+	    laydate.render({
+	       elem: '#endDate'
+	    });
 	});
 	
 	function del(id){
@@ -149,7 +157,7 @@
 	    }, function() {
 	    	$.ajax({
 	            type : 'delete',
-	            url : '/goodstypes/'+id,
+	            url : '/qmmprices/'+id,
 	            success : function(data) {
 	                example.ajax.reload();
 	                layer.msg("删除成功");
@@ -160,7 +168,6 @@
 	    });
 	}
 	
-	
 	//获取影院
 	getCinema();
 	function getCinema(){
@@ -170,26 +177,60 @@
 	        success:function(data){
 				for(var i=0; i<data.length;i++){
 					var option = "<option value="+data[i].code+">"+data[i].name+"</option>";
-					$("#CinemaCode").append(option);
+					$("#cinemaCode").append(option);
 				}
-				if(code == null){
-					code = data[0].code;
-				}
-	        },
-	        error:function(){
-	            J.alert('Error');
 	        }
+	        
 	    })
+	}
+	
+	//获取第三方平台
+	getAlldataType();
+	function getAlldataType(){
+		$.ajax({
+	        type:"post",
+	        url:"/qmmprices/AllDataType",
+	        success:function(data){
+				for(var i=0; i<data.length;i++){
+					var option = "<option value="+data[i].dataType+">"+data[i].dataName+"</option>";
+					$("#dataType").append(option);
+				}
+	        }
+	        
+	    })
+	}
+	
+	//同步趣满满数据
+	function getNewData(){
+		layer.confirm('同步时间可能较长，确定同步趣满满比价数据吗?', {
+	        btn : [ '确定', '取消' ]
+	    }, function() {
+	    	$.ajax({
+	            type : 'post',
+	            url : '/qmmprices/synchronousData',
+	            success : function(data) {
+	            	example.ajax.reload();
+		            layer.msg("同步成功");
+	            }	
+	        });
+	        
+	        layer.close(1);
+	    });
 	}
 	
 	$("#searchBt").click(function(){
 		example.ajax.reload();
 	});
 	
-	window.onload = function(){
-		$("#CinemaCode").find("option[value='"+code+"']").attr("selected","selected");
-		example.ajax.reload();
-	}
+	$("#emptyBt").click(function(){
+		$("#cinemaCode").val("");
+		$("#dataType").val("");
+		$("#screenName").val("");
+		$("#filmName").val("");
+		$("#startDate").val("");
+		$("#endDate").val("");
+	});
+	
 </script>
 </body>
 </html>

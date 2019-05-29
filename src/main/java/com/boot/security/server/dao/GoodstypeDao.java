@@ -27,7 +27,7 @@ public interface GoodstypeDao {
     int update(Goodstype goodstype);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into goodstype(CinemaCode, UserId, TypeCode, TypeName, TypeDesc, TypePic) values(#{CinemaCode}, #{UserId}, #{TypeCode},#{TypeName}, #{TypeDesc}, #{TypePic})")
+    @Insert("insert into goodstype(CinemaCode, UserId, TypeCode, TypeName, TypeDesc, TypePic, Sort) values(#{CinemaCode}, #{UserId}, #{TypeCode},#{TypeName}, #{TypeDesc}, #{TypePic}, #{Sort})")
     int save(Goodstype goodstype);
     
     int count(@Param("params") Map<String, Object> params);

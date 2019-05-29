@@ -1,6 +1,5 @@
 package com.boot.security.server.apicontroller;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +18,7 @@ import com.boot.security.server.api.core.SubmitGoodsOrderReply;
 import com.boot.security.server.apicontroller.reply.CreateGoodsOrderQueryJson;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.NetSaleQueryJson;
+import com.boot.security.server.apicontroller.reply.QueryComponentsReply;
 import com.boot.security.server.apicontroller.reply.QueryGoodsOrderReply;
 import com.boot.security.server.apicontroller.reply.QueryGoodsOrderReply.QueryGoodsOrderReplyOrder;
 import com.boot.security.server.apicontroller.reply.QueryGoodsReply;
@@ -30,17 +30,19 @@ import com.boot.security.server.apicontroller.reply.QueryGoodsTypeReply.QueryGoo
 import com.boot.security.server.apicontroller.reply.QueryLocalGoodsOrderReply.QueryLocalGoodsOrderReplyOrder;
 import com.boot.security.server.apicontroller.reply.QueryLocalGoodsOrderReply;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
+import com.boot.security.server.apicontroller.reply.QueryComponentsReply.ComponetsReply;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderView;
+import com.boot.security.server.model.Goodscomponents;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Goodstype;
-import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.GoodsTypeServiceImpl;
+import com.boot.security.server.service.impl.GoodscomponentsServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.google.gson.JsonSyntaxException;
 
@@ -59,6 +61,8 @@ public class AppGoodsController {
 	private GoodsServiceImpl _goodsService;
 	@Autowired
 	private GoodsOrderServiceImpl _goodsOrderService;
+	@Autowired
+	private GoodscomponentsServiceImpl goodscomponentsService;
 
 	//region 查询影院卖品信息
 	@GetMapping("/QueryGoods/{UserName}/{Password}/{CinemaCode}")
@@ -281,4 +285,44 @@ public class AppGoodsController {
         return queryGoodsTypeReply;
 	}
 	//endregion
+	
+	@GetMapping("/QueryComponents/{username}/{password}/{cinemaCode}/{seatNum}")
+	@ApiOperation(value = "查询推荐套餐")
+	public QueryComponentsReply QueryComponents(@PathVariable String username, @PathVariable String password, 
+			@PathVariable String cinemaCode, @PathVariable String seatNum){
+		QueryComponentsReply reply=new QueryComponentsReply();
+		//校验参数
+        if (!ReplyExtension.RequestInfoGuard(reply,username, password, cinemaCode, seatNum)) {
+            return reply;
+        }
+        //获取用户信息(渠道)
+        Userinfo UserInfo = _userInfoService.getByUserCredential(username, password);
+        if (UserInfo == null) {
+        	reply.SetUserCredentialInvalidReply();
+            return reply;
+        }
+        //验证影院是否存在且可访问
+        Cinema cinema = _cinemaService.getByCinemaCode(cinemaCode);
+        if (cinema == null) {
+        	reply.SetCinemaInvalidReply();
+            return reply;
+        }
+        
+        //返回
+        List<ComponetsReply> data = new ArrayList<ComponetsReply>();
+        List<Goodscomponents> componentslist = goodscomponentsService.getByRecommendCode(cinemaCode, seatNum);
+        for(Goodscomponents component : componentslist){
+        	ComponetsReply newComponent = new ComponetsReply();
+        	newComponent.setPackageCode(component.getPackageCode());
+        	newComponent.setPackageName(component.getPackageName());
+        	newComponent.setPackagePic(component.getPackagePic());
+        	newComponent.setPackageStandarPrice(component.getPackageStandardPrice());
+        	newComponent.setPackageSettlePrice(component.getPackageSettlePrice());
+        	data.add(newComponent);
+        }
+        reply.setData(data);
+        reply.SetSuccessReply();
+        
+        return reply;
+	}
 }

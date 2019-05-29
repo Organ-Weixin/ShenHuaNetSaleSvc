@@ -38,7 +38,7 @@ public interface CinemaDao {
     List<Cinema> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
     
     //获取当前登陆用户的影院
-    List<Cinema> getCinemasByUser(@Param("roleId") Long roleId, @Param("username") String username);
+    List<Cinema> getCinemasByUser(@Param("roleId") Long roleId, @Param("id") Long id);
     
     //查询卖品管理的影院信息
     int goodscount(@Param("params") Map<String, Object> params);

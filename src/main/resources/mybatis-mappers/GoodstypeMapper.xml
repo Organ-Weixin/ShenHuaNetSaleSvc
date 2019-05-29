@@ -78,7 +78,9 @@
 			<if test="TypePic != null">
 				TypePic = #{TypePic}, 
 			</if>
-
+			<if test="Sort != null">
+				Sort = #{Sort}, 
+			</if>
 		</set>
 
 		where t.id = #{id}

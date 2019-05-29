@@ -21,7 +21,6 @@
 											影院：
 											<select class="form-control input-sm" id="CinemaCode" style="width:150px;" >
 												<option value="">影院</option>
-												<option value="33111001" selected="selected">神画新天地影城</option>
 											</select>
 											<input id="PackageName" type="text" class="form-control" placeholder="套餐名称">
 											<select class="form-control input-sm" id="RecommendCode" style="width:150px;" >
@@ -168,9 +167,6 @@
                		            var id = row['id'];
                		        	var cinemaCode = row['cinemaCode'];
                		     		var packageCode = row['packageCode'];
-//               		           var href = "updateGoodscomponents.html?id=" + id;
-//                               var edit = buttonEdit(href, "", pers);
-//               		           var del = buttonDel(id, "", pers);
                		           	var edit = "<button style='color:blue; background-color:transparent; border:0' value="+cinemaCode+" title='"+packageCode+"' class='updatePackage'>编辑</button>&nbsp;&nbsp;&nbsp;";
                		         	var del = "<button style='color:blue; background-color:transparent; border:0' value="+cinemaCode+" title='"+packageCode+"' class='delPackage'>删除</button>";
                                 return edit + del;
@@ -178,7 +174,7 @@
 					},
 	                
 	            ],
-	           "order": [[ 6, "asc" ]]
+	           "order": [[ 8, "asc" ]]
 	        } );
 	}
 	
@@ -226,7 +222,9 @@
 				for(var i=0; i<data.length;i++){
 					var option = "<option value="+data[i].code+">"+data[i].name+"</option>";
 					$("#CinemaCode").append(option);
-					
+				}
+				if(code == null){
+					code = data[0].code;
 				}
 	        }
 	        

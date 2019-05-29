@@ -11,6 +11,7 @@ public class Goodstype {
 	private String TypeName;
 	private String TypeDesc;
 	private String TypePic;
+	private String Sort;
 	
 	private String cinemaName; //后台需要
 
@@ -62,6 +63,12 @@ public class Goodstype {
 	}
 	public void setCinemaName(String cinemaName) {
 		this.cinemaName = cinemaName;
+	}
+	public String getSort() {
+		return Sort;
+	}
+	public void setSort(String sort) {
+		this.Sort = sort;
 	}
 	
 }

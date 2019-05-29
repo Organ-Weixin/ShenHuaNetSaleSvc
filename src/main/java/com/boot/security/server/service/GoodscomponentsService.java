@@ -21,5 +21,7 @@ public interface GoodscomponentsService {
 	    int count( Map<String, Object> params);
 
 	    List<Goodscomponents> list(Map<String, Object> params, Integer offset,Integer limit);
+	    
+	    List<Goodscomponents> getByRecommendCode(String cinemacode,String recommendcode);
 
 }

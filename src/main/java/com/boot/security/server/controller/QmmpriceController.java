@@ -1,5 +1,7 @@
 package com.boot.security.server.controller;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,63 +19,50 @@ import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
+import com.boot.security.server.utils.QmmPriceUtil;
 import com.boot.security.server.utils.UserUtil;
 import com.boot.security.server.dao.CinemaDao;
+import com.boot.security.server.dao.QmmpriceDao;
 import com.boot.security.server.model.Cinema;
+import com.boot.security.server.model.Qmmprice;
 import com.boot.security.server.model.SysUser;
 
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/cinemas")
-public class CinemaController {
+@RequestMapping("/qmmprices")
+public class QmmpriceController {
 
+    @Autowired
+    private QmmpriceDao qmmpriceDao;
     @Autowired
     private CinemaDao cinemaDao;
 
     @PostMapping
     @ApiOperation(value = "保存")
-    public Cinema save(@RequestBody Cinema cinema) {
-        cinemaDao.save(cinema);
+    public Qmmprice save(@RequestBody Qmmprice qmmprice) {
+        qmmpriceDao.save(qmmprice);
 
-        return cinema;
+        return qmmprice;
     }
 
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取")
-    public Cinema get(@PathVariable Long id) {
-    	return cinemaDao.getById(id);
+    public Qmmprice get(@PathVariable Long id) {
+        return qmmpriceDao.getById(id);
     }
-    
+
     @PutMapping
     @ApiOperation(value = "修改")
-    public Cinema update(@RequestBody Cinema cinema) {
-        cinemaDao.update(cinema);
+    public Qmmprice update(@RequestBody Qmmprice qmmprice) {
+        qmmpriceDao.update(qmmprice);
 
-        return cinema;
+        return qmmprice;
     }
 
     @GetMapping
     @ApiOperation(value = "列表")
     public PageTableResponse list(PageTableRequest request) {
-        return new PageTableHandler(new CountHandler() {
-
-            @Override
-            public int count(PageTableRequest request) {
-                return cinemaDao.count(request.getParams());
-            }
-        }, new ListHandler() {
-
-            @Override
-            public List<Cinema> list(PageTableRequest request) {
-                return cinemaDao.list(request.getParams(), request.getOffset(), request.getLimit());
-            }
-        }).handle(request);
-    }
-    
-    @GetMapping("/cinemaGoodsList")
-    @ApiOperation(value = "卖品影院列表")
-    public PageTableResponse cinemaGoodslist(PageTableRequest request) {
     	//获取当前登陆人信息
     	SysUser sysuser = UserUtil.getLoginUser();
     	request.getParams().put("id", sysuser.getId());
@@ -83,13 +72,13 @@ public class CinemaController {
 
             @Override
             public int count(PageTableRequest request) {
-                return cinemaDao.goodscount(request.getParams());
+                return qmmpriceDao.count(request.getParams());
             }
         }, new ListHandler() {
 
             @Override
-            public List<Cinema> list(PageTableRequest request) {
-                return cinemaDao.goodslist(request.getParams(), request.getOffset(), request.getLimit());
+            public List<Qmmprice> list(PageTableRequest request) {
+                return qmmpriceDao.list(request.getParams(), request.getOffset(), request.getLimit());
             }
         }).handle(request);
     }
@@ -97,15 +86,30 @@ public class CinemaController {
     @DeleteMapping("/{id}")
     @ApiOperation(value = "删除")
     public void delete(@PathVariable Long id) {
-        cinemaDao.delete(id);
+        qmmpriceDao.delete(id);
     }
     
-    @GetMapping("/getCinemas")
-    @ApiOperation(value = "获取登陆用户影院")
-    public List<Cinema> getCinemas() {
+    @PostMapping("/AllDataType")
+    @ApiOperation(value = "查询第三方平台")
+    public List<Qmmprice> getDataType() {
+
+        return qmmpriceDao.getDataType();
+    }
+    
+    @PostMapping("/synchronousData")
+    @ApiOperation(value = "同步趣满满数据")
+    public void synchronous() {
     	//获取当前登陆人信息
     	SysUser sysuser = UserUtil.getLoginUser();
+    	List<Cinema> cinemalist = cinemaDao.getCinemasByUser(sysuser.getRoleId(),sysuser.getId());
     	
-    	return cinemaDao.getCinemasByUser(sysuser.getRoleId(),sysuser.getId());
+    	for(Cinema cinema : cinemalist){
+    		try {
+    			new QmmPriceUtil().getQmmPrice(cinema.getCode());
+				
+			} catch (ParseException | IOException e) {
+				e.printStackTrace();
+			}
+    	}
     }
 }

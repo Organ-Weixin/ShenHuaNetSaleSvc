@@ -11,12 +11,6 @@
 			<h1>新建分类类型</h1>
 			<input type="hidden" name="cinemaCode"  id="CinemaCode"/>
 			<div class='form-group'>
-				<label class='col-md-2 control-label'>分类编码：</label>
-				<div class='col-md-10'>
-					<input class='form-control' type='text' name='typeCode' id='TypeCode' data-bv-notempty='true' data-bv-notempty-message='分类编码 不能为空'>
-				</div>
-			</div>
-			<div class='form-group'>
 				<label class='col-md-2 control-label'>分类名称：</label>
 				<div class='col-md-10'>
 					<input class='form-control' type='text' name='typeName' id='TypeName' data-bv-notempty='true' data-bv-notempty-message='分类名称 不能为空'>
@@ -29,6 +23,12 @@
 					<div class="layui-upload-drag" id="pic"></div>
 					<img class="" src="" id="preview" width="118" height="118">
 				    <p id="resultMsg"></p>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>排序：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='sort' id='Sort' >
 				</div>
 			</div>
 			<div class='form-group'>
@@ -46,7 +46,7 @@
 				<div class="row" align="center">
 					<div class="col-md-12">
 					    <button class="btn btn-primary" onclick="goback()">返回</button>
-						<button class="btn btn-primary" type="submit" onclick="add()">
+						<button class="btn btn-primary" type="submit" id='addtype' onclick="add()">
 							<i class="fa fa-save"></i> 保存
 						</button>
 					</div>
@@ -142,6 +142,7 @@
 		     
 			if(str == null || str.length == 0){
 				alert("至少选择一家影城");
+				$("#addtype").attr('disabled',false);
 			} else {
 				var formdata = $("#form").serializeObject();
 				$.ajax({

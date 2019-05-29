@@ -50,5 +50,9 @@ public class GoodscomponentsServiceImpl implements GoodscomponentsService{
 	public Goodscomponents getByGoodsCode(String goodscode) {
 		return goodscomponentsDao.getByGoodsCode(goodscode);
 	}
+	@Override
+	public List<Goodscomponents> getByRecommendCode(String cinemacode, String recommendcode) {
+		return goodscomponentsDao.getByRecommendCode(cinemacode, recommendcode);
+	}
 	
 }

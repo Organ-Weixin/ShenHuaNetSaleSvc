@@ -40,4 +40,9 @@ public class QmmpriceServiceImpl implements QmmpriceService {
 		return qmmpricedao.getByCinemaCodeAndScreenName(cinemacode, screenname, showtime);
 	}
 
+	@Override
+	public List<Qmmprice> selectDataType() {
+		return qmmpricedao.getDataType();
+	}
+
 }

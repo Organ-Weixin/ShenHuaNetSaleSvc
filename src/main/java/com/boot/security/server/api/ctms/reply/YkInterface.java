@@ -1,6 +1,5 @@
 package com.boot.security.server.api.ctms.reply;
 
-import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -1419,21 +1418,24 @@ public class YkInterface implements ICTMSInterface {
 			if("SUCCESS".equals(ykResult.getData().getBizCode())){
 				List<CardBean> cardlist = ykResult.getData().getDataList().stream().filter(
 						(CardBean cc)-> userCinema.getCinemaId().equals(cc.getCinemaLinkId())).collect(Collectors.toList());
-				List<Membercardlevel> newcardlevel = new ArrayList<Membercardlevel>();
+				
 				for(CardBean card:cardlist){
-					Membercardlevel cardlevel = new Membercardlevel();
-					cardlevel.setLevelCode(card.getGradeId());
-					cardlevel.setLevelName(card.getGradeDesc());
-					cardlevel.setCinemaCode(userCinema.getCinemaCode());
-					cardlevel.setCardCostFee(Double.valueOf(card.getCardCostFee()));
-					cardlevel.setMemberFee(Double.valueOf(card.getMemberFee()));
-					newcardlevel.add(cardlevel);
-				}
-				//删除旧的
-				memberCardLevelService.deleteByCinemaCode(userCinema.getCinemaCode());
-				//新增
-				for(Membercardlevel card : newcardlevel){
-					memberCardLevelService.Save(card);
+					Membercardlevel cardlevel = memberCardLevelService.getByCinemaCodeAndLevelCode(userCinema.getCinemaCode(),card.getGradeId());
+					if(cardlevel == null){
+						cardlevel = new Membercardlevel();
+						cardlevel.setCinemaCode(userCinema.getCinemaCode());
+						cardlevel.setLevelCode(card.getGradeId());
+						cardlevel.setLevelName(card.getGradeDesc());
+						cardlevel.setCardCostFee(Double.valueOf(card.getCardCostFee()));
+						cardlevel.setMemberFee(Double.valueOf(card.getMemberFee()));
+						cardlevel.setStatus(0); 	//无返回，默认0
+						memberCardLevelService.Save(cardlevel);
+					} else {
+						cardlevel.setLevelName(card.getGradeDesc());
+						cardlevel.setCardCostFee(Double.valueOf(card.getCardCostFee()));
+						cardlevel.setMemberFee(Double.valueOf(card.getMemberFee()));
+						memberCardLevelService.update(cardlevel);
+					}
 				}
 				reply.Status = StatusEnum.Success;
 			} else {
