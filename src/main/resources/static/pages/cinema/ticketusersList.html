@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>购票用户</title>
 <link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
 <link rel="stylesheet" href="../../layui/css/layui.css" media="all" />
@@ -12,13 +12,14 @@
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div>
                 <header style="height: 100%">
+                     <input type="hidden" id="cinemacodes" >
                     <div align="left">
 	                    <table style="width: 100%">
 	                   		<tr>
 	                   			<td>
 		                   			<form class="form-inline" onsubmit="return false">
 										<div class="form-group">
-																							
+								<input id="CinemaCode" type="text" class="form-control" placeholder="影院编码">			
 					<!--根据手机号搜索对应用户信息-->				
 						<input id="mobilephone" type="text" class="form-control" placeholder="手机号">&nbsp;&nbsp;
 						<!--根据手机号搜索对应用户信息-->				
@@ -28,9 +29,6 @@
 									</form>
 	                   			</td>
 	                   			<td align="right">
-	                   				<!-- <button class="layui-btn layui-btn-sm" onclick="location.href='addTicketusers.html'">
-                                      <i class="layui-icon">&#xe608;</i> 添加
-                                    </button> -->
 	                   			</td>
 	                   		</tr> 
 	                    </table>
@@ -45,8 +43,9 @@
                                 </tr>                       
                                 <tr>
 									<th>#</th>
+									<th>影院编码</th>
 									<th>手机号</th>
-									<th>是否通过验证</th>
+									<th>是否活跃用户</th>
 									<th>用户昵称</th>
 									<th>用户性别</th>
 									<th>用户所在国家</th>
@@ -77,10 +76,6 @@
 <script type="text/javascript">
 
 var pers = checkPermission();
-var Sex = showDictSelect("sex", "Sex", true);
-
-var isActive = showDictSelect("isActive", "isActive", true);
-
 var example;
 function init(){
 	example = 
@@ -96,28 +91,60 @@ function init(){
         		"url" : "/ticketuserss",
         		"type":"get",
         		"data":function(d){
-        			d.Id = $("#id").val();
+        			d.id = $("#id").val();
     				d.MobilePhone = $("#mobilephone").val();
     				d.NickName = $("#nickname").val();
+    				d.CinemaCode = $("#CinemaCode").val();
+    				if($("#CinemaCode").val==null||$("#CinemaCode").val()==""){
+    					d.CinemaCode=$("#cinemacodes").val();
+    				}else{
+    					d.CinemaCode=$("#CinemaCode").val();
+    				}
     			}
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
             "columns": [
-            	{"data" : "id", "defaultContent" : ""},
+            //	{"data" : "id", "defaultContent" : ""},
+             	 {"data" : null, 
+            		"defaultContent" : "",
+					"render" : function(data, type, full, meta){
+						return meta.row + 1 + meta.settings._iDisplayStart;
+						}
+				},
+            	{"data" : "cinemaCode", "defaultContent" : ""},
 				{"data" : "mobilePhone", "defaultContent" : ""},
-				{"data" : "isActive", "defaultContent" : "",
+        		{
+					"data" : "isActive", 
+					"defaultContent" : "",
 					"render": function (data, type, row) {
-                	return isActive[data];
-              	}		},
+                		var isActive = row['isActive'];
+                      	var flag = "";
+                      	if(isActive == 1){
+                      		flag = "是";
+                      	}else{
+                      		flag = "否";
+                      	}
+                        return flag;
+                  	}
+				},
 				{"data" : "nickName", "defaultContent" : ""},
-				{"data" : "sex", "defaultContent" : "",
-					"render": function (data, type, row) {
-                    	return Sex[data];
-                  	}		},
+            		{
+    					"data" : "sex", 
+    					"defaultContent" : "",
+    					"render": function (data, type, row) {
+                    		var sex = row['sex'];
+                          	var flag = "";
+                          	if(sex == 1){
+                          		flag = "男";
+                          	}else{
+                          		flag = "女";
+                          	}
+                            return flag;
+                      	}
+    				},
 				{"data" : "country", "defaultContent" : ""},
 				{"data" : "province", "defaultContent" : ""},
 				{"data" : "city", "defaultContent" : ""},
-				/* {"data" : "headImgUrl", "defaultContent" : ""}, */
 				{
 					"data":"headImgUrl",
 					"defaultContent": "",
@@ -127,24 +154,40 @@ function init(){
 					  	return img;
 					}
 				},
-            
-				/* { 
-								"data": "", 
-								"defaultContent": "",
-								"orderable":false,
-						        "render": function (data, type, row) {
-                		           var id = row['id'];
-                		           var href = "updateTicketusers.html?id=" + id;
-                                   var edit = buttonEdit(href, "", pers);
-                		           var del = buttonDel(id, "", pers);
-                                   return edit + del;
-                  	            }		
-							}, */
-                
             ],
            "order": [[ 0, "asc" ]]
         } );
 }
+//获取登陆人信息
+initUser();
+function initUser(){
+	$.ajax({
+		type : 'get',
+		url : '/users/current',
+		async : false,
+		success : function(data) {
+			$("#userId").val(data.id);
+			getCinemaCodes(data.id,data.roleId);
+		}
+	});
+}
+
+//获取登录人的影院
+function getCinemaCodes(id,roleId){
+	$.ajax({
+		url:'/users/getCinemaName',
+		data:{"id":id,"roleId":roleId},
+		type:'post',
+		success:function(data){
+			var cinemacodes = "";
+			for(var i=0; i<data.length; i++){
+				cinemacodes += data[i].cinemaCode+",";
+			}
+			$("#cinemacodes").val(cinemacodes.substring(0,cinemacodes.length-1));
+			example.ajax.reload();
+		}
+	})
+}  
 
 layui.use('layer', function(){
     var layer = layui.layer;
