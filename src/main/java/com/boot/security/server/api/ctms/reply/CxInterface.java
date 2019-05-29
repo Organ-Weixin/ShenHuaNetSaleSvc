@@ -230,9 +230,11 @@ public class CxInterface implements ICTMSInterface {
 					session.setUserID(userCinema.getUserId());
 					newSessions.add(session);
 				}
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				String sd = sdf.format(new Date(Long.parseLong(String.valueOf(EndDate.getTime()+24*60*60*1000))));
 				// 先删除旧场次
 				_sessioninfoService.deleteByCinemaCodeAndDate(userCinema.getUserId(), userCinema.getCinemaCode(),
-						StartDate, EndDate);
+						StartDate, new SimpleDateFormat("yyyy-MM-dd").parse(sd));
 				// 插入场次信息
 				for (Sessioninfo session : newSessions) {
 					_sessioninfoService.save(session);

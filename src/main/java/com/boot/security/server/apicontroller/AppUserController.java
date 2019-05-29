@@ -1,7 +1,10 @@
 package com.boot.security.server.apicontroller;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,11 +46,17 @@ import com.boot.security.server.dao.MiniprogramordersviewDao;
 import com.boot.security.server.model.Adminorderview;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaMiniProgramAccounts;
+import com.boot.security.server.model.Coupons;
+import com.boot.security.server.model.CouponsStatusEnum;
+import com.boot.security.server.model.Couponsgroup;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Miniprogramordersview;
+import com.boot.security.server.model.Registeractive;
+import com.boot.security.server.model.Registeractivecoupons;
+import com.boot.security.server.model.Registercollectionrecord;
 import com.boot.security.server.model.Roomgiftuser;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.StatusEnum;
@@ -57,9 +66,14 @@ import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.modelView.Goodsorderdetailsview;
 import com.boot.security.server.service.impl.CinemaMiniProgramAccountsServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
+import com.boot.security.server.service.impl.CouponsServiceImpl;
+import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
+import com.boot.security.server.service.impl.RegisteractiveServiceImpl;
+import com.boot.security.server.service.impl.RegisteractivecouponsServiceImpl;
+import com.boot.security.server.service.impl.RegistercollectionrecordServiceImpl;
 import com.boot.security.server.service.impl.RoomgiftuserServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
@@ -98,10 +112,20 @@ public class AppUserController {
 	private GoodsorderdetailsDao goodsorderdetailsDao;
 	@Autowired
 	private MiniprogramordersviewDao miniprogramordersviewDao;
+	@Autowired
+	private RegisteractiveServiceImpl registeractiveService;
+	@Autowired
+	private RegisteractivecouponsServiceImpl registeractivecouponsService;
+	@Autowired
+	private CouponsgroupServiceImpl couponsgroupService;
+	@Autowired
+	private CouponsServiceImpl couponsService;
+	@Autowired
+	private RegistercollectionrecordServiceImpl registercollectionrecordService;
 	
 	@PostMapping("/UserLogin")
 	@ApiOperation(value = "用户登陆")
-	public UserLoginReply UserLogin(@RequestBody UserLoginInput userinput){
+	public UserLoginReply UserLogin(@RequestBody UserLoginInput userinput) throws ParseException{
 		UserLoginReply userReply = new UserLoginReply();
 		// 校验参数
 		if (!ReplyExtension.RequestInfoGuard(userReply, userinput.getUserName(), userinput.getPassword(), 
@@ -177,6 +201,58 @@ public class AppUserController {
         data.setIsActive(String.valueOf(ticketuser.getIsActive()));
         data.setRoll(ticketuser.getRoll());
         data.setCreated(ticketuser.getCreated()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ticketuser.getCreated()));
+        //登陆送优惠券
+        if(ticketuser.getOpenID()!=null){
+        	List<Registercollectionrecord> registercollectionrecordList = registercollectionrecordService.getByOpenID(ticketuser.getOpenID());
+        	if(registercollectionrecordList.size()<=0){
+        		List<Registeractive> registeractiveList = registeractiveService.getCanUseRegisterActive();
+            	if(registeractiveList.size()>0){
+            		int result =0;
+            		for(Registeractive registeractive:registeractiveList){
+            			List<Registeractivecoupons> registeractivecouponsList = registeractivecouponsService.getByRegisterActiveCode(registeractive.getRegisterActiveCode());
+            			if(registeractivecouponsList.size()>0){
+            				for(Registeractivecoupons registeractivecoupons:registeractivecouponsList){
+            					Couponsgroup couponsgroup = couponsgroupService.getByGroupCode(registeractivecoupons.getGroupCode());
+            					if(couponsgroup!=null){
+            						if((couponsgroup.getCouponsNumber()-couponsgroup.getIssuedNumber())>registeractivecoupons.getGiveNumber()){
+                						List<Coupons> couponsList = couponsService.getCanUseByGroupCode(couponsgroup.getGroupCode());
+                						if(couponsList.size()>0){
+                							for(int i=0; i<registeractivecoupons.getGiveNumber(); i++){
+                								Coupons coupons = couponsService.getById(couponsList.get(i).getId());
+                								if(couponsgroup.getValidityType()==2){
+                			        				Calendar c = Calendar.getInstance();
+                			        				c.add(Calendar.DAY_OF_MONTH, couponsgroup.getEffectiveDays());
+                			        				coupons.setEffectiveDate(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(c.getTime())));
+                			        				c.add(Calendar.DAY_OF_MONTH, couponsgroup.getValidityDays());
+                			        				coupons.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(c.getTime())));
+                			            		}
+                								coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
+                								coupons.setOpenID(ticketuser.getOpenID());
+                								result = couponsService.update(coupons);
+                							}
+                							if(result>0){
+                								//已发放数量
+                				    			couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()+couponsgroup.getIssuedNumber());
+                				    			//已领取数量
+                				    			couponsgroup.setFetchNumber(couponsgroup.getFetchNumber()+couponsgroup.getIssuedNumber());
+                				    			//剩余数量
+                				    			couponsgroup.setRemainingNumber(couponsgroup.getRemainingNumber()-couponsgroup.getIssuedNumber());
+                				    			couponsgroup.setUpdateDate(new Date());
+                				    			couponsgroupService.update(couponsgroup);
+                				    			Registercollectionrecord registercollectionrecord = new Registercollectionrecord();
+                	            				registercollectionrecord.setOpenID(ticketuser.getOpenID());
+                	            				registercollectionrecord.setRegisterActiveCode(registeractive.getRegisterActiveCode());
+                	            				registercollectionrecordService.save(registercollectionrecord);
+                							}
+                						}
+            						}
+            					}
+            				}
+            			}
+            		}
+            	}
+        	}
+        }
         
         userReply.setData(data);
         userReply.SetSuccessReply();

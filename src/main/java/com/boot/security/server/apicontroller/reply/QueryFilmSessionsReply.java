@@ -184,7 +184,6 @@ public class QueryFilmSessionsReply extends BaseReply{
 						private Double ListingPrice;
 						private Double ActivityPrice;
 						private Double MemberPrice;
-						private List<QueryFilmSessionsReplySessionPrice> Price;
 						public String getSessionCode() {
 							return SessionCode;
 						}
@@ -274,43 +273,6 @@ public class QueryFilmSessionsReply extends BaseReply{
 						}
 						public void setMemberPrice(Double memberPrice) {
 							MemberPrice = memberPrice;
-						}
-						public List<QueryFilmSessionsReplySessionPrice> getPrice() {
-							return Price;
-						}
-						public void setPrice(List<QueryFilmSessionsReplySessionPrice> price) {
-							Price = price;
-						}
-						public static class QueryFilmSessionsReplySessionPrice{
-							private String TypeCode;
-							private String TypeName;
-							private Double SettlePrice;
-							private Double StandardPrice;
-							public String getTypeCode() {
-								return TypeCode;
-							}
-							public void setTypeCode(String typeCode) {
-								TypeCode = typeCode;
-							}
-							public String getTypeName() {
-								return TypeName;
-							}
-							public void setTypeName(String typeName) {
-								TypeName = typeName;
-							}
-							public Double getSettlePrice() {
-								return SettlePrice;
-							}
-							public void setSettlePrice(Double settlePrice) {
-								SettlePrice = settlePrice;
-							}
-							public Double getStandardPrice() {
-								return StandardPrice;
-							}
-							public void setStandardPrice(Double standardPrice) {
-								StandardPrice = standardPrice;
-							}
-							
 						}
 						
 					}

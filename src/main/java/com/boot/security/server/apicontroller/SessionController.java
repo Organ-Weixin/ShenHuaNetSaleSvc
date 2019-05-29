@@ -18,7 +18,6 @@ import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.Query
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions.QueryFilmSessionsReplyFilm.QueryFilmSessionsReplySession;
 import com.boot.security.server.apicontroller.reply.QueryOrderSessionReply;
 import com.boot.security.server.apicontroller.reply.QueryOrderSessionReply.QueryOrderSessionReplyOrderSession;
-import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions.QueryFilmSessionsReplyFilm.QueryFilmSessionsReplySession.QueryFilmSessionsReplySessionPrice;
 import com.boot.security.server.apicontroller.reply.QueryFimlSessionPriceReply.QueryFimlSessionPriceReplyFilm;
 import com.boot.security.server.apicontroller.reply.QueryFimlSessionPriceReply.QueryFimlSessionPriceReplyFilm.QueryFimlSessionPriceReplySessionDate;
 import com.boot.security.server.apicontroller.reply.QueryFimlSessionPriceReply.QueryFimlSessionPriceReplyFilm.QueryFimlSessionPriceReplySessionDate.QueryFimlSessionPriceReplySession;
@@ -143,19 +142,6 @@ public class SessionController {
 					}else{
 						sessionReply.setIsToday(false);
 					}
-					List<Qmmprice> qmmpriceList = _qmmpriceService.getByCinemaCodeAndScreenName(session.getCCode(), sessionReply.getScreenName(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(session.getStartTime()));
-					List<QueryFilmSessionsReplySessionPrice> sessionPriceList = new ArrayList<QueryFilmSessionsReplySessionPrice>();
-					for(Qmmprice qmmprice:qmmpriceList){
-						QueryFilmSessionsReplySessionPrice sessionPrice = new QueryFilmSessionsReplySessionPrice();
-						if(qmmprice!=null){
-							sessionPrice.setTypeCode(qmmprice.getDataType());
-							sessionPrice.setTypeName(qmmprice.getDataName());
-							sessionPrice.setSettlePrice(qmmprice.getSettlePrice());
-							sessionPrice.setStandardPrice(qmmprice.getPrice());
-							sessionPriceList.add(sessionPrice);
-						}
-					}
-					sessionReply.setPrice(sessionPriceList);
 					sessionReplyList.add(sessionReply);
 				}
 				filmReply.setSession(sessionReplyList);
@@ -211,7 +197,7 @@ public class SessionController {
 		return NetSaleSvcCore.getInstance().QuerySessionSeat(UserName, Password, CinemaCode, SessionCode, Status);
 	}
 	
-	@GetMapping("/QueryFimlSessionPrice/{UserName}/{Password}/{CinemaCode}/{FilmCode}/{StartDate}/{EndDate}")
+	@GetMapping("/QueryFilmSessionPrice/{UserName}/{Password}/{CinemaCode}/{FilmCode}/{StartDate}/{EndDate}")
 	@ApiOperation(value = "获取影片排期价格")
 	public QueryFimlSessionPriceReply QueryFimlSessionPrice(@PathVariable String UserName, @PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String FilmCode, @PathVariable String StartDate,@PathVariable String EndDate){

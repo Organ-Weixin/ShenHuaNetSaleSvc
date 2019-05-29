@@ -272,9 +272,6 @@ public class Dy1905Interface implements ICTMSInterface {
 			if(dy1905Sessions.size()>0){
 				List<Sessioninfo> newSessions = new ArrayList<Sessioninfo>();
 				for (SessionBean cinemaplan : dy1905Sessions) {
-					System.out.println("接口返回时间"+(cinemaplan.getSessionDate().getTime()+cinemaplan.getStartTime().getTime()));
-					System.out.println("开始时间"+StartDate.getTime());
-					System.out.println("结束时间"+EndDate.getTime());
 					if((cinemaplan.getSessionDate().getTime()+cinemaplan.getStartTime().getTime())>=StartDate.getTime()&&(cinemaplan.getSessionDate().getTime()+cinemaplan.getStartTime().getTime())<=(EndDate.getTime()+24*60*60*1000)){
 						Screeninfo screen = screeninfoService.getByScreenId(userCinema.getCinemaCode(), cinemaplan.getScreenNo());
 						Sessioninfo session = new Sessioninfo();// 先创建实例

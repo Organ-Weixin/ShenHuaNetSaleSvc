@@ -16,8 +16,6 @@ public interface MemberCardService {
 	
 	List<Membercard> getByCinemaCodeAndMobilePhone(String cinemacode,String mobilephone);
 	
-	List<Membercard> getByCinemaCodeAndOpenId(String cinemacode,String openid);
-	
 	List<Membercard> getByCinemaCodes(String cinemacodes);
 	
 	List<Membercard> getByCinemaCodeAndOpenID(String cinemacode,String openid);

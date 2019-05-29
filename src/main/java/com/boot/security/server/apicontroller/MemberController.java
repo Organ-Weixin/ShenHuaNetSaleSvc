@@ -386,7 +386,7 @@ public class MemberController {
             return prePayParametersReply;
         }
         //验证此用户是否存在会员卡
-        List<Membercard> membercardList = _memberCardService.getByCinemaCodeAndOpenId(CinemaCode, OpenID);
+        List<Membercard> membercardList = _memberCardService.getByCinemaCodeAndOpenID(CinemaCode, OpenID);
         if(membercardList.size()<=0){
         	prePayParametersReply.SetMemberCardInvalidReply();
         	return prePayParametersReply;
@@ -542,7 +542,7 @@ public class MemberController {
         	queryMemberCardByOpenIDReply.SetCinemaInvalidReply();
             return queryMemberCardByOpenIDReply;
         }
-        List<Membercard> memberCardList = _memberCardService.getByCinemaCodeAndOpenId(CinemaCode, OpenID);
+        List<Membercard> memberCardList = _memberCardService.getByCinemaCodeAndOpenID(CinemaCode, OpenID);
         QueryMemberCardByOpenIDReplyOpenIDCard data = new QueryMemberCardByOpenIDReplyOpenIDCard();
         if(memberCardList.size()>0){
         	data.setCinemaCode(CinemaCode);

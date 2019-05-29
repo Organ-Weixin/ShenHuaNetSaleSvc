@@ -89,6 +89,6 @@ public interface SessioninfoDao {
 	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode=#{filmcode} and t.starttime >= #{startdate} and t.starttime <= #{enddate} group by substr(t.starttime,1,10)")
 	List<Sessioninfo> getSessionDate(@Param("cinemacode") String cinemacode,@Param("filmcode") String filmcode,@Param("startdate") String startdate,@Param("enddate") String enddate);
 	
-	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode = #{filmcode} and substr(t.starttime,1,10) = #{sessiondate}")
+	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode = #{filmcode} and substr(t.starttime,1,10) = #{sessiondate} order by t.starttime asc")
 	List<Sessioninfo> getOneDaySession(@Param("cinemacode") String cinemacode,@Param("filmcode") String filmcode,@Param("sessiondate")String sessiondate);
 }
