@@ -2,6 +2,8 @@ package com.boot.security.server.controller;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +23,17 @@ import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.utils.QmmPriceUtil;
 import com.boot.security.server.utils.UserUtil;
-import com.google.gson.Gson;
 import com.boot.security.server.dao.CinemaDao;
 import com.boot.security.server.dao.QmmpriceDao;
+import com.boot.security.server.dao.ScreeninfoDao;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Qmmprice;
+import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.SysUser;
 
 import io.swagger.annotations.ApiOperation;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 @RestController
 @RequestMapping("/qmmprices")
@@ -38,13 +43,36 @@ public class QmmpriceController {
     private QmmpriceDao qmmpriceDao;
     @Autowired
     private CinemaDao cinemaDao;
+    @Autowired
+    private ScreeninfoDao screeninfoDao;
 
     @PostMapping
     @ApiOperation(value = "保存")
-    public Qmmprice save(@RequestBody Qmmprice qmmprice) {
-    	System.out.println("------"+new Gson().toJson(qmmprice));
-        qmmpriceDao.save(qmmprice);
-
+    public Qmmprice save(@RequestBody Qmmprice qmmprice) throws ParseException {
+    	JSONArray json = JSONArray.fromObject(qmmprice.getCinemaId());
+    	String screencode=null;
+    	String showtime = "";
+    	for(int i=0;i<json.size();i++){
+    		JSONObject obj = JSONObject.fromObject(json.get(i));
+    		screencode = obj.get("screencode").toString();
+    		showtime = obj.get("showtime").toString();
+    		Screeninfo screen = screeninfoDao.getByScreenCode(qmmprice.getCinemaCode(), screencode);
+    		qmmprice.setScreenName(screen.getSName());
+    		qmmprice.setShowTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(showtime));
+    		Qmmprice qmm = qmmpriceDao.getByCinemaCodeAnddatatype(qmmprice.getCinemaCode(), qmmprice.getScreenName(), showtime, qmmprice.getDataType());
+    		if(qmm == null){
+    			qmmprice.setCinemaId("");
+    			qmmprice.setUpdated(new Date());
+    			qmmpriceDao.save(qmmprice);
+    		} else {
+    			qmm.setPrice(qmmprice.getPrice());
+    			qmm.setSettlePrice(qmmprice.getSettlePrice());
+    			qmm.setMinPrice(qmmprice.getMinPrice());
+    			qmm.setUpdated(new Date());
+    			qmmpriceDao.update(qmm);
+    		}
+    	}
+        
         return qmmprice;
     }
 

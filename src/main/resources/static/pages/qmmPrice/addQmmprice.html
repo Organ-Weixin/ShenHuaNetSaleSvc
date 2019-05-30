@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<h1>基础信息</h1>
+			<input type="hidden" name="filmName"  id="filmName"/>
+			<input type="hidden" name="cinemaId"  id="cinemaId"/>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院名称：</label>
+				<div class='col-md-10'>
+					<select class="form-control" name='cinemaCode' id='cinemaCode' onchange='selfilm()' data-bv-notempty='true' data-bv-notempty-message='影院 不能为空'>
+						<option value="">请选择影院...</option>
+					</select>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影片名称：</label>
+				<div class='col-md-10'>
+					<select class="form-control" name='filmCode' id='filmCode' onchange='selshowtime()' data-bv-notempty='true' data-bv-notempty-message='影片 不能为空'>
+						<option value="">请选择影片...</option>
+					</select>
+				</div>
+			</div>
+			<div class='form-group' style="display: none;">
+				<label class='col-md-2 control-label'>影厅名称：</label>
+				<div class='col-md-10'>
+					<input class="form-control" name='screenName' id='screenName' >
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>平台名称：</label>
+				<div class='col-md-10'>
+					<select class="form-control" name='dataType' id='dataType' data-bv-notempty='true' data-bv-notempty-message='平台 不能为空'>
+						<option value="">请选择平台...</option>
+						<option value="36">猫眼</option>
+						<option value="46">百度糯米</option>
+						<option value="49">淘票票</option>
+					</select>
+				</div>
+			</div>
+			<div class='form-group' style="display: none;">
+				<label class='col-md-2 control-label'>dataName</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='dataName' id='dataName' >
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>放映时间：</label>
+				<div class='col-md-10'>
+					<div id="showtimeCheckbox" >
+						
+					</div>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>零售价：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='price' id='price' data-bv-notempty='true' data-bv-notempty-message='price 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>结算价：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='settlePrice' id='settlePrice' data-bv-notempty='true' data-bv-notempty-message='settlePrice 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>最低价：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='minPrice' id='minPrice' >
+				</div>
+			</div>
+
+
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="location.href='qmmpriceList.html'">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="add()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/jq.js"></script>
+<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
+<script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript">
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		});
+		
+		function add() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		  	//获取选中 多选框的值
+		    var sessions=[]; 
+		    $('input[name="checkbox"]:checked').each(function(){
+		    	sessions.push({
+		    		showtime:$(this).val(),
+					screencode:$(this).attr('title')
+	            });
+		    	
+	        })
+	       
+	        $("#cinemaId").val(JSON.stringify(sessions));
+		    $("#filmName").val($("#filmCode option:selected").text());
+		    $("#dataName").val($("#dataType option:selected").text());
+		    var formdata = $("#form").serializeObject();
+
+			$.ajax({
+				type : 'post',
+				url : '/qmmprices',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+						layer.msg("添加成功", {shift: -1, time: 1000}, function(){
+                        location.href = "qmmpriceList.html";
+                    });
+				}
+			});
+		}
+		
+		//获取影院
+		getCinema();
+		function getCinema(){
+			$.ajax({
+		        type:"get",
+		        url:"/cinemas/getCinemas",
+		        success:function(data){
+					for(var i=0; i<data.length;i++){
+						var option = "<option value="+data[i].code+">"+data[i].name+"</option>";
+						$("#cinemaCode").append(option);
+					}
+		        }
+		        
+		    })
+		}
+		
+		//根据影院查询影片
+		function selfilm(){
+			$("#filmCode").html("<option value=''>请选择影片...</option>");
+			$.ajax({
+		        type:"post",
+		        url:"/sessioninfos/getFilmsByCinemaCode",
+		        data:{"cinemacodes":$("#cinemaCode").val()},
+		        success:function(data){
+					for(var i=0; i<data.length;i++){
+						var option = "<option value="+data[i].filmCode+">"+data[i].filmName+"</option>";
+						$("#filmCode").append(option);
+					}
+		        }
+		        
+		    })
+		}
+		
+		//根据影院、影片查场次
+		function selshowtime(){
+			$("#showtimeCheckbox").html("");
+			$.ajax({
+		        type:"post",
+		        url:"/sessioninfos/getByCinemaFilm",
+		        data:{"cinemacode":$("#cinemaCode").val(),"filmcode":$("#filmCode").val()},
+		        success:function(data){
+					for(var i=0; i<data.length;i++){
+						var input = "";
+						if(i >0 && i%5 == 0){
+							input = input +"<br>";
+						}
+						input = input + "<input type='checkbox' style='margin-left:2%' name='checkbox' title="+data[i].screenCode+" value='"+data[i].startTime+"' />&nbsp;&nbsp;"+data[i].startTime;
+						$("#showtimeCheckbox").append(input);
+					}
+		        }
+		        
+		    })
+		}
+		
+</script>
+</body>
+</html>

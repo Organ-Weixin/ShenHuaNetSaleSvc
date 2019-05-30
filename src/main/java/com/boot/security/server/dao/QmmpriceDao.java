@@ -38,6 +38,9 @@ public interface QmmpriceDao {
     @Select("select * from qmmprice t where t.cinemacode = #{cinemacode} and t.screenName = #{screenname} and t.showtime = #{showtime}")
     List<Qmmprice> getByCinemaCodeAndScreenName(@Param("cinemacode") String cinemacode,@Param("screenname") String screenname,@Param("showtime") String showtime);
     
+    @Select("select * from qmmprice t where t.cinemacode = #{cinemacode} and t.screenName = #{screenname} and t.showtime = #{showtime} and t.dataType = #{datatype}")
+    Qmmprice getByCinemaCodeAnddatatype(@Param("cinemacode") String cinemacode,@Param("screenname") String screenname,@Param("showtime") String showtime,@Param("datatype") String datatype);
+    
     //查询所有第三方平台
     @Select("select * from qmmprice group by dataType")
     List<Qmmprice> getDataType();
