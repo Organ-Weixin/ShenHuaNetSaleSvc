@@ -39,18 +39,14 @@ import com.boot.security.server.apicontroller.reply.UserLoginReply;
 import com.boot.security.server.apicontroller.reply.UserLoginReply.UserLoginResult;
 import com.boot.security.server.apicontroller.reply.UserPhoneInput;
 import com.boot.security.server.apicontroller.reply.UserWXResult;
-import com.boot.security.server.dao.AdminorderviewDao;
 import com.boot.security.server.dao.GoodsorderdetailsDao;
-import com.boot.security.server.dao.GoodsorderdetailsviewDao;
 import com.boot.security.server.dao.MiniprogramordersviewDao;
-import com.boot.security.server.model.Adminorderview;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaMiniProgramAccounts;
 import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.Couponsgroup;
 import com.boot.security.server.model.Filminfo;
-import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Miniprogramordersview;
@@ -58,24 +54,20 @@ import com.boot.security.server.model.Registeractive;
 import com.boot.security.server.model.Registeractivecoupons;
 import com.boot.security.server.model.Registercollectionrecord;
 import com.boot.security.server.model.Roomgiftuser;
-import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
-import com.boot.security.server.modelView.Goodsorderdetailsview;
 import com.boot.security.server.service.impl.CinemaMiniProgramAccountsServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
-import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.RegisteractiveServiceImpl;
 import com.boot.security.server.service.impl.RegisteractivecouponsServiceImpl;
 import com.boot.security.server.service.impl.RegistercollectionrecordServiceImpl;
 import com.boot.security.server.service.impl.RoomgiftuserServiceImpl;
-import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
@@ -104,8 +96,6 @@ public class AppUserController {
 	private RoomgiftuserServiceImpl roomgiftuserService;
 	@Autowired
 	private FilminfoServiceImpl _filminfoServiceImpl;
-	@Autowired
-	private  AdminorderviewDao adminorderviewDao;
 	@Autowired
 	private GoodsOrderServiceImpl _goodsOrderService;
 	@Autowired
@@ -203,18 +193,24 @@ public class AppUserController {
         data.setCreated(ticketuser.getCreated()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ticketuser.getCreated()));
         //登陆送优惠券
         if(ticketuser.getOpenID()!=null){
+        	//查询用户是否存在领取记录
         	List<Registercollectionrecord> registercollectionrecordList = registercollectionrecordService.getByOpenID(ticketuser.getOpenID());
         	if(registercollectionrecordList.size()<=0){
+        		//不存在领取记录：获取所有影院的注册送规则
         		List<Registeractive> registeractiveList = registeractiveService.getCanUseRegisterActive();
             	if(registeractiveList.size()>0){
             		int result =0;
             		for(Registeractive registeractive:registeractiveList){
+            			//根据规则编码找到所赠送的优惠券组编码及赠送数量
             			List<Registeractivecoupons> registeractivecouponsList = registeractivecouponsService.getByRegisterActiveCode(registeractive.getRegisterActiveCode());
             			if(registeractivecouponsList.size()>0){
             				for(Registeractivecoupons registeractivecoupons:registeractivecouponsList){
+            					//根据优惠券组编码获取所有未使用的优惠券
             					Couponsgroup couponsgroup = couponsgroupService.getByGroupCode(registeractivecoupons.getGroupCode());
             					if(couponsgroup!=null){
+            						//判断优惠券可发放数量是否大于赠送数量
             						if((couponsgroup.getCouponsNumber()-couponsgroup.getIssuedNumber())>registeractivecoupons.getGiveNumber()){
+            							//是：获取所有未使用的优惠券
                 						List<Coupons> couponsList = couponsService.getCanUseByGroupCode(couponsgroup.getGroupCode());
                 						if(couponsList.size()>0){
                 							for(int i=0; i<registeractivecoupons.getGiveNumber(); i++){
@@ -228,25 +224,29 @@ public class AppUserController {
                 			            		}
                 								coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
                 								coupons.setOpenID(ticketuser.getOpenID());
+                								coupons.setReceiveDate(new Date());
                 								result = couponsService.update(coupons);
                 							}
                 							if(result>0){
                 								//已发放数量
-                				    			couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()+couponsgroup.getIssuedNumber());
+                				    			couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()+registeractivecoupons.getGiveNumber());
                 				    			//已领取数量
-                				    			couponsgroup.setFetchNumber(couponsgroup.getFetchNumber()+couponsgroup.getIssuedNumber());
+                				    			couponsgroup.setFetchNumber(couponsgroup.getFetchNumber()+registeractivecoupons.getGiveNumber());
                 				    			//剩余数量
-                				    			couponsgroup.setRemainingNumber(couponsgroup.getRemainingNumber()-couponsgroup.getIssuedNumber());
+                				    			couponsgroup.setRemainingNumber(couponsgroup.getRemainingNumber()-registeractivecoupons.getGiveNumber());
                 				    			couponsgroup.setUpdateDate(new Date());
                 				    			couponsgroupService.update(couponsgroup);
-                				    			Registercollectionrecord registercollectionrecord = new Registercollectionrecord();
-                	            				registercollectionrecord.setOpenID(ticketuser.getOpenID());
-                	            				registercollectionrecord.setRegisterActiveCode(registeractive.getRegisterActiveCode());
-                	            				registercollectionrecordService.save(registercollectionrecord);
                 							}
                 						}
             						}
             					}
+            				}
+            				if(result>0){
+            					//添加用户领取记录
+            					Registercollectionrecord registercollectionrecord = new Registercollectionrecord();
+	            				registercollectionrecord.setOpenID(ticketuser.getOpenID());
+	            				registercollectionrecord.setRegisterActiveCode(registeractive.getRegisterActiveCode());
+	            				registercollectionrecordService.save(registercollectionrecord);
             				}
             			}
             		}

@@ -841,7 +841,6 @@ public class Dy1905Interface implements ICTMSInterface {
 					membercard.setBalance(cardInfo.getBalance());
 					Date ExpireDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Long.valueOf(cardInfo.getExpireDate()) * 1000)));  
 					membercard.setExpireDate(ExpireDate);
-					membercard.setStatus(0);
 					membercard.setCreateTime(new Date());
 					membercard.setUpdated(new Date());
 					memberCardService.Save(membercard);
@@ -856,7 +855,6 @@ public class Dy1905Interface implements ICTMSInterface {
 					membercard.setBalance(cardInfo.getBalance());
 					Date ExpireDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Long.valueOf(cardInfo.getExpireDate()) * 1000)));  
 					membercard.setExpireDate(ExpireDate);
-					membercard.setStatus(0);
 					membercard.setCreateTime(new Date());
 					membercard.setUpdated(new Date());
 					memberCardService.Update(membercard);

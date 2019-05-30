@@ -780,9 +780,12 @@ public class CxInterface implements ICTMSInterface {
 			membercard.setSex(Sex);
 			membercard.setCreditNum(IDNumber);
 			membercard.setCreateTime(new Date());
+			membercard.setBalance(0.00);
 			membercard.setStatus(0);
 			_membercardService.Save(membercard);
-			
+			reply.setCardNo(MobilePhone);
+			reply.setBalance(0f);
+			reply.setCreateTime(new Date());
             reply.Status = StatusEnum.Success;
         }
         else

@@ -30,11 +30,13 @@ import com.boot.security.server.model.Qmmprice;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Userinfo;
+import com.boot.security.server.modelView.Sessioninfoview;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.QmmpriceServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
+import com.boot.security.server.service.impl.SessioninfoviewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 
 import io.swagger.annotations.ApiOperation;
@@ -54,6 +56,8 @@ public class SessionController {
 	private ScreeninfoServiceImpl _screeninfoService;
 	@Autowired
 	private QmmpriceServiceImpl _qmmpriceService;
+	@Autowired
+	private SessioninfoviewServiceImpl _sessioninfoviewService;
 	@GetMapping("/QueryFilmSessions/{UserName}/{Password}/{CinemaCode}/{StartDate}/{EndDate}")
 	@ApiOperation(value = "获取场次影片信息")
 	public QueryFilmSessionsReply QueryFilmSessions(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
@@ -237,12 +241,20 @@ public class SessionController {
 				List<QueryFimlSessionPriceReplySessionDate> sessionDateReplyList = new ArrayList<QueryFimlSessionPriceReplySessionDate>();
 				for(Sessioninfo sessioninfo:sessioninfoList){
 					QueryFimlSessionPriceReplySessionDate sessionDateReply = new QueryFimlSessionPriceReplySessionDate();
-					sessionDateReply.setSessionDate(new SimpleDateFormat("yyyy-MM-dd").format(sessioninfo.getStartTime()));
+					String today = "";
+					if(new SimpleDateFormat("yyyy-MM-dd").format(sessioninfo.getStartTime()).equals(new SimpleDateFormat("yyyy-MM-dd").format(new Date()))){
+						today = " 今天";
+					}
+					sessionDateReply.setSessionDate(new SimpleDateFormat("MM-dd").format(sessioninfo.getStartTime())+today);
 					sessionDateReplyList.add(sessionDateReply);
 					List<Sessioninfo> oneDateSessionList = _sessionInfoService.getOneDaySession(sessioninfo.getCCode(), sessioninfo.getFilmCode(), new SimpleDateFormat("yyyy-MM-dd").format(sessioninfo.getStartTime()));
 					List<QueryFimlSessionPriceReplySession> sessionReplyList = new ArrayList<QueryFimlSessionPriceReplySession>();
 					for(Sessioninfo oneDateSession:oneDateSessionList){
 						QueryFimlSessionPriceReplySession sessionReply = new QueryFimlSessionPriceReplySession();
+						Sessioninfoview sessioninfoview = _sessioninfoviewService.getByCinemaCodeAndSessionCode(oneDateSession.getCCode(), oneDateSession.getSCode());
+						if(sessioninfoview!=null){
+							sessionReply.setMemberPrice(sessioninfoview.getMemberPrice());
+						}
 						sessionReply.setScreenCode(oneDateSession.getScreenCode());
 						sessionReply.setSessionCode(oneDateSession.getSCode());
 						Screeninfo screeninfo = _screeninfoService.getByScreenCode(oneDateSession.getCCode(), oneDateSession.getScreenCode());
@@ -250,7 +262,7 @@ public class SessionController {
 							sessionReply.setScreenName(screeninfo.getSName());
 						}
 						sessionReply.setLanguage(oneDateSession.getLanguage());
-						sessionReply.setSessionTime(new SimpleDateFormat("HH:mm").format(oneDateSession.getStartTime()));
+						sessionReply.setBeginTime(new SimpleDateFormat("HH:mm").format(oneDateSession.getStartTime()));
 						if(data.getDuration()!=null&&data.getDuration()!=""&&oneDateSession.getStartTime()!=null){
 							String endtime = String.valueOf(oneDateSession.getStartTime().getTime()+Integer.valueOf(data.getDuration())*60*1000);
 							SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");

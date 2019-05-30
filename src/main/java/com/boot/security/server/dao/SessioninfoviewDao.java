@@ -19,4 +19,7 @@ public interface SessioninfoviewDao {
     int count(@Param("params") Map<String, Object> params);
 
     List<Sessioninfoview> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    
+    @Select("select * from sessioninfoview t where t.cinemacode = #{cinemacode} and t.scode = #{sessioncode}")
+    Sessioninfoview getByCinemaCodeAndSessionCode(@Param("cinemacode")String cinemacode,@Param("sessioncode")String sessioncode);
 }

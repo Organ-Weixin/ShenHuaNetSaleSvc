@@ -88,7 +88,8 @@ public class QueryFimlSessionPriceReply extends BaseReply{
 				private String Language;
 				private Double SettlePrice;
 				private Double StandardPrice;
-				private String SessionTime;
+				private Double MemberPrice;
+				private String BeginTime;
 				private String EndTime;
 				private List<QueryFimlSessionPriceReplySessionPrice> SessionPrice;
 				public String getSessionCode() {
@@ -127,11 +128,17 @@ public class QueryFimlSessionPriceReply extends BaseReply{
 				public void setStandardPrice(Double standardPrice) {
 					StandardPrice = standardPrice;
 				}
-				public String getSessionTime() {
-					return SessionTime;
+				public Double getMemberPrice() {
+					return MemberPrice;
 				}
-				public void setSessionTime(String sessionTime) {
-					SessionTime = sessionTime;
+				public void setMemberPrice(Double memberPrice) {
+					MemberPrice = memberPrice;
+				}
+				public String getBeginTime() {
+					return BeginTime;
+				}
+				public void setBeginTime(String beginTime) {
+					BeginTime = beginTime;
 				}
 				public String getEndTime() {
 					return EndTime;
