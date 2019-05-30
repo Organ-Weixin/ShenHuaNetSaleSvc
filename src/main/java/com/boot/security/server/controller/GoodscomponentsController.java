@@ -1,5 +1,7 @@
 package com.boot.security.server.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,9 @@ import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.utils.UserUtil;
+import com.boot.security.server.dao.GoodsDao;
 import com.boot.security.server.dao.GoodscomponentsDao;
+import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.Goodscomponents;
 import com.boot.security.server.model.SysUser;
 
@@ -32,25 +36,44 @@ public class GoodscomponentsController {
 
     @Autowired
     private GoodscomponentsDao goodscomponentsDao;
+    @Autowired
+    private GoodsDao goodsDao;
 
     @PostMapping
     @ApiOperation(value = "保存")
     public Goodscomponents save(@RequestBody Goodscomponents goodscomponents) {
-    	String timestamp=String.valueOf(System.currentTimeMillis());
+    	String str = new SimpleDateFormat("yyyymmddHHmmss").format(new Date());
+    	int num = (int)((Math.random()*9+1)*100);
+    	str = str +String.valueOf(num);
     	String[] countlist = goodscomponents.getGoodsCount().split(",");
     	
     	JSONArray jsonArray = JSONArray.fromObject(goodscomponents.getGoodsCode());
     	for(int i=0; i<jsonArray.size(); i++){
     		JSONObject obj = JSONObject.fromObject(jsonArray.get(i));
-    		goodscomponents.setPackageCode(timestamp);
+    		goodscomponents.setPackageCode(str);
     		goodscomponents.setGoodsCode(obj.get("goodCode").toString());
     		goodscomponents.setGoodsName(obj.get("goodsName").toString());
     		goodscomponents.setGoodsStandardPrice(Double.valueOf(obj.get("standardPrice").toString()));
     		goodscomponents.setGoodsSettlePrice(Double.valueOf(obj.get("settlePrice").toString()));
     		goodscomponents.setGoodsCount(countlist[i]);
-    		goodscomponentsDao.save(goodscomponents);
+    		goodscomponentsDao.save(goodscomponents);	//保存到套餐表
     	}
         
+    	Goods goods = new Goods();
+    	goods.setCinemaCode(goodscomponents.getCinemaCode());
+    	goods.setGoodsCode(str);
+    	goods.setGoodsName(goodscomponents.getPackageName());
+    	goods.setGoodsType(goodscomponents.getGoodsType());
+    	goods.setStandardPrice(goodscomponents.getPackageStandardPrice());
+    	goods.setSettlePrice(goodscomponents.getPackageSettlePrice());
+    	goods.setGoodsPic(goodscomponents.getPackagePic());
+    	goods.setShowSeqNo(goodscomponents.getSort());
+    	goods.setGoodsStatus(goodscomponents.getStatus());
+    	goods.setIsRecommand(1);
+    	goods.setIsPackage(1);
+    	goods.setUpdated(new Date());
+    	goodsDao.save(goods);	//保存到卖品表
+    	
         return goodscomponents;
     }
 

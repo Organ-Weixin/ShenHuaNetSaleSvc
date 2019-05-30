@@ -18,11 +18,9 @@
 	                   			<td>
 		                   			<form class="form-inline" onsubmit="return false">
 										<div class="form-group">
-											渠道：
 											<select class="form-control input-sm" id="channel" style="width:150px;">
 												<option value="">渠道</option>
 											</select>
-											影院：
 											<select class="form-control input-sm" id="cinema" style="width:150px;" >
 												<option value="">影院</option>
 											</select>
@@ -47,14 +45,14 @@
                 
                 <div>
                     <div class="widget-body no-padding">
-                        <table id="dt-table" class="table table-striped table-bordered table-hover" style="width:100%">
+                        <table id="dt-table" class="table table-striped table-bordered table-hover" style="width:140%">
                             <thead>
                                 <tr>
                                 </tr>                       
                                 <tr>
 									<th>#</th>
 									<th width="8%">影院名称</th>
-									<th width="8%">渠道名称</th>
+									<th width="6%">渠道名称</th>
 									<th>影片名称</th>
 									<th>影厅名称</th>
 									<th>放映时间</th>
@@ -66,6 +64,7 @@
 									<th>增值服务费</th>
 									<th>影院补贴</th>
 									<th>设置价</th>
+									<th>会员价</th>
 									<th width="6%">操作</th>
                                 </tr>
                             </thead>
@@ -138,6 +137,19 @@
 	                        return price;
 	                  	}
 					},
+					{
+						"data" : "memberPrice", 
+						"defaultContent" : "0",
+						"render": function (data, type, row) {
+	                		var memberPrice = row['memberPrice'];
+	                		if(memberPrice == null){
+	                			memberPrice = 0;
+	                		}
+	                		var str = "<span style='color:red'>"+memberPrice+"</span>"
+	                      
+	                        return str;
+	                  	}
+					},
 					{ 
 						"data": "", 
 						"sDefaultContent": "",
@@ -154,7 +166,7 @@
 					},
 	                
 	            ],
-	           "order": [[ 1, "asc" ]]
+	           "order": [[ 0, "asc" ]]
 	        } );
 	}
 	

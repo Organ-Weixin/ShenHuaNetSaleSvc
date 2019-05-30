@@ -80,7 +80,7 @@ public interface SessioninfoDao {
     List<Sessioninfo> getByFilmName(@Param("cinemacode") String cinemacode,@Param("startDate") String startDate,@Param("endDate") String endDate);
     
     //根据影院编码和影片编码查询排期
-	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode=#{filmcode}")
+	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode=#{filmcode} order by startTime asc")
     List<Sessioninfo> getByCinemaCodeAndFilmCode(@Param("cinemacode") String cinemacode,@Param("filmcode") String filmcode);
 	
 	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode=#{filmcode} and t.starttime >= #{startdate} and t.starttime <= #{enddate}")

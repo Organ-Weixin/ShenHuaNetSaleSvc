@@ -21,6 +21,7 @@ public class Goodscomponents {
 		
 	private String RecommendName;	//后台需要
 	private String cinemaName;
+	private String GoodsType;
 
 	public Long getId() {
 		return Id;
@@ -129,6 +130,12 @@ public class Goodscomponents {
 	}
 	public void setCinemaName(String cinemaName) {
 		this.cinemaName = cinemaName;
+	}
+	public String getGoodsType() {
+		return GoodsType;
+	}
+	public void setGoodsType(String goodsType) {
+		GoodsType = goodsType;
 	}
 	
 }

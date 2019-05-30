@@ -30,7 +30,7 @@ public interface PriceplanDao {
 
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into priceplan(CinemaCode, Code, UserID, Price, TicketFee, AddFee, CinemaAllowance, Type) values(#{CinemaCode}, #{Code}, #{UserID}, #{Price}, #{TicketFee}, #{AddFee}, #{CinemaAllowance}, #{Type})")
+    @Insert("insert into priceplan(CinemaCode, Code, UserID, Price, MemberPrice, TicketFee, AddFee, CinemaAllowance, Type) values(#{CinemaCode}, #{Code}, #{UserID}, #{Price}, #{MemberPrice}, #{TicketFee}, #{AddFee}, #{CinemaAllowance}, #{Type})")
     int save(Priceplan priceplan);
     
     int updatePriceplan(Priceplan priceplan);

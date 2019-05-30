@@ -7,7 +7,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,8 +28,9 @@ import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.NetSaleQueryJson;
 import com.boot.security.server.apicontroller.reply.PrePayGoodsOrderQueryJson;
 import com.boot.security.server.apicontroller.reply.PrePayGoodsOrderQueryJson.PrePayGoodsOrderQueryJsonGoods;
-import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson;
 import com.boot.security.server.apicontroller.reply.PrePayParametersReply;
+import com.boot.security.server.apicontroller.reply.QueryComponentsReply;
+import com.boot.security.server.apicontroller.reply.QueryComponentsReply.ComponetsReply;
 import com.boot.security.server.apicontroller.reply.QueryGoodsOrderReply;
 import com.boot.security.server.apicontroller.reply.QueryGoodsOrderReply.QueryGoodsOrderReplyOrder;
 import com.boot.security.server.apicontroller.reply.QueryGoodsReply;
@@ -42,7 +42,6 @@ import com.boot.security.server.apicontroller.reply.QueryGoodsTypeReply.QueryGoo
 import com.boot.security.server.apicontroller.reply.QueryLocalGoodsOrderReply.QueryLocalGoodsOrderReplyOrder;
 import com.boot.security.server.apicontroller.reply.QueryLocalGoodsOrderReply;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
-import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson.PrePayOrderQueryJsonSeat;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Cinemapaymentsettings;
 import com.boot.security.server.model.Coupons;
@@ -51,16 +50,12 @@ import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
+import com.boot.security.server.model.Goodscomponents;
 import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Goodstype;
 import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
-import com.boot.security.server.model.OrderView;
-import com.boot.security.server.model.Orders;
-import com.boot.security.server.model.Orderseatdetails;
-import com.boot.security.server.model.Priceplan;
-import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
@@ -69,6 +64,7 @@ import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.GoodsTypeServiceImpl;
+import com.boot.security.server.service.impl.GoodscomponentsServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.WxPayUtil;
@@ -94,6 +90,8 @@ public class AppGoodsController {
 	private UserCinemaViewServiceImpl _userCinemaViewService;
 	@Autowired
 	private CinemapaymentsettingsServiceImpl _cinemapaymentsettingsService;
+	@Autowired
+	private GoodscomponentsServiceImpl goodscomponentsService;
 	@Autowired
 	private CouponsServiceImpl _couponsService;
 	@Autowired
@@ -320,6 +318,46 @@ public class AppGoodsController {
         return queryGoodsTypeReply;
 	}
 	//endregion
+	
+	@GetMapping("/QueryComponents/{username}/{password}/{cinemaCode}/{seatNum}")
+	@ApiOperation(value = "查询推荐套餐")
+	public QueryComponentsReply QueryComponents(@PathVariable String username, @PathVariable String password, 
+			@PathVariable String cinemaCode, @PathVariable String seatNum){
+		QueryComponentsReply reply=new QueryComponentsReply();
+		//校验参数
+        if (!ReplyExtension.RequestInfoGuard(reply,username, password, cinemaCode, seatNum)) {
+            return reply;
+        }
+        //获取用户信息(渠道)
+        Userinfo UserInfo = _userInfoService.getByUserCredential(username, password);
+        if (UserInfo == null) {
+        	reply.SetUserCredentialInvalidReply();
+            return reply;
+        }
+        //验证影院是否存在且可访问
+        Cinema cinema = _cinemaService.getByCinemaCode(cinemaCode);
+        if (cinema == null) {
+        	reply.SetCinemaInvalidReply();
+            return reply;
+        }
+        
+        //返回
+        List<ComponetsReply> data = new ArrayList<ComponetsReply>();
+        List<Goodscomponents> componentslist = goodscomponentsService.getByRecommendCode(cinemaCode, seatNum);
+        for(Goodscomponents component : componentslist){
+        	ComponetsReply newComponent = new ComponetsReply();
+        	newComponent.setPackageCode(component.getPackageCode());
+        	newComponent.setPackageName(component.getPackageName());
+        	newComponent.setPackagePic(component.getPackagePic());
+        	newComponent.setPackageStandarPrice(component.getPackageStandardPrice());
+        	newComponent.setPackageSettlePrice(component.getPackageSettlePrice());
+        	data.add(newComponent);
+        }
+        reply.setData(data);
+        reply.SetSuccessReply();
+        
+        return reply;
+	}
 	
 	//region 微信预支付卖品订单（准备微信支付参数）
 	@RequestMapping(value="/PrePayGoodsOrder",method = RequestMethod.POST)

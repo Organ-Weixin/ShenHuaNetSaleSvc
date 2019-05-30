@@ -1,7 +1,6 @@
 package com.boot.security.server.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -74,5 +73,11 @@ public class SessioninfoController{
     @RequestMapping("/getFilmsByCinemaCode")
     public List<Sessioninfo> getFilmsByCinemaCode(@RequestParam("cinemacodes") String cinemacodes){
     	return sessioninfoService.getFilmsByCinemaCode(cinemacodes);
+    }
+    
+    @RequestMapping("/getByCinemaFilm")
+    @ApiOperation(value = "根据影院、影片查询场次")
+    public List<Sessioninfo> getByCinemaFilm(@RequestParam("cinemacode") String cinemacode,@RequestParam("filmcode") String filmcode){
+    	return sessioninfoService.getByCinemaCodeAndFilmCode(cinemacode, filmcode);
     }
 }

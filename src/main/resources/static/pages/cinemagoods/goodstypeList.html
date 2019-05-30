@@ -19,8 +19,8 @@
 		                   			<form class="form-inline" onsubmit="return false">
 										<div class="form-group">
 											影院：
-											<select class="form-control input-sm" id="CinemaCode" style="width:150px;" >
-												<option value="" >选择影院</option>
+											<select class="form-control input-sm" id="CinemaCode" style="width:160px;" >
+												
 											</select>
 											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
 										</div>
@@ -171,9 +171,6 @@
 				for(var i=0; i<data.length;i++){
 					var option = "<option value="+data[i].code+">"+data[i].name+"</option>";
 					$("#CinemaCode").append(option);
-				}
-				if(code == null){
-					code = data[0].code;
 				}
 	        },
 	        error:function(){

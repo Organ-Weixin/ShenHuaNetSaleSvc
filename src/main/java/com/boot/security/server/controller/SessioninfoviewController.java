@@ -82,6 +82,7 @@ public class SessioninfoviewController {
     	priceplan.setTicketFee(Double.parseDouble(map.get("ticketFee").toString()));
     	priceplan.setAddFee(Double.parseDouble(map.get("addFee").toString()));
     	priceplan.setCinemaAllowance(Double.parseDouble(map.get("cinemaAllowance").toString()));
+    	priceplan.setMemberPrice(Double.parseDouble(map.get("memberPrice").toString()));
     	String type=map.get("type").toString();
     	if("1".equals(type)){
     		priceplan.setCode(map.get("scode").toString());
@@ -94,9 +95,11 @@ public class SessioninfoviewController {
     	Priceplan p = priceplanDao.selectPrice(priceplan);
     	if(p == null){
     		priceplanDao.save(priceplan);
+    	} else {
+    		priceplanDao.updatePriceplan(priceplan);
     	}
     	
-        return priceplanDao.updatePriceplan(priceplan);
+        return 1;
     }
     
     @PostMapping("/getCompany")

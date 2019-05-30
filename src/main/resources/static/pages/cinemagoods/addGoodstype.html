@@ -168,10 +168,15 @@
 		        url:"/cinemas/getCinemas",
 		        success:function(data){
 					for(var i=0; i<data.length;i++){
-						var input = "<input type='checkbox' name='checkbox' value="+data[i].code+" />&nbsp;&nbsp;"+data[i].name;
+						var input = "";
+						if(i >0 && i%5 == 0){
+							input = input +"<br>";
+						}
+						input = input + "<input type='checkbox' style='margin-left:2%' name='checkbox' value="+data[i].code+" />&nbsp;"+data[i].name;
 						$("#CinameCheckbox").append(input);
-						
 					}
+					
+					$("input:checkbox[name='checkbox'][value='"+cinemaCode+"']").prop("checked","checked");
 		        },
 		        error:function(){
 		            J.alert('Error');

@@ -186,8 +186,8 @@
 		}
 		
 		//获取影院的商品分类
-		getCinema();
-		function getCinema(){
+		getGoodsType();
+		function getGoodsType(){
 			$.ajax({
 		        type:"get",
 		        url:"/goodstypes/getTypes/"+$('#CinemaCode').val(),

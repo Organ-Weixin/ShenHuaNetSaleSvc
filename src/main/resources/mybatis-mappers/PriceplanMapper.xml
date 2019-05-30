@@ -66,6 +66,9 @@
 			<if test="Price != null">
 				Price = #{Price}, 
 			</if>
+			<if test="MemberPrice != null">
+				MemberPrice = #{MemberPrice}, 
+			</if>
 			<if test="TicketFee != null">
 				TicketFee = #{TicketFee}, 
 			</if>

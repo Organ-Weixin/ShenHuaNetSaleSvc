@@ -13,6 +13,13 @@
 			<input type="hidden" name="cinemaCode"  id="CinemaCode"/>
 			<input type="hidden" name="goodsCount"  id="GoodsCount"/>
 			<div class='form-group'>
+				<input type="hidden" name="goodsType"  id="GoodsType"/>
+				<label class='col-md-2 control-label'>商品分类：</label>
+				<div class='col-md-10' id='typeradio'>
+					
+				</div>
+			</div>
+			<div class='form-group'>
 				<label class='col-md-2 control-label'>套餐名称：</label>
 				<div class='col-md-10'>
 					<input class='form-control' type='text' name='packageName' id='PackageName' data-bv-notempty='true' data-bv-notempty-message='套餐名称 不能为空'>
@@ -163,7 +170,7 @@
 <script type="text/javascript" src="../../layui/layui.js"></script>
 <script type="text/javascript">
 	
-	layui.use([ "jquery", "upload", "form", "layer", "element" ],function() {
+		layui.use([ "jquery", "upload", "form", "layer", "element" ],function() {
 		var $ = layui.$, element = layui.element, layer = layui.layer, upload = layui.upload, form = layui.form;
 		//拖拽上传
 		var uploadInst = upload.render({
@@ -208,6 +215,7 @@
 	});
 
 	$("#CinemaCode").val(getUrlParam('cinemaCode'));
+
 	//返回上一页面
 	function goback(){
 		window.location.href = 'goodscomponentsList.html?cinemaCode='+$("#CinemaCode").val();
@@ -226,8 +234,10 @@
 	    $("#selectedgoods>div").each(function(){
 	    	counts.push($(this).find("input[name='count']").val());
         }); 
-	    $("#GoodsCode").val(JSON.stringify(json));
 	    $("#GoodsCount").val(counts);
+	    $("#GoodsCode").val(JSON.stringify(json));
+	    $("#GoodsType").val($("input[type='radio']:checked").val());
+	    
 	    var formdata = $("#form").serializeObject();
 
 		$.ajax({
@@ -242,6 +252,23 @@
 			}
 		});
 	}
+	
+	//获取影院的商品分类
+	getGoodsType();
+	function getGoodsType(){
+		$.ajax({
+	        type:"get",
+	        url:"/goodstypes/getTypes/"+$('#CinemaCode').val(),
+	        success:function(data){
+				for(var i=0; i<data.length;i++){
+					var input = "<input type='radio' name='radio' value="+data[i].typeCode+" />"+data[i].typeName+"&nbsp;&nbsp;";
+					$("#typeradio").append(input);
+				}
+				
+	        }
+	    })
+	}
+	
 	
 	//选择商品-弹窗
 	$("#getGoods").click(function(){

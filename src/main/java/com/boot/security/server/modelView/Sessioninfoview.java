@@ -23,6 +23,7 @@ public class Sessioninfoview {
 	private Double AddFee;
 	private Double CinemaAllowance;
 	private Double Price;
+	private Double MemberPrice;
 	
 	private Date EndTime;
 	
@@ -146,6 +147,12 @@ public class Sessioninfoview {
 	}
 	public void setEndTime(Date endTime) {
 		EndTime = endTime;
+	}
+	public Double getMemberPrice() {
+		return MemberPrice;
+	}
+	public void setMemberPrice(Double memberPrice) {
+		MemberPrice = memberPrice;
 	}
 	
 }

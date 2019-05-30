@@ -21,6 +21,7 @@ import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.utils.QmmPriceUtil;
 import com.boot.security.server.utils.UserUtil;
+import com.google.gson.Gson;
 import com.boot.security.server.dao.CinemaDao;
 import com.boot.security.server.dao.QmmpriceDao;
 import com.boot.security.server.model.Cinema;
@@ -41,6 +42,7 @@ public class QmmpriceController {
     @PostMapping
     @ApiOperation(value = "保存")
     public Qmmprice save(@RequestBody Qmmprice qmmprice) {
+    	System.out.println("------"+new Gson().toJson(qmmprice));
         qmmpriceDao.save(qmmprice);
 
         return qmmprice;
