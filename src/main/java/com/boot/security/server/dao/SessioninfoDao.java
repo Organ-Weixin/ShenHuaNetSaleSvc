@@ -76,19 +76,19 @@ public interface SessioninfoDao {
     List<Sessioninfo> getByCinemafilm(@Param("cinemacode")String cinemacode, @Param("filmcode")String filmcode);
 
     //小程序-新分组查询电影排期
-    @Select("select * from sessioninfo t where t.CCode = #{cinemacode} and t.StartTime>=#{startDate} and t.StartTime<=#{endDate} GROUP BY filmcode")
-    List<Sessioninfo> getByFilmName(@Param("cinemacode") String cinemacode,@Param("startDate") String startDate,@Param("endDate") String endDate);
+    @Select("select * from sessioninfo t where t.CCode = #{cinemacode} and t.StartTime>=#{startDate} GROUP BY filmcode")
+    List<Sessioninfo> getByFilmName(@Param("cinemacode") String cinemacode,@Param("startDate") String startDate);
     
     //根据影院编码和影片编码查询排期
 	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode=#{filmcode} order by startTime asc")
     List<Sessioninfo> getByCinemaCodeAndFilmCode(@Param("cinemacode") String cinemacode,@Param("filmcode") String filmcode);
 	
-	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode=#{filmcode} and t.starttime >= #{startdate} and t.starttime <= #{enddate}")
-	List<Sessioninfo> getByCinemaCodeAndFilmCodeAndTime(@Param("cinemacode") String cinemacode,@Param("filmcode") String filmcode,@Param("startdate") String startdate,@Param("enddate") String enddate);
+	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode=#{filmcode} and t.starttime >= #{startdate}")
+	List<Sessioninfo> getByCinemaCodeAndFilmCodeAndTime(@Param("cinemacode") String cinemacode,@Param("filmcode") String filmcode,@Param("startdate") String startdate);
 	
-	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode=#{filmcode} and t.starttime >= #{startdate} and t.starttime <= #{enddate} group by substr(t.starttime,1,10)")
-	List<Sessioninfo> getSessionDate(@Param("cinemacode") String cinemacode,@Param("filmcode") String filmcode,@Param("startdate") String startdate,@Param("enddate") String enddate);
+	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode=#{filmcode} and t.starttime >= #{startdate} group by substr(t.starttime,1,10)")
+	List<Sessioninfo> getSessionDate(@Param("cinemacode") String cinemacode,@Param("filmcode") String filmcode,@Param("startdate") String startdate);
 	
-	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode = #{filmcode} and substr(t.starttime,1,10) = #{sessiondate} order by t.starttime asc")
+	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode = #{filmcode} and t.starttime >=now() and substr(t.starttime,1,10) = #{sessiondate} order by t.starttime asc")
 	List<Sessioninfo> getOneDaySession(@Param("cinemacode") String cinemacode,@Param("filmcode") String filmcode,@Param("sessiondate")String sessiondate);
 }

@@ -43,4 +43,7 @@ public interface CinemaDao {
     //查询卖品管理的影院信息
     int goodscount(@Param("params") Map<String, Object> params);
     List<Cinema> goodslist(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    
+    @Select("select * from cinema")
+    List<Cinema> AllCinema();
 }

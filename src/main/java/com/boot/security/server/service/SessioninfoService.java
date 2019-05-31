@@ -34,13 +34,13 @@ public interface SessioninfoService {
 
 	List<Sessioninfo> getByCinemafilm(String cinemacode,String filmcode);
 	
-	List<Sessioninfo> getByFilmName(String cinemacode,String startDate,String endDate);
+	List<Sessioninfo> getByFilmName(String cinemacode,String startDate);
 	
 	List<Sessioninfo> getByCinemaCodeAndFilmCode(String cinemacode,String filmcode);
 	
-	List<Sessioninfo> getByCinemaCodeAndFilmCodeAndTime(String cinemacode,String filmcode,String startdate,String enddate);
+	List<Sessioninfo> getByCinemaCodeAndFilmCodeAndTime(String cinemacode,String filmcode,String startdate);
 	
-	List<Sessioninfo> getSessionDate(String cinemacode,String filmcode,String startdate,String enddate);
+	List<Sessioninfo> getSessionDate(String cinemacode,String filmcode,String startdate);
 	
 	List<Sessioninfo> getOneDaySession(String cinemacode,String filmcode,String sessiondate);
 

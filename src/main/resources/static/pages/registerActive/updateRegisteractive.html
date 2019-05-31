@@ -68,24 +68,6 @@
 	<script type="text/javascript" src="../../js/common.js"></script>
 	<script type="text/javascript" src="../../layui/layui.js"></script>
 	<script type="text/javascript">
-	window.onload=function(){
-		//获取登陆人的对应影院的优惠券
-		getCouponGroups($("#cinemacode").val());
-		function getCouponGroups(cinemacode){
-			$.ajax({
-				url:'/couponsgroups/getCouponGroups?cinemacode='+cinemacode,
-				type:'post',
-				success:function(data){
-					for(var i=0; i<data.length; i++){
-						var option = "<option value='"+data[i].groupCode+"' title='"+data[i].couponsName+"'>"+data[i].couponsName+"</option>";
-						$("select[name='couponSelect']").each(function(){
-							$(this).append(option);
-						});
-					}
-				}
-			});
-		}
-	}
 		layui.use(['layer','laydate'], function(){
 		    var layer = layui.layer;
 		});
@@ -140,7 +122,23 @@
 				async : false,
 				success : function(data) {
 					$("#cinemacode").val(data.cinemaCode);
+					getCouponGroups(data.cinemaCode);
 					initData(data.cinemaCode);
+				}
+			});
+		}
+		//获取登陆人的对应影院的优惠券
+		function getCouponGroups(cinemacode){
+			$.ajax({
+				url:'/couponsgroups/getCouponGroups?cinemacode='+cinemacode,
+				type:'post',
+				success:function(data){
+					for(var i=0; i<data.length; i++){
+						var option = "<option value='"+data[i].groupCode+"' title='"+data[i].couponsName+"'>"+data[i].couponsName+"</option>";
+						$("select[name='couponSelect']").each(function(){
+							$(this).append(option);
+						});
+					}
 				}
 			});
 		}
@@ -153,7 +151,9 @@
 						$('#Id').val(data.id);
 						$('#RegisterActiveCode').val(data.registerActiveCode);
 						$('#ActivePictureUrl').val(data.activePictureUrl);
-						$('#preview').attr("src",data.activePictureUrl);
+						if(data.activePictureUrl!=null){
+							$('#preview').attr("src",data.activePictureUrl);
+						}
 						$('#UpdatedTime').val(data.updatedTime);
 						$('#Status').val(data.status);
 						getByRegisterActiveCode(data.registerActiveCode);
@@ -179,6 +179,7 @@
 					for(var i=0; i<data.length; i++){
 						groupCodes.push(data[i].groupCode);
 						giveNumbers.push(data[i].giveNumber);
+						$("select[name='couponSelect']").eq(i).val(groupCodes[i]);
 						$(".giveNumber").eq(i).val(giveNumbers[i]);
 					}
 					$("#groupCodes").val(groupCodes);
@@ -254,9 +255,8 @@
 					}
 				});
 		    }
-			
 		}
-		
+		alert("正在加载...");
 	</script>
 </body>
 </html>

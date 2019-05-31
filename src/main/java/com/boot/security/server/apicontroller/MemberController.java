@@ -544,9 +544,9 @@ public class MemberController {
         }
         List<Membercard> memberCardList = _memberCardService.getByCinemaCodeAndOpenID(CinemaCode, OpenID);
         QueryMemberCardByOpenIDReplyOpenIDCard data = new QueryMemberCardByOpenIDReplyOpenIDCard();
+        data.setCinemaCode(CinemaCode);
+        data.setMemberPhoneCount(memberCardList.size());
         if(memberCardList.size()>0){
-        	data.setCinemaCode(CinemaCode);
-        	data.setMemberPhoneCount(String.valueOf(memberCardList.size()));
         	List<QueryMemberCardByOpenIDReplyOpenIDMemberCard> cardReplyList = new ArrayList<>();
         	for(Membercard memberCard: memberCardList){
         		QueryMemberCardByOpenIDReplyOpenIDMemberCard cardReply = new QueryMemberCardByOpenIDReplyOpenIDMemberCard();

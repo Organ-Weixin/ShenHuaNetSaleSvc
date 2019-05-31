@@ -14,7 +14,7 @@ public class QueryMemberCardByOpenIDReply extends BaseReply{
 	}
 	public static class QueryMemberCardByOpenIDReplyOpenIDCard{
 		private String CinemaCode;
-		private String MemberPhoneCount;
+		private int MemberPhoneCount;
 		private List<QueryMemberCardByOpenIDReplyOpenIDMemberCard> MemberCard;
 		public String getCinemaCode() {
 			return CinemaCode;
@@ -22,10 +22,10 @@ public class QueryMemberCardByOpenIDReply extends BaseReply{
 		public void setCinemaCode(String cinemaCode) {
 			CinemaCode = cinemaCode;
 		}
-		public String getMemberPhoneCount() {
+		public int getMemberPhoneCount() {
 			return MemberPhoneCount;
 		}
-		public void setMemberPhoneCount(String memberPhoneCount) {
+		public void setMemberPhoneCount(int memberPhoneCount) {
 			MemberPhoneCount = memberPhoneCount;
 		}
 		public List<QueryMemberCardByOpenIDReplyOpenIDMemberCard> getMemberCard() {

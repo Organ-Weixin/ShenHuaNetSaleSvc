@@ -79,36 +79,6 @@
 var pers = checkPermission();
 var enabled = showDictSelect("status", "enabled", true);
 
-//获取登陆人信息
-initUser();
-function initUser(){
-	$.ajax({
-		type : 'get',
-		url : '/users/current',
-		async : false,
-		success : function(data) {
-			getCinemaCodes(data.id,data.roleId);
-		}
-	});
-}
-//获取登陆人的所有影院的影院编码
-function getCinemaCodes(id,roleId){
-	$.ajax({
-		url:'/users/getCinemaName',
-		data:{"id":id,"roleId":roleId},
-		type:'post',
-		success:function(data){
-			var cinemacodes = "";
-			for(var i=0; i<data.length; i++){
-				cinemacodes += data[i].cinemaCode+",";
-				var option = "<option value="+data[i].cinemaCode+">"+data[i].cinemaName+"</option>";
-				$("#cinemaName").append(option);
-			}
-			$("#cinemacodes").val(cinemacodes.substring(0,cinemacodes.length-1));
-			example.ajax.reload();
-		}
-	})
-}
 $("#cinemaName").blur(function(){
 	example.ajax.reload();
 });
@@ -235,4 +205,36 @@ $("#StatusSelect").blur(function(){
 	example.ajax.reload();
 });
 init();
+
+
+//获取登陆人信息
+initUser();
+function initUser(){
+	$.ajax({
+		type : 'get',
+		url : '/users/current',
+		async : false,
+		success : function(data) {
+			getCinemaCodes(data.id,data.roleId);
+		}
+	});
+}
+//获取登陆人的所有影院的影院编码
+function getCinemaCodes(id,roleId){
+	$.ajax({
+		url:'/users/getCinemaName',
+		data:{"id":id,"roleId":roleId},
+		type:'post',
+		success:function(data){
+			var cinemacodes = "";
+			for(var i=0; i<data.length; i++){
+				cinemacodes += data[i].cinemaCode+",";
+				var option = "<option value="+data[i].cinemaCode+">"+data[i].cinemaName+"</option>";
+				$("#cinemaName").append(option);
+			}
+			$("#cinemacodes").val(cinemacodes.substring(0,cinemacodes.length-1));
+			example.ajax.reload();
+		}
+	})
+}
 </script>

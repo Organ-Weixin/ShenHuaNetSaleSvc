@@ -38,4 +38,9 @@ public class CinemaServiceImpl implements CinemaService {
 		return cinemaDao.getByCinemaCode(cinemacode);
 	}
 
+	@Override
+	public List<Cinema> AllCinema() {
+		return cinemaDao.AllCinema();
+	}
+
 }

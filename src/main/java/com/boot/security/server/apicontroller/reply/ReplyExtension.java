@@ -821,7 +821,7 @@ public class ReplyExtension {
 		return true;
 	}
 	//region QueryGoodsOrderReply
-		public static boolean RequestInfoGuard(QueryFilmSessionsReply reply,String Username,String Password,String CinemaCode,String StartDate,String EndDate){
+		public static boolean RequestInfoGuard(QueryFilmSessionsReply reply,String Username,String Password,String CinemaCode){
 			if (Username==null || "".equals(Username)) {
 				reply.SetNecessaryParamMissReply("UserName");
 				return false;
@@ -832,14 +832,6 @@ public class ReplyExtension {
 			}
 			if (CinemaCode==null || "".equals(CinemaCode)) {
 				reply.SetNecessaryParamMissReply("CinemaCode");
-				return false;
-			}
-			if (StartDate==null || "".equals(StartDate)) {
-				reply.SetNecessaryParamMissReply("StartDate");
-				return false;
-			}
-			if (EndDate==null || "".equals(EndDate)) {
-				reply.SetNecessaryParamMissReply("EndDate");
 				return false;
 			}
 			return true;
@@ -1036,7 +1028,7 @@ public class ReplyExtension {
 		//endregion
 		
 		//region QueryFimlSessionPriceReply
-		public static boolean RequestInfoGuard(QueryFimlSessionPriceReply reply, String Username, String Password, String CinemaCode, String FilmCode, String StartDate, String EndDate)
+		public static boolean RequestInfoGuard(QueryFimlSessionPriceReply reply, String Username, String Password, String CinemaCode, String FilmCode)
 	    {
 	        if (Username == null || "".equals(Username))
 	        {
@@ -1056,16 +1048,6 @@ public class ReplyExtension {
 	        if (FilmCode == null || "".equals(FilmCode))
 	        {
 	            reply.SetNecessaryParamMissReply("FilmCode");
-	            return false;
-	        }
-	        if (StartDate == null || "".equals(StartDate))
-	        {
-	            reply.SetNecessaryParamMissReply("StartDate");
-	            return false;
-	        }
-	        if (EndDate == null || "".equals(EndDate))
-	        {
-	            reply.SetNecessaryParamMissReply("EndDate");
 	            return false;
 	        }
 	        return true;

@@ -23,12 +23,13 @@
 			</div>
 			<div class='form-group'>
 				<label class='col-md-2 control-label'>会员卡等级名称</label>
+				<input type="hidden" id="Status" name="status">
 				<div class='col-md-10'>
 					<input class='form-control' type='text' name='levelName' id='LevelName' data-bv-notempty='true' data-bv-notempty-message='LevelName 不能为空' readonly="readonly">
 				</div>
 			</div>
 			<div class="form-group">
-				 <input type="hidden" name="prictureUrl"  id="Image"/>
+				 <input type="hidden" name="pictureUrl"  id="Image"/>
 				 <label class="col-md-2 control-label">会员卡图片</label>
 				 <div class="col-md-10">
 					<div class="layui-upload-drag" id="filmImage"></div>
@@ -115,8 +116,9 @@
 						$('#CinemaCode').val(data.cinemaCode);
 						$('#LevelCode').val(data.levelCode);
 						$('#LevelName').val(data.levelName);
-						$("#Image").val(data.prictureUrl);
-						$("#preview").prop("src",data.prictureUrl);
+						$("#Image").val(data.pictureUrl);
+						$("#Status").val(data.status);
+						$("#preview").prop("src",data.pictureUrl);
 					}
 				});
 			}

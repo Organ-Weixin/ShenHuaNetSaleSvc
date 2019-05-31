@@ -30,8 +30,8 @@ public class Dy1905ModelMapper {
     	entity.setSeatCode(model.getSeatNo());
     	entity.setRowNum(model.getSeatRow());
     	entity.setColumnNum(model.getSeatCol());
-    	entity.setXCoord(Integer.valueOf(model.getGraphRow()));
-    	entity.setYCoord(Integer.valueOf(model.getGraphCol()));
+    	entity.setXCoord(Integer.valueOf(model.getGraphCol()));
+    	entity.setYCoord(Integer.valueOf(model.getGraphRow()));
     	entity.setUpdateTime(new Date());
     	return entity;
     }

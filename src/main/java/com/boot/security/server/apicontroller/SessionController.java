@@ -58,13 +58,12 @@ public class SessionController {
 	private QmmpriceServiceImpl _qmmpriceService;
 	@Autowired
 	private SessioninfoviewServiceImpl _sessioninfoviewService;
-	@GetMapping("/QueryFilmSessions/{UserName}/{Password}/{CinemaCode}/{StartDate}/{EndDate}")
+	@GetMapping("/QueryFilmSessions/{UserName}/{Password}/{CinemaCode}")
 	@ApiOperation(value = "获取场次影片信息")
-	public QueryFilmSessionsReply QueryFilmSessions(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
-			@PathVariable String StartDate,@PathVariable String EndDate) throws ParseException{
+	public QueryFilmSessionsReply QueryFilmSessions(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode) throws ParseException{
 		QueryFilmSessionsReply queryFilmSessionsReply = new QueryFilmSessionsReply();
 		// 校验参数
-		if (!ReplyExtension.RequestInfoGuard(queryFilmSessionsReply, UserName, Password, CinemaCode, StartDate, EndDate)) {
+		if (!ReplyExtension.RequestInfoGuard(queryFilmSessionsReply, UserName, Password, CinemaCode)) {
 			return queryFilmSessionsReply;
 		}
 		// 获取用户信息(渠道)
@@ -79,15 +78,9 @@ public class SessionController {
 			queryFilmSessionsReply.SetCinemaInvalidReply();
 			return queryFilmSessionsReply;
 		}
-		//验证日期是否正确
-		Date Start=new SimpleDateFormat("yyyy-MM-dd").parse(StartDate);
-		Date End=new SimpleDateFormat("yyyy-MM-dd").parse(EndDate);
-		if(Start.getTime() > End.getTime()){
-			queryFilmSessionsReply.SetDateInvalidReply();
-			return queryFilmSessionsReply;
-		}
 		//排期中的全部影片
-		List<Sessioninfo> films = _sessionInfoService.getByFilmName(CinemaCode, StartDate, EndDate);
+		String StartDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+		List<Sessioninfo> films = _sessionInfoService.getByFilmName(CinemaCode, StartDate);
 		QueryFilmSessionsReplyFilmSessions data = new QueryFilmSessionsReplyFilmSessions();
 		if(films.size()>0){
 			data.setCinemaCode(films.get(0).getCCode());
@@ -120,7 +113,7 @@ public class SessionController {
 					filmReply.setType(filminfo.getType());
 					filmReply.setVersion(filminfo.getVersion());
 				}
-				List<Sessioninfo> sessionList = _sessionInfoService.getByCinemaCodeAndFilmCodeAndTime(film.getCCode(), filmcode, StartDate, EndDate);
+				List<Sessioninfo> sessionList = _sessionInfoService.getByCinemaCodeAndFilmCodeAndTime(film.getCCode(), filmcode, StartDate);
 				List<QueryFilmSessionsReplySession> sessionReplyList = new ArrayList<QueryFilmSessionsReplySession>();
 				for(Sessioninfo session :sessionList){
 					QueryFilmSessionsReplySession sessionReply = new QueryFilmSessionsReplySession();
@@ -201,13 +194,13 @@ public class SessionController {
 		return NetSaleSvcCore.getInstance().QuerySessionSeat(UserName, Password, CinemaCode, SessionCode, Status);
 	}
 	
-	@GetMapping("/QueryFilmSessionPrice/{UserName}/{Password}/{CinemaCode}/{FilmCode}/{StartDate}/{EndDate}")
+	@GetMapping("/QueryFilmSessionPrice/{UserName}/{Password}/{CinemaCode}/{FilmCode}")
 	@ApiOperation(value = "获取影片排期价格")
 	public QueryFimlSessionPriceReply QueryFimlSessionPrice(@PathVariable String UserName, @PathVariable String Password,@PathVariable String CinemaCode,
-			@PathVariable String FilmCode, @PathVariable String StartDate,@PathVariable String EndDate){
+			@PathVariable String FilmCode){
 		QueryFimlSessionPriceReply queryFimlSessionPriceReply = new QueryFimlSessionPriceReply();
 		// 校验参数
-		if (!ReplyExtension.RequestInfoGuard(queryFimlSessionPriceReply, UserName, Password, CinemaCode, FilmCode, StartDate, EndDate)) {
+		if (!ReplyExtension.RequestInfoGuard(queryFimlSessionPriceReply, UserName, Password, CinemaCode, FilmCode)) {
 			return queryFimlSessionPriceReply;
 		}
 		// 获取用户信息(渠道)
@@ -224,6 +217,7 @@ public class SessionController {
 		}
 		QueryFimlSessionPriceReplyFilm data = new QueryFimlSessionPriceReplyFilm();
 		Filminfo filminfo = _filminfoService.getByFilmCode(FilmCode);
+		String StartDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 		if(filminfo!=null){
 			data.setCinemaCode(CinemaCode);
 			data.setFilmCode(filminfo.getFilmCode());
@@ -231,7 +225,7 @@ public class SessionController {
 			data.setFilmType(filminfo.getType());
 			data.setCast(filminfo.getCast());
 			data.setDuration(filminfo.getDuration());
-			List<Sessioninfo> sessioninfoList = _sessionInfoService.getSessionDate(CinemaCode, FilmCode, StartDate, EndDate);
+			List<Sessioninfo> sessioninfoList = _sessionInfoService.getSessionDate(CinemaCode, FilmCode, StartDate);
 			if(sessioninfoList.size()>0){
 				if(data.getDuration()==null||data.getDuration()==""){
 					if(sessioninfoList.get(0).getDuration()!=null){

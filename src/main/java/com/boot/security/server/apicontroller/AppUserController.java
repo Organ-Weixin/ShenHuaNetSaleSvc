@@ -227,18 +227,18 @@ public class AppUserController {
                 								coupons.setReceiveDate(new Date());
                 								result = couponsService.update(coupons);
                 							}
-                							if(result>0){
-                								//已发放数量
-                				    			couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()+registeractivecoupons.getGiveNumber());
-                				    			//已领取数量
-                				    			couponsgroup.setFetchNumber(couponsgroup.getFetchNumber()+registeractivecoupons.getGiveNumber());
-                				    			//剩余数量
-                				    			couponsgroup.setRemainingNumber(couponsgroup.getRemainingNumber()-registeractivecoupons.getGiveNumber());
-                				    			couponsgroup.setUpdateDate(new Date());
-                				    			couponsgroupService.update(couponsgroup);
-                							}
                 						}
             						}
+            					}
+            					if(result>0){
+            						//已发放数量
+    				    			couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()+registeractivecoupons.getGiveNumber());
+    				    			//已领取数量
+    				    			couponsgroup.setFetchNumber(couponsgroup.getFetchNumber()+registeractivecoupons.getGiveNumber());
+    				    			//剩余数量
+    				    			couponsgroup.setRemainingNumber(couponsgroup.getRemainingNumber()-registeractivecoupons.getGiveNumber());
+    				    			couponsgroup.setUpdateDate(new Date());
+    				    			couponsgroupService.update(couponsgroup);
             					}
             				}
             				if(result>0){

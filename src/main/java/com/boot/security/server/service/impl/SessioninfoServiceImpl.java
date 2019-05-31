@@ -103,8 +103,8 @@ public class SessioninfoServiceImpl implements SessioninfoService{
 	}
 
 	@Override
-	public List<Sessioninfo> getByFilmName(String cinemacode, String startDate, String endDate) {
-		return sessioninfoDao.getByFilmName(cinemacode, startDate, endDate);
+	public List<Sessioninfo> getByFilmName(String cinemacode, String startDate) {
+		return sessioninfoDao.getByFilmName(cinemacode, startDate);
 	}
 
 	@Override
@@ -113,14 +113,13 @@ public class SessioninfoServiceImpl implements SessioninfoService{
 	}
 
 	@Override
-	public List<Sessioninfo> getByCinemaCodeAndFilmCodeAndTime(String cinemacode, String filmcode, String startdate,
-			String enddate) {
-		return sessioninfoDao.getByCinemaCodeAndFilmCodeAndTime(cinemacode, filmcode, startdate, enddate);
+	public List<Sessioninfo> getByCinemaCodeAndFilmCodeAndTime(String cinemacode, String filmcode, String startdate) {
+		return sessioninfoDao.getByCinemaCodeAndFilmCodeAndTime(cinemacode, filmcode, startdate);
 	}
 
 	@Override
-	public List<Sessioninfo> getSessionDate(String cinemacode, String filmcode, String startdate, String enddate) {
-		return sessioninfoDao.getSessionDate(cinemacode, filmcode, startdate, enddate);
+	public List<Sessioninfo> getSessionDate(String cinemacode, String filmcode, String startdate) {
+		return sessioninfoDao.getSessionDate(cinemacode, filmcode, startdate);
 	}
 
 	@Override

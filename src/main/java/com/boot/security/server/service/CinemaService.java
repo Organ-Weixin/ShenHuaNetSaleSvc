@@ -14,4 +14,6 @@ public interface CinemaService {
 
 	int delete(Long id);
 	
+	List<Cinema> AllCinema();
+	
 }
