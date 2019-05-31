@@ -139,7 +139,7 @@
 	        } );
 	}
 	
-//	var layer;
+
 	layui.use(['layer','laydate'], function(){
 	    var layer = layui.layer;
 	    var laydate = layui.laydate;
@@ -205,10 +205,12 @@
 		layer.confirm('同步时间可能较长，确定同步趣满满比价数据吗?', {
 	        btn : [ '确定', '取消' ]
 	    }, function() {
+	    	showLoading();
 	    	$.ajax({
 	            type : 'post',
 	            url : '/qmmprices/synchronousData',
 	            success : function(data) {
+	            	completeLoading();
 	            	example.ajax.reload();
 		            layer.msg("同步成功");
 	            }	
@@ -218,10 +220,25 @@
 	    });
 	}
 	
+	//在页面未加载完毕之前显示的loading Html自定义内容
+	var _LoadingHtml = '<div id="loadingDiv" style="display: none; "><div id="over" style=" position: absolute;top: 0;left: 0; width: 100%;height: 100%; background-color: #f5f5f5;opacity:0.5;z-index: 1000;"></div><div id="layout" style="position: absolute;top: 30%; left: 36%;width: 20%; height: 20%;  z-index: 1001;text-align:center;"><img src="../../img/loading/loading-0.gif" /></div></div>';
+	//呈现loading效果
+	document.write(_LoadingHtml); 
+	//移除loading效果
+	function completeLoading() {  		
+		document.getElementById("loadingDiv").style.display="none";
+	}
+	//展示loading效果
+	function showLoading(){
+		document.getElementById("loadingDiv").style.display="block";
+	}
+	
+	//搜索
 	$("#searchBt").click(function(){
 		example.ajax.reload();
 	});
 	
+	//清空
 	$("#emptyBt").click(function(){
 		$("#cinemaCode").val("");
 		$("#dataType").val("");
