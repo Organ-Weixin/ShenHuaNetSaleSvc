@@ -49,6 +49,7 @@
 									<th>#</th>
 									<th>卡券类型</th>
 									<th>卡券名称</th>
+									<th>适用于</th>
 									<th style="width:15%">有效期</th>
 									<th>状态</th>
 									<th>价格</th>
@@ -112,7 +113,7 @@
 var pers = checkPermission();
 var couponsType = showDictSelect("couponsType", "couponsType", true);
 var enabled = showDictSelect("status", "enabled", true);
-
+var reductionTypes = showDictSelect("reductionType", "reductionTypes", true);
 //获取登陆人信息
 initUser();
 function initUser(){
@@ -178,6 +179,11 @@ function init(){
                   	}						
 				},
 				{"data" : "couponsName", "defaultContent" : "","orderable":false},
+				{"data" : "reductionType", "defaultContent" : "","orderable":false,
+					"render": function (data, type, row) {
+                    	return reductionTypes[data];
+                  	}
+				},
 				{"data" : "", "defaultContent" : "","orderable":false,
 					"render":function(data,type,row){
 						var effectiveDate = row['effectiveDate'];
