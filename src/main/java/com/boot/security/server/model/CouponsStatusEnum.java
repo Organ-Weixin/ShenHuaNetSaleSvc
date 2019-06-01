@@ -1,7 +1,7 @@
 package com.boot.security.server.model;
 
 public enum CouponsStatusEnum {
-	Created("生成", 0), Fetched("已领取", 1), Used("已使用", 2);
+	Created("生成", 0), Fetched("已领取", 1), Used("已使用", 2), Expire("已过期", 3);
 	private String StatusName;
 	private int StatusCode;
 

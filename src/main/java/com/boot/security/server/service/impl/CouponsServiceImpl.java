@@ -75,4 +75,16 @@ public class CouponsServiceImpl implements CouponsService{
 		couponsgroupdao.update(couponsview.getCouponsgroup());
 		return 1;//暂时
 	}
+
+	@Override
+	public List<Coupons> getPastCoupons() {
+		// TODO Auto-generated method stub
+		return couponsdao.getPastCoupons();
+	}
+
+	@Override
+	public int changeStatus(String couponscode) {
+		// TODO Auto-generated method stub
+		return couponsdao.changeStatus(couponscode);
+	}
 }

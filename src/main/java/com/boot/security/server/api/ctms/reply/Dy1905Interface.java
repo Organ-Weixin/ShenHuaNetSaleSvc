@@ -21,6 +21,7 @@ import com.boot.security.server.api.ctms.reply.Dy1905GoodsListResult.ResBean.Goo
 import com.boot.security.server.api.ctms.reply.Dy1905LockSeatCustomResult.ResBean.SeatInfosBean.SeatInfoBean;
 import com.boot.security.server.api.ctms.reply.Dy1905MakeMemberCardResult.ResBean.CardInfoBean;
 import com.boot.security.server.api.ctms.reply.Dy1905MemberTypeListResult.ResBean.TypesBean.TypeBean.LevelsBean.LevelBean;
+import com.boot.security.server.api.ctms.reply.YkGetGoodsResult.DataBean.GoodsBean.GoodsResult;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
@@ -1148,15 +1149,21 @@ public class Dy1905Interface implements ICTMSInterface {
 			if(Dy1905Reply.getGoodsListResult().getResultCode().equals("0")){
 				List<GoodBean> dy1905goodList =  Dy1905Reply.getGoodsListResult().getGoods().getGood();
 				List<Goods> goodsList = goodsService.getByCinemaCode(userCinema.getUserId(), userCinema.getCinemaCode());
-				for(int i=0; i<dy1905goodList.size(); i++){
-					for(int j=0; j<goodsList.size(); j++){
-						if(!dy1905goodList.get(i).getSerial().equals(goodsList.get(j).getGoodsCode())){
-							goodsService.deleteByCinemaCodeAndGoodsCode(goodsList.get(j).getCinemaCode(), goodsList.get(j).getGoodsCode());
+				for(Goods goods : goodsList){
+					boolean flag = true;
+					for(GoodBean goodsResult : dy1905goodList){
+						if(goods.getGoodsCode().equals(goodsResult.getSerial())){
+							flag = false;
+							break;
 						}
+					}
+					if(flag){
+						//删除本地有的而查出来没有的
+						goodsService.deleteByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), goods.getGoodsCode());
 					}
 				}
 				for(GoodBean dy1905good : dy1905goodList){
-					Goods goods = goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), dy1905good.getDetail());
+					Goods goods = goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), dy1905good.getSerial());
 					if(goods==null){
 						goods = new Goods();
 						goods.setGoodsType("1");

@@ -123,8 +123,10 @@
 				type:'post',
 				success:function(data){
 					for(var i=0; i<data.length; i++){
-						var option = "<option value='"+data[i].groupCode+"' limit ='"+data[i].limitNum+"' title='"+data[i].couponsNumber+"' issued='"+data[i].issuedNumber+"'>"+data[i].couponsName+"</option>";
-						$("#CouponsSelect").append(option);
+						if(data[i].status==1){
+							var option = "<option value='"+data[i].groupCode+"' limit ='"+data[i].limitNum+"' title='"+data[i].couponsNumber+"' issued='"+data[i].issuedNumber+"'>"+data[i].couponsName+"</option>";
+							$("#CouponsSelect").append(option);							
+						}
 					}
 				}
 			});

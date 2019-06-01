@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boot.security.server.page.table.PageTableRequest;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
+import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
@@ -33,7 +34,9 @@ public class CouponsController {
     private CouponsDao couponsDao;
     @Autowired
     private CouponsgroupServiceImpl couponsgroupService;
-
+    @Autowired
+    private CouponsServiceImpl couponsService;
+    
     @PostMapping
     @ApiOperation(value = "保存")
     public Coupons save(@RequestBody Coupons coupons) {
@@ -59,6 +62,10 @@ public class CouponsController {
     @GetMapping
     @ApiOperation(value = "列表")
     public PageTableResponse list(PageTableRequest request) {
+    	List<Coupons> couponList = couponsService.getPastCoupons();
+    	for(Coupons coupon:couponList){
+    		couponsService.changeStatus(coupon.getCouponsCode());
+    	}
         return new PageTableHandler(new CountHandler() {
 
             @Override

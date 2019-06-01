@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.boot.security.server.model.Coupons;
 
@@ -45,4 +46,10 @@ public interface CouponsDao {
     
     @Select("select * from coupons t where t.groupcode = #{groupcode} and t.status = 0")
     List<Coupons> getCanUseByGroupCode(String groupcode);
+    
+    @Select("select * from coupons t where t.expiredate < now()")
+    List<Coupons> getPastCoupons();
+    
+    @Update("update coupons t set t.status = 3 where t.couponscode = #{couponscode}")
+    int changeStatus(@Param("couponscode")String couponscode);
 }

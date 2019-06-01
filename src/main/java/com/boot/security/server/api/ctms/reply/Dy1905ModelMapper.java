@@ -100,6 +100,7 @@ public class Dy1905ModelMapper {
     	entity.setGoodsPic(model.getImage());
     	entity.setStockCount(model.getStockCount() ==null?0 : Integer.valueOf(model.getStockCount()));
     	entity.setGoodsDesc(model.getDetail());
+    	entity.setUpdated(new Date());
     	return entity;
     }
 }

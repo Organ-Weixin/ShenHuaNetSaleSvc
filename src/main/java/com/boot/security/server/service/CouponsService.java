@@ -24,4 +24,8 @@ public interface CouponsService {
 	List<Coupons> getCanUseByGroupCode(String groupcode);
 	
 	CouponsView getWithCouponsCode(String couponscode);
+	
+	List<Coupons> getPastCoupons();
+	
+	int changeStatus(String couponscode);
 }

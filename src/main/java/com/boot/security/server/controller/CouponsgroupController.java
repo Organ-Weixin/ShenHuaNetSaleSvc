@@ -57,7 +57,7 @@ public class CouponsgroupController {
     	String groupCode = String.valueOf(new Date().getTime()/1000);
     	groupCode+=(int)((Math.random()*9+1)*100000);
     	couponsgroup.setGroupCode(groupCode);
-    	couponsgroup.setStatus(CouponGroupStatusEnum.UnEnabled.getStatusCode());
+    	couponsgroup.setStatus(CouponGroupStatusEnum.Enabled.getStatusCode());
     	couponsgroup.setIssuedNumber(0);
     	couponsgroup.setFetchNumber(0);
     	couponsgroup.setRemainingNumber(couponsgroup.getCouponsNumber());
@@ -162,6 +162,10 @@ public class CouponsgroupController {
     @RequestMapping("/getCouponGroups")
     @ApiOperation(value = "获取对应影院的优惠券")
     public List<Couponsgroup> getCouponGroups(@RequestParam("cinemacode") String cinemacode){
+    	List<Coupons> couponList = couponsService.getPastCoupons();
+    	for(Coupons coupon:couponList){
+    		couponsService.changeStatus(coupon.getCouponsCode());
+    	}
     	List<Couponsgroup> pastCouponsList = couponsgroupService.getPastCoupons();
     	if(pastCouponsList.size()>0){
         	couponsgroupDao.updatePastCoupons(CouponGroupStatusEnum.Expired.getStatusCode());

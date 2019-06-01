@@ -79,7 +79,7 @@ function getUrlParam(name) {//封装方法
 	return null; //返回参数值
 }
 
-var couponsStatus = showDictSelect("status", "couponsStatus", true);
+var couponStatus = showDictSelect("status", "couponStatus", true);
 var pers = checkPermission();
 
 var example;
@@ -127,7 +127,7 @@ function init(){
 				},
 				{"data" : "status", "defaultContent" : "","orderable":false,
 					"render": function (data, type, row) {
-						return couponsStatus[data];	
+						return couponStatus[data];	
                   	}
 				},
 				{"data" : "usedDate", "defaultContent" : "","orderable":false},

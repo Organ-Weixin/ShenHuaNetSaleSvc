@@ -99,6 +99,9 @@
 			<if test="IsPackage != null">
 				IsPackage = #{IsPackage}, 
 			</if>
+			<if test="Updated != null">
+				Updated = #{Updated}, 
+			</if>
 
 		</set>
 
