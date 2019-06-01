@@ -684,7 +684,7 @@ public class OrderController {
 		// 校验参数
 		if (!ReplyExtension.RequestInfoGuard(refundpaymentReply, UserName, Password, CinemaCode, LockOrderCode)) {
 			return refundpaymentReply;
-		}
+		} 
 		// 获取用户信息
 		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
 		if (UserInfo == null) {
