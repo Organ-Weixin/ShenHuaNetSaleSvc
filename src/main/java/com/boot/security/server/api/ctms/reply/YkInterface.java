@@ -19,6 +19,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.util.Base64Utils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.boot.security.server.api.ctms.reply.YkConfirmMixOrderResult.DataBean.ConfirmMixOrderBean;
 import com.boot.security.server.api.ctms.reply.YkConfirmOrderResult.DataBean.OrderBean;
 import com.boot.security.server.api.ctms.reply.YkConfirmOrderResult.DataBean.OrderBean.Tickets;
 import com.boot.security.server.api.ctms.reply.YkGetCardConsumeRecordsResult.DataBean.ConsumeRecords;
@@ -859,6 +860,121 @@ public class YkInterface implements ICTMSInterface {
 	}
 	
 	/*
+	 * 混合下单（同时购买卖品和选座）
+	 */
+	public CTMSFetchTicketReply confirmMixOrder(Usercinemaview userCinema, OrderView order, GoodsOrderView goodsorder){
+		CTMSFetchTicketReply reply = new CTMSFetchTicketReply();
+		
+		boolean flag = order.getOrderBaseInfo().getCardNo() == null?false:true;	//是否使用会员卡折扣 
+		Sessioninfo sessioninfo = _sessioninfoService.getSessionCode(userCinema.getCinemaCode(), order.getOrderBaseInfo().getSessionCode());
+		List<Map<String,Object>> ticketList = new ArrayList<Map<String,Object>>();
+		List<Orderseatdetails> orderseatdetails = order.getOrderSeatDetails();	//购票订单详情列表
+		for(Orderseatdetails orderseat : orderseatdetails){
+			Map<String,Object> orderMap = new LinkedHashMap<String,Object>();
+			orderMap.put("seatId", orderseat.getSeatCode());
+			orderMap.put("ticketPrice", String.valueOf(orderseat.getPrice()));
+			orderMap.put("ticketFee", String.valueOf(orderseat.getFee()));
+			if(flag){
+				orderMap.put("isCardDiscount", true);
+			}
+			ticketList.add(orderMap);
+		}
+		
+		List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
+		for(Goodsorderdetails goodsorderdetails : goodsorder.getOrderGoodsDetails()){
+			Map<String,Object> goodsMap = new LinkedHashMap<String,Object>();
+			goodsMap.put("goodsId", goodsorderdetails.getGoodsCode());
+			goodsMap.put("salePrice", goodsorderdetails.getSettlePrice().toString());
+			goodsMap.put("count", goodsorderdetails.getGoodsCount()); 
+			goodsMap.put("isPackage", goodsorderdetails.getIsPackage()==1?true:false);
+			if(flag){
+				goodsMap.put("isCardDiscount", true);
+			}
+			goodsList.add(goodsMap);
+		}
+		
+		JSONObject  input=new JSONObject();
+		input.put("cinemaLinkId", userCinema.getCinemaId());
+		input.put("lockOrderId", order.getOrderBaseInfo().getLockOrderCode());
+		input.put("scheduleId", sessioninfo.getSessionId());
+		input.put("scheduleKey", sessioninfo.getSessionKey());
+		input.put("ticketList", ticketList);
+		input.put("goodsList", goodsList);
+		input.put("mobile", order.getOrderBaseInfo().getMobilePhone());
+		if(flag){	
+			
+			Map<String,String> payCardInfo = new LinkedHashMap<String,String>();
+			payCardInfo.put("cinemaLinkId", userCinema.getCinemaId());
+			payCardInfo.put("cardNumber", order.getOrderBaseInfo().getCardNo());
+//			payCardInfo.put("cardPassword", MD5AESPassword(order.getOrderBaseInfo().getCardPassword(),userCinema.getDefaultPassword()));
+			
+			Map<String,Object> payment = new LinkedHashMap<String,Object>();
+			payment.put("paymentMethod", "MemberCard");
+			payment.put("payCardInfo", payCardInfo);
+			
+			List<Map<String,Object>> paymentList = new ArrayList<>();
+			paymentList.add(payment);
+			input.put("paymentList", paymentList);
+		}
+		String data=input.toJSONString();
+		
+		Map<String,String> param = new LinkedHashMap<String,String>();
+		param.put("api", "ykse.partner.order.confirmMixOrder");
+		param.put("channelCode", userCinema.getDefaultUserName());
+		param.put("data", data);
+		param.put("timestamp", String.valueOf(System.currentTimeMillis()));
+		param.put("v", "1.0");
+		
+		String sign = createSign(userCinema.getDefaultPassword(), param);
+		String confirmMixOrderResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
+				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
+		System.out.println("混合下单返回："+confirmMixOrderResult);
+		
+		Gson gson = new Gson();
+		YkConfirmMixOrderResult ykResult = gson.fromJson(confirmMixOrderResult, YkConfirmMixOrderResult.class);
+		if("0".equals(ykResult.getRetCode())){
+			if("SUCCESS".equals(ykResult.getData().getBizCode())){
+				ConfirmMixOrderBean orderBean = ykResult.getData().getData();
+				order.getOrderBaseInfo().setSubmitOrderCode(orderBean.getOrderId());	//平台订单号
+				order.getOrderBaseInfo().setPrintNo(orderBean.getConfirmationId());		//取票号
+				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Complete.getStatusCode());	//订单状态
+				order.getOrderBaseInfo().setSubmitTime(new Date());					//订单提交时间
+				String str = creatOutLockId();
+				order.getOrderBaseInfo().setVerifyCode(str.substring(str.length()-6));	//取票验证码，随机生成的6位数字
+				List<com.boot.security.server.api.ctms.reply.YkConfirmMixOrderResult.DataBean.ConfirmMixOrderBean.Tickets> ticketsList = orderBean.getTickets();
+				for(com.boot.security.server.api.ctms.reply.YkConfirmMixOrderResult.DataBean.ConfirmMixOrderBean.Tickets ticket:ticketsList){
+					for(int i=0;i<order.getOrderSeatDetails().size();i++){
+						if(order.getOrderSeatDetails().get(i).getSeatCode().equals(ticket.getSeatId())){
+							order.getOrderSeatDetails().get(i).setSeatId(ticket.getSeatCode());
+							order.getOrderSeatDetails().get(i).setFilmTicketCode(ticket.getTicketNo());//票号
+						}
+					}
+				}
+				//卖品订单信息
+				goodsorder.getOrderBaseInfo().setOrderCode(ykResult.getData().getData().getGoodsOrder().getHoldId());
+				goodsorder.getOrderBaseInfo().setPickUpCode(ykResult.getData().getData().getGoodsOrder().getPickUpCode());
+				goodsorder.getOrderBaseInfo().setTotalPrice(Double.valueOf(ykResult.getData().getData().getGoodsOrder().getTotalGoodsPrice()));
+				goodsorder.getOrderBaseInfo().setTotalFee(Double.valueOf(ykResult.getData().getData().getGoodsOrder().getTotalGoodsFee()));
+				goodsorder.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
+				goodsorder.getOrderBaseInfo().setSubmitTime(new Date());
+				
+				reply.Status = StatusEnum.Success;
+			} else {
+				reply.Status = StatusEnum.Failure;
+				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.SubmitFail.getStatusCode());
+				goodsorder.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.SubmitFail.getStatusCode());
+			}
+			reply.ErrorCode = ykResult.getData().getBizCode();
+			reply.ErrorMessage=ykResult.getData().getBizMsg();
+		} else {
+			reply.Status = StatusEnum.Failure;
+			reply.ErrorCode = ykResult.getRetCode();
+			reply.ErrorMessage = ykResult.getRetMsg();
+		}
+		
+		return reply;
+	}
+	/*
 	 * 签名算法
 	 */
 	private static String createSign(String pKeyInfo, Map<String, String> param) {
@@ -1543,30 +1659,48 @@ public class YkInterface implements ICTMSInterface {
 		String sign = createSign(userCinema.getDefaultPassword(), param);
 		String getGoodsResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
 				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
-//		System.out.println("查询卖品返回："+getGoodsResult);
+		System.out.println("查询卖品返回："+getGoodsResult);
 		
 		Gson gson = new Gson();
 		YkGetGoodsResult ykResult = gson.fromJson(getGoodsResult, YkGetGoodsResult.class);
 		if("0".equals(ykResult.getRetCode())){
 			if("SUCCESS".equals(ykResult.getData().getBizCode())){
-				List<Goods> goodslist = new ArrayList<Goods>();
-				for(GoodsResult goods : ykResult.getData().getData().getGoodsList()){
-					Goods newGoods = new Goods();
-					newGoods.setCinemaCode(userCinema.getCinemaCode());
-					newGoods.setUserId(userCinema.getUserId());
-					newGoods.setIsRecommand(0); 	//接口无返回，默认0
-					newGoods.setStockCount(0);		//接口无返回，默认0
-					newGoods.setShowSeqNo(0);		//接口无返回，默认0
-					newGoods.setGoodsStatus(1); 	//接口无返回，默认1
-					newGoods.setUpdated(new Date());
-					YkModelMapper.MapToEntity(goods, newGoods);
-					goodslist.add(newGoods);
+				List<GoodsResult> goodsResultlist = ykResult.getData().getData().getGoodsList();
+				List<Goods> goodslist = goodsService.getByCinemaCode(userCinema.getUserId(), userCinema.getCinemaCode());
+				for(Goods goods : goodslist){
+					boolean flag = true;
+					for(GoodsResult goodsResult : goodsResultlist){
+						if(goods.getGoodsCode().equals(goodsResult.getGoodsId())){
+							flag = false;
+							break;
+						}
+					}
+					if(flag){
+						//删除本地有的而查出来没有的
+						goodsService.deleteByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), goods.getGoodsCode());
+					}
 				}
-				//删除旧的
-				goodsService.deleteByCinemaCode(userCinema.getUserId(),userCinema.getCinemaCode());
-				//插入新的
-				for(Goods goodsinfo : goodslist){
-					goodsService.save(goodsinfo);	
+				
+				for(GoodsResult goods : goodsResultlist){
+					Goods newGoods = goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), goods.getGoodsId());
+					if(newGoods == null){
+						newGoods = new Goods();
+						newGoods.setCinemaCode(userCinema.getCinemaCode());
+						newGoods.setUserId(userCinema.getUserId());
+						newGoods.setGoodsType("1");		//接口无返回，默认1
+						newGoods.setIsRecommand(0); 	//接口无返回，默认0
+						newGoods.setStockCount(99);		//接口无返回，
+						newGoods.setShowSeqNo(0);		//接口无返回，默认0
+						newGoods.setGoodsStatus(1); 	//接口无返回，默认1
+						newGoods.setUpdated(new Date());
+						YkModelMapper.MapToEntity(goods, newGoods);
+						goodsService.save(newGoods);	//新增
+					} else {
+						YkModelMapper.MapToEntity(goods, newGoods);
+						newGoods.setUpdated(new Date());
+						goodsService.update(newGoods);	//修改已有的
+					}
+					
 				}
 				reply.Status = StatusEnum.Success;
 			} else {

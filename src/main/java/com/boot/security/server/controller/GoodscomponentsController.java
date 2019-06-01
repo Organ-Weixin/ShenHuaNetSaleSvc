@@ -67,10 +67,12 @@ public class GoodscomponentsController {
     	goods.setStandardPrice(goodscomponents.getPackageStandardPrice());
     	goods.setSettlePrice(goodscomponents.getPackageSettlePrice());
     	goods.setGoodsPic(goodscomponents.getPackagePic());
+    	goods.setStockCount(99);
     	goods.setShowSeqNo(goodscomponents.getSort());
     	goods.setGoodsStatus(goodscomponents.getStatus());
     	goods.setIsRecommand(1);
     	goods.setIsPackage(1);
+    	goods.setIsDiscount(0);
     	goods.setUpdated(new Date());
     	goodsDao.save(goods);	//保存到卖品表
     	
