@@ -64,4 +64,6 @@ public interface ICTMSInterface {
     CTMSQueryGoodsOrderReply QueryGoodsOrder(Usercinemaview userCinema,GoodsOrderView order) throws Exception;
     //退卖品
     CTMSRefundGoodsReply RefundGoods(Usercinemaview userCinema,GoodsOrderView order) throws Exception;
+    //混合下单（票+卖品）
+    CTMSSubmitMixOrderReply SubmitMixOrder(Usercinemaview userCinema,OrderView order, GoodsOrderView goodsorder) throws Exception;
 }

@@ -1332,4 +1332,10 @@ public class Dy1905Interface implements ICTMSInterface {
 			reply.ErrorCode = Dy1905Reply.getRefundGoodsResult().getResultCode();
 			return reply;
 		}
+		@Override
+		public CTMSSubmitMixOrderReply SubmitMixOrder(Usercinemaview userCinema, OrderView order,
+				GoodsOrderView goodsorder) throws Exception {
+			// TODO Auto-generated method stub
+			return null;
+		}
 }

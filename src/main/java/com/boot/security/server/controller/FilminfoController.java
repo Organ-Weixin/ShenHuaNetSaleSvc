@@ -149,7 +149,7 @@ public class FilminfoController {
         map.put("code",0);
         map.put("msg","上传成功！");
         map.put("data",map2);
-        map2.put("src",returnroot +File.separator + path + File.separator +fileName); 
+        map2.put("src",returnroot +"/" + path + "/" +fileName); 
         return map;
     }
     //endregion

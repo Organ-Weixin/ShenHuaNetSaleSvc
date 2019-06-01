@@ -862,8 +862,9 @@ public class YkInterface implements ICTMSInterface {
 	/*
 	 * 混合下单（同时购买卖品和选座）
 	 */
-	public CTMSFetchTicketReply confirmMixOrder(Usercinemaview userCinema, OrderView order, GoodsOrderView goodsorder){
-		CTMSFetchTicketReply reply = new CTMSFetchTicketReply();
+	@Override
+	public CTMSSubmitMixOrderReply SubmitMixOrder(Usercinemaview userCinema, OrderView order, GoodsOrderView goodsorder) throws Exception {
+		CTMSSubmitMixOrderReply reply = new CTMSSubmitMixOrderReply();
 		
 		boolean flag = order.getOrderBaseInfo().getCardNo() == null?false:true;	//是否使用会员卡折扣 
 		Sessioninfo sessioninfo = _sessioninfoService.getSessionCode(userCinema.getCinemaCode(), order.getOrderBaseInfo().getSessionCode());
@@ -901,8 +902,7 @@ public class YkInterface implements ICTMSInterface {
 		input.put("ticketList", ticketList);
 		input.put("goodsList", goodsList);
 		input.put("mobile", order.getOrderBaseInfo().getMobilePhone());
-		if(flag){	
-			
+		if(flag){
 			Map<String,String> payCardInfo = new LinkedHashMap<String,String>();
 			payCardInfo.put("cinemaLinkId", userCinema.getCinemaId());
 			payCardInfo.put("cardNumber", order.getOrderBaseInfo().getCardNo());
@@ -1902,5 +1902,6 @@ public class YkInterface implements ICTMSInterface {
 		
 		return reply;
 	}
+
 	
 }

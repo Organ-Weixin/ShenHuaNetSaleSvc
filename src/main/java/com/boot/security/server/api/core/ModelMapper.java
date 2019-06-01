@@ -17,6 +17,7 @@ import com.boot.security.server.api.core.QueryGoodsReply.QueryGoodsReplyGoodss.Q
 import com.boot.security.server.api.core.QuerySeatReply.QuerySeatReplyCinema.QuerySeatReplyScreen.QuerySeatReplySeat;
 import com.boot.security.server.api.core.QuerySessionReply.QuerySessionReplySessions.QuerySessionReplySession;
 import com.boot.security.server.api.core.QuerySessionReply.QuerySessionReplySessions.QuerySessionReplySession.QuerySessionReplyFilms.QuerySessionReplyFilm;
+import com.boot.security.server.api.core.SubmitMixOrderQueryXml.SubmitMixOrderQueryXmlSeat;
 import com.boot.security.server.api.core.SubmitOrderQueryXml.SubmitOrderQueryXmlOrder.SubmitOrderQueryXmlSeat;
 import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Filminfo;
@@ -189,6 +190,30 @@ public class ModelMapper {
 		return order;
 	}
 
+	//混合下单-购票部分
+	public static OrderView MapFrom(OrderView order, SubmitMixOrderQueryXml queryXmlObj) {
+		order.getOrderBaseInfo().setTotalPrice(queryXmlObj.getSeat().stream().mapToDouble(SubmitMixOrderQueryXmlSeat::getPrice).sum());
+		order.getOrderBaseInfo().setTotalSalePrice(queryXmlObj.getSeat().stream().mapToDouble(SubmitMixOrderQueryXmlSeat::getRealPrice).sum());
+		order.getOrderBaseInfo().setTotalFee(queryXmlObj.getSeat().stream().mapToDouble(SubmitMixOrderQueryXmlSeat::getFee).sum());
+		order.getOrderBaseInfo().setMobilePhone(queryXmlObj.getMobilePhone());
+		order.getOrderBaseInfo().setUpdated(new Date());
+		if (order.getOrderBaseInfo().getIsMemberPay() == 1) {
+			order.getOrderBaseInfo().setPaySeqNo(queryXmlObj.getPaySeqNo());
+		}
+		for (Orderseatdetails seat : order.getOrderSeatDetails()) {
+			List<SubmitMixOrderQueryXmlSeat> seatinfo = queryXmlObj.getSeat().stream()
+					.filter((SubmitMixOrderQueryXmlSeat s) -> seat.getSeatCode().equals(s.getSeatCode()))
+					.collect(Collectors.toList());
+			if (seatinfo != null) {
+				seat.setPrice(seatinfo.get(0).getPrice());
+				seat.setSalePrice(seatinfo.get(0).getRealPrice());
+				seat.setFee(seatinfo.get(0).getFee());
+				seat.setUpdated(new Date());
+			}
+		}
+		return order;
+	}
+	
 	public static QueryGoodsReplyGoods MapFrom(QueryGoodsReplyGoods goods, Goods entity) {
 		goods.setCinemaCode(entity.getCinemaCode());
 		goods.setGoodsCode(entity.getGoodsCode());
@@ -245,6 +270,21 @@ public class ModelMapper {
 	}
 	
 	public static Goodsorders MapFrom(Goodsorders order, SubmitGoodsOrderQueryXml queryXmlObj) {
+		order.setTotalPrice(0D);//暂时设为0
+		order.setTotalSettlePrice(0D);//暂时设为0
+		order.setTotalFee(0D);//暂时设为0
+		order.setMobilePhone(queryXmlObj.getMobilePhone());
+		order.setCardNo(queryXmlObj.getCardNo());
+		order.setCardPassword(queryXmlObj.getCardPassword());
+		order.setUpdated(new Date());
+		if (order.getOrderPayType() != null && OrderPayTypeEnum.MemberCardPay.getTypeCode() == order.getOrderPayType()) {
+			order.setPaySeqNo(queryXmlObj.getPaySeqNo());
+		}
+		return order;
+	}
+	
+	//混合下单-卖品部分
+	public static Goodsorders MapFrom(Goodsorders order, SubmitMixOrderQueryXml queryXmlObj) {
 		order.setTotalPrice(0D);//暂时设为0
 		order.setTotalSettlePrice(0D);//暂时设为0
 		order.setTotalFee(0D);//暂时设为0

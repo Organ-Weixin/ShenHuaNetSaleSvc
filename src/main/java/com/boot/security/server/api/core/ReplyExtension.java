@@ -196,6 +196,26 @@ public class ReplyExtension {
 		return true;
 	}
 	// endregion
+	
+	// region SubmitOrderReply
+	public static boolean RequestInfoGuard(SubmitMixOrderReply reply, String Username, String Password, String QueryXml) {
+		if (Username == null || "".equals(Username)) {
+			reply.SetNecessaryParamMissReply("Username");
+			return false;
+		}
+		if (Password == null || "".equals(Password)) {
+			reply.SetNecessaryParamMissReply("Password");
+			return false;
+		}
+		if (QueryXml == null || "".equals(QueryXml)) {
+			reply.SetNecessaryParamMissReply("QueryXml");
+			return false;
+		}
+
+		return true;
+	}
+	// endregion
+		
 
 	// region QueryPrintReply
 	public static boolean RequestInfoGuard(QueryPrintReply reply, String Username, String Password, String CinemaCode,

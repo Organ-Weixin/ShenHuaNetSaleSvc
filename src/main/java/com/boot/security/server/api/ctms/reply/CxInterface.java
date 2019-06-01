@@ -913,4 +913,11 @@ public class CxInterface implements ICTMSInterface {
 		return reply;
 	}
 	//endregion
+
+	@Override
+	public CTMSSubmitMixOrderReply SubmitMixOrder(Usercinemaview userCinema, OrderView order, GoodsOrderView goodsorder)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

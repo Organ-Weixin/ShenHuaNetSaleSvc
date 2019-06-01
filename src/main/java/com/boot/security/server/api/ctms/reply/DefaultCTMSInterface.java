@@ -158,33 +158,34 @@ public class DefaultCTMSInterface implements ICTMSInterface {
 
 	@Override
 	public CTMSQueryGoodsReply QueryGoods(Usercinemaview userCinema) throws Exception {
-		// TODO Auto-generated method stub
 		throw new Exception(CinemaInterfaceMiss);
 	}
 
 	@Override
 	public CTMSCreateGoodsOrderReply CreateGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
 			throws Exception {
-		// TODO Auto-generated method stub
 		throw new Exception(CinemaInterfaceMiss);
 	}
 
 	@Override
 	public CTMSSubmitGoodsOrderReply SubmitGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
 			throws Exception {
-		// TODO Auto-generated method stub
 		throw new Exception(CinemaInterfaceMiss);
 	}
 
 	@Override
 	public CTMSQueryGoodsOrderReply QueryGoodsOrder(Usercinemaview userCinema, GoodsOrderView order) throws Exception {
-		// TODO Auto-generated method stub
 		throw new Exception(CinemaInterfaceMiss);
 	}
 
 	@Override
 	public CTMSRefundGoodsReply RefundGoods(Usercinemaview userCinema, GoodsOrderView order) throws Exception {
-		// TODO Auto-generated method stub
+		throw new Exception(CinemaInterfaceMiss);
+	}
+
+	@Override
+	public CTMSSubmitMixOrderReply SubmitMixOrder(Usercinemaview userCinema, OrderView order, GoodsOrderView goodsorder)
+			throws Exception {
 		throw new Exception(CinemaInterfaceMiss);
 	}
 

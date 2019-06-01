@@ -1,20 +1,12 @@
 package com.boot.security.server.apicontroller;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.TreeMap;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.w3c.dom.Document;
 
 import com.boot.security.server.api.core.LockSeatReply;
 import com.boot.security.server.api.core.NetSaleSvcCore;
@@ -36,13 +27,12 @@ import com.boot.security.server.api.core.QueryPrintReply;
 import com.boot.security.server.api.core.QueryTicketReply;
 import com.boot.security.server.api.core.RefundTicketReply;
 import com.boot.security.server.api.core.ReleaseSeatReply;
+import com.boot.security.server.api.core.SubmitMixOrderReply;
 import com.boot.security.server.api.core.SubmitOrderReply;
-import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.NetSaleQueryJson;
 import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson;
 import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson.PrePayOrderQueryJsonSeat;
 import com.boot.security.server.apicontroller.reply.PrePayParametersReply;
-import com.boot.security.server.apicontroller.reply.PrePayParametersReply.PrePayParametersReplyParameter;
 import com.boot.security.server.apicontroller.reply.QueryLocalOrderReply;
 import com.boot.security.server.apicontroller.reply.QueryLocalOrderReply.QueryLocalOrder;
 import com.boot.security.server.apicontroller.reply.QueryLocalOrderReply.QueryLocalOrder.Seats;
@@ -72,11 +62,7 @@ import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
-import com.boot.security.server.utils.HttpHelper;
-import com.boot.security.server.utils.MD5Util;
-import com.boot.security.server.utils.StrUtil;
 import com.boot.security.server.utils.WxPayUtil;
-import com.boot.security.server.utils.XmlHelper;
 import com.google.gson.JsonSyntaxException;
 
 import freemarker.template.utility.StringUtil;
@@ -159,6 +145,22 @@ public class OrderController {
 	}
 	//endregion
 	
+	
+	//region 提交订单(票 + 卖品)
+	@PostMapping("/SubmitMixOrder")
+	@ApiOperation(value = "提交订单")
+	public SubmitMixOrderReply SubmitMixOrder(@RequestBody NetSaleQueryJson QueryJson){
+		try {
+			SubmitMixOrderReply reply = NetSaleSvcCore.getInstance().SubmitMixOrder(QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getQueryXml());
+
+			return reply;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new SubmitMixOrderReply();
+		}
+	}
+	//endregion
+		
 	//region 查询订单
 	@GetMapping("/QueryOrder/{UserName}/{Password}/{CinemaCode}/{OrderCode}")
 	@ApiOperation(value = "查询订单")

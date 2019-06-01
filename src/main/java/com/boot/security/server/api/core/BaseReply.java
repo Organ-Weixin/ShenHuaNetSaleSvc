@@ -33,6 +33,7 @@ public class BaseReply {
 	public static String ID_SubmitGoodsOrderReply="ID_SubmitGoodsOrderReply";
 	public static String ID_QueryGoodsOrderReply="ID_QueryGoodsOrderReply";
 	public static String ID_RefundGoodsReply="ID_RefundGoodsReply";
+	public static String ID_SubmitMixOrderReply="ID_SubmitMixOrderReply";
 	
 	public BaseReply()
     {

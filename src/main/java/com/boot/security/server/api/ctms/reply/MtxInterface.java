@@ -913,6 +913,12 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 		reply.ErrorCode=mtxReply.getBackSellGoodsResult().getResultCode();
 		return reply;
 	}
+	@Override
+	public CTMSSubmitMixOrderReply SubmitMixOrder(Usercinemaview userCinema, OrderView order, GoodsOrderView goodsorder)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	
 }
