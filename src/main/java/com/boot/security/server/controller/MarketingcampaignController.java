@@ -16,46 +16,48 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boot.security.server.page.table.PageTableRequest;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
+import com.boot.security.server.service.impl.MarketingcampaignServiceImpl;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
-import com.boot.security.server.dao.ScreeninfoDao;
-import com.boot.security.server.model.Goods;
-import com.boot.security.server.model.Goodstype;
-import com.boot.security.server.model.Screeninfo;
-import com.boot.security.server.model.Sessioninfo;
+import com.boot.security.server.dao.MarketingcampaignDao;
+import com.boot.security.server.model.Marketingcampaign;
 
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/screeninfos")
-public class ScreeninfoController {
+@RequestMapping("/marketingcampaigns")
+public class MarketingcampaignController {
 
     @Autowired
-    private ScreeninfoDao screeninfoDao;
-
+    private MarketingcampaignDao marketingcampaignDao;
+/*    @Autowired
+    private MarketingcampaignServiceImpl _marketingcampaignService;*/
     @PostMapping
     @ApiOperation(value = "保存")
-    public Screeninfo save(@RequestBody Screeninfo screeninfo) {
-        screeninfoDao.save(screeninfo);
+    public Marketingcampaign save(@RequestBody Marketingcampaign marketingcampaign) {
+        marketingcampaignDao.save(marketingcampaign);
 
-        return screeninfo;
+        return marketingcampaign;
     }
-    //根据id查询影厅信息
+ 
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取")
-    public Screeninfo get(@PathVariable Long id) {
-        return screeninfoDao.getById(id);
+    public Marketingcampaign get(@PathVariable Long id) {
+        return marketingcampaignDao.getById(id);
+    }
+    @RequestMapping("/changestatus")
+    @ApiOperation(value = "改变营销活动状态")
+    public int changeStatus(@RequestParam("status") Integer status,@RequestParam("id") Long id){
+    	return marketingcampaignDao.changestatus(status, id);
     }
     
     @PutMapping
     @ApiOperation(value = "修改")
-    public Screeninfo update(@RequestBody Screeninfo screeninfo) {
-        screeninfoDao.update(screeninfo);
-
-        return screeninfo;
+    public Marketingcampaign update(@RequestBody Marketingcampaign marketingcampaign) {
+        marketingcampaignDao.update(marketingcampaign);
+        return marketingcampaign;
     }
 
-    //影厅信息列表
     @GetMapping
     @ApiOperation(value = "列表")
     public PageTableResponse list(PageTableRequest request) {
@@ -63,13 +65,13 @@ public class ScreeninfoController {
 
             @Override
             public int count(PageTableRequest request) {
-                return screeninfoDao.count(request.getParams());
+                return marketingcampaignDao.count(request.getParams());
             }
         }, new ListHandler() {
 
             @Override
-            public List<Screeninfo> list(PageTableRequest request) {
-                return screeninfoDao.list(request.getParams(), request.getOffset(), request.getLimit());
+            public List<Marketingcampaign> list(PageTableRequest request) {
+                return marketingcampaignDao.list(request.getParams(), request.getOffset(), request.getLimit());
             }
         }).handle(request);
     }
@@ -77,17 +79,6 @@ public class ScreeninfoController {
     @DeleteMapping("/{id}")
     @ApiOperation(value = "删除")
     public void delete(@PathVariable Long id) {
-        screeninfoDao.delete(id);
-    }
-    
-    @DeleteMapping("/{ccode}")
-    @ApiOperation(value = "删除")
-    public void delete(@PathVariable String ccode) {
-        screeninfoDao.deleteByCinemaCode(ccode);
-    }
-    @RequestMapping("/getScreenByCinemaCode")
-    @ApiOperation(value = "根据影院编码获取对应影厅")
-    public List<Screeninfo> getScreenByCinemaCode(@RequestParam("cinemacodes")String cinemacodes){
-		return screeninfoDao.getScreenByCinemaCode(cinemacodes);
+        marketingcampaignDao.delete(id);
     }
 }

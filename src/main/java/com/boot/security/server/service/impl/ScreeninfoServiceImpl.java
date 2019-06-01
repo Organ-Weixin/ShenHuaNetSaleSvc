@@ -78,4 +78,10 @@ public class ScreeninfoServiceImpl  implements ScreeninfoService{
 		// TODO Auto-generated method stub
 		return screeninfoDao.getByScreenId(cinemacode, screenid);
 	}
+
+	@Override
+	public List<Screeninfo> getScreenByCinemaCode(String cinemacodes) {
+		return screeninfoDao.getScreenByCinemaCode(cinemacodes);
+	}
+
 }

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>票务促销</title>
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="../../layui/css/layui.css" media="all" />
+</head>
+<body>
+    <div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div>
+                <header style="height: 100%">
+                    <div align="left">
+	                    <table style="width: 100%">
+	                   		<tr>
+	                   			<td>
+		                   			<form class="form-inline" onsubmit="return false">
+		                   				<input type="hidden" id="cinemacodes">
+		                   			<input type="hidden" id="userId">
+		                   			<input type="hidden" id="roleId">
+		                   				<div class="form-group">	
+		                   			<button class="layui-btn layui-btn-sm"style="width:180px;float:left;" onclick="location.href='addMarketingcampaign.html'">
+                                      <i class="layui-icon">&#xe608;</i>新建营销活动
+                                    </button>
+                                    </div>
+							<div class="form-group" style="float:right;">
+							<input id="ActivityName" type="text" class="form-control" placeholder="活动名称"> 
+							<select class="form-control" style="width:180px" name="activityType" id="ActivityType">
+									<option value="">活动方式</option>
+									<option value="1">立减</option>
+									<option value="2">固定价</option>
+								   <option value="3">最低发行价</option>
+							</select>
+							<select class="form-control" style="width:180px" name="status" id="Status">
+							<option value="">活动状态</option>
+							<option value="1">启动</option>
+							<option value="0">未启动</option>
+							</select>
+							<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
+								<button type="reset" class="layui-btn layui-btn-sm">清空</button>
+										</div>
+									</form>
+	                   			</td>
+	                   		</tr> 
+	                    </table>
+					</div>
+                </header>
+                
+                <div>
+                    <div class="widget-body no-padding">
+                        <table id="dt-table" class="table table-striped table-bordered table-hover" style="width:100%">
+                            <thead>
+                                <tr>
+                                </tr>                       
+                                <tr>
+									<th>#</th>
+									<th>活动名称</th>
+									<th>活动方式</th>
+									<th>优惠金额</th>
+									<th>开始日期</th>
+									<th>结束日期</th>
+									<th>活动总票数</th>
+									<th>剩余票数</th>
+									<th>是否叠加</th>
+									<th>活动状态</th>
+									<th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/jq.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript" src="../../js/my/permission.js"></script>
+<script type="text/javascript">
+var pers = checkPermission();
+//获取登陆人信息
+initUser();
+function initUser(){
+	$.ajax({
+		type : 'get',
+		url : '/users/current',
+		async : false,
+		success : function(data) {
+			$("#userId").val(data.id);
+			$("#roleId").val(data.roleId);
+			getCinemaCodes(data.id,data.roleId);
+		}
+	});
+}
+
+//获取登陆人的所有影院的影院编码
+function getCinemaCodes(id,roleId){
+	$.ajax({
+		url:'/users/getCinemaName',
+		data:{"id":id,"roleId":roleId},
+		type:'post',
+		success:function(data){
+			var cinemacodes = "";
+			for(var i=0; i<data.length; i++){
+				cinemacodes += data[i].cinemaCode+",";
+				var option = "<option value="+data[i].cinemaCode+">"+data[i].cinemaName+"</option>";
+				$("#cinemaName").append(option);
+			}
+			$("#cinemacodes").val(cinemacodes.substring(0,cinemacodes.length-1));
+			example.ajax.reload();
+		}
+	})
+}
+
+var example;
+function init(){
+	example = 
+    	$('#dt-table').DataTable({
+        	"searching": false,
+        	"processing": false,
+        	"serverSide" : true,
+          	"ordering":false,
+        	"language": {
+                "url": "/js/plugin/datatables/Chinese.lang"
+            },
+        	"ajax": {
+        		"url" : "/marketingcampaigns",
+        		"type":"get",
+        		"data":function(d){
+    				d.Id = $("#id").val();
+    				d.ActivityName = $("#ActivityName").val();
+    				d.ActivityType = $("#ActivityType").val();
+    				d.Status = $("#Status").val();
+    			}
+        	},
+        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
+            "columns": [
+				//{"data" : "id", "defaultContent" : ""},
+				{"data" : null, "defaultContent" : "","orderable":false,
+					"render" : function(data, type, full, meta){
+						return meta.row + 1 + meta.settings._iDisplayStart;
+						}
+				},
+				{"data" : "activityName", "defaultContent" : ""},
+				{
+					"data" : "activityType", 
+					"defaultContent" : "",
+					"render": function (data, type, row) {
+                		var activityType = row['activityType'];
+                		var str = "";
+                      	if(activityType == 1){
+                      		str = "立减";
+                      	} else  if(activityType == 2){
+                      		str = "固定价";
+                      	}else{
+                      		activityType == 3;
+                      		str="最低发行价";
+                      	}
+                        return str;
+                  	}
+			    },
+				{"data" : "couponPrice", "defaultContent" : ""},
+				{"data" : "startDate", "defaultContent" : ""},
+				{"data" : "endDate", "defaultContent" : ""},
+				{"data" : "sumNumber", "defaultContent" : ""},
+				{"data" : "remainingNumber", "defaultContent" : ""},
+				{
+					"data" : "isSuperposition", 
+					"defaultContent" : "",
+					"render": function (data, type, row) {
+                		var isSuperposition = row['isSuperposition'];
+                		var str = "";
+                      	if(isSuperposition == 1){
+                      		str = "是";
+                      	} else {
+                      		isSuperposition == 0;
+                      		str = "否";
+                      	}
+                        return str;
+                  	}
+			    },
+				 {
+					"data" : "status", 
+					"defaultContent" : "",
+					"render": function (data, type, row) {
+                		var status = row['status'];
+                		var str = "";
+                      	if(status == 1){
+                      		str = "启动";
+                      	} else {
+                      		status == 0;
+                      		str = "未启动";
+                      	}
+                        return str;
+                  	}
+			    }, 
+				//{"data" : "status", "defaultContent" : ""},
+				{ 
+								"data": "", 
+								"defaultContent": "",
+								"orderable":false,
+						        "render": function (data, type, row) {
+                		           var id = row['id'];
+                		            var status=row['status'];
+                		           var change = "";
+                		           if(status == 1){
+                		        	   change ="停用";
+                		           }else{
+                		        	   status == 0;
+                		        	   change ="启动";
+                		           }
+                		           var href = "updateMarketingcampaign.html?id=" + id;
+                		           var upda = "<button class='change' title='"+status+"' value='"+id+"' style='margin-right:5%'>"+change+"</button>";
+                                   var edit = buttonEdit(href, "", pers);
+                		           var del = buttonDel(id, "", pers);
+                		           return upda+edit + del;
+                  	            }		
+				},
+                
+            ],
+           "order": [[ 0, "asc" ]]
+        } );
+}
+
+layui.use('layer', function(){
+    var layer = layui.layer;
+});
+
+function del(id){
+	layer.confirm('确定要删除吗？', {
+        btn : [ '确定', '取消' ]
+    }, function() {
+    	$.ajax({
+            type : 'delete',
+            url : '/marketingcampaigns/'+id,
+            success : function(data) {
+                example.ajax.reload();
+                layer.msg("删除成功");
+            }
+        });
+        
+        layer.close(1);
+    });
+}
+
+/*  $("#tbody").on('click','.change',function(){
+	var status = "";
+	if($(this).attr('title')==1){
+		status = 0;
+	}else{
+		status = 1;
+	}
+	$.ajax({
+		url:'/marketingcampaigns/changestatus',
+		data:{"status":status,"id":$(this).val()},
+		type:'post',
+		success:function(data){
+			window.location.href="marketingcampaignList.html";
+		}
+	}); 
+});  */  
+$("#tbody").on('click','.change',function(){
+	var status ="";
+	if($(this).attr('title')==1){
+		status = 0;
+	}else{
+		status = 1;
+	}
+	$.ajax({
+		url:'/marketingcampaigns/changestatus',
+		data:{"status":status,"id":$(this).val()},
+		type:'post',
+		success:function(data){
+			window.location.href="marketingcampaignList.html";
+		}
+	});
+});
+
+$("#searchBt").click(function(){
+	example.ajax.reload();
+});
+
+init();
+</script>

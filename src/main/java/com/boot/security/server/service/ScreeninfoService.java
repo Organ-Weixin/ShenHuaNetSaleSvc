@@ -17,7 +17,9 @@ public interface ScreeninfoService {
     Screeninfo getByScreenId(String cinemacode,String screenid);
     
     List<Screeninfo> getByCinemaCode(String cinemacode);
-
+    
+    List<Screeninfo> getScreenByCinemaCode(String cinemacodes);
+    
     int delete(Long id);
     
     int deleteByCinemaCode(String cinemacode);

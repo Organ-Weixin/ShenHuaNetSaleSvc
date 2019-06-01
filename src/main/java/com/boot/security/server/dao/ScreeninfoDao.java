@@ -27,10 +27,13 @@ public interface ScreeninfoDao {
     //查询影票
     /*@Select("select * from screeninfo t where t.ccode = #{CinemaCode} and t.scode = #{ScreenCode}")
     Screeninfo getByCinemaCodeAndScreenCode(String CinemaCode,String ScreenCode);*/
-    
+   
     @Select("select * from screeninfo t where t.ccode = #{cinemacode}")
     List<Screeninfo> getByCinemaCode(String cinemacode);
-
+    
+    @Select("select * from screeninfo where find_in_set(ccode,#{cinemacodes})")
+    List<Screeninfo> getScreenByCinemaCode(String cinemacodes);
+    
     @Delete("delete from screeninfo where id = #{id}")
     int delete(Long id);
     
