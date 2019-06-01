@@ -19,14 +19,18 @@ import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.Couponsgroup;
+import com.boot.security.server.model.Filminfo;
+import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
+import com.boot.security.server.service.impl.FilminfoServiceImpl;
+import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
-
+import com.boot.security.server.apicontroller.reply.QueryUserConponsReply.QueryUserConponsBeans;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
@@ -42,7 +46,10 @@ public class ConponController {
 	private CouponsServiceImpl _couponsService;
 	@Autowired
 	private CouponsgroupServiceImpl _couponsgroupService;
-	
+	@Autowired
+	private FilminfoServiceImpl _filminfoService;
+	@Autowired
+	private GoodsServiceImpl _goodsService;
 	@GetMapping("/QueryUsingConpons/{UserName}/{Password}/{CinemaCode}")
 	@ApiOperation(value = "获取所有启用优惠券")
 	public QueryUsingConponsReply QueryUsingConpons(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode){
@@ -110,36 +117,93 @@ public class ConponController {
 			return queryUserConponsReply;
 		}
 		List<Coupons> coupons=_couponsService.getByOpenID(OpenID);
-		List<Couponsgroup> couponsgroup=_couponsgroupService.getByCinemaCode(CinemaCode);
-		queryUserConponsReply.setData(queryUserConponsReply.new QueryUserConponsBeans());
+		QueryUserConponsBeans data=new QueryUserConponsBeans();
 		if(coupons==null || coupons.size()==0){
 			queryUserConponsReply.getData().setConponCount(0);
 		}else{
-			queryUserConponsReply.getData().setConponCount(coupons.size());
-			queryUserConponsReply.getData().setConpons(new ArrayList<QueryUserConponsBean>());
+			data.setConponCount(coupons.size());
+			List<QueryUserConponsBean> queryUserConponsBeanss=new ArrayList<QueryUserConponsBean>();
 			for(Coupons coupon:coupons){
-				QueryUserConponsBean queryUserConponsBean=queryUserConponsReply.getData().new QueryUserConponsBean();
+				QueryUserConponsBean queryUserConponsBean=new QueryUserConponsBean();
 				ModelMapper.MapForm(queryUserConponsBean, coupon);
-				if(couponsgroup.size()!=0){
+				List<Couponsgroup> couponsgroup=_couponsgroupService.getByCinemaCodeAndGroupCode(cinema.getCode(), coupon.getGroupCode());
+				if(couponsgroup.size()>0){
 				    for (int i = 0; i < couponsgroup.size(); i++) { 
 				    	Couponsgroup cou=couponsgroup.get(i);
-				    String CouponsType=String.valueOf(cou.getCouponsType());
-				    queryUserConponsBean.setTypeCode(CouponsType);
-				    String ReductionPrice=String.valueOf(cou.getReductionPrice());
-				    queryUserConponsBean.setPrice(ReductionPrice);
-				    String FilmCodes=cou.getFilmCodes();
-				    queryUserConponsBean.setSnackCode(FilmCodes);
-				    String CinemaCodes=cou.getCinemaCodes();
-				    queryUserConponsBean.setCinemaCode(CinemaCodes);
-				    String Remark=cou.getRemark();
-				    queryUserConponsBean.setRemark(Remark);
-				    String CouponsName=cou.getCouponsName();
-				    queryUserConponsBean.setTitle(CouponsName);
+				    	    queryUserConponsBean.setCinemaCode(cou.getCinemaCodes());
+						    queryUserConponsBean.setRemark(cou.getRemark());
+							queryUserConponsBean.setGoodsCodes(cou.getGoodsCodes());
+							queryUserConponsBean.setFilmCodes(cou.getFilmCodes());
+							if(cou.getReductionPrice()!=null){
+							queryUserConponsBean.setPrice(String.valueOf(cou.getReductionPrice()));
+							}
+							if(cou.getCouponsType()!=null){
+							queryUserConponsBean.setTypeCode(String.valueOf(cou.getCouponsType()));
+							}
+							queryUserConponsBean.setTitle(cou.getCouponsName());
+							queryUserConponsBean.setCanUseCinemaType(cou.getCanUseCinemaType());
+							//获取可用影院名称
+							String cinemacodeList[]=cou.getCinemaCodes().split(",");
+							String cinemaname="";
+							for(int j=0;j<cinemacodeList.length;j++){
+							Cinema cine=_cinemaService.getByCinemaCode(cinemacodeList[j]);
+							if(cine!=null){
+							cinemaname+=cine.getName()+",";
+							}
+							}
+							if( cinemaname.length()>0){
+							queryUserConponsBean.setCinemaName(cinemaname.substring(0, cinemaname.length()-1));
+							}
+							queryUserConponsBean.setReductionType(cou.getReductionType());
+							//获取影片名称
+							String filmcodesList[]=cou.getFilmCodes().split(",");
+							String filmname="";
+							for(int j=0;j<filmcodesList.length;j++){
+								Filminfo fil=_filminfoService.getByFilmCode(filmcodesList[j]);
+								if(fil!=null){
+								filmname+=fil.getFilmName()+",";
+								}
+							}
+							if(filmname.length()>0){
+							queryUserConponsBean.setFilmName(filmname.substring(0, filmname.length()-1));
+							}
+							//获取卖品名称
+							String goodscodeList[]=cou.getGoodsCodes().split(",");
+							String goodsNames="";
+							for(int j=0;j<cinemacodeList.length;j++){
+								for(int m=0;m<goodscodeList.length;m++){
+									Goods goo=_goodsService.getByCinemaCodeAndGoodsCode(cinemacodeList[j], goodscodeList[m]);
+									if(goo!=null){
+									goodsNames+=goo.getGoodsName()+",";
+									}
+								}
+							}
+							if(goodsNames.length()>0){
+							queryUserConponsBean.setGoodsName(goodsNames.substring(0, goodsNames.length()-1));
+							}
+							queryUserConponsBean.setCanUsePeriodType(cou.getCanUsePeriodType());
+							queryUserConponsBean.setWeekDays(cou.getWeekDays());
+							queryUserConponsBean.setTimePeriod(cou.getTimePeriod());
+							if(cou.getReductionType()==1&&(cou.getFilmCodes().equals("")||cou.getFilmCodes().equals(null))){
+								queryUserConponsBean.setIsAllFilm(true);
+							}
+							if(cou.getReductionType()==1&&(!cou.getFilmCodes().equals("")&&!cou.getFilmCodes().equals(null))){
+								queryUserConponsBean.setIsAllFilm(false);
+							}
+							if(cou.getReductionType()==2&&(cou.getGoodsCodes().equals("")||cou.getGoodsCodes().equals(null))){
+								queryUserConponsBean.setIsAllGoods(true);
+							}
+							if(cou.getReductionType()==2&&(!cou.getGoodsCodes().equals("")&&!cou.getGoodsCodes().equals(null))){
+								queryUserConponsBean.setIsAllGoods(false);
+							}
 				    }
 					}
-				queryUserConponsReply.getData().getConpons().add(queryUserConponsBean);
+				queryUserConponsBeanss.add(queryUserConponsBean);		
+
 			}
+			data.setConpons(queryUserConponsBeanss);
 		}
+		queryUserConponsReply.setData(data);
 		queryUserConponsReply.SetSuccessReply();
 		return queryUserConponsReply;
 	}

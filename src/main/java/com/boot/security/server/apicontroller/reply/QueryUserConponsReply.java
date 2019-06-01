@@ -11,7 +11,7 @@ public class QueryUserConponsReply extends BaseReply{
 	public void setData(QueryUserConponsBeans data) {
 		this.data = data;
 	}
-	public class QueryUserConponsBeans{
+	public static class QueryUserConponsBeans{
 		private int ConponCount;//优惠券数量
 		private List<QueryUserConponsBean> Conpons;
 		public int getConponCount() {
@@ -26,7 +26,7 @@ public class QueryUserConponsReply extends BaseReply{
 		public void setConpons(List<QueryUserConponsBean> conpons) {
 			Conpons = conpons;
 		}
-		public class QueryUserConponsBean{
+		public static class QueryUserConponsBean{
 			private Long ConponId;
 			private String CinemaCode;
 			private String TypeCode;
@@ -34,7 +34,8 @@ public class QueryUserConponsReply extends BaseReply{
 			private String OpenID;
 			private String Price;
 			private String ConponCode;
-			private String SnackCode;
+			private String GoodsCodes;
+			private String FilmCodes;
 			private String EffectiveDate;
 			private String ExpireDate; 
 			private String Status;
@@ -42,6 +43,17 @@ public class QueryUserConponsReply extends BaseReply{
 			private String ReceivedDate;
 			private String Title;
 			private String Remark;
+			
+			private Integer CanUseCinemaType;//可用门店类型
+			private String CinemaName;
+			private Integer ReductionType;//影片或卖品类型
+			private String FilmName;
+			private String GoodsName;
+			private Integer CanUsePeriodType;//可用时段类型 1：全部时段  2：部分时段
+			private String WeekDays;//可用时间 0：周日 1：周一 ...
+			private String TimePeriod;//可用时段-具体时间
+			private boolean IsAllFilm;//1,所有影片0部分影片
+			private boolean IsAllGoods;//1所有卖品，0部分卖品
 			public Long getConponId() {
 				return ConponId;
 			}
@@ -84,11 +96,17 @@ public class QueryUserConponsReply extends BaseReply{
 			public void setConponCode(String conponCode) {
 				ConponCode = conponCode;
 			}
-			public String getSnackCode() {
-				return SnackCode;
+			public String getGoodsCodes() {
+				return GoodsCodes;
 			}
-			public void setSnackCode(String snackCode) {
-				SnackCode = snackCode;
+			public void setGoodsCodes(String goodsCodes) {
+				GoodsCodes = goodsCodes;
+			}
+			public String getFilmCodes() {
+				return FilmCodes;
+			}
+			public void setFilmCodes(String filmCodes) {
+				FilmCodes = filmCodes;
 			}
 			public String getEffectiveDate() {
 				return EffectiveDate;
@@ -132,6 +150,67 @@ public class QueryUserConponsReply extends BaseReply{
 			public void setRemark(String remark) {
 				Remark = remark;
 			}
+			public Integer getCanUseCinemaType() {
+				return CanUseCinemaType;
+			}
+			public void setCanUseCinemaType(Integer canUseCinemaType) {
+				CanUseCinemaType = canUseCinemaType;
+			}
+			public String getCinemaName() {
+				return CinemaName;
+			}
+			public void setCinemaName(String cinemaName) {
+				CinemaName = cinemaName;
+			}
+			public Integer getReductionType() {
+				return ReductionType;
+			}
+			public void setReductionType(Integer reductionType) {
+				ReductionType = reductionType;
+			}
+			public String getFilmName() {
+				return FilmName;
+			}
+			public void setFilmName(String filmName) {
+				FilmName = filmName;
+			}
+			public String getGoodsName() {
+				return GoodsName;
+			}
+			public void setGoodsName(String goodsName) {
+				GoodsName = goodsName;
+			}
+			public Integer getCanUsePeriodType() {
+				return CanUsePeriodType;
+			}
+			public void setCanUsePeriodType(Integer canUsePeriodType) {
+				CanUsePeriodType = canUsePeriodType;
+			}
+			public String getWeekDays() {
+				return WeekDays;
+			}
+			public void setWeekDays(String weekDays) {
+				WeekDays = weekDays;
+			}
+			public String getTimePeriod() {
+				return TimePeriod;
+			}
+			public void setTimePeriod(String timePeriod) {
+				TimePeriod = timePeriod;
+			}
+			public boolean isIsAllFilm() {
+				return IsAllFilm;
+			}
+			public void setIsAllFilm(boolean isAllFilm) {
+				IsAllFilm = isAllFilm;
+			}
+			public boolean isIsAllGoods() {
+				return IsAllGoods;
+			}
+			public void setIsAllGoods(boolean isAllGoods) {
+				IsAllGoods = isAllGoods;
+			}
+			
 		}
 	}
 }
