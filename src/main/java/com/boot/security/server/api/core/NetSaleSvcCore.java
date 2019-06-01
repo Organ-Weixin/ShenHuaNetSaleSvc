@@ -68,6 +68,7 @@ import com.boot.security.server.api.ctms.reply.CTMSRefundGoodsReply;
 import com.boot.security.server.api.ctms.reply.CTMSRefundTicketReply;
 import com.boot.security.server.api.ctms.reply.CTMSReleaseSeatReply;
 import com.boot.security.server.api.ctms.reply.CTMSSubmitGoodsOrderReply;
+import com.boot.security.server.api.ctms.reply.CTMSSubmitMixOrderReply;
 import com.boot.security.server.api.ctms.reply.CTMSSubmitOrderReply;
 import com.boot.security.server.api.ctms.reply.ICTMSInterface;
 import com.boot.security.server.model.CardChargeTypeEnum;
@@ -2177,7 +2178,7 @@ ScreenType,ListingPrice,LowestPrice))
 
 		
 		//验证卖品订单
-		GoodsOrderView goodsorder = _goodsOrderService.getWithLocalOrderCode(QueryXmlObj.getCinemaCode(), QueryXmlObj.getOrderCode());
+		GoodsOrderView goodsorder = _goodsOrderService.getWithLocalOrderCode(QueryXmlObj.getCinemaCode(), QueryXmlObj.getGoodsOrderCode());
 		if (goodsorder == null || (goodsorder.getOrderBaseInfo().getOrderStatus() != GoodsOrderStatusEnum.Created.getStatusCode()
 				&& goodsorder.getOrderBaseInfo().getOrderStatus() != GoodsOrderStatusEnum.SubmitFail.getStatusCode()
 				&& goodsorder.getOrderBaseInfo().getOrderStatus() != GoodsOrderStatusEnum.Payed.getStatusCode())) {
@@ -2220,8 +2221,8 @@ ScreenType,ListingPrice,LowestPrice))
 	private SubmitMixOrderReply SubmitMixOrder(SubmitMixOrderReply reply,Usercinemaview userCinema,OrderView order, GoodsOrderView goodsorder){
 		try {
 			_CTMSInterface = CTMSInterfaceFactory.Create(userCinema);
-			CTMSSubmitOrderReply CTMSReply = null;
-			CTMSReply = _CTMSInterface.SubmitOrder(userCinema, order);
+			CTMSSubmitMixOrderReply CTMSReply = null;
+			CTMSReply = _CTMSInterface.SubmitMixOrder(userCinema, order, goodsorder);
 
 			if (StatusEnum.Success.equals(CTMSReply.Status)) {
 				SubmitTicketsOrder ticketsOrder = new SubmitTicketsOrder();	//购票信息

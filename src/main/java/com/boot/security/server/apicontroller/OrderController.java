@@ -1,10 +1,6 @@
 package com.boot.security.server.apicontroller;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -13,12 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.TreeMap;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,12 +34,10 @@ import com.boot.security.server.api.core.RefundTicketReply;
 import com.boot.security.server.api.core.ReleaseSeatReply;
 import com.boot.security.server.api.core.SubmitMixOrderReply;
 import com.boot.security.server.api.core.SubmitOrderReply;
-import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.NetSaleQueryJson;
 import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson;
 import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson.PrePayOrderQueryJsonSeat;
 import com.boot.security.server.apicontroller.reply.PrePayParametersReply;
-import com.boot.security.server.apicontroller.reply.PrePayParametersReply.PrePayParametersReplyParameter;
 import com.boot.security.server.apicontroller.reply.QueryLocalOrderReply;
 import com.boot.security.server.apicontroller.reply.QueryLocalOrderReply.QueryLocalOrder;
 import com.boot.security.server.apicontroller.reply.QueryLocalOrderReply.QueryLocalOrder.Seats;
@@ -84,9 +74,6 @@ import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
-import com.boot.security.server.utils.HttpHelper;
-import com.boot.security.server.utils.MD5Util;
-import com.boot.security.server.utils.StrUtil;
 import com.boot.security.server.utils.WxPayUtil;
 import com.boot.security.server.utils.XmlHelper;
 import com.google.gson.JsonSyntaxException;
@@ -173,9 +160,9 @@ public class OrderController {
 	}
 	//endregion
 	
-	//region 提交订单(票 + 卖品)
+	//region 提交混合订单(票 + 卖品)
 	@PostMapping("/SubmitMixOrder")
-	@ApiOperation(value = "提交订单")
+	@ApiOperation(value = "提交混合订单")
 	public SubmitMixOrderReply SubmitMixOrder(@RequestBody NetSaleQueryJson QueryJson){
 		try {
 			SubmitMixOrderReply reply = NetSaleSvcCore.getInstance().SubmitMixOrder(QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getQueryXml());
