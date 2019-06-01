@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.security.server.page.table.PageTableRequest;
@@ -18,7 +19,10 @@ import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.dao.ScreeninfoDao;
+import com.boot.security.server.model.Goods;
+import com.boot.security.server.model.Goodstype;
 import com.boot.security.server.model.Screeninfo;
+import com.boot.security.server.model.Sessioninfo;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -80,5 +84,10 @@ public class ScreeninfoController {
     @ApiOperation(value = "删除")
     public void delete(@PathVariable String ccode) {
         screeninfoDao.deleteByCinemaCode(ccode);
+    }
+    @RequestMapping("/getScreenByCinemaCode")
+    @ApiOperation(value = "根据影院编码获取对应影厅")
+    public List<Screeninfo> getScreenByCinemaCode(@RequestParam("cinemacodes")String cinemacodes){
+		return screeninfoDao.getScreenByCinemaCode(cinemacodes);
     }
 }
