@@ -140,4 +140,10 @@ public class OrderServiceImpl implements OrderService{
 		return orderview;
 	}
 
+	@Override
+	public List<Orders> getNonPayOrders(Long userid, String cinemaCode, String openID) {
+		// TODO Auto-generated method stub
+		return ordersDao.getNonPayOrders(userid, cinemaCode, openID);
+	}
+
 }

@@ -22,7 +22,7 @@ public interface FilminfoDao {
     @Select("select * from filminfo t where t.filmcode = #{filmcode}")
     Filminfo getByFilmCode(String filmcode);
     
-    @Select("select * from filminfo  where LEFT(filmname,position('（' IN filmname)-1) like '%${filmname}%'")
+    @Select("select * from filminfo  where filmname like '%${filmname}%'")
     List<Filminfo> getFilmByFilmName(@Param("filmname") String filmname);
     
     @Select("select * from filminfo  where filmcode=#{filmcode}")

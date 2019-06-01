@@ -38,6 +38,8 @@ public interface OrderService {
     
     List<Orders> getOrdersByCreated(Long userid,String cinemaCode,Date startDate,Date endDate);
     
+    List<Orders> getNonPayOrders(Long userid,String cinemaCode,String openID);
+    
     @Transactional(propagation = Propagation.REQUIRED)
 	int Insert(OrderView orderview);
 	@Transactional(propagation = Propagation.REQUIRED)

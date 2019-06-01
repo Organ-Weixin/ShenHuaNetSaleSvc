@@ -1,8 +1,17 @@
 package com.boot.security.server.utils;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,19 +20,41 @@ import java.util.Random;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
+import javax.net.ssl.SSLContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContexts;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ResourceUtils;
 import org.w3c.dom.Document;
 
 import com.boot.security.server.apicontroller.reply.PrePayParametersReply;
 import com.boot.security.server.apicontroller.reply.PrePayParametersReply.PrePayParametersReplyParameter;
+import com.boot.security.server.apicontroller.reply.RefundPaymentReply;
+import com.boot.security.server.apicontroller.reply.RefundPaymentReply.RefundPaymentReplyOrder;
 import com.boot.security.server.model.Cinemapaymentsettings;
 import com.boot.security.server.service.impl.CinemapaymentsettingsServiceImpl;
 
 import freemarker.template.utility.StringUtil;
 
 public class WxPayUtil {
+	//连接超时时间，默认10秒
+    private static int socketTimeout = 10000;
+    //传输超时时间，默认30秒
+    private static int connectTimeout = 30000;
+    //请求器的配置
+    private static RequestConfig requestConfig;
+	//HTTP请求器
+    private static CloseableHttpClient httpClient;
 
 	//region 准备支付参数
 	public static PrePayParametersReply WxPayPrePay(HttpServletRequest request, PrePayParametersReply reply,
@@ -126,7 +157,7 @@ public class WxPayUtil {
 		return returnmap;
 	}
 	//endregion
-	
+
 	// region 得到签名
 	private static String getSign(Map<String, String> map, String key, String value, String charset) {
 		StringBuilder sb = new StringBuilder();
@@ -157,4 +188,89 @@ public class WxPayUtil {
 	}
 	// endregion
 
+	//region 退款
+	public static String WxPayRefund(String WxpayAppId,String WxpayMchId,String WxpayKey,String TradeNo,String RefundFee,String OrderTradeNo,String CinemaCode,String WxpayRefundCert) throws UnrecoverableKeyException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, IOException{
+		String nonce_str = MD5Util.MD5Encode(String.valueOf(new Random().nextInt(1000)), "UTF-8");
+		Map<String, String> map = new TreeMap<String, String>();
+		map.put("appid", WxpayAppId);
+		map.put("mch_id",WxpayMchId);
+		map.put("nonce_str",nonce_str.toLowerCase());
+		map.put("op_user_id",WxpayMchId);
+		map.put("out_refund_no",TradeNo);//商家退款单号
+		map.put("out_trade_no","");
+		map.put("refund_fee",RefundFee);
+		map.put("total_fee",RefundFee);
+		map.put("transaction_id",OrderTradeNo);
+		String sign = getSign(map, "key", WxpayKey, "UTF-8");
+		map.put("sign",sign);
+		// 把参数组装成xml
+		String data = getXml(map);
+		String url = "https://api.mch.weixin.qq.com/secapi/pay/refund";//微信退款接口地址
+		//初始化证书
+		initCert(WxpayMchId,CinemaCode,WxpayRefundCert);
+		String strRefundPaymentXml = httpsRequest(url,data);
+		return strRefundPaymentXml;
+	}
+	//endregion
+	
+	//region 初始化微信退款证书
+	public static void initCert(String WxpayMchId, String CinemaCode,String WxpayRefundCert) throws IOException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyManagementException {
+        //本地或者服务器的证书位置（证书在微信支付申请成功发来的通知邮件中）
+		String cert=ResourceUtils.getURL("classpath:").getPath()+File.separator+"static/cert/"+CinemaCode+"/"+WxpayRefundCert;
+		//私钥（在安装证书时设置）
+		String password = WxpayMchId;
+        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+        //加载本地的证书进行https加密传输
+        FileInputStream instream = new FileInputStream(new File(cert));
+        try {
+            keyStore.load(instream, password.toCharArray());  //加载证书密码，默认为商户ID
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } finally {
+            instream.close();
+        }
+        // Trust own CA and all self-signed certs
+        SSLContext sslcontext = SSLContexts.custom()
+                .loadKeyMaterial(keyStore, password.toCharArray())//加载证书密码，默认为商户ID
+                .build();
+        // Allow TLSv1 protocol only
+        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
+                sslcontext,
+                new String[]{"TLSv1"},
+                null,
+                SSLConnectionSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER);
+        httpClient = HttpClients.custom()
+                .setSSLSocketFactory(sslsf)
+                .build();
+        //根据默认超时限制初始化requestConfig
+        requestConfig = RequestConfig.custom().setSocketTimeout(socketTimeout).setConnectTimeout(connectTimeout).build();
+    }
+	//endregion
+	
+	//region 微信退款请求
+	public static String httpsRequest(String url, String data) throws IOException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyManagementException {
+		
+        String result = null;
+        HttpPost httpPost = new HttpPost(url);
+        
+        //得指明使用UTF-8编码，否则到API服务器XML的中文不能被成功识别
+        StringEntity postEntity = new StringEntity(data, "UTF-8");
+        httpPost.addHeader("Content-Type", "text/xml");
+        httpPost.setEntity(postEntity);
+ 
+        //设置请求器的配置
+        httpPost.setConfig(requestConfig);
+        try {
+            HttpResponse response = httpClient.execute(httpPost);
+            HttpEntity entity = response.getEntity();
+            result = EntityUtils.toString(entity, "UTF-8");
+        } catch (Exception e) {
+        } finally {
+            httpPost.abort();
+        }
+        return result;
+    }
+	//endregion
 }

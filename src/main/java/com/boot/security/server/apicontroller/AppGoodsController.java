@@ -1,6 +1,10 @@
 package com.boot.security.server.apicontroller;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.w3c.dom.Document;
 
 import com.boot.security.server.api.core.CreateGoodsOrderReply;
 import com.boot.security.server.api.core.NetSaleSvcCore;
@@ -40,7 +45,9 @@ import com.boot.security.server.apicontroller.reply.QueryGoodsTypeReply;
 import com.boot.security.server.apicontroller.reply.QueryGoodsTypeReply.QueryGoodsTypeReplyTypes;
 import com.boot.security.server.apicontroller.reply.QueryGoodsTypeReply.QueryGoodsTypeReplyTypes.QueryGoodsTypeReplyType;
 import com.boot.security.server.apicontroller.reply.QueryLocalGoodsOrderReply.QueryLocalGoodsOrderReplyOrder;
+import com.boot.security.server.apicontroller.reply.RefundPaymentReply.RefundPaymentReplyOrder;
 import com.boot.security.server.apicontroller.reply.QueryLocalGoodsOrderReply;
+import com.boot.security.server.apicontroller.reply.RefundPaymentReply;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Cinemapaymentsettings;
@@ -56,6 +63,7 @@ import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Goodstype;
 import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
+import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
@@ -68,6 +76,7 @@ import com.boot.security.server.service.impl.GoodscomponentsServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.WxPayUtil;
+import com.boot.security.server.utils.XmlHelper;
 import com.google.gson.JsonSyntaxException;
 
 import freemarker.template.utility.StringUtil;
@@ -319,6 +328,7 @@ public class AppGoodsController {
 	}
 	//endregion
 	
+	//region 查询推荐套餐
 	@GetMapping("/QueryComponents/{username}/{password}/{cinemaCode}/{seatNum}")
 	@ApiOperation(value = "查询推荐套餐")
 	public QueryComponentsReply QueryComponents(@PathVariable String username, @PathVariable String password, 
@@ -358,6 +368,7 @@ public class AppGoodsController {
         
         return reply;
 	}
+	//endregion
 	
 	//region 微信预支付卖品订单（准备微信支付参数）
 	@RequestMapping(value="/PrePayGoodsOrder",method = RequestMethod.POST)
@@ -546,6 +557,75 @@ public class AppGoodsController {
 				_goodsOrderService.UpdateOrderBaseInfo(order);
 			}
 		}
+	}
+	//endregion
+	
+	//region 卖品订单退款
+	@GetMapping("/RefundPayment/{UserName}/{Password}/{CinemaCode}/{LocalOrderCode}")
+	@ApiOperation(value = "退款")
+	public RefundPaymentReply RefundPayment(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
+			@PathVariable String LocalOrderCode) throws UnrecoverableKeyException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, IOException{
+		RefundPaymentReply refundpaymentReply=new RefundPaymentReply();
+		// 校验参数
+		if (!ReplyExtension.RequestInfoGuard2(refundpaymentReply, UserName, Password, CinemaCode, LocalOrderCode)) {
+			return refundpaymentReply;
+		}
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
+		if (UserInfo == null) {
+			refundpaymentReply.SetUserCredentialInvalidReply();
+			return refundpaymentReply;
+		}
+		// 验证影院是否存在且可访问
+		Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),CinemaCode);
+		if (userCinema == null) {
+			refundpaymentReply.SetCinemaInvalidReply();
+			return refundpaymentReply;
+		}
+		// 获取影院的支付配置
+		Cinemapaymentsettings cinemapaymentsettings = _cinemapaymentsettingsService
+				.getByCinemaCode(CinemaCode);
+		if (cinemapaymentsettings == null || cinemapaymentsettings.getWxpayAppId().isEmpty()
+				|| cinemapaymentsettings.getWxpayMchId().isEmpty()) {
+			refundpaymentReply.SetCinemaPaySettingInvalidReply();
+			return refundpaymentReply;
+		}
+		//验证订单是否存在
+		Goodsorders order=_goodsOrderService.getByLocalOrderCode(LocalOrderCode);
+		if(order==null){
+			refundpaymentReply.SetOrderNotExistReply();
+			return refundpaymentReply;
+		}else{
+			//如果订单存在，开始退款
+			String WxpayAppId = cinemapaymentsettings.getWxpayAppId();
+			String WxpayMchId=cinemapaymentsettings.getWxpayMchId();
+			String WxpayKey=cinemapaymentsettings.getWxpayKey();
+			String TradeNo=new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + CinemaCode
+			+ order.getId();
+			Double RefundPrice = order.getTotalSettlePrice()+order.getTotalFee();// 结算价+服务费
+			String RefundFee = String.valueOf(Double.valueOf(RefundPrice*100).intValue());// 退款金额，以分为单位
+			String OrderTradeNo=order.getOrderTradeNo();//微信支付订单号
+			String WxpayRefundCert=cinemapaymentsettings.getWxpayRefundCert();
+			
+			String strRefundPaymentXml = WxPayUtil.WxPayRefund(WxpayAppId,WxpayMchId,WxpayKey,TradeNo,RefundFee,OrderTradeNo,CinemaCode,WxpayRefundCert);
+			//获取返回值 
+			String strRefundPaymentXml2 = strRefundPaymentXml.replace("<![CDATA[", "").replace("]]>", "");
+			Document document = XmlHelper.StringTOXml(strRefundPaymentXml2);
+			String resultcodeValue = XmlHelper.getNodeValue(document, "/xml/result_code");
+			String refundidValue=XmlHelper.getNodeValue(document,"/xml/refund_id");
+			if (resultcodeValue.equals("SUCCESS")) {
+				refundpaymentReply.setData(new RefundPaymentReplyOrder());
+				refundpaymentReply.getData().setOrderCode(order.getLocalOrderCode());
+				refundpaymentReply.getData().setOrderStatus(GoodsOrderStatusEnum.CastToEnum(order.getOrderStatus()).getStatusName());
+				refundpaymentReply.getData().setRefundTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+				refundpaymentReply.getData().setRefundTradeNo(refundidValue);
+				refundpaymentReply.SetSuccessReply();
+			}else{
+				refundpaymentReply.Status = "Failure";
+				refundpaymentReply.ErrorCode = resultcodeValue;
+			}
+		}
+		return refundpaymentReply;
 	}
 	//endregion
 }

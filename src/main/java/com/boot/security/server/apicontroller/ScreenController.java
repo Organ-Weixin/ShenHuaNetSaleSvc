@@ -2,6 +2,8 @@ package com.boot.security.server.apicontroller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.QueryScreenInfoReply;
 import com.boot.security.server.apicontroller.reply.QueryScreenInfoReply.QueryScreensReplyScreenInfo;
+import com.boot.security.server.apicontroller.reply.QueryScreenSeatsArrangementReply;
+import com.boot.security.server.apicontroller.reply.QueryScreenSeatsArrangementReply.DataBean;
+import com.boot.security.server.apicontroller.reply.QueryScreenSeatsArrangementReply.DataBean.RowBean;
+import com.boot.security.server.apicontroller.reply.QueryScreenSeatsArrangementReply.DataBean.RowBean.SeatBean;
 import com.boot.security.server.apicontroller.reply.QueryScreenSeatsReply.QueryScreenSeatsReplyScreenSeats.QueryScreenSeatsReplyScreenSeat;
 import com.boot.security.server.apicontroller.reply.QueryScreenSeatsReply;
 import com.boot.security.server.apicontroller.reply.QueryScreensReply;
@@ -26,6 +32,7 @@ import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
+import com.google.gson.Gson;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -44,6 +51,7 @@ public class ScreenController {
 	@Autowired
 	private ScreenseatinfoServiceImpl _screenseatinfoService;
 
+	//region 获取影厅列表
 	@GetMapping("/QueryScreens/{Username}/{Password}/{CinemaCode}")
 	@ApiOperation(value = "获取影厅列表")
     public QueryScreensReply QueryScreens(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode){
@@ -83,7 +91,9 @@ public class ScreenController {
 		queryScreensReply.SetSuccessReply();
 		return queryScreensReply;
     }
+	//endregion
 	
+	//region 根据影厅编码获取影厅信息
 	@GetMapping("/QueryScreenInfo/{Username}/{Password}/{CinemaCode}/{ScreenCode}")
 	@ApiOperation(value = "根据影厅编码获取影厅信息")
 	public QueryScreenInfoReply QueryScreenInfo(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode, @PathVariable String ScreenCode){
@@ -120,7 +130,9 @@ public class ScreenController {
         queryScreenInfoReply.SetSuccessReply();
 		return queryScreenInfoReply;
 	}
+	//endregion
 	
+	//region 根据影厅编码获取影厅座位信息
 	@GetMapping("/QueryScreenSeats/{Username}/{Password}/{CinemaCode}/{ScreenCode}")
 	@ApiOperation(value = "根据影厅编码获取影厅座位信息")
 	public QueryScreenSeatsReply QueryScreenSeats(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode, @PathVariable String ScreenCode){
@@ -166,5 +178,108 @@ public class ScreenController {
         queryScreenSeatsReply.SetSuccessReply();
 		return queryScreenSeatsReply;
 	}
+	//endregion
+	
+	//region 根据影厅编码获取影厅座位信息(按坐标重新排列整合)
+	@GetMapping("/QueryScreenSeatsArrangement/{Username}/{Password}/{CinemaCode}/{ScreenCode}")
+	@ApiOperation(value = "根据影厅编码获取影厅座位信息(按坐标重新排列整合)")
+	public QueryScreenSeatsArrangementReply QueryScreenSeatsArrangement(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode, @PathVariable String ScreenCode){
+		QueryScreenSeatsArrangementReply queryScreenSeatsArrangementReply = new QueryScreenSeatsArrangementReply();
+		//校验参数
+        if (!ReplyExtension.RequestInfoGuard(queryScreenSeatsArrangementReply, Username, Password, CinemaCode, ScreenCode))
+        {
+            return queryScreenSeatsArrangementReply;
+        }
+        //获取用户信息(渠道)
+        Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+        if (UserInfo == null)
+        {
+        	queryScreenSeatsArrangementReply.SetUserCredentialInvalidReply();
+            return queryScreenSeatsArrangementReply;
+        }
+        //验证影院是否存在且可访问
+        Cinema cinema = _cinemaService.getByCinemaCode(CinemaCode);
+        if (cinema == null)
+        {
+        	queryScreenSeatsArrangementReply.SetCinemaInvalidReply();
+            return queryScreenSeatsArrangementReply;
+        }
+        //验证影厅是否存在且可访问
+        Screeninfo screeninfo = _screeninfoService.getByScreenCode(CinemaCode, ScreenCode);
+        if(screeninfo == null){
+        	queryScreenSeatsArrangementReply.SetScreenInvalidReply();
+        	return queryScreenSeatsArrangementReply;
+        }
+        //读取影厅座位
+        List<Screenseatinfo> screenseatinfos = _screenseatinfoService.getByCinemaCodeAndScreenCode(CinemaCode, ScreenCode);
+        System.out.println("===="+new Gson().toJson(screenseatinfos));
+        queryScreenSeatsArrangementReply.setData(new DataBean());
+        if(screenseatinfos!=null){
+        	//region 座位排列组合
+            int MaxColumn=0;//最大纵坐标
+            int MinColumn=9999;//最小纵坐标
+            int MaxRow=0;//最大横坐标
+            int MinRow=9999;//最小横坐标
+            for(Screenseatinfo seat:screenseatinfos){
+            	//得到最大纵坐标
+            	if(seat.getXCoord()>MaxColumn){
+            		MaxColumn=seat.getXCoord();
+            	}
+            	//得到最小纵坐标
+            	if(seat.getXCoord()<MinColumn){
+            		MinColumn=seat.getXCoord();
+            	}
+            	//得到最大横坐标
+            	if(seat.getYCoord()>MaxRow){
+            		MaxRow=seat.getYCoord();
+            	}
+            	//得到最小横坐标
+            	if(seat.getYCoord()<MinRow){
+            		MinRow=seat.getYCoord();
+            	}
+            }
+            queryScreenSeatsArrangementReply.getData().setRows(new ArrayList<RowBean>());
+            //循环行
+            for(int currentRow=MinRow;currentRow<=MaxRow;currentRow++){
+            	int currentRow1=currentRow;
+            	//System.out.println(currentRow1);
+            	//得到当前行的座位列表
+            	List<Screenseatinfo> currentRowSeats = screenseatinfos.stream().filter(st->st.getYCoord()==currentRow1).collect(Collectors.toList());
+            	//System.out.println("-----"+new Gson().toJson(currentRowSeats));
+            	if(currentRowSeats!=null){
+            		RowBean rowBean=new RowBean();
+            		rowBean.setRowNum(currentRowSeats.get(0).getRowNum());
+            		rowBean.setSeats(new ArrayList<SeatBean>());
+            		for(int currentColumn=MinColumn;currentColumn<=MaxColumn;currentColumn++){
+            			int currentColumn1=currentColumn;
+            			//System.out.println(currentColumn1);
+            			List<Screenseatinfo> seat=currentRowSeats.stream().filter(s->s.getXCoord()==currentColumn1).collect(Collectors.toList());
+            			//System.out.println("===seat===="+new Gson().toJson(seat));
+            			if(seat!=null&&seat.size()>0){
+            				SeatBean seatBean=new SeatBean();
+            				seatBean.setSeatCode(seat.get(0).getSeatCode());
+            				seatBean.setGroupCode(seat.get(0).getGroupCode());
+            				seatBean.setRowNum(seat.get(0).getRowNum());
+            				seatBean.setColumnNum(seat.get(0).getColumnNum());
+            				seatBean.setStatus(seat.get(0).getStatus());
+            				seatBean.setLoveFlag(seat.get(0).getLoveFlag());
+            				seatBean.setType(seat.get(0).getType());
+            				rowBean.getSeats().add(seatBean);
+            			}else
+            			{
+            				rowBean.getSeats().add(null);
+            			}
+            		}
+            		queryScreenSeatsArrangementReply.getData().getRows().add(rowBean);//添加行
+            	}else{
+            		queryScreenSeatsArrangementReply.getData().getRows().add(null);
+            	}
+            }
+            //endregion
+        }
+        queryScreenSeatsArrangementReply.SetSuccessReply();
+		return queryScreenSeatsArrangementReply;
+	}
+	//endregion
 	
 }

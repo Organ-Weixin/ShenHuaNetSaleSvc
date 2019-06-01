@@ -1,12 +1,24 @@
 package com.boot.security.server.apicontroller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.TreeMap;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.w3c.dom.Document;
 
 import com.boot.security.server.api.core.LockSeatReply;
 import com.boot.security.server.api.core.NetSaleSvcCore;
@@ -29,16 +42,23 @@ import com.boot.security.server.api.core.RefundTicketReply;
 import com.boot.security.server.api.core.ReleaseSeatReply;
 import com.boot.security.server.api.core.SubmitMixOrderReply;
 import com.boot.security.server.api.core.SubmitOrderReply;
+import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.NetSaleQueryJson;
 import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson;
 import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson.PrePayOrderQueryJsonSeat;
 import com.boot.security.server.apicontroller.reply.PrePayParametersReply;
+import com.boot.security.server.apicontroller.reply.PrePayParametersReply.PrePayParametersReplyParameter;
 import com.boot.security.server.apicontroller.reply.QueryLocalOrderReply;
 import com.boot.security.server.apicontroller.reply.QueryLocalOrderReply.QueryLocalOrder;
 import com.boot.security.server.apicontroller.reply.QueryLocalOrderReply.QueryLocalOrder.Seats;
+import com.boot.security.server.apicontroller.reply.QueryNonPayOrdersReply;
+import com.boot.security.server.apicontroller.reply.QueryNonPayOrdersReply.NonPayOrders;
+import com.boot.security.server.apicontroller.reply.QueryNonPayOrdersReply.NonPayOrders.NonPayOrder;
 import com.boot.security.server.apicontroller.reply.QueryUserOrdersReply;
+import com.boot.security.server.apicontroller.reply.RefundPaymentReply;
 import com.boot.security.server.apicontroller.reply.QueryUserOrdersReply.UserOrders;
 import com.boot.security.server.apicontroller.reply.QueryUserOrdersReply.UserOrders.OrderList;
+import com.boot.security.server.apicontroller.reply.RefundPaymentReply.RefundPaymentReplyOrder;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.model.Cinemapaymentsettings;
 import com.boot.security.server.model.Coupons;
@@ -52,6 +72,7 @@ import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Priceplan;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Sessioninfo;
+import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemapaymentsettingsServiceImpl;
@@ -60,9 +81,14 @@ import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.service.impl.PriceplanServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
+import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
+import com.boot.security.server.utils.HttpHelper;
+import com.boot.security.server.utils.MD5Util;
+import com.boot.security.server.utils.StrUtil;
 import com.boot.security.server.utils.WxPayUtil;
+import com.boot.security.server.utils.XmlHelper;
 import com.google.gson.JsonSyntaxException;
 
 import freemarker.template.utility.StringUtil;
@@ -87,6 +113,8 @@ public class OrderController {
 	SessioninfoServiceImpl _sessioninfoService;
 	@Autowired
 	PriceplanServiceImpl _priceplanService;
+	@Autowired
+	TicketusersServiceImpl _ticketUserService;
 	@Autowired
 	private HttpServletRequest request;
 
@@ -239,6 +267,74 @@ public class OrderController {
 			orderReply.SetSuccessReply();
 		}
 		return orderReply;
+	}
+	//endregion
+	
+	//region 查询未支付订单
+	@GetMapping("/QueryNonPayOrders/{UserName}/{Password}/{CinemaCode}/{OpenID}")
+	@ApiOperation(value = "用户未支付订单列表")
+	public QueryNonPayOrdersReply QueryNonPayOrders(@PathVariable String UserName, @PathVariable String Password, @PathVariable String CinemaCode, @PathVariable String OpenID,
+			@PathVariable String startDate, @PathVariable String endDate, @PathVariable String CurrentPage, @PathVariable String PageSize) throws Exception {
+		
+		QueryNonPayOrdersReply reply = new QueryNonPayOrdersReply();
+		// 校验参数
+		if (!ReplyExtension.RequestInfoGuard(reply, UserName, Password, CinemaCode, OpenID)) {
+			return reply;
+		}
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
+		if (UserInfo == null) {
+			reply.SetUserCredentialInvalidReply();
+			return reply;
+		}
+		// 验证影院是否存在且可访问
+		Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),CinemaCode);
+		if (userCinema == null) {
+			reply.SetCinemaInvalidReply();
+			return reply;
+		}
+		// 验证用户是否存在
+		Ticketusers ticketUser=_ticketUserService.getByopenids(OpenID);
+		if(ticketUser==null){
+			reply.SetOpenIDNotExistReply();
+			return reply;
+		}
+		List<Orders> orderlist = _orderService.getNonPayOrders(UserInfo.getId(),CinemaCode,OpenID);
+		NonPayOrders nonPayOrders = new NonPayOrders();
+		if(orderlist == null || orderlist.size()==0){
+			nonPayOrders.setOrderCount(0);
+		} else {
+			nonPayOrders.setOrderCount(orderlist.size());
+			List<NonPayOrder> orderinfoList = new ArrayList<NonPayOrder>();
+			for(Orders order : orderlist){
+				NonPayOrder orderinfo = new NonPayOrder();
+				orderinfo.setOrderId(order.getId());
+				orderinfo.setCinemaCode(order.getCinemaCode());
+				orderinfo.setSessionCode(order.getSessionCode());
+				orderinfo.setScreenCode(order.getScreenCode());
+				
+				Screeninfo screeninfo = _screeninfoService.getByScreenCode(order.getCinemaCode(),order.getScreenCode());	
+				orderinfo.setScreenName(screeninfo==null?"":screeninfo.getSName());
+				orderinfo.setSessionTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getSessionTime()));
+				orderinfo.setFilmCode(order.getFilmCode());
+				orderinfo.setFilmName(order.getFilmName());
+				orderinfo.setTicketCount(order.getTicketCount());
+				orderinfo.setTotalPrice(order.getTotalPrice());
+				orderinfo.setTotalFee(order.getTotalFee());
+				orderinfo.setTotalSalePrice(order.getTotalSalePrice());
+				orderinfo.setOrderStatus(OrderStatusEnum.CastToEnum(order.getOrderStatus()).getStatusName());
+				orderinfo.setMobilePhone(order.getMobilePhone());
+				orderinfo.setLockTime(order.getLockTime()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getLockTime()));
+				orderinfo.setAutoUnlockDatetime(order.getAutoUnlockDatetime()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getAutoUnlockDatetime()));
+				orderinfo.setLockOrderCode(order.getLockOrderCode());
+				
+				orderinfoList.add(orderinfo);
+			}
+			nonPayOrders.setOrders(orderinfoList);
+		}
+		reply.setData(nonPayOrders);
+		reply.SetSuccessReply();
+		return reply;
 	}
 	//endregion
 	
@@ -578,4 +674,73 @@ public class OrderController {
 		}
 	}
 	// endregion
+	
+	//region 退款
+	@GetMapping("/RefundPayment/{UserName}/{Password}/{CinemaCode}/{LockOrderCode}")
+	@ApiOperation(value = "退款")
+	public RefundPaymentReply RefundPayment(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
+			@PathVariable String LockOrderCode) throws UnrecoverableKeyException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, IOException{
+		RefundPaymentReply refundpaymentReply=new RefundPaymentReply();
+		// 校验参数
+		if (!ReplyExtension.RequestInfoGuard(refundpaymentReply, UserName, Password, CinemaCode, LockOrderCode)) {
+			return refundpaymentReply;
+		}
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
+		if (UserInfo == null) {
+			refundpaymentReply.SetUserCredentialInvalidReply();
+			return refundpaymentReply;
+		}
+		// 验证影院是否存在且可访问
+		Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),CinemaCode);
+		if (userCinema == null) {
+			refundpaymentReply.SetCinemaInvalidReply();
+			return refundpaymentReply;
+		}
+		// 获取影院的支付配置
+		Cinemapaymentsettings cinemapaymentsettings = _cinemapaymentsettingsService
+				.getByCinemaCode(CinemaCode);
+		if (cinemapaymentsettings == null || cinemapaymentsettings.getWxpayAppId().isEmpty()
+				|| cinemapaymentsettings.getWxpayMchId().isEmpty()) {
+			refundpaymentReply.SetCinemaPaySettingInvalidReply();
+			return refundpaymentReply;
+		}
+		//验证订单是否存在
+		Orders order=_orderService.getOrderBaseByLockOrderCode(LockOrderCode);
+		if(order==null){
+			refundpaymentReply.SetOrderNotExistReply();
+			return refundpaymentReply;
+		}else{
+			//如果订单存在，开始退款
+			String WxpayAppId = cinemapaymentsettings.getWxpayAppId();
+			String WxpayMchId=cinemapaymentsettings.getWxpayMchId();
+			String WxpayKey=cinemapaymentsettings.getWxpayKey();
+			String TradeNo=new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + CinemaCode
+			+ order.getId();
+			Double RefundPrice = order.getTotalSalePrice();// 暂时的
+			String RefundFee = String.valueOf(Double.valueOf(RefundPrice*100).intValue());// 退款金额，以分为单位
+			String OrderTradeNo=order.getOrderTradeNo();//微信支付订单号
+			String WxpayRefundCert=cinemapaymentsettings.getWxpayRefundCert();
+			
+			String strRefundPaymentXml = WxPayUtil.WxPayRefund(WxpayAppId,WxpayMchId,WxpayKey,TradeNo,RefundFee,OrderTradeNo,CinemaCode,WxpayRefundCert);
+			//获取返回值 
+			String strRefundPaymentXml2 = strRefundPaymentXml.replace("<![CDATA[", "").replace("]]>", "");
+			Document document = XmlHelper.StringTOXml(strRefundPaymentXml2);
+			String resultcodeValue = XmlHelper.getNodeValue(document, "/xml/result_code");
+			String refundidValue=XmlHelper.getNodeValue(document,"/xml/refund_id");
+			if (resultcodeValue.equals("SUCCESS")) {
+				refundpaymentReply.setData(new RefundPaymentReplyOrder());
+				refundpaymentReply.getData().setOrderCode(order.getLockOrderCode());
+				refundpaymentReply.getData().setOrderStatus(OrderStatusEnum.CastToEnum(order.getOrderStatus()).getStatusName());
+				refundpaymentReply.getData().setRefundTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+				refundpaymentReply.getData().setRefundTradeNo(refundidValue);
+				refundpaymentReply.SetSuccessReply();
+			}else{
+				refundpaymentReply.Status = "Failure";
+				refundpaymentReply.ErrorCode = resultcodeValue;
+			}
+		}
+		return refundpaymentReply;
+	}
+	//endregion
 }

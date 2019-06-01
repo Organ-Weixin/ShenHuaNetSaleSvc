@@ -836,6 +836,8 @@ public class ReplyExtension {
 			}
 			return true;
 		}
+		//endregion
+		
 		//region QueryCardLevelReply
 		public static boolean RequestInfoGuard(QueryCardLevelReply reply,String Username,String Password,String CinemaCode){
 			if (Username==null || "".equals(Username)) {
@@ -875,6 +877,8 @@ public class ReplyExtension {
 			}
 			return true;
 		}
+		//endregion
+		
 		//region QueryFilmReply
 		public static boolean RequestInfoGuard(QueryMemberCardByOpenIDReply reply, String Username, String Password, String CinemaCode, String OpenID)
 	    {
@@ -1080,4 +1084,101 @@ public class ReplyExtension {
 			return true;
 		}
 		//endregion
+		
+		//region RefundPaymentReply
+		public static boolean RequestInfoGuard(RefundPaymentReply reply, String Username, String Password, String CinemaCode,String LockOrderCode)
+	    {
+	        if (Username == null || "".equals(Username)) {
+	            reply.SetNecessaryParamMissReply("UserName");
+	            return false;
+	        }
+	        if (Password == null || "".equals(Password)) {
+	            reply.SetNecessaryParamMissReply("Password");
+	            return false;
+	        }
+	        if (CinemaCode == null || "".equals(CinemaCode)) {
+	            reply.SetNecessaryParamMissReply("CinemaCode");
+	            return false;
+	        }
+	        if (LockOrderCode == null || "".equals(LockOrderCode)) {
+				reply.SetNecessaryParamMissReply("LockOrderCode");
+				return false;
+			}
+	        return true;
+	    }
+		//endregion
+	
+	//region QueryScreenSeatsArrangementReply
+	public static boolean RequestInfoGuard(QueryScreenSeatsArrangementReply reply, String Username, String Password, String CinemaCode,String ScreenCode)
+    {
+        if (Username == null || "".equals(Username))
+        {
+            reply.SetNecessaryParamMissReply("UserName");
+            return false;
+        }
+        if (Password == null || "".equals(Password))
+        {
+            reply.SetNecessaryParamMissReply("Password");
+            return false;
+        }
+        if (CinemaCode == null || "".equals(CinemaCode))
+        {
+            reply.SetNecessaryParamMissReply("CinemaCode");
+            return false;
+        }
+        if (ScreenCode == null || "".equals(ScreenCode))
+        {
+            reply.SetNecessaryParamMissReply("ScreenCode");
+            return false;
+        }
+        return true;
+    }
+	//endregion
+	
+	//region 查询未支付订单
+	public static boolean RequestInfoGuard(QueryNonPayOrdersReply reply, String Username, String Password, String CinemaCode,
+			String OpenID)
+    {
+        if (Username == null || "".equals(Username)) {
+            reply.SetNecessaryParamMissReply("UserName");
+            return false;
+        }
+        if (Password == null || "".equals(Password)) {
+            reply.SetNecessaryParamMissReply("Password");
+            return false;
+        }
+        if (CinemaCode == null || "".equals(CinemaCode)) {
+            reply.SetNecessaryParamMissReply("CinemaCode");
+            return false;
+        }
+        if (OpenID == null || "".equals(OpenID)) {
+			reply.SetNecessaryParamMissReply("OpenID");
+			return false;
+		}
+        return true;
+    }
+	//endregion
+	
+	//region RefundPaymentReply
+	public static boolean RequestInfoGuard2(RefundPaymentReply reply, String Username, String Password, String CinemaCode,String LocalOrderCode)
+    {
+        if (Username == null || "".equals(Username)) {
+            reply.SetNecessaryParamMissReply("UserName");
+            return false;
+        }
+        if (Password == null || "".equals(Password)) {
+            reply.SetNecessaryParamMissReply("Password");
+            return false;
+        }
+        if (CinemaCode == null || "".equals(CinemaCode)) {
+            reply.SetNecessaryParamMissReply("CinemaCode");
+            return false;
+        }
+        if (LocalOrderCode == null || "".equals(LocalOrderCode)) {
+			reply.SetNecessaryParamMissReply("LocalOrderCode");
+			return false;
+		}
+        return true;
+    }
+	//endregion
 }

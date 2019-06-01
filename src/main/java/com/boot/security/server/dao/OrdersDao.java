@@ -59,4 +59,7 @@ public interface OrdersDao {
     @Select("select * from orders t where t.UserId=#{userid} and t.CinemaCode=#{cinemacode} and t.Created > #{startDate} and t.Created < #{endDate}")
     List<Orders> getOrdersByCreated(@Param("userid")Long userid,@Param("cinemacode")String cinemacode,@Param("startDate")Date startDate,@Param("endDate")Date endDate);
     
+    //查询未支付订单
+    @Select("select * from orders t where t.userId=#{userid} and t.cinemaCode=#{cinemacode} and t.openID=#{openid} and orderStatus in(2,11) and autoUnlockDatetime>now()")
+    List<Orders> getNonPayOrders(@Param("userid")Long userid,@Param("cinemacode")String cinemacode,@Param("openid")String openid);
 }
