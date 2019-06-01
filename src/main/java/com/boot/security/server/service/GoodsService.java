@@ -2,7 +2,6 @@ package com.boot.security.server.service;
 
 import java.util.List;
 
-
 import com.boot.security.server.model.Goods;
 
 public interface GoodsService {
@@ -17,6 +16,8 @@ public interface GoodsService {
 	Goods getByGoodsCode(String goodscode);
 	
 	int deleteByCinemaCode(Long userid,String cinemacode);
+	
+	int deleteByCinemaCodeAndGoodsCode(String cinemacode,String goodscode);
 	
 	//List<Goods> getGoodsByCinemaCode(Long id,Long roleId);
 	

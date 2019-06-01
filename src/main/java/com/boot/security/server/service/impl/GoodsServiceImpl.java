@@ -61,6 +61,12 @@ public class GoodsServiceImpl implements GoodsService {
 		return goodsDao.getGoodsByCinemaCode(cinemacodes);
 	}
 
+	@Override
+	public int deleteByCinemaCodeAndGoodsCode(String cinemacode, String goodscode) {
+		// TODO Auto-generated method stub
+		return goodsDao.deleteByCinemaCodeAndGoodsCode(cinemacode, goodscode);
+	}
+
 	/*@Override
 	public List<Goods> getGoodsByCinemaCode(Long id,Long roleId) {
 		// TODO Auto-generated method stub

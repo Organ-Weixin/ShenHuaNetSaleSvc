@@ -223,7 +223,18 @@ public class BaseReply {
         ErrorCode = ErrorCodeEnum.CardLevelInvalid.getCode();
         ErrorMessage = ErrorCodeEnum.CardLevelInvalid.getMessage();
     }
-    //卖品数量非法
+    /// <summary>
+    /// 此卡不支持线上绑定
+    /// </summary>
+    public void SetCardLevelNonsupportReply()
+    {
+        Status = StatusEnum.Failure.getStatusCode();
+        ErrorCode = ErrorCodeEnum.CardLevelNonsupport.getCode();
+        ErrorMessage = ErrorCodeEnum.CardLevelNonsupport.getMessage();
+    }
+    /// <summary>
+    ///卖品数量非法
+    /// <summary>
     public void SetGoodsCountInvalidReply()
     {
         Status = StatusEnum.Failure.getStatusCode();

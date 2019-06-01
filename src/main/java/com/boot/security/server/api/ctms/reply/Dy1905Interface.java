@@ -1147,18 +1147,31 @@ public class Dy1905Interface implements ICTMSInterface {
 			Dy1905GoodsListResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(GoodsListResult,"GoodsListResult"), Dy1905GoodsListResult.class);
 			if(Dy1905Reply.getGoodsListResult().getResultCode().equals("0")){
 				List<GoodBean> dy1905goodList =  Dy1905Reply.getGoodsListResult().getGoods().getGood();
-				goodsService.deleteByCinemaCode(userCinema.getUserId(),userCinema.getCinemaCode());
+				List<Goods> goodsList = goodsService.getByCinemaCode(userCinema.getUserId(), userCinema.getCinemaCode());
+				for(int i=0; i<dy1905goodList.size(); i++){
+					for(int j=0; j<goodsList.size(); j++){
+						if(!dy1905goodList.get(i).getSerial().equals(goodsList.get(j).getGoodsCode())){
+							goodsService.deleteByCinemaCodeAndGoodsCode(goodsList.get(j).getCinemaCode(), goodsList.get(j).getGoodsCode());
+						}
+					}
+				}
 				for(GoodBean dy1905good : dy1905goodList){
-					Goods goods = new Goods();
-					goods.setGoodsType("1");
-					goods.setCinemaCode(userCinema.getCinemaCode());
-					goods.setUserId(userCinema.getUserId());
-					goods.setIsDiscount(0);
-					goods.setGoodsStatus(1);
-					goods.setIsPackage(0);
-					goods.setIsRecommand(0);
-					Dy1905ModelMapper.MaptoEntity(dy1905good, goods);
-					goodsService.save(goods);
+					Goods goods = goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), dy1905good.getDetail());
+					if(goods==null){
+						goods = new Goods();
+						goods.setGoodsType("1");
+						goods.setCinemaCode(userCinema.getCinemaCode());
+						goods.setUserId(userCinema.getUserId());
+						goods.setIsDiscount(0);
+						goods.setGoodsStatus(1);
+						goods.setIsPackage(0);
+						goods.setIsRecommand(0);
+						Dy1905ModelMapper.MaptoEntity(dy1905good, goods);
+						goodsService.save(goods);
+					}else{
+						Dy1905ModelMapper.MaptoEntity(dy1905good, goods);
+						goodsService.update(goods);
+					}
 				}
 				reply.Status = StatusEnum.Success;
 			}else{
@@ -1299,7 +1312,6 @@ public class Dy1905Interface implements ICTMSInterface {
 			param.put("pNetOrder",order.getOrderBaseInfo().getOrderCode());
 			param.put("pVerifyInfo",pVerifyInfo);
 			String RefundGoodsResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/RefundGoods",param,"UTF-8");
-			System.out.println(RefundGoodsResult);
 			Gson gson = new Gson();
 			Dy1905RefundGoodsResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(RefundGoodsResult,"RefundGoodsResult"), Dy1905RefundGoodsResult.class);
 			if(Dy1905Reply.getRefundGoodsResult().getResultCode().equals("0")){

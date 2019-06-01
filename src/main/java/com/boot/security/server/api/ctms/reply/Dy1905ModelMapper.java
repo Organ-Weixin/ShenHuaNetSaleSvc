@@ -65,6 +65,7 @@ public class Dy1905ModelMapper {
     	entity.setCinemaAllowance((double) 0);
     	entity.setIsAvalible(Integer.valueOf(model.getStatus()));
     	entity.setPlaythroughFlag(model.getConsecutive());
+    	entity.setUpdateTime(new Date());
     	return entity;
     }
     
@@ -99,7 +100,6 @@ public class Dy1905ModelMapper {
     	entity.setGoodsPic(model.getImage());
     	entity.setStockCount(model.getStockCount() ==null?0 : Integer.valueOf(model.getStockCount()));
     	entity.setGoodsDesc(model.getDetail());
-    	entity.setUpdated(new Date());
     	return entity;
     }
 }

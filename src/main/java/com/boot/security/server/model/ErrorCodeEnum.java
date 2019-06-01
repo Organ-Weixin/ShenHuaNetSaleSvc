@@ -33,7 +33,8 @@ public enum ErrorCodeEnum {
 	GiftInvalid("奖品不存在！","10000028"),
 	SendGiftFailure("发放放映厅奖品失败！","10000029"),
 	OverrunGift("超出放映厅此奖品发放上限","10000030"),
-	SnatchFailure("抢红包失败","10000030");
+	SnatchFailure("抢红包失败","10000031"),
+	CardLevelNonsupport("此会员卡不支持线上绑定","10000032");
 	
 	private String Message;
 	private String Code;

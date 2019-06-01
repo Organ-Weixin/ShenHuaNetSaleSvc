@@ -32,6 +32,9 @@ public interface GoodsDao {
     
     @Delete("delete from goods where userid = #{userid} and cinemacode=#{cinemacode}")
     int deleteByCinemaCode(@Param("userid") Long userid,@Param("cinemacode") String cinemacode);
+    
+    @Delete("delete from goods where cinemacode = #{cinemacode} and goodscode = #{goodscode}")
+    int deleteByCinemaCodeAndGoodsCode(@Param("cinemacode")String cinemacode,@Param("goodscode")String goodscode);
 
     int update(Goods goods);
     
