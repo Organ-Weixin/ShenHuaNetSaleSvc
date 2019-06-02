@@ -6,6 +6,7 @@ import java.util.List;
 public class SubmitMixOrderQueryXml {
 
 	private String CinemaCode;
+	private String PayType;//满天星接口需要（先选择支付方式后把该值传入）
 	private String OrderCode;	//购票订单
 	private String GoodsOrderCode;	//卖品订单
 	private String SessionCode;
@@ -22,6 +23,12 @@ public class SubmitMixOrderQueryXml {
 	}
 	public void setCinemaCode(String cinemaCode) {
 		CinemaCode = cinemaCode;
+	}
+	public String getPayType() {
+		return PayType;
+	}
+	public void setPayType(String payType) {
+		PayType = payType;
 	}
 	public String getOrderCode() {
 		return OrderCode;

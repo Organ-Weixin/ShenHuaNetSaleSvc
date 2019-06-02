@@ -22,9 +22,9 @@ public interface CouponsgroupService {
 	    
 	int changeStatus(Integer status,Long id);
 	
-	List<Couponsgroup> getPastCoupons();
-	
 	int updatePastCoupons(Integer status);
 	
 	int update(Couponsgroup couponsgroup);
+	
+	int changePast(Integer status);
 }

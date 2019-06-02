@@ -27,6 +27,11 @@
 											<input type="text" id="CardNo" class="form-control" placeholder="卡号">
 											<input type="text" id="MobilePhone" class="form-control" placeholder="手机号">
 											<input type="text" id="UserName" class="form-control" placeholder="用户名">
+											<select id="statusSelect" class="form-control input-sm">
+												<option value="">状态</option>
+												<option value="1">已绑定</option>
+												<option value="0">未绑定</option>
+											</select>
 											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
 										</div>
 									</form>
@@ -57,6 +62,7 @@
 									<th>用户名</th>
 									<th>开卡日期</th>
 									<th>有效期</th>
+									<th>状态</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -76,7 +82,10 @@
 <script type="text/javascript" src="../../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="../../../layui/layui.js"></script>
 <script type="text/javascript" src="../../../js/my/permission.js"></script>
+<script type="text/javascript" src="../../js/dict.js"></script>
 <script type="text/javascript">
+
+var memberStatus = showDictSelect("status", "memberStatus", true);
 window.onload=function(){
 	//获取登陆人信息
 	initUser();
@@ -135,6 +144,7 @@ function init(){
         			d.CardNo = $("#CardNo").val();
         			d.MobilePhone = $("#MobilePhone").val();
         			d.UserName = $("#UserName").val();
+        			d.Status = $("#statusSelect").val();
     			}
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
@@ -152,6 +162,11 @@ function init(){
 				{"data" : "userName", "defaultContent" : "","orderable":false},
 				{"data" : "createTime", "defaultContent" : "","orderable":false},
 				{"data" : "expireDate", "defaultContent" : "","orderable":false},
+				{"data" : "status", "defaultContent" : "","orderable":false,
+					"render":function(data,type,row){
+						return memberStatus[data];
+					}	
+				},
 				/* { 
 								"data": "", 
 								"defaultContent": "",

@@ -33,10 +33,6 @@ public class CouponsgroupServiceImpl implements CouponsgroupService{
 		return couponsgroupDao.getByGroupCode(groupcode);
 	}
 	@Override
-	public List<Couponsgroup> getPastCoupons() {
-		return couponsgroupDao.getPastCoupons();
-	}
-	@Override
 	public int updatePastCoupons(Integer status) {
 		return couponsgroupDao.updatePastCoupons(status);
 	}
@@ -55,6 +51,10 @@ public class CouponsgroupServiceImpl implements CouponsgroupService{
 	@Override
 	public List<Couponsgroup> getAllCinemaCanUseCoupons() {
 		return couponsgroupDao.getAllCinemaCanUseCoupons();
+	}
+	@Override
+	public int changePast(Integer status) {
+		return couponsgroupDao.changePast(status);
 	}
 
 }

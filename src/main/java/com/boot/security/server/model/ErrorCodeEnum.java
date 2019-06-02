@@ -34,7 +34,9 @@ public enum ErrorCodeEnum {
 	SendGiftFailure("发放放映厅奖品失败！","10000029"),
 	OverrunGift("超出放映厅此奖品发放上限","10000030"),
 	SnatchFailure("抢红包失败","10000031"),
-	CardLevelNonsupport("此会员卡不支持线上绑定","10000032");
+	CardLevelNonsupport("此会员卡不支持线上绑定","10000032"),
+	CouponNotAvailable("优惠券不可用或已过期","10000033"),
+	CouponMismatch("优惠券与所选门店不对应","10000034");
 	
 	private String Message;
 	private String Code;

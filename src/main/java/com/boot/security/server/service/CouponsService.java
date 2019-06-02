@@ -25,7 +25,7 @@ public interface CouponsService {
 	
 	CouponsView getWithCouponsCode(String couponscode);
 	
-	List<Coupons> getPastCoupons();
-	
 	int changeStatus(String couponscode);
+	
+	int changePast(Integer status);
 }

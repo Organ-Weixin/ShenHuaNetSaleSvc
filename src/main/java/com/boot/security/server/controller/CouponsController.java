@@ -62,10 +62,6 @@ public class CouponsController {
     @GetMapping
     @ApiOperation(value = "列表")
     public PageTableResponse list(PageTableRequest request) {
-    	List<Coupons> couponList = couponsService.getPastCoupons();
-    	for(Coupons coupon:couponList){
-    		couponsService.changeStatus(coupon.getCouponsCode());
-    	}
         return new PageTableHandler(new CountHandler() {
 
             @Override

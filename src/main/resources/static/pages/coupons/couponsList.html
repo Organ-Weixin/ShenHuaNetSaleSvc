@@ -19,6 +19,13 @@
 		                   			<form class="form-inline" onsubmit="return false">
 										<div class="form-group">
 											<input id="couponsCode" type="text" class="form-control" placeholder="优惠券编码">
+											<select class="form-control" style="width:180px" id="statusSelect">
+												<option value="">状态</option>
+												<option value="0">生成</option>
+												<option value="1">已领取</option>
+												<option value="2">已使用</option>
+												<option value="3">已过期</option>
+											</select>
 											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
 										</div>
 									</form>
@@ -100,6 +107,7 @@ function init(){
         		"data":function(d){
         			d.GroupCode = groupCode;
         			d.CouponsCode = $("#couponsCode").val();
+        			d.Status = $("#statusSelect").val();
     			}
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	

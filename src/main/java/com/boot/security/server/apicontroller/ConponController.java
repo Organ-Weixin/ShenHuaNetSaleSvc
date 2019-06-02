@@ -1,6 +1,7 @@
 package com.boot.security.server.apicontroller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.boot.security.server.apicontroller.reply.BindCouponsReply;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.QueryUserConponsReply;
 import com.boot.security.server.apicontroller.reply.QueryUserConponsReply.QueryUserConponsBeans.QueryUserConponsBean;
@@ -18,6 +20,7 @@ import com.boot.security.server.apicontroller.reply.QueryUsingConponsReply.Conpo
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Coupons;
+import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.Couponsgroup;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
@@ -31,6 +34,7 @@ import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.apicontroller.reply.QueryUserConponsReply.QueryUserConponsBeans;
+import com.boot.security.server.apicontroller.reply.BindCouponsReply.BindCouponsReplyBind;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
@@ -208,5 +212,67 @@ public class ConponController {
 		queryUserConponsReply.SetSuccessReply();
 		return queryUserConponsReply;
 	}
-	
+	@GetMapping("/BindCoupons/{UserName}/{Password}/{CinemaCode}/{OpenID}/{CouponsCode}")
+	@ApiOperation(value = "绑定优惠券")
+	public BindCouponsReply BindCoupons(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
+			@PathVariable String OpenID,@PathVariable String CouponsCode){
+		BindCouponsReply bindCouponsReply = new BindCouponsReply();
+		//校验参数
+		if(!ReplyExtension.RequestInfoGuard(bindCouponsReply, UserName, Password, CinemaCode, OpenID, CouponsCode)){
+			return bindCouponsReply;
+		}
+		//获取用户渠道
+		Userinfo UserInfo=_userInfoService.getByUserCredential(UserName, Password);
+		if(UserInfo==null){
+			bindCouponsReply.SetUserCredentialInvalidReply();
+			return bindCouponsReply;
+		}
+		//验证影院是否存在且可访问
+		Cinema cinema=_cinemaService.getByCinemaCode(CinemaCode);
+		if(cinema==null){
+			bindCouponsReply.SetCinemaInvalidReply();
+			return bindCouponsReply;
+		}
+		//验证用户OpenId是否存在
+		Ticketusers ticketusers=_ticketusersService.getByopenids(OpenID);
+		if(ticketusers==null){
+			bindCouponsReply.SetOpenIDNotExistReply();
+			return bindCouponsReply;
+		}
+		//验证优惠券是否存在且未使用
+		Coupons coupons = _couponsService.getByCouponsCode(CouponsCode);
+		if(coupons==null){
+			bindCouponsReply.SetCouponNotAvailableReply();
+			return bindCouponsReply;
+		}
+		//验证优惠券适用门店是否匹配
+		Couponsgroup couponsgroup = _couponsgroupService.getByGroupCode(coupons.getGroupCode());
+		if(couponsgroup.getCanUseCinemaType()!=1&&!couponsgroup.getCinemaCodes().contains(CinemaCode)){
+			bindCouponsReply.SetCouponMismatchReply();
+			return bindCouponsReply;
+		}
+		//验证优惠券是否有效
+		if(coupons.getStatus()!=0||coupons.getOpenID()!=null){
+			bindCouponsReply.SetCouponNotAvailableReply();
+			return bindCouponsReply;
+		}
+		BindCouponsReplyBind data = new BindCouponsReplyBind();
+		//进行绑定
+		coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
+		coupons.setOpenID(OpenID);
+		coupons.setReceiveDate(new Date());
+		if(_couponsService.update(coupons)>0){
+			//更新优惠券数量
+			couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()+1);
+			couponsgroup.setFetchNumber(couponsgroup.getFetchNumber()+1);
+			couponsgroup.setRemainingNumber(couponsgroup.getRemainingNumber()-1);
+			_couponsgroupService.update(couponsgroup);
+			data.setCouponCode(coupons.getCouponsCode());
+			data.setCouponName(coupons.getCouponsName());
+			data.setCouponStatus(coupons.getStatus());
+			bindCouponsReply.SetSuccessReply();
+		}
+		bindCouponsReply.setData(data);
+		return bindCouponsReply;
+	}
 }

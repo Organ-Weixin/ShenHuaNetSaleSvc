@@ -30,6 +30,9 @@ public interface CouponsDao {
 
     int update(Coupons coupons);
     
+    @Update("update coupons set status = #{status} where expiredate < now()")
+    int changePast(Integer status);
+    
     @Options(useGeneratedKeys = true, keyProperty = "id")
     @Insert("insert into coupons(CouponsCode, CouponsName, EffectiveDate, ExpireDate, GroupCode, Status, OpenID, CreateDate, ReceiveDate, UsedDate) values(#{CouponsCode}, #{CouponsName}, #{EffectiveDate}, #{ExpireDate}, #{GroupCode}, #{Status}, #{OpenID}, Now(), #{ReceiveDate}, #{UsedDate})")
     int save(Coupons coupons);
@@ -46,9 +49,6 @@ public interface CouponsDao {
     
     @Select("select * from coupons t where t.groupcode = #{groupcode} and t.status = 0")
     List<Coupons> getCanUseByGroupCode(String groupcode);
-    
-    @Select("select * from coupons t where t.expiredate < now()")
-    List<Coupons> getPastCoupons();
     
     @Update("update coupons t set t.status = 3 where t.couponscode = #{couponscode}")
     int changeStatus(@Param("couponscode")String couponscode);

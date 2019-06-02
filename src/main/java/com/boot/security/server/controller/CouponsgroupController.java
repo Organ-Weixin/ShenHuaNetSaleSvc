@@ -96,10 +96,6 @@ public class CouponsgroupController {
     @GetMapping
     @ApiOperation(value = "列表")
     public PageTableResponse list(PageTableRequest request) {
-    	List<Couponsgroup> pastCouponsList = couponsgroupService.getPastCoupons();
-    	if(pastCouponsList.size()>0){
-        	couponsgroupDao.updatePastCoupons(CouponGroupStatusEnum.Expired.getStatusCode());
-    	}
     	String CinemaCodes = request.getParams().get("CinemaCodesList").toString();
     	String CinemaCodesList []  = CinemaCodes.split(",");
         return new PageTableHandler(new CountHandler() {
@@ -162,14 +158,6 @@ public class CouponsgroupController {
     @RequestMapping("/getCouponGroups")
     @ApiOperation(value = "获取对应影院的优惠券")
     public List<Couponsgroup> getCouponGroups(@RequestParam("cinemacode") String cinemacode){
-    	List<Coupons> couponList = couponsService.getPastCoupons();
-    	for(Coupons coupon:couponList){
-    		couponsService.changeStatus(coupon.getCouponsCode());
-    	}
-    	List<Couponsgroup> pastCouponsList = couponsgroupService.getPastCoupons();
-    	if(pastCouponsList.size()>0){
-        	couponsgroupDao.updatePastCoupons(CouponGroupStatusEnum.Expired.getStatusCode());
-    	}
     	List<Couponsgroup> list = new ArrayList<>();
     	String CinemaCodesList []  = cinemacode.split(",");
     	List<String> strings = new ArrayList<>();

@@ -21,7 +21,6 @@ import com.boot.security.server.api.ctms.reply.Dy1905GoodsListResult.ResBean.Goo
 import com.boot.security.server.api.ctms.reply.Dy1905LockSeatCustomResult.ResBean.SeatInfosBean.SeatInfoBean;
 import com.boot.security.server.api.ctms.reply.Dy1905MakeMemberCardResult.ResBean.CardInfoBean;
 import com.boot.security.server.api.ctms.reply.Dy1905MemberTypeListResult.ResBean.TypesBean.TypeBean.LevelsBean.LevelBean;
-import com.boot.security.server.api.ctms.reply.YkGetGoodsResult.DataBean.GoodsBean.GoodsResult;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
@@ -529,6 +528,7 @@ public class Dy1905Interface implements ICTMSInterface {
 				+SeatCode+TicketPrice+Fee+userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
 		param.put("pVerifyInfo",pVerifyInfo);
 		String checkSeatStateResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/LockSeatCustom", param,"UTF-8");
+		System.out.println("锁座订单"+checkSeatStateResult);
 		////////////////////////////////////////////////
 		Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd")
 				.registerTypeAdapter(Integer.class, new IntegerDefaultAdapter())
@@ -568,6 +568,7 @@ public class Dy1905Interface implements ICTMSInterface {
 		param.put("pOrderID",order.getOrderBaseInfo().getLockOrderCode());
 		param.put("pVerifyInfo",pVerifyInfo);
 		String unLockOrderResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/UnLockSeat",param,"UTF-8");
+		System.out.println("解锁座位"+unLockOrderResult);
 		Gson gson = new Gson();
 		Dy1905UnLockSeatResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(unLockOrderResult,"UnLockOrderResult"),Dy1905UnLockSeatResult.class);
 		if(Dy1905Reply.getUnLockOrderResult().getResultCode().equals("0")){
@@ -610,6 +611,7 @@ public class Dy1905Interface implements ICTMSInterface {
 		String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + order.getOrderBaseInfo().getLockOrderCode() + SeatCode + TicketPrice + Fee + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
 		param.put("pVerifyInfo",pVerifyInfo);
 		String sellTicketResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/SellTicketCustom/v2",param,"UTF-8");
+		System.out.println("影票提交订单"+sellTicketResult);
 		Gson gson = new Gson();
 		Dy1905SellTicketCustomResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(sellTicketResult, "SellTicketResult"),Dy1905SellTicketCustomResult.class);
 		if(Dy1905Reply.getSellTicketResult().getResultCode().equals("0")){
@@ -1248,7 +1250,7 @@ public class Dy1905Interface implements ICTMSInterface {
 			param.put("pMark",order.getOrderBaseInfo().getDeliveryMark());
 			param.put("pVerifyInfo",pVerifyInfo);
 			String GoodsOrderResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/GoodsOrder",param,"UTF-8");
-			System.out.println(GoodsOrderResult);
+			System.out.println("提交卖品订单"+GoodsOrderResult);
 			Gson gson = new Gson();
 			Dy1905GoodsOrderResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(GoodsOrderResult,"GoodsOrderResult"), Dy1905GoodsOrderResult.class);
 			if(Dy1905Reply.getGoodsOrderResult().getResultCode().equals("0")){
@@ -1332,10 +1334,63 @@ public class Dy1905Interface implements ICTMSInterface {
 			reply.ErrorCode = Dy1905Reply.getRefundGoodsResult().getResultCode();
 			return reply;
 		}
+		/*
+		 * 混合下单
+		 * */
 		@Override
 		public CTMSSubmitMixOrderReply SubmitMixOrder(Usercinemaview userCinema, OrderView order,
 				GoodsOrderView goodsorder) throws Exception {
-			// TODO Auto-generated method stub
-			return null;
+			CTMSSubmitMixOrderReply reply = new CTMSSubmitMixOrderReply();
+			//锁座，创建影票订单
+			CTMSLockSeatReply lockReply = LockSeat(userCinema, order);
+			if(!lockReply.Status.equals("Success")){
+				reply.Status = lockReply.Status;
+				reply.ErrorCode = lockReply.ErrorCode;
+				reply.ErrorMessage = lockReply.ErrorMessage;
+				return reply;
+			}
+			//创建卖品订单
+			CTMSCreateGoodsOrderReply creatGoodsOrder = CreateGoodsOrder(userCinema, goodsorder);
+			if(!creatGoodsOrder.Status.equals("Success")){
+				reply.Status = creatGoodsOrder.Status;
+				reply.ErrorCode = creatGoodsOrder.ErrorCode;
+				reply.ErrorMessage = creatGoodsOrder.ErrorMessage;
+				return reply;
+			}
+			//提交影票订单
+			CTMSSubmitOrderReply orderReply = SubmitOrder(userCinema, order);
+			if(!orderReply.Status.equals("Success")){
+				reply.Status = orderReply.Status;
+				reply.ErrorCode = orderReply.ErrorCode;
+				reply.ErrorMessage = orderReply.ErrorMessage;
+				return reply;
+			}
+			//提交卖品订单
+			CTMSSubmitGoodsOrderReply goodsOrderReply = SubmitGoodsOrder(userCinema, goodsorder);
+			if(!goodsOrderReply.Status.equals("Success")){
+				reply.Status = orderReply.Status;
+				reply.ErrorCode = orderReply.ErrorCode;
+				reply.ErrorMessage = orderReply.ErrorMessage;
+				return reply;
+			}
+			//影票成功卖品失败--退票
+			if(orderReply.Status.equals("Success")&&!goodsOrderReply.Status.equals("Success")){
+				for(int i=0; i<3; i++){
+					CTMSRefundTicketReply refundReply = RefundTicket(userCinema, order);
+					if(refundReply.Status.equals("Success")){
+						break;
+					}
+				}
+				reply.Status = goodsOrderReply.Status;
+				reply.ErrorCode = goodsOrderReply.ErrorCode;
+				reply.ErrorMessage = goodsOrderReply.ErrorMessage;
+				return reply;
+			}else{
+				//都成功
+				reply.Status = orderReply.Status;
+			}
+			reply.ErrorCode = orderReply.ErrorCode;
+			reply.ErrorMessage = orderReply.ErrorMessage;
+			return reply;
 		}
 }

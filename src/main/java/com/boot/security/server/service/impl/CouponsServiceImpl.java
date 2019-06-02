@@ -77,14 +77,14 @@ public class CouponsServiceImpl implements CouponsService{
 	}
 
 	@Override
-	public List<Coupons> getPastCoupons() {
-		// TODO Auto-generated method stub
-		return couponsdao.getPastCoupons();
-	}
-
-	@Override
 	public int changeStatus(String couponscode) {
 		// TODO Auto-generated method stub
 		return couponsdao.changeStatus(couponscode);
+	}
+
+	@Override
+	public int changePast(Integer status) {
+		// TODO Auto-generated method stub
+		return couponsdao.changePast(status);
 	}
 }

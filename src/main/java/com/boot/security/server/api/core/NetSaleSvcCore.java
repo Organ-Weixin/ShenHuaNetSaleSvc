@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.boot.security.server.api.core.CreateGoodsOrderQueryXml.CreateGoodsOrderQueryXmlGoodsList;
 import com.boot.security.server.api.core.CreateGoodsOrderQueryXml.CreateGoodsOrderQueryXmlGoodsList.CreateGoodsOrderQueryXmlGoods;
 import com.boot.security.server.api.core.CreateGoodsOrderReply.CreateGoodsOrderReplyOrder;
 import com.boot.security.server.api.core.LockSeatReply.LockSeatReplyOrder.LockSeatReplySeat;
@@ -2176,7 +2177,24 @@ ScreenType,ListingPrice,LowestPrice))
 		// 更新订单信息
 		order = ModelMapper.MapFrom(order, QueryXmlObj);
 
-		
+		//创建卖品订单
+		CreateGoodsOrderQueryXml createGoodsOrderQueryXml = new CreateGoodsOrderQueryXml();
+		createGoodsOrderQueryXml.setCinemaCode(QueryXmlObj.getCinemaCode());
+		createGoodsOrderQueryXml.setPayType(QueryXmlObj.getPayType());
+		List<SubmitMixOrderQueryXmlGoods> mixGoods = QueryXmlObj.getGoods();
+		CreateGoodsOrderQueryXmlGoodsList goodsList = new CreateGoodsOrderQueryXmlGoodsList();
+		List<CreateGoodsOrderQueryXmlGoods> goods = new ArrayList<CreateGoodsOrderQueryXmlGoods>();
+		for(SubmitMixOrderQueryXmlGoods mixGood:mixGoods){
+			CreateGoodsOrderQueryXmlGoods good = new CreateGoodsOrderQueryXmlGoods();
+			good.setGoodsCode(mixGood.getGoodsCode());
+			good.setGoodsChannelFee(mixGood.getGoodsChannelFee());
+			good.setGoodsCount(mixGood.getGoodsCount());
+			good.setStandardPrice(mixGood.getStandardPrice());
+			goods.add(good);
+		}
+		goodsList.setGoods(goods);
+		createGoodsOrderQueryXml.setGoodsList(goodsList);
+		CreateGoodsOrder(Username, Password, createGoodsOrderQueryXml.toString());
 		//验证卖品订单
 		GoodsOrderView goodsorder = _goodsOrderService.getWithLocalOrderCode(QueryXmlObj.getCinemaCode(), QueryXmlObj.getGoodsOrderCode());
 		if (goodsorder == null || (goodsorder.getOrderBaseInfo().getOrderStatus() != GoodsOrderStatusEnum.Created.getStatusCode()

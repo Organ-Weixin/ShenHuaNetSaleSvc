@@ -1181,4 +1181,31 @@ public class ReplyExtension {
         return true;
     }
 	//endregion
+    
+  //region RefundPaymentReply
+  	public static boolean RequestInfoGuard(BindCouponsReply reply, String Username, String Password, String CinemaCode, String OpenID, String CouponsCode)
+      {
+          if (Username == null || "".equals(Username)) {
+              reply.SetNecessaryParamMissReply("UserName");
+              return false;
+          }
+          if (Password == null || "".equals(Password)) {
+              reply.SetNecessaryParamMissReply("Password");
+              return false;
+          }
+          if (CinemaCode == null || "".equals(CinemaCode)) {
+              reply.SetNecessaryParamMissReply("CinemaCode");
+              return false;
+          }
+          if (OpenID == null || "".equals(OpenID)) {
+  			reply.SetNecessaryParamMissReply("OpenID");
+  			return false;
+  		  }
+          if (CouponsCode == null || "".equals(CouponsCode)) {
+    		reply.SetNecessaryParamMissReply("CouponsCode");
+    		return false;
+    	 }
+          return true;
+      }
+  	//endregion
 }

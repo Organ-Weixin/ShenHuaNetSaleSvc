@@ -294,6 +294,24 @@ public class BaseReply {
         ErrorCode = ErrorCodeEnum.SnatchFailure.getCode();
         ErrorMessage = ErrorCodeEnum.SnatchFailure.getMessage();
     }
+    /// <summary>
+    /// 优惠券不可用或已过期
+    /// </summary>
+    public void SetCouponNotAvailableReply()
+    {
+    	Status = StatusEnum.Failure.getStatusCode();
+        ErrorCode = ErrorCodeEnum.CouponNotAvailable.getCode();
+        ErrorMessage = ErrorCodeEnum.CouponNotAvailable.getMessage();
+    }
+    /// <summary>
+    /// 优惠券不可用或已过期
+    /// </summary>
+    public void SetCouponMismatchReply()
+    {
+    	Status = StatusEnum.Failure.getStatusCode();
+        ErrorCode = ErrorCodeEnum.CouponMismatch.getCode();
+        ErrorMessage = ErrorCodeEnum.CouponMismatch.getMessage();
+    }
     
     public String Status;
 
