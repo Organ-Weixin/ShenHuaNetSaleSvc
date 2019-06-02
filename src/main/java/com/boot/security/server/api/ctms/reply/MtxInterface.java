@@ -29,6 +29,7 @@ import com.boot.security.server.api.ctms.reply.MtxGetHallResult.ResBean.HallsBea
 import com.boot.security.server.api.ctms.reply.MtxGetPlanSiteStateResult.ResBean.PlanSiteStatesBean.PlanSiteStateBean;
 import com.boot.security.server.api.ctms.reply.MtxGetSPInfosResult.GetSPInfosBean;
 import com.boot.security.server.api.ctms.reply.MtxGetSPInfosResult.GetSPInfosBean.GetSPInfoBean;
+import com.boot.security.server.api.ctms.reply.YkGetGoodsResult.DataBean.GoodsBean.GoodsResult;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Filminfo;
@@ -785,6 +786,21 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 			if ("0".equals(mtxReply.getResultCode())) {
 				List<Goods> goods = new ArrayList<Goods>();
 				List<GetSPInfosBean> getSPInfosBeans = mtxReply.getSpinfos();
+				List<Goods> goodslist = _goodsService.getByCinemaCode(userCinema.getUserId(), userCinema.getCinemaCode());
+				for(Goods goo : goodslist){
+					boolean flag = true;
+					for(GetSPInfosBean getSPI : getSPInfosBeans){
+						if(goo.getGoodsCode().equals(getSPI.getSpno())){
+							flag = false;
+							break;
+						}
+					}
+					if(flag){
+						//删除本地有的而查出来没有的
+						_goodsService.deleteByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), goo.getGoodsCode());
+						System.out.println("删除本地有的而查出来没有的");
+					}
+				}
 				for (GetSPInfosBean getSPInfosBean : getSPInfosBeans) {
 					Goods goo = new Goods();
 					goo.setCinemaCode(userCinema.getCinemaCode());
@@ -842,15 +858,12 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 					if (_goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(),
 							getSPInfosBean.getSpno()) == null) {
 						_goodsService.save(goo);
-//						System.out.println("插入卖品信息");
 					} else {
 						_goodsService.update(goo);
-//						System.out.println("更新卖品信息");
 					}
 				}
-				
 				reply.Status = StatusEnum.Success;
-//				System.out.println("更新成功");
+				System.out.println("更新成功");
 			} else {
 				reply.Status = StatusEnum.Failure;
 			}

@@ -43,7 +43,6 @@ public class QueryUserConponsReply extends BaseReply{
 			private String ReceivedDate;
 			private String Title;
 			private String Remark;
-			
 			private Integer CanUseCinemaType;//可用门店类型
 			private String CinemaName;
 			private Integer ReductionType;//影片或卖品类型
@@ -52,8 +51,9 @@ public class QueryUserConponsReply extends BaseReply{
 			private Integer CanUsePeriodType;//可用时段类型 1：全部时段  2：部分时段
 			private String WeekDays;//可用时间 0：周日 1：周一 ...
 			private String TimePeriod;//可用时段-具体时间
-			private boolean IsAllFilm;//1,所有影片0部分影片
-			private boolean IsAllGoods;//1所有卖品，0部分卖品
+			private boolean IsAllFilm;//true所有影片false部分影片
+			private boolean IsAllGoods;//true所有卖品，false部分卖品
+			private Integer IsShare;//是否叠加
 			public Long getConponId() {
 				return ConponId;
 			}
@@ -210,7 +210,12 @@ public class QueryUserConponsReply extends BaseReply{
 			public void setIsAllGoods(boolean isAllGoods) {
 				IsAllGoods = isAllGoods;
 			}
-			
+			public Integer getIsShare() {
+				return IsShare;
+			}
+			public void setIsShare(Integer isShare) {
+				IsShare = isShare;
+			}
 		}
 	}
 }

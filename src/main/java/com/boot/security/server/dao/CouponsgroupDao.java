@@ -38,7 +38,7 @@ public interface CouponsgroupDao {
     @Select("select * from couponsgroup where find_in_set(#{cinemacode},cinemacodes)")
     List<Couponsgroup> getByCinemaCode(String cinemacode);
     
-    @Select("select * from couponsgroup  t where  t.groupcode =#{groupcode} and (cinemacodes='' or  find_in_set(#{cinemacodes},cinemacodes))")
+    @Select("select * from couponsgroup  t where  t.groupcode =#{groupcode} and (cinemacodes='' or  find_in_set(#{cinemacodes},cinemacodes)) ORDER  BY status asc")
     List<Couponsgroup> getByCinemaCodeAndGroupCode(@Param("cinemacodes")String cinemacodes,@Param("groupcode") String groupcode);
     
  

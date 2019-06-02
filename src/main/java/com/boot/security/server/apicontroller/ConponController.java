@@ -196,6 +196,7 @@ public class ConponController {
 							if(cou.getReductionType()==2&&(!cou.getGoodsCodes().equals("")&&!cou.getGoodsCodes().equals(null))){
 								queryUserConponsBean.setIsAllGoods(false);
 							}
+							queryUserConponsBean.setIsShare(cou.getIsShare());
 				    }
 					}
 				queryUserConponsBeanss.add(queryUserConponsBean);		
