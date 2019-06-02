@@ -48,4 +48,9 @@ public class MiddlewareServiceImpl implements MiddlewareService{
 		// TODO Auto-generated method stub
 		return middleW.list(params, offset, limit);
 	}
+
+	@Override
+	public List<Middleware> getTitle() {
+		return middleW.getTitle();
+	}
 }

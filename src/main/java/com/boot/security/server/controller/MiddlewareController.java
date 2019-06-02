@@ -20,6 +20,7 @@ import com.boot.security.server.service.MiddlewareService;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.model.Middleware;
+import com.boot.security.server.model.Userinfo;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -73,8 +74,9 @@ public class MiddlewareController {
     public void delete(@PathVariable Long id) {
     	middleS.delete(id);
     }
-    @Test
-    public void test(){
-    	
+    @PostMapping("/getTitle")
+    @ApiOperation(value = "渠道列表")
+    public List<Middleware> getTitle() {
+        return middleS.getTitle();
     }
 }

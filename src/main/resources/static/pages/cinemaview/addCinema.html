@@ -26,25 +26,7 @@
 				<label class='col-md-2 control-label'>中间件<font style="color:red">*</font></label>
 					<div class='col-md-10'>
 						<select class="form-control" name="mid" id="Mid" >
-							<option selected="selected" value="">请选择...</option>
-							<option value="1">辰星科技</option>
-							<option value="3">鼎新</option>
-							<option value="4">满天星</option>
-							<option value="5">满天星2</option>
-							<option value="6">1905网</option>
-							<option value="7">衢州裕丰影城</option>
-							<option value="13">太平国际环球影城</option>
-							<option value="16">上海川沙影剧院</option>
-							<option value="19">江山蒙太奇影城</option>
-							<option value="26">辰星科技2</option>
-							<option value="27">蓝钻时光下沙店</option>
-							<option value="35">沙湾影剧院</option>
-							<option value="41">满天星3</option>
-							<option value="54">粤科</option>
-							<option value="55">满天星4</option>
-							<option value="58">VISTA</option>
-							<option value="59">吉大满天星</option>
-							<option value="60">电影1905</option>
+							<option value="">请选择...</option>
 						</select>
 					</div>
 				</div>
@@ -220,6 +202,23 @@
 		layui.use(['layer','laydate'], function(){
 		    var layer = layui.layer;
 		});
+		getTitle();
+		function getTitle(){
+			$.ajax({
+		        type:"post",
+		        url:"/middlewares/getTitle",
+		        success:function(data){
+					for(var i=0; i<data.length;i++){
+						var option = "<option value="+data[i].id+">"+data[i].title+"</option>";
+						$("#Mid").append(option);
+					}
+		        },
+		        error:function(){
+		            J.alert('Error');
+		        }
+			})
+		}
+		
 		
 		function add() {
 			$('#form').bootstrapValidator();
