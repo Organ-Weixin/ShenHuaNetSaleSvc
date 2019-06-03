@@ -287,7 +287,7 @@ public class ModelMapper {
 		order.setGoodsCount(ov.getOrderBaseInfo().getGoodsCount());
 		order.setDeliveryType(ov.getOrderBaseInfo().getDeliveryType());
 		order.setDeliveryAddress(ov.getOrderBaseInfo().getDeliveryAddress());
-		order.setDeliveryTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ov.getOrderBaseInfo().getDeliveryTime()));
+		order.setDeliveryTime(ov.getOrderBaseInfo().getDeliveryTime());
 		order.setOpenID(ov.getOrderBaseInfo().getOpenID());
 		order.setGoodsList(new QueryLocalGoodsOrderReplyGoodsList());
 		order.getGoodsList().setGoods(new ArrayList<QueryLocalGoodsOrderReplyGoods>());
@@ -301,7 +301,9 @@ public class ModelMapper {
 			replygoods.setGoodsCount(orderdetail.getGoodsCount());
 			replygoods.setIsPackage(orderdetail.getIsPackage()==1?"是":"否");
 			replygoods.setGoodsDetail(orderdetail.getGoodsDetail());
-			replygoods.setShowSeqNo(orderdetail.getShowSeqNo());
+			if(orderdetail.getShowSeqNo()!=null){
+				replygoods.setShowSeqNo(orderdetail.getShowSeqNo());
+			}
 			order.getGoodsList().getGoods().add(replygoods);
 		}
 		return order;
@@ -309,6 +311,7 @@ public class ModelMapper {
 	}
 	
 	public static QueryGoodsOrderReplyOrder MapFrom(QueryGoodsOrderReplyOrder order,GoodsOrderView ov){
+		System.out.println(ov.getOrderBaseInfo().getCinemaCode());
 		SimpleDateFormat dateformat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		order.setCinemaCode(ov.getOrderBaseInfo().getCinemaCode());
 		order.setLocalOrderCode(ov.getOrderBaseInfo().getLocalOrderCode());
@@ -327,7 +330,7 @@ public class ModelMapper {
 		order.setPickUpTime(dateformat.format(ov.getOrderBaseInfo().getPickUpTime()));
 		order.setDeliveryType(ov.getOrderBaseInfo().getDeliveryType().toString());
 		order.setDeliveryAddress(ov.getOrderBaseInfo().getDeliveryAddress());
-		order.setDeliveryTime(dateformat.format(ov.getOrderBaseInfo().getDeliveryTime()));
+		order.setDeliveryTime(ov.getOrderBaseInfo().getDeliveryTime());
 		order.setOrderPayFlag(ov.getOrderBaseInfo().getOrderPayFlag()==1?"已支付":"未支付");
 		order.setOrderPayType(ov.getOrderBaseInfo().getOrderPayType().toString());
 		order.setOrderPayTime(dateformat.format(ov.getOrderBaseInfo().getOrderPayTime()));

@@ -1856,7 +1856,7 @@ ScreenType,ListingPrice,LowestPrice))
 		order.setOrderBaseInfo(orderBaseInfo);
 		List<Goodsorderdetails> goodsDetails = new ArrayList<Goodsorderdetails>();
 		for(CreateGoodsOrderQueryXmlGoods xmlgoods:QueryXmlObj.getGoodsList().getGoods()){
-			Goods localGoods=_goodsService.getByGoodsCode(xmlgoods.getGoodsCode());
+			Goods localGoods=_goodsService.getByCinemaCodeAndGoodsCode(QueryXmlObj.getCinemaCode(), xmlgoods.getGoodsCode());
 			Goodsorderdetails goods=new Goodsorderdetails();
 			goods.setGoodsCode(localGoods.getGoodsCode());
 			goods.setGoodsName(localGoods.getGoodsName());

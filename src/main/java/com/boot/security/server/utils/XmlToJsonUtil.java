@@ -104,6 +104,8 @@ public class XmlToJsonUtil {
 				|| (apiResultName + "_" + nodeName).equals("CreateMerOrderResult_SaleMerInfo")
 				|| (apiResultName + "_" + nodeName).equals("SubmitMerOrderResult_SaleMerInfo")
 				|| (apiResultName + "_" + nodeName).equals("QueryOrderDetailResult_SaleMerInfo")
+				|| (apiResultName + "_" + nodeName).equals("SubmitMixOrderQueryXml_Seat")
+				|| (apiResultName + "_" + nodeName).equals("SubmitMixOrderQueryXml_Goods")
 					) 
 			{
 				JSONArray qq = new JSONArray();
