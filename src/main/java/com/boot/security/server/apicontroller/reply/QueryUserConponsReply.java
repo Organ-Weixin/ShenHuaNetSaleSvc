@@ -43,6 +43,7 @@ public class QueryUserConponsReply extends BaseReply{
 			private String ReceivedDate;
 			private String Title;
 			private String Remark;
+			
 			private Integer CanUseCinemaType;//可用门店类型
 			private String CinemaName;
 			private Integer ReductionType;//影片或卖品类型

@@ -1,6 +1,10 @@
 package com.boot.security.server.apicontroller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -9,8 +13,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.TreeMap;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,10 +42,15 @@ import com.boot.security.server.api.core.RefundTicketReply;
 import com.boot.security.server.api.core.ReleaseSeatReply;
 import com.boot.security.server.api.core.SubmitMixOrderReply;
 import com.boot.security.server.api.core.SubmitOrderReply;
+import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.NetSaleQueryJson;
+import com.boot.security.server.apicontroller.reply.PrePayMixOrderQueryJson;
+import com.boot.security.server.apicontroller.reply.PrePayMixOrderQueryJson.PrePayMixOrderQueryJsonGoods;
+import com.boot.security.server.apicontroller.reply.PrePayMixOrderQueryJson.PrePayMixOrderQueryJsonSeat;
 import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson;
 import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson.PrePayOrderQueryJsonSeat;
 import com.boot.security.server.apicontroller.reply.PrePayParametersReply;
+import com.boot.security.server.apicontroller.reply.PrePayParametersReply.PrePayParametersReplyParameter;
 import com.boot.security.server.apicontroller.reply.QueryLocalOrderReply;
 import com.boot.security.server.apicontroller.reply.QueryLocalOrderReply.QueryLocalOrder;
 import com.boot.security.server.apicontroller.reply.QueryLocalOrderReply.QueryLocalOrder.Seats;
@@ -50,10 +63,15 @@ import com.boot.security.server.apicontroller.reply.QueryUserOrdersReply.UserOrd
 import com.boot.security.server.apicontroller.reply.QueryUserOrdersReply.UserOrders.OrderList;
 import com.boot.security.server.apicontroller.reply.RefundPaymentReply.RefundPaymentReplyOrder;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
+import com.boot.security.server.apicontroller.reply.PrePayGoodsOrderQueryJson.PrePayGoodsOrderQueryJsonGoods;
 import com.boot.security.server.model.Cinemapaymentsettings;
 import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.CouponsView;
+import com.boot.security.server.model.GoodsOrderStatusEnum;
+import com.boot.security.server.model.GoodsOrderView;
+import com.boot.security.server.model.Goodsorderdetails;
+import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
@@ -67,6 +85,7 @@ import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemapaymentsettingsServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
+import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.service.impl.PriceplanServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
@@ -74,6 +93,9 @@ import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
+import com.boot.security.server.utils.HttpHelper;
+import com.boot.security.server.utils.MD5Util;
+import com.boot.security.server.utils.StrUtil;
 import com.boot.security.server.utils.WxPayUtil;
 import com.boot.security.server.utils.XmlHelper;
 import com.google.gson.JsonSyntaxException;
@@ -102,6 +124,8 @@ public class OrderController {
 	PriceplanServiceImpl _priceplanService;
 	@Autowired
 	TicketusersServiceImpl _ticketUserService;
+	@Autowired
+	private GoodsOrderServiceImpl _goodsOrderService;
 	@Autowired
 	private HttpServletRequest request;
 
@@ -527,50 +551,7 @@ public class OrderController {
 					.collect(Collectors.toList()).get(0).getCouponsCode();
 			CouponsView couponsview = _couponsService.getWithCouponsCode(CouponsCode);
 			if(couponsview.getCoupons()!=null){
-				boolean ifCanUse = true;
-				//优惠券状态不对
-				if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
-					ifCanUse=false;
-				}
-				// 不在有效期范围内
-				if (couponsview.getCoupons().getEffectiveDate().getTime() > new Date().getTime()
-						|| couponsview.getCoupons().getExpireDate().getTime() <= new Date().getTime()) {
-					ifCanUse = false;
-				}
-				if (couponsview.getCouponsgroup().getCanUsePeriodType() == 2) {
-					Calendar c = Calendar.getInstance();
-					c.setTime(new Date());
-					int weekday = c.get(Calendar.DAY_OF_WEEK);// 1周日，2周一，7周六
-					//不在指定周几
-					if (!couponsview.getCouponsgroup().getWeekDays().contains(String.valueOf(weekday))) {
-						ifCanUse = false;
-					}
-					String[] timeperiods=couponsview.getCouponsgroup().getTimePeriod().split(",");
-					SimpleDateFormat dateFormater = new SimpleDateFormat("HHmm");
-					boolean ifintimeperiod=false;
-					for(String timeperiod:timeperiods){
-						int stime= Integer.parseInt(timeperiod.split("-")[0].replace(":",""));
-						int etime= Integer.parseInt(timeperiod.split("-")[1].replace(":",""));
-						int date= Integer.parseInt(dateFormater.format(new Date()));
-						if(date>stime&&date<etime){
-							ifintimeperiod = true;
-							break;
-						}else
-						{
-							continue;
-						}
-					}
-					//不在所有的可用时间段内
-					if(!ifintimeperiod){
-						ifCanUse = false;
-						}
-				}
-				//如果是部分门店可用，并且当前订单的影院不在可用门店里面
-				if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
-					if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(order.getOrderBaseInfo().getCinemaCode())==-1){
-						ifCanUse = false;
-					}
-				}
+				boolean ifCanUse=CouponsCanUse(couponsview,order.getOrderBaseInfo().getCinemaCode());
 				//如果减免类型是影片
 				if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1){
 					if(couponsview.getCouponsgroup().getFilmCodes().indexOf(order.getOrderBaseInfo().getFilmCode())>-1){
@@ -596,7 +577,7 @@ public class OrderController {
 		order.getOrderBaseInfo().setTotalConponPrice(TotalConponPrice);
 		//更新订单
 		_orderService.Update(order);
-		// 准备支付参数
+		//region 准备支付参数
 		Calendar cal=Calendar.getInstance();
 		cal.setTime(order.getOrderBaseInfo().getSessionTime());
 		String WxpayAppId = cinemapaymentsettings.getWxpayAppId();
@@ -615,6 +596,7 @@ public class OrderController {
 				.format(order.getOrderBaseInfo().getAutoUnlockDatetime());
 		Double TotalPrice = order.getOrderBaseInfo().getTotalSalePrice();// 暂时的
 		String TotalFee = String.valueOf(Double.valueOf(TotalPrice*100).intValue());// 商品金额，以分为单位
+		//endregion
 		return WxPayUtil.WxPayPrePay(request, prePayParametersReply, WxpayAppId, WxpayMchId, WxpayKey, strbody,
 				NotifyUrl, OpenId, TradeNo, ExpireDate, TotalFee);
 	}
@@ -670,7 +652,7 @@ public class OrderController {
 		// 校验参数
 		if (!ReplyExtension.RequestInfoGuard(refundpaymentReply, UserName, Password, CinemaCode, LockOrderCode)) {
 			return refundpaymentReply;
-		} 
+		}
 		// 获取用户信息
 		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
 		if (UserInfo == null) {
@@ -727,6 +709,404 @@ public class OrderController {
 			}
 		}
 		return refundpaymentReply;
+	}
+	//endregion
+	
+	//region 联合预支付（购票+卖品）
+	@RequestMapping(value="/PrePayMixOrder",method = RequestMethod.POST)
+	@ApiOperation(value = "预支付联合订单")
+	public PrePayParametersReply PrePayMixOrder(@RequestBody PrePayMixOrderQueryJson QueryJson) throws IOException{
+		PrePayParametersReply prePayParametersReply=new PrePayParametersReply();
+		// 校验参数
+		if (!ReplyExtension.RequestInfoGuard(prePayParametersReply, QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getCinemaCode(), QueryJson.getOrderCode(),QueryJson.getSeats(),QueryJson.getGoodsList())) {
+			return prePayParametersReply;
+		}
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(QueryJson.getUserName(), QueryJson.getPassword());
+		if (UserInfo == null) {
+			prePayParametersReply.SetUserCredentialInvalidReply();
+			return prePayParametersReply;
+		}
+		// 验证影院是否存在且可访问
+		Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),QueryJson.getCinemaCode());
+		if (userCinema == null) {
+			prePayParametersReply.SetCinemaInvalidReply();
+			return prePayParametersReply;
+		}
+		// 获取影院的支付配置
+		Cinemapaymentsettings cinemapaymentsettings = _cinemapaymentsettingsService
+				.getByCinemaCode(QueryJson.getCinemaCode());
+		if (cinemapaymentsettings == null || cinemapaymentsettings.getWxpayAppId().isEmpty()
+				|| cinemapaymentsettings.getWxpayMchId().isEmpty()) {
+			prePayParametersReply.SetCinemaPaySettingInvalidReply();
+			return prePayParametersReply;
+		}
+		// 验证订单是否存在
+		OrderView order = _orderService.getOrderWidthLockOrderCode(QueryJson.getCinemaCode(), QueryJson.getOrderCode());
+		if (order == null || (order.getOrderBaseInfo().getOrderStatus() != OrderStatusEnum.Locked.getStatusCode()
+				&& order.getOrderBaseInfo().getOrderStatus() != OrderStatusEnum.PayFail.getStatusCode())) {
+			prePayParametersReply.SetOrderNotExistReply();
+			return prePayParametersReply;
+		}
+		//验证卖品订单是否存在
+		GoodsOrderView goodsorder = _goodsOrderService.getWithLocalOrderCode(QueryJson.getCinemaCode(),QueryJson.getOrderCode());
+		if (goodsorder == null || (goodsorder.getOrderBaseInfo().getOrderStatus() != GoodsOrderStatusEnum.Created.getStatusCode()
+				&& goodsorder.getOrderBaseInfo().getOrderStatus() != GoodsOrderStatusEnum.PayFail.getStatusCode())) {
+			prePayParametersReply.SetOrderNotExistReply();
+			return prePayParametersReply;
+		}
+		// 验证座位数量
+		if (QueryJson.getSeats().size() != order.getOrderBaseInfo().getTicketCount()) {
+			prePayParametersReply.SetSeatCountInvalidReply();
+			return prePayParametersReply;
+		}
+		// 验证卖品数量
+		int GoodsCount=QueryJson.getGoodsList().stream().mapToInt(PrePayMixOrderQueryJsonGoods::getGoodsCount).sum();
+		if (GoodsCount != goodsorder.getOrderBaseInfo().getGoodsCount()) {
+			prePayParametersReply.SetGoodsCountInvalidReply();
+			return prePayParametersReply;
+		}
+		//验证优惠券是否使用(卖品)
+		if(!QueryJson.getCouponsCode().isEmpty()){
+			Coupons coupons = _couponsService.getByCouponsCode(QueryJson.getCouponsCode());
+			if (coupons.getStatus() != 1)// 不是已领取状态
+			{
+				prePayParametersReply.SetCouponsNotExistOrUsedReply();
+				return prePayParametersReply;
+			}
+		}
+		// 验证优惠券是否使用（购票）
+		for (PrePayMixOrderQueryJsonSeat seat : QueryJson.getSeats()) {
+			if (!seat.getCouponsCode().isEmpty()) {
+				Coupons coupons = _couponsService.getByCouponsCode(seat.getCouponsCode());
+				if (coupons.getStatus() != 1)// 不是已领取状态
+				{
+					prePayParametersReply.SetCouponsNotExistOrUsedReply();
+					return prePayParametersReply;
+				}
+			}
+		}
+		
+		//region 重新计算票价
+		Double SubmitPrice;// 最终上报价格
+		Double SalePrice;// 最终销售价格
+		Double TicketFee;// 最终服务费
+		int TicketCount = order.getOrderBaseInfo().getTicketCount();// 总票数
+
+		Sessioninfo sessioninfo = _sessioninfoService.getBySessionCode(order.getOrderBaseInfo().getUserId(),
+				order.getOrderBaseInfo().getCinemaCode(), order.getOrderBaseInfo().getSessionCode());
+		List<Priceplan> priceplans = _priceplanService.getByCode(order.getOrderBaseInfo().getUserId(),
+				order.getOrderBaseInfo().getCinemaCode(), order.getOrderBaseInfo().getFilmCode(),
+				order.getOrderBaseInfo().getSessionCode());
+		// 得到价格计划
+		Priceplan priceplan = new Priceplan();
+		if (priceplans.size() > 1) {
+			priceplan = priceplans.stream().filter((Priceplan s) -> s.getType() == 1).collect(Collectors.toList())
+					.get(0);
+		} else if (priceplans.size() == 1) {
+			priceplan = priceplans.get(0);
+		}
+		Double priceplanPrice = null == priceplan.getPrice() ? sessioninfo.getStandardPrice() : priceplan.getPrice();
+		Double priceplanFee = null == priceplan.getTicketFee() ? 0 : priceplan.getTicketFee();
+		Double priceplanAddFee = null == priceplan.getAddFee() ? 0 : priceplan.getAddFee();
+		Double priceplanCinemaAllowance = null == priceplan.getCinemaAllowance() ? 0 : priceplan.getCinemaAllowance();
+		// 上报价=场次标准价+场次服务费
+		SubmitPrice = sessioninfo.getStandardPrice() + sessioninfo.getTicketFee();
+		// 服务费=场次服务费+场次增值服务费-场次影院补贴+价格设置表服务费+价格设置表增值服务费-价格设置表影院补贴
+		TicketFee = sessioninfo.getTicketFee() + sessioninfo.getAddFee() - sessioninfo.getCinemaAllowance()
+				+ priceplanFee + priceplanAddFee - priceplanCinemaAllowance;
+		// 销售价=真实标准价+服务费
+		SalePrice = priceplanPrice + TicketFee;
+		// 循环处理每一个座位
+		//region 更新优惠券和价格到订单详细
+		for (Orderseatdetails seat : order.getOrderSeatDetails()) {
+			String CouponsCode = QueryJson.getSeats().stream()
+					.filter((PrePayMixOrderQueryJsonSeat s) -> s.getSeatCode().equals(seat.getSeatCode()))
+					.collect(Collectors.toList()).get(0).getCouponsCode();
+			CouponsView couponsview = _couponsService.getWithCouponsCode(CouponsCode);
+			if(couponsview.getCoupons()!=null){
+				boolean ifCanUse=CouponsCanUse(couponsview,order.getOrderBaseInfo().getCinemaCode());
+				//如果减免类型是影片
+				if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1){
+					if(couponsview.getCouponsgroup().getFilmCodes().indexOf(order.getOrderBaseInfo().getFilmCode())>-1){
+						//当前优惠券可以使用，把券码和优惠价格更新到订单详细表
+						seat.setConponCode(couponsview.getCoupons().getCouponsCode());
+						seat.setConponPrice(couponsview.getCouponsgroup().getReductionPrice());
+					}
+				}else{
+					seat.setConponPrice(0D);//如果优惠券类型是卖品，更新优惠金额为0
+				}
+			}else{
+				seat.setConponPrice(0D);//找不到优惠券，更新优惠金额为0
+			}
+		}
+		//endregion
+		//总优惠金额=所有座位的优惠金额相加
+		Double TotalConponPrice=order.getOrderSeatDetails().stream().mapToDouble(Orderseatdetails::getConponPrice).sum();
+		// 更新订单信息
+		// 总上报金额=上报价*总票数
+		order.getOrderBaseInfo().setTotalPrice(SubmitPrice * TicketCount);
+		order.getOrderBaseInfo().setTotalFee(TicketFee * TicketCount);
+		order.getOrderBaseInfo().setTotalSalePrice(SalePrice * TicketCount);
+		order.getOrderBaseInfo().setTotalConponPrice(TotalConponPrice);
+		//更新订单
+		_orderService.Update(order);
+		//endregion
+		
+		//region 重新计算卖品价格
+		String CouponsCode = QueryJson.getCouponsCode();
+		CouponsView couponsview = _couponsService.getWithCouponsCode(CouponsCode);
+		if(couponsview.getCoupons()!=null){
+			boolean ifCanUse=CouponsCanUse(couponsview,goodsorder.getOrderBaseInfo().getCinemaCode());
+			//如果减免类型是卖品
+			if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==2){
+				//循环判断每个卖品是不是在可使用优惠的卖品里面
+				for(Goodsorderdetails goodsdetail:goodsorder.getOrderGoodsDetails()){
+					if(couponsview.getCouponsgroup().getGoodsCodes().indexOf(goodsdetail.getGoodsCode())==-1){
+						ifCanUse=false;
+						break;
+					}else{
+						continue;
+					}
+				}
+				//如果到最后还是可以使用
+				if(ifCanUse){
+					//当前优惠券可以使用,把优惠券更新到卖品订单表
+					goodsorder.getOrderBaseInfo().setCouponsCode(couponsview.getCoupons().getCouponsCode());
+					goodsorder.getOrderBaseInfo().setCouponsPrice(couponsview.getCouponsgroup().getReductionPrice());
+				}
+			}else{
+				goodsorder.getOrderBaseInfo().setCouponsPrice(0D);//如果优惠券类型不是卖品，更新优惠金额为0
+			}
+		}else{
+			goodsorder.getOrderBaseInfo().setCouponsPrice(0D);//找不到优惠券，更新优惠金额为0
+		}
+		//更新卖品订单主表
+		_goodsOrderService.UpdateOrderBaseInfo(goodsorder.getOrderBaseInfo());
+		//endregion
+		
+		//region 准备支付参数
+		Double TotalGoodsOrderPrice = goodsorder.getOrderBaseInfo().getTotalSettlePrice()-goodsorder.getOrderBaseInfo().getCouponsPrice();
+		
+		Calendar cal=Calendar.getInstance();
+		cal.setTime(order.getOrderBaseInfo().getSessionTime());
+		String WxpayAppId = cinemapaymentsettings.getWxpayAppId();
+		String strbody = cinemapaymentsettings.getCinemaName() + "-"
+				+ StringUtil.leftPad(String.valueOf(cal.get(Calendar.MONTH)+1), 2, "0")
+				+ "月" + StringUtil.leftPad(String.valueOf(cal.get(Calendar.DATE)), 2, "0")
+				+ "日" + new SimpleDateFormat("HH:mm").format(order.getOrderBaseInfo().getSessionTime()) + " "
+				+ order.getOrderBaseInfo().getFilmName() + " 电影票（" + order.getOrderBaseInfo().getTicketCount() + "张）,"
+		        + "卖品订单总额（" + TotalGoodsOrderPrice + "元）"; 
+		String WxpayMchId = cinemapaymentsettings.getWxpayMchId();
+		String WxpayKey = cinemapaymentsettings.getWxpayKey();
+		String NotifyUrl = "https://xc.80piao.com:8443/Api/Order/WxPayMixNotify";//联合预支付的异步通知
+		String OpenId = order.getOrderBaseInfo().getOpenID();
+		String TradeNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + QueryJson.getCinemaCode()
+				+ order.getOrderBaseInfo().getId();
+		String ExpireDate = new SimpleDateFormat("yyyyMMddHHmmss")
+				.format(order.getOrderBaseInfo().getAutoUnlockDatetime());
+		Double TotalPrice = order.getOrderBaseInfo().getTotalSalePrice()+TotalGoodsOrderPrice;// 总支付金额=总购票金额+总卖品金额
+		String TotalFee = String.valueOf(Double.valueOf(TotalPrice*100).intValue());// 商品金额，以分为单位
+		//endregion
+		return WxPayUtil.WxPayPrePay(request, prePayParametersReply, WxpayAppId, WxpayMchId, WxpayKey, strbody,
+				NotifyUrl, OpenId, TradeNo, ExpireDate, TotalFee);
+	}
+	//endregion
+	
+	//region 联合预支付微信异步返回
+	public void WxPayMixNotify() throws Exception {
+		// 读取返回内容
+		Map<String, String> returnmap = WxPayUtil.WxPayNotify(request);
+		if (returnmap.get("isWXsign").equals("True")) {
+			
+			//region 更新购票订单
+			// 得到订单Id
+			Long OrderID = Long.parseLong(returnmap.get("out_trade_no").substring("yyyyMMddHHmmss".length() + 8));
+			OrderView order = _orderService.getOrderWidthId(OrderID);
+			if (returnmap.get("return_code").equals("SUCCESS") && returnmap.get("result_code").equals("SUCCESS")) {
+				// 更新购票订单主表
+				if (order.getOrderBaseInfo().getPayFlag() != 1) {
+					order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Payed.getStatusCode());
+					order.getOrderBaseInfo().setUpdated(new Date());
+					order.getOrderBaseInfo().setOrderPayType(OrderPayTypeEnum.WxPay.getTypeCode());
+					order.getOrderBaseInfo().setPayFlag(1);
+					order.getOrderBaseInfo().setPayTime(new Date());
+					order.getOrderBaseInfo().setOrderTradeNo(returnmap.get("transaction_id"));
+					_orderService.UpdateOrderBaseInfo(order.getOrderBaseInfo());
+				}
+				// 更新优惠券已使用
+				for (Orderseatdetails seat : order.getOrderSeatDetails()) {
+					if (!seat.getConponCode().equals("")) {
+						CouponsView couponsview=_couponsService.getWithCouponsCode(seat.getConponCode());
+						couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
+						couponsview.getCoupons().setUsedDate(new Date());
+						//使用数量+1
+						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+						//更新优惠券及优惠券分组表
+						_couponsService.update(couponsview);
+					}
+				}
+			} else {
+				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.PayFail.getStatusCode());
+				order.getOrderBaseInfo().setUpdated(new Date());
+				order.getOrderBaseInfo().setErrorMessage(returnmap.get("err_code_des"));
+				_orderService.UpdateOrderBaseInfo(order.getOrderBaseInfo());
+			}
+			//endregion
+			
+			//region 更新卖品订单
+			//购票订单的锁座订单号和卖品的本地订单号是一样的，所以用它来查询关联的卖品订单
+			Goodsorders goodsorder = _goodsOrderService.getByLocalOrderCode(order.getOrderBaseInfo().getLockOrderCode());
+			if (returnmap.get("return_code").equals("SUCCESS") && returnmap.get("result_code").equals("SUCCESS")) {
+				// 更新订单主表
+				if (goodsorder.getOrderPayFlag() != 1) {
+					goodsorder.setOrderStatus(OrderStatusEnum.Payed.getStatusCode());
+					goodsorder.setUpdated(new Date());
+					goodsorder.setOrderPayType(OrderPayTypeEnum.WxPay.getTypeCode());
+					goodsorder.setOrderPayFlag(1);
+					goodsorder.setOrderPayTime(new Date());
+					goodsorder.setOrderTradeNo(returnmap.get("transaction_id"));
+					_goodsOrderService.UpdateOrderBaseInfo(goodsorder);
+				}
+				// 更新优惠券已使用
+				if (!goodsorder.getCouponsCode().equals("")) {
+					CouponsView couponsview=_couponsService.getWithCouponsCode(goodsorder.getCouponsCode());
+					couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
+					couponsview.getCoupons().setUsedDate(new Date());
+					//使用数量+1
+					couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+					//更新优惠券及优惠券分组表
+					_couponsService.update(couponsview);
+				}
+			} else {
+				goodsorder.setOrderStatus(OrderStatusEnum.PayFail.getStatusCode());
+				goodsorder.setUpdated(new Date());
+				goodsorder.setErrorMessage(returnmap.get("err_code_des"));
+				_goodsOrderService.UpdateOrderBaseInfo(goodsorder);
+			}
+			//endregion
+		}
+	}
+	//endregion
+	
+	//region 联合支付退款
+	@GetMapping("/RefundMixPayment/{UserName}/{Password}/{CinemaCode}/{LockOrderCode}")
+	@ApiOperation(value = "联合支付退款")
+	public RefundPaymentReply RefundMixPayment(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
+			@PathVariable String LockOrderCode) throws UnrecoverableKeyException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, IOException{
+		RefundPaymentReply refundpaymentReply=new RefundPaymentReply();
+		// 校验参数
+		if (!ReplyExtension.RequestInfoGuard(refundpaymentReply, UserName, Password, CinemaCode, LockOrderCode)) {
+			return refundpaymentReply;
+		}
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
+		if (UserInfo == null) {
+			refundpaymentReply.SetUserCredentialInvalidReply();
+			return refundpaymentReply;
+		}
+		// 验证影院是否存在且可访问
+		Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),CinemaCode);
+		if (userCinema == null) {
+			refundpaymentReply.SetCinemaInvalidReply();
+			return refundpaymentReply;
+		}
+		// 获取影院的支付配置
+		Cinemapaymentsettings cinemapaymentsettings = _cinemapaymentsettingsService
+				.getByCinemaCode(CinemaCode);
+		if (cinemapaymentsettings == null || cinemapaymentsettings.getWxpayAppId().isEmpty()
+				|| cinemapaymentsettings.getWxpayMchId().isEmpty()) {
+			refundpaymentReply.SetCinemaPaySettingInvalidReply();
+			return refundpaymentReply;
+		}
+		//验证订单是否存在
+		Orders order=_orderService.getOrderBaseByLockOrderCode(LockOrderCode);
+		Goodsorders goodsorder = _goodsOrderService.getByLocalOrderCode(LockOrderCode);
+		if(order==null||goodsorder==null){
+			refundpaymentReply.SetOrderNotExistReply();
+			return refundpaymentReply;
+		}else{
+			//如果订单存在，开始退款
+			String WxpayAppId = cinemapaymentsettings.getWxpayAppId();
+			String WxpayMchId=cinemapaymentsettings.getWxpayMchId();
+			String WxpayKey=cinemapaymentsettings.getWxpayKey();
+			String TradeNo=new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + CinemaCode
+			+ order.getId();
+			Double TotalGoodsOrderPrice = goodsorder.getTotalSettlePrice()-goodsorder.getCouponsPrice();
+			Double RefundPrice = order.getTotalSalePrice()+TotalGoodsOrderPrice;//退款总金额=购票金额+卖品金额
+			String RefundFee = String.valueOf(Double.valueOf(RefundPrice*100).intValue());// 退款金额，以分为单位
+			String OrderTradeNo=order.getOrderTradeNo();//微信支付订单号
+			String WxpayRefundCert=cinemapaymentsettings.getWxpayRefundCert();
+			
+			String strRefundPaymentXml = WxPayUtil.WxPayRefund(WxpayAppId,WxpayMchId,WxpayKey,TradeNo,RefundFee,OrderTradeNo,CinemaCode,WxpayRefundCert);
+			//获取返回值 
+			String strRefundPaymentXml2 = strRefundPaymentXml.replace("<![CDATA[", "").replace("]]>", "");
+			Document document = XmlHelper.StringTOXml(strRefundPaymentXml2);
+			String resultcodeValue = XmlHelper.getNodeValue(document, "/xml/result_code");
+			String refundidValue=XmlHelper.getNodeValue(document,"/xml/refund_id");
+			if (resultcodeValue.equals("SUCCESS")) {
+				refundpaymentReply.setData(new RefundPaymentReplyOrder());
+				refundpaymentReply.getData().setOrderCode(order.getLockOrderCode());
+				refundpaymentReply.getData().setOrderStatus(OrderStatusEnum.CastToEnum(order.getOrderStatus()).getStatusName());
+				refundpaymentReply.getData().setRefundTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+				refundpaymentReply.getData().setRefundTradeNo(refundidValue);
+				refundpaymentReply.SetSuccessReply();
+			}else{
+				refundpaymentReply.Status = "Failure";
+				refundpaymentReply.ErrorCode = resultcodeValue;
+			}
+		}
+		return refundpaymentReply;
+	}
+	//endregion
+	
+	//region 判断优惠券是否可使用
+	private boolean CouponsCanUse(CouponsView couponsview,String CinemaCode){
+		boolean ifCanUse = true;
+		//优惠券状态不对
+		if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
+			ifCanUse=false;
+		}
+		// 不在有效期范围内
+		if (couponsview.getCoupons().getEffectiveDate().getTime() > new Date().getTime()
+				|| couponsview.getCoupons().getExpireDate().getTime() <= new Date().getTime()) {
+			ifCanUse = false;
+		}
+		if (couponsview.getCouponsgroup().getCanUsePeriodType() == 2) {
+			Calendar c = Calendar.getInstance();
+			c.setTime(new Date());
+			int weekday = c.get(Calendar.DAY_OF_WEEK);// 1周日，2周一，7周六
+			//不在指定周几
+			if (!couponsview.getCouponsgroup().getWeekDays().contains(String.valueOf(weekday))) {
+				ifCanUse = false;
+			}
+			String[] timeperiods=couponsview.getCouponsgroup().getTimePeriod().split(",");
+			SimpleDateFormat dateFormater = new SimpleDateFormat("HHmm");
+			boolean ifintimeperiod=false;
+			for(String timeperiod:timeperiods){
+				int stime= Integer.parseInt(timeperiod.split("-")[0].replace(":",""));
+				int etime= Integer.parseInt(timeperiod.split("-")[1].replace(":",""));
+				int date= Integer.parseInt(dateFormater.format(new Date()));
+				if(date>stime&&date<etime){
+					ifintimeperiod = true;
+					break;
+				}else
+				{
+					continue;
+				}
+			}
+			//不在所有的可用时间段内
+			if(!ifintimeperiod){
+				ifCanUse = false;
+				}
+		}
+		//如果是部分门店可用，并且当前订单的影院不在可用门店里面
+		if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
+			if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(CinemaCode)==-1){
+				ifCanUse = false;
+			}
+		}
+		return ifCanUse;
 	}
 	//endregion
 }

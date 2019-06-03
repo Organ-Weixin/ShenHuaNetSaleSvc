@@ -139,6 +139,15 @@ public class BaseReply {
         ErrorCode = ErrorCodeEnum.SeatCountInvalid.getCode();
         ErrorMessage = ErrorCodeEnum.SeatCountInvalid.getMessage();
     }
+    ///
+    ///卖品数量错误
+    ///
+    public void SetGoodsCountInvalidReply()
+    {
+        Status = StatusEnum.Failure.getStatusCode();
+        ErrorCode = ErrorCodeEnum.GoodsCountInvalid.getCode();
+        ErrorMessage = ErrorCodeEnum.GoodsCountInvalid.getMessage();
+    }
 
     /// <summary>
     /// 订单不存在或状态不合法

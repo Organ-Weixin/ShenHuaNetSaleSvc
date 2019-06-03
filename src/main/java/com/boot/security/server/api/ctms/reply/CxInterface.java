@@ -323,7 +323,7 @@ public class CxInterface implements ICTMSInterface {
 	@Override
 	public CTMSSubmitOrderReply SubmitOrder(Usercinemaview userCinema, OrderView order) {
 		CTMSSubmitOrderReply reply = new CTMSSubmitOrderReply();
-		CxSubmitOrderResult cxReply = cxService.SubmitOrder(userCinema, order);
+		CxSubmitOrderResult cxReply = cxService.SubmitOrder(userCinema,order,null);
 		if (cxReply.getSubmitOrderResult().getResultCode().equals("0")) {
 			order.getOrderBaseInfo().setSubmitOrderCode(cxReply.getSubmitOrderResult().getOrderCode());
 			order.getOrderBaseInfo().setPrintNo(cxReply.getSubmitOrderResult().getPrintNo());
@@ -352,6 +352,51 @@ public class CxInterface implements ICTMSInterface {
 		return reply;
 	}
 	// endregion
+	
+	//region 提交混合订单
+	@Override
+	public CTMSSubmitMixOrderReply SubmitMixOrder(Usercinemaview userCinema, OrderView order,GoodsOrderView goodsorder) {
+		CTMSSubmitMixOrderReply reply = new CTMSSubmitMixOrderReply();
+		CxSubmitOrderResult cxReply = cxService.SubmitOrder(userCinema, order,goodsorder);
+		if (cxReply.getSubmitOrderResult().getResultCode().equals("0")) {
+			//更新购票订单
+			order.getOrderBaseInfo().setSubmitOrderCode(cxReply.getSubmitOrderResult().getOrderCode());
+			order.getOrderBaseInfo().setPrintNo(cxReply.getSubmitOrderResult().getPrintNo());
+			order.getOrderBaseInfo().setVerifyCode(cxReply.getSubmitOrderResult().getVerifyCode());
+			for (Orderseatdetails orderseat : order.getOrderSeatDetails()) {
+				log.info("SeatCode：" + orderseat.getSeatCode());
+				List<SeatInfoBean> seatinfobeans = cxReply.getSubmitOrderResult().getSeatInfos().getSeatInfo().stream()
+						.filter(item -> item.getSeatCode().equals(orderseat.getSeatCode()))
+						.collect(Collectors.toList());
+				SeatInfoBean seatinfobean = seatinfobeans.get(0);
+				log.info("SeatInfoBean：" + seatinfobean.getSeatCode());
+				if (seatinfobean != null) {
+					orderseat.setFilmTicketCode(seatinfobean.getFilmTicketCode());
+				}
+			}
+			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Complete.getStatusCode());
+			order.getOrderBaseInfo().setSubmitTime(new Date());
+			//更新卖品订单
+			goodsorder.getOrderBaseInfo().setOrderCode(cxReply.getSubmitOrderResult().getOrderCode());
+			goodsorder.getOrderBaseInfo().setPickUpCode(cxReply.getSubmitOrderResult().getPrintNo());
+			goodsorder.getOrderBaseInfo().setVerifyCode(cxReply.getSubmitOrderResult().getVerifyCode());
+			goodsorder.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
+			goodsorder.getOrderBaseInfo().setSubmitTime(new Date());
+			reply.Status = StatusEnum.Success;
+		} else {
+			//更新购票订单
+			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.SubmitFail.getStatusCode());
+			order.getOrderBaseInfo().setErrorMessage(cxReply.getSubmitOrderResult().getMessage());
+			//更新卖品订单
+			goodsorder.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.SubmitFail.getStatusCode());
+			goodsorder.getOrderBaseInfo().setErrorMessage(cxReply.getSubmitOrderResult().getMessage());
+			reply.Status = StatusEnum.Failure;
+		}
+		reply.ErrorCode = cxReply.getSubmitOrderResult().getResultCode();
+		reply.ErrorMessage = cxReply.getSubmitOrderResult().getMessage();
+		return reply;
+	}
+	//endregion
 
 	// region 查询出票状态（完成）
 	@Override
@@ -736,18 +781,23 @@ public class CxInterface implements ICTMSInterface {
             //var oldCardLevels = _membercardService.GetMemberCardLevels(userCinema.CinemaCode);
         	List<Membercardlevel> memercardlevels=new ArrayList<Membercardlevel>();
         	for(MemberLevelBean levelbean:cxReply.getQueryMemberLevelResult().getMemberLevels().getMemberLevel()){
-        		Membercardlevel memercardlevel=new Membercardlevel();
-        		memercardlevel.setCinemaCode(userCinema.getCinemaCode());
-        		memercardlevel.setLevelCode(levelbean.getLevelCode());
-        		memercardlevel.setLevelName(levelbean.getLevelName());
-        		memercardlevels.add(memercardlevel);
+        		Membercardlevel memercardlevel = _membercardlevelService.getByCinemaCodeAndLevelCode(userCinema.getCinemaCode(), levelbean.getLevelCode());
+        		if(memercardlevel==null){
+        			memercardlevel = new Membercardlevel();
+        			memercardlevel.setCinemaCode(userCinema.getCinemaCode());
+            		memercardlevel.setLevelCode(levelbean.getLevelCode());
+            		memercardlevel.setLevelName(levelbean.getLevelName());
+            		memercardlevel.setStatus(0);
+            		memercardlevels.add(memercardlevel);
+            		_membercardlevelService.Save(memercardlevel);
+        		}else{
+        			memercardlevel.setCinemaCode(userCinema.getCinemaCode());
+            		memercardlevel.setLevelCode(levelbean.getLevelCode());
+            		memercardlevel.setLevelName(levelbean.getLevelName());
+            		_membercardlevelService.update(memercardlevel);
+        		}
+        		
         	}
-        	//先删除原会员卡等级
-        	_membercardlevelService.deleteByCinemaCode(userCinema.getCinemaCode());
-            //插入最新会员卡等级
-            for(Membercardlevel cardlevel:memercardlevels){
-            	_membercardlevelService.Save(cardlevel);
-            }
             reply.Status = StatusEnum.Success;
         }
         else
@@ -870,7 +920,7 @@ public class CxInterface implements ICTMSInterface {
 			order.getOrderBaseInfo().setSubmitTime(new Date());
 			reply.Status = StatusEnum.Success;
 		}else {
-			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.SubmitFail.getStatusCode());
+			order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.SubmitFail.getStatusCode());
 			order.getOrderBaseInfo().setErrorMessage(cxReply.getSubmitMerOrderResult().getMessage());
 			reply.Status = StatusEnum.Failure;
 		}
@@ -913,11 +963,4 @@ public class CxInterface implements ICTMSInterface {
 		return reply;
 	}
 	//endregion
-
-	@Override
-	public CTMSSubmitMixOrderReply SubmitMixOrder(Usercinemaview userCinema, OrderView order, GoodsOrderView goodsorder)
-			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

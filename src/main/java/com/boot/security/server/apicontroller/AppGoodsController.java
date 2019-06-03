@@ -63,6 +63,7 @@ import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Goodstype;
 import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
+import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
@@ -408,7 +409,7 @@ public class AppGoodsController {
 		// 验证卖品数量
 		int GoodsCount=QueryJson.getGoodsList().stream().mapToInt(PrePayGoodsOrderQueryJsonGoods::getGoodsCount).sum();
 		if (GoodsCount != order.getOrderBaseInfo().getGoodsCount()) {
-			prePayParametersReply.SetSeatCountInvalidReply();
+			prePayParametersReply.SetGoodsCountInvalidReply();
 			return prePayParametersReply;
 		}
 		// 验证优惠券是否使用

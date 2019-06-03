@@ -49,6 +49,8 @@ import com.boot.security.server.api.ctms.reply.CxReleaseSeatResult;
 import com.boot.security.server.api.ctms.reply.CxSubmitMerOrderParameter;
 import com.boot.security.server.api.ctms.reply.CxSubmitMerOrderResult;
 import com.boot.security.server.api.ctms.reply.CxSubmitOrderParameter;
+import com.boot.security.server.api.ctms.reply.CxSubmitOrderParameter.CxSubmitOrderXmlSaleMerInfos;
+import com.boot.security.server.api.ctms.reply.CxSubmitOrderParameter.CxSubmitOrderXmlSaleMerInfos.CxSubmitOrderXmlSaleMerInfo;
 import com.boot.security.server.api.ctms.reply.CxSubmitOrderParameter.CxSubmitOrderXmlSeatInfos;
 import com.boot.security.server.api.ctms.reply.CxSubmitOrderParameter.CxSubmitOrderXmlSeatInfos.CxSubmitOrderXmlSeatInfo;
 import com.boot.security.server.api.ctms.reply.CxSubmitOrderResult;
@@ -380,8 +382,8 @@ public class WebService {
 	}
 	// endregion
 
-	// region 提交订单(完成)
-	public static CxSubmitOrderResult SubmitOrder(Usercinemaview userCinema, OrderView orderview) {
+	// region 提交订单()(含卖品)
+	public static CxSubmitOrderResult SubmitOrder(Usercinemaview userCinema, OrderView orderview,GoodsOrderView goodsorderview) {
 		try {
 			// 用来生成验证码
 			Map<String, String> map = new LinkedHashMap();
@@ -399,6 +401,18 @@ public class WebService {
 							.append(new DecimalFormat("#0.00").format(n.getCinemaAllowance()))// 影院补贴
 							/*.append(orderview.getOrderBaseInfo().getMarketingCode())*/);// 活动标识
 			map.put("SeatInfos", SeatInfos.toString());
+			//如果是混合订单
+			if(goodsorderview!=null){
+				StringBuffer SaleMerInfos=new StringBuffer();
+				goodsorderview.getOrderGoodsDetails()
+				     .forEach(n->SaleMerInfos.append(n.getGoodsCode())//商品编码
+				            .append(n.getGoodsName())//商品名称
+				            .append(new DecimalFormat("#0.00").format(n.getStandardPrice()))//销售价
+				            .append(n.getGoodsCount())//商品数量
+				            .append("{}")//商品详情扩展信息
+				            .append(n.getShowSeqNo()));//商品序号
+				map.put("SaleMerInfos",SaleMerInfos.toString());
+			}
 			map.put("Compress", "0");
 			log.info("==========================");
 			log.info(SeatInfos.toString());
@@ -425,6 +439,23 @@ public class WebService {
 			}
 			seatInfos.setSeatInfo(seatInfo);
 			param.setSeatInfos(seatInfos);
+			//如果是混合订单
+			if(goodsorderview!=null){
+				CxSubmitOrderXmlSaleMerInfos saleMerInfos= new CxSubmitOrderParameter.CxSubmitOrderXmlSaleMerInfos();
+				List<CxSubmitOrderXmlSaleMerInfo> saleMerInfo=new ArrayList<CxSubmitOrderXmlSaleMerInfo>();
+				for(Goodsorderdetails goodsorderdetail:goodsorderview.getOrderGoodsDetails()){
+					CxSubmitOrderXmlSaleMerInfo goods=new CxSubmitOrderXmlSaleMerInfo();
+					goods.setMerCode(goodsorderdetail.getGoodsCode());
+					goods.setMerName(goodsorderdetail.getGoodsName());
+					goods.setMerPrice(new DecimalFormat("#.00").format(goodsorderdetail.getStandardPrice()));
+					goods.setSaleAmount(goodsorderdetail.getGoodsCount().toString());
+					goods.setMerExtend("{}");
+					goods.setSeqNo(goodsorderdetail.getShowSeqNo().toString());
+					saleMerInfo.add(goods);
+				}
+				saleMerInfos.setSaleMerInfo(saleMerInfo);
+				param.setSaleMerInfos(saleMerInfos);
+			}
 			param.setCompress("0");
 			String VerifyInfo = MD5Util.getCxSign(map, userCinema.getRealPassword());
 			param.setVerifyInfo(VerifyInfo);

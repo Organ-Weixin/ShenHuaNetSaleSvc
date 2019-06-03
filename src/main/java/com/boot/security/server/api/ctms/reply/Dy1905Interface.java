@@ -341,7 +341,7 @@ public class Dy1905Interface implements ICTMSInterface {
 				if(Dy1905SessionSeat.getSeatStatus().equals("1")){
 					sessionSeats.setStatus(SessionSeatStatusEnum.Sold);
 				}
-				if(Dy1905SessionSeat.getSeatStatus().equals("1")){
+				if(Dy1905SessionSeat.getSeatStatus().equals("3")){
 					sessionSeats.setStatus(SessionSeatStatusEnum.Locked);
 				}
 				SessionSeatList.add(sessionSeats);

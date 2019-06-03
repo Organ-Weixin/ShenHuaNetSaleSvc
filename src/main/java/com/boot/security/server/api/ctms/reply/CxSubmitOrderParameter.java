@@ -17,6 +17,7 @@ public class CxSubmitOrderParameter{
     private String FeatureAppNo;
     private String MobilePhone;
 	private CxSubmitOrderXmlSeatInfos SeatInfos;
+	private CxSubmitOrderXmlSaleMerInfos SaleMerInfos;
     private String Compress;
     private String VerifyInfo;
     
@@ -61,6 +62,13 @@ public class CxSubmitOrderParameter{
 	}
 	public void setSeatInfos(CxSubmitOrderXmlSeatInfos seatInfos) {
 		SeatInfos = seatInfos;
+	}
+	@XmlElement(name="SaleMerInfos")
+	public CxSubmitOrderXmlSaleMerInfos getSaleMerInfos() {
+		return SaleMerInfos;
+	}
+	public void setSaleMerInfos(CxSubmitOrderXmlSaleMerInfos saleMerInfos) {
+		SaleMerInfos = saleMerInfos;
 	}
 	@XmlElement(name="Compress")
 	public String getCompress() {
@@ -139,6 +147,70 @@ public class CxSubmitOrderParameter{
 			}
 			
 		}
+	}
+	public static class CxSubmitOrderXmlSaleMerInfos{
+		@XmlElement(name="SaleMerInfo")
+		private List<CxSubmitOrderXmlSaleMerInfo> SaleMerInfo;
+
+		public List<CxSubmitOrderXmlSaleMerInfo> getSaleMerInfo() {
+			return SaleMerInfo;
+		}
+
+		public void setSaleMerInfo(List<CxSubmitOrderXmlSaleMerInfo> saleMerInfo) {
+			SaleMerInfo = saleMerInfo;
+		}
+		public static class CxSubmitOrderXmlSaleMerInfo{
+			@XmlElement(name="MerCode")
+			private String MerCode;
+			@XmlElement(name="MerName")
+			private String MerName;
+			@XmlElement(name="MerPrice")
+			private String MerPrice;
+			@XmlElement(name="SaleAmount")
+			private String SaleAmount;
+			@XmlElement(name="MerExtend")
+			private String MerExtend;
+			@XmlElement(name="SeqNo")
+			private String SeqNo;
+			public String getMerCode() {
+				return MerCode;
+			}
+			public void setMerCode(String merCode) {
+				MerCode = merCode;
+			}
+			public String getMerName() {
+				return MerName;
+			}
+			public void setMerName(String merName) {
+				MerName = merName;
+			}
+			public String getMerPrice() {
+				return MerPrice;
+			}
+			public void setMerPrice(String merPrice) {
+				MerPrice = merPrice;
+			}
+			public String getSaleAmount() {
+				return SaleAmount;
+			}
+			public void setSaleAmount(String saleAmount) {
+				SaleAmount = saleAmount;
+			}
+			public String getMerExtend() {
+				return MerExtend;
+			}
+			public void setMerExtend(String merExtend) {
+				MerExtend = merExtend;
+			}
+			public String getSeqNo() {
+				return SeqNo;
+			}
+			public void setSeqNo(String seqNo) {
+				SeqNo = seqNo;
+			}
+			
+		}
+		
 	}
     
 
