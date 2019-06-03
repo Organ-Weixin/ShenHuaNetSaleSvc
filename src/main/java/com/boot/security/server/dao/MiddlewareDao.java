@@ -11,7 +11,6 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.boot.security.server.model.Middleware;
-import com.boot.security.server.model.Userinfo;
 
 @Mapper
 public interface MiddlewareDao {
@@ -21,9 +20,6 @@ public interface MiddlewareDao {
     
     @Delete("delete from middleware where id = #{id}")
     int delete(Long id);
-   //
-    @Select("select * from middleware")
-    List<Middleware> getTitle();
     
     int update(Middleware middleware);
     

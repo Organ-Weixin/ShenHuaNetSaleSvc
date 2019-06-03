@@ -11,8 +11,7 @@ public interface MiddlewareService {
 	    Middleware getById(Long id);
 	    
 	    int delete(Long id);
-	    List<Middleware> getTitle();
-
+	    
 	    int update(Middleware middleware);
 	    
 	    int save(Middleware middleware);
