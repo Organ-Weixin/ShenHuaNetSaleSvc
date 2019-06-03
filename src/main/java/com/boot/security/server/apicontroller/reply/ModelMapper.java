@@ -214,7 +214,7 @@ public class ModelMapper {
 		entity.setTimePeriod(model.getTimePeriod());
 		entity.setLimitNum(model.getLimitNum());
 		entity.setReductionType(model.getReductionType());
-		entity.setReductionPrice(Double.valueOf(model.getReductionPrice().toString()));
+		entity.setReductionPrice(model.getReductionPrice());
 		entity.setFilmCodes(model.getFilmCodes());
 		entity.setGoodsCodes(model.getGoodsCodes());
 		entity.setIsShare(model.getIsShare());
