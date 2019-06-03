@@ -135,11 +135,6 @@ public class ConponController {
 				Couponsgroup cou = _couponsgroupService.getByCinemaCodeAndGroupCode(cinema.getCode(),
 						coupon.getGroupCode());
 				System.out.println("111111111"+new Gson().toJson(cou));
-				//if (couponsgroup.size() > 0) {
-				
-					//for (int i = 0; i < couponsgroup.size(); i++) {
-						
-						//Couponsgroup cou = couponsgroup.get(i);
 						if (cou != null) {
 							sum++;
 							queryUserConponsBean.setCinemaCode(cou.getCinemaCodes());
@@ -217,13 +212,7 @@ public class ConponController {
 							
 							queryUserConponsBeanss.add(queryUserConponsBean);
 						}
-
-					//}
-					
 					data.setConponCount(sum);
-
-			//	}
-				
 			}
 			data.setConpons(queryUserConponsBeanss);
 			
