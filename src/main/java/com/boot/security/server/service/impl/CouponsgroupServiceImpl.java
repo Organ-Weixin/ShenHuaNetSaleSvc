@@ -20,10 +20,7 @@ public class CouponsgroupServiceImpl implements CouponsgroupService{
 	public List<Couponsgroup> getByCinemaCode(String cinemacode) {
 		return couponsgroupDao.getByCinemaCode(cinemacode);
 	}
-	@Override
-	public List<Couponsgroup> getByCinemaCodeAndGroupCode(String cinemacodes, String groupcode) {
-		return couponsgroupDao.getByCinemaCodeAndGroupCode(cinemacodes, groupcode);
-	}
+
 	@Override
 	public Couponsgroup getById(Long id) {
 		return couponsgroupDao.getById(id);
@@ -55,6 +52,10 @@ public class CouponsgroupServiceImpl implements CouponsgroupService{
 	@Override
 	public int changePast(Integer status) {
 		return couponsgroupDao.changePast(status);
+	}
+	@Override
+	public Couponsgroup getByCinemaCodeAndGroupCode(String cinemacodes, String groupcode) {
+		return couponsgroupDao.getByCinemaCodeAndGroupCode(cinemacodes, groupcode);
 	}
 
 }

@@ -11,7 +11,7 @@ public interface CouponsgroupService {
 	
 	List<Couponsgroup> getByCinemaCode(String cinemacode);
 	    
-	List<Couponsgroup> getByCinemaCodeAndGroupCode(String cinemacodes,String groupcode);
+	Couponsgroup getByCinemaCodeAndGroupCode(String cinemacodes,String groupcode);
 	
 
 	List<Couponsgroup> getCanUseByGroupCode(String cinemacode);
