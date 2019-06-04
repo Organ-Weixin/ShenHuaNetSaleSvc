@@ -504,7 +504,7 @@ public class OrderController {
 		}
 		// 验证优惠券是否使用
 		for (PrePayOrderQueryJsonSeat seat : QueryJson.getSeats()) {
-			if (!seat.getCouponsCode().isEmpty()) {
+			if (!seat.getCouponsCode().isEmpty()&&!seat.getCouponsCode().equals("")) {
 				Coupons coupons = _couponsService.getByCouponsCode(seat.getCouponsCode());
 				if (coupons.getStatus() != 1)// 不是已领取状态
 				{
@@ -549,26 +549,76 @@ public class OrderController {
 			String CouponsCode = QueryJson.getSeats().stream()
 					.filter((PrePayOrderQueryJsonSeat s) -> s.getSeatCode().equals(seat.getSeatCode()))
 					.collect(Collectors.toList()).get(0).getCouponsCode();
-			CouponsView couponsview = _couponsService.getWithCouponsCode(CouponsCode);
-			if(couponsview.getCoupons()!=null){
-				boolean ifCanUse=CouponsCanUse(couponsview,order.getOrderBaseInfo().getCinemaCode());
-				//如果减免类型是影片
-				if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1){
-					if(couponsview.getCouponsgroup().getFilmCodes().indexOf(order.getOrderBaseInfo().getFilmCode())>-1){
-						//当前优惠券可以使用，把券码和优惠价格更新到订单详细表
-						seat.setConponCode(couponsview.getCoupons().getCouponsCode());
-						seat.setConponPrice(couponsview.getCouponsgroup().getReductionPrice());
+			if(!CouponsCode.equals("")&&!CouponsCode.equals(null)){
+				CouponsView couponsview = _couponsService.getWithCouponsCode(CouponsCode);
+				if(couponsview.getCoupons()!=null){
+					boolean ifCanUse = true;
+					//优惠券状态不对
+					if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
+						ifCanUse=false;
+					}
+					// 不在有效期范围内
+					if (couponsview.getCoupons().getEffectiveDate().getTime() > new Date().getTime()
+							|| couponsview.getCoupons().getExpireDate().getTime() <= new Date().getTime()) {
+						ifCanUse = false;
+					}
+					if (couponsview.getCouponsgroup().getCanUsePeriodType() == 2) {
+						Calendar c = Calendar.getInstance();
+						c.setTime(new Date());
+						int weekday = c.get(Calendar.DAY_OF_WEEK);// 1周日，2周一，7周六
+						//不在指定周几
+						if (!couponsview.getCouponsgroup().getWeekDays().contains(String.valueOf(weekday))) {
+							ifCanUse = false;
+						}
+						String[] timeperiods=couponsview.getCouponsgroup().getTimePeriod().split(",");
+						SimpleDateFormat dateFormater = new SimpleDateFormat("HHmm");
+						boolean ifintimeperiod=false;
+						for(String timeperiod:timeperiods){
+							int stime= Integer.parseInt(timeperiod.split("-")[0].replace(":",""));
+							int etime= Integer.parseInt(timeperiod.split("-")[1].replace(":",""));
+							int date= Integer.parseInt(dateFormater.format(new Date()));
+							if(date>stime&&date<etime){
+								ifintimeperiod = true;
+								break;
+							}else
+							{
+								continue;
+							}
+						}
+						//不在所有的可用时间段内
+						if(!ifintimeperiod){
+							ifCanUse = false;
+							}
+					}
+					//如果是部分门店可用，并且当前订单的影院不在可用门店里面
+					if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
+						if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(order.getOrderBaseInfo().getCinemaCode())==-1){
+							ifCanUse = false;
+						}
+					}
+					//如果减免类型是影片
+					if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1){
+						if(couponsview.getCouponsgroup().getFilmCodes().indexOf(order.getOrderBaseInfo().getFilmCode())>-1){
+							//当前优惠券可以使用，把券码和优惠价格更新到订单详细表
+							seat.setConponCode(couponsview.getCoupons().getCouponsCode());
+							seat.setConponPrice(couponsview.getCouponsgroup().getReductionPrice());
+						}
+					}else{
+						seat.setConponPrice(0D);//如果优惠券类型是卖品，更新优惠金额为0
 					}
 				}else{
-					seat.setConponPrice(0D);//如果优惠券类型是卖品，更新优惠金额为0
+					seat.setConponPrice(0D);//找不到优惠券，更新优惠金额为0
 				}
-			}else{
-				seat.setConponPrice(0D);//找不到优惠券，更新优惠金额为0
 			}
 		}
 		//endregion
 		//总优惠金额=所有座位的优惠金额相加
-		Double TotalConponPrice=order.getOrderSeatDetails().stream().mapToDouble(Orderseatdetails::getConponPrice).sum();
+		for(int i=0; i<order.getOrderSeatDetails().size(); i++){
+			if(order.getOrderSeatDetails().get(i).getConponCode()==null||order.getOrderSeatDetails().get(i).getConponCode()==""){
+				order.getOrderSeatDetails().get(i).setConponPrice(0.00);
+			}
+		}
+		Double TotalConponPrice = order.getOrderSeatDetails().stream().mapToDouble(Orderseatdetails::getConponPrice).sum();
 		// 更新订单信息
 		// 总上报金额=上报价*总票数
 		order.getOrderBaseInfo().setTotalPrice(SubmitPrice * TicketCount);

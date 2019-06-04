@@ -320,7 +320,6 @@ public class Dy1905Interface implements ICTMSInterface {
 		param.put("pSessionID", SessionCode);
 		param.put("pVerifyInfo",pVerifyInfo);
 		String getSessionSeatResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/GetSessionSeat/v2", param,"UTF-8");
-		System.out.println(getSessionSeatResult);
 		Gson gson = new Gson();
 		Dy1905GetSessionSeatResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(getSessionSeatResult,"GetSessionSeatResult"),Dy1905GetSessionSeatResult.class);
 		List<SessionSeatBean> Dy1905SessionSeatList = new ArrayList<SessionSeatBean>();
@@ -368,7 +367,7 @@ public class Dy1905Interface implements ICTMSInterface {
 						if(Dy1905SessionSeat.getSeatStatus().equals("1")){
 							sessionSeats.setStatus(SessionSeatStatusEnum.Sold);
 						}
-						if(Dy1905SessionSeat.getSeatStatus().equals("1")){
+						if(Dy1905SessionSeat.getSeatStatus().equals("3")){
 							sessionSeats.setStatus(SessionSeatStatusEnum.Locked);
 						}
 						SessionSeatList.add(sessionSeats);
@@ -916,13 +915,13 @@ public class Dy1905Interface implements ICTMSInterface {
 	            OrderID += (c + "");
 	        }
 			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() + CardNo + CardPassword 
-					+ PayAmount + OrderID + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
+					+ (PayAmount+GoodsPayAmount) + OrderID + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
 			Map<String,String> param = new LinkedHashMap<String,String>();
 			param.put("pAppCode", userCinema.getDefaultUserName());
 			param.put("pCinemaID", userCinema.getCinemaId());
 			param.put("pCardNo", CardNo);
 			param.put("pCardPwd", CardPassword);
-			param.put("pBalance", String.valueOf(PayAmount));
+			param.put("pBalance", String.valueOf(PayAmount+GoodsPayAmount));
 			param.put("pOrderID", OrderID);
 			param.put("pVerifyInfo", pVerifyInfo);
 			String MemberCardDeductResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/MemberCardDeduct",param,"UTF-8");

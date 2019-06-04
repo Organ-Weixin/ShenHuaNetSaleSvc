@@ -1,9 +1,6 @@
 package com.boot.security.server.service;
 
 import java.util.List;
-import java.util.Map;
-
-import org.apache.ibatis.annotations.Param;
 
 import com.boot.security.server.model.Ticketusers;
 
@@ -17,5 +14,8 @@ public interface TicketusersService {
     Ticketusers getByCinemaCode(String cinemacode);
     
     Ticketusers getByopenids(String openid);
-
+    
+    List<Ticketusers> getAllList();
+    
+    int updateIsActive(Integer isactive, String openid);
 }

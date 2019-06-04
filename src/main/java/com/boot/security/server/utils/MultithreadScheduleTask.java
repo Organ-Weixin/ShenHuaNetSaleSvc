@@ -21,9 +21,20 @@ import com.boot.security.server.api.core.QueryGoodsReply;
 import com.boot.security.server.api.core.QuerySeatReply;
 import com.boot.security.server.api.core.QuerySessionReply;
 import com.boot.security.server.model.Cinema;
+import com.boot.security.server.model.CouponGroupStatusEnum;
+import com.boot.security.server.model.CouponsStatusEnum;
+import com.boot.security.server.model.Couponsgroup;
+import com.boot.security.server.model.Goodsorders;
+import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Screeninfo;
+import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
+import com.boot.security.server.service.impl.CouponsServiceImpl;
+import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
+import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
+import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
+import com.boot.security.server.service.impl.TicketusersServiceImpl;
 
 @Component
 @EnableScheduling   // 1.开启定时任务
@@ -33,6 +44,16 @@ public class MultithreadScheduleTask {
 	private CinemaServiceImpl cinemaService;
 	@Autowired
 	private ScreeninfoServiceImpl screeninfoService;
+	@Autowired
+	private CouponsgroupServiceImpl couponsgroupService;
+	@Autowired
+	private CouponsServiceImpl couponsService;
+	@Autowired
+	private TicketusersServiceImpl ticketusersService;
+	@Autowired
+	private OrderServiceImpl orderService;
+	@Autowired
+	private GoodsOrderServiceImpl goodsOrderService;
 	
 	//更新影院、影厅信息
 	@Async
@@ -135,4 +156,36 @@ public class MultithreadScheduleTask {
 			Thread.sleep(1000 * 10);
 		}
     }
+	//更新优惠券组状态
+	@Async
+	@Scheduled(cron="0 0 3 * * ?")
+	public void checkExripeOfCouponsGroup(){
+		couponsgroupService.changePast(CouponGroupStatusEnum.Expired.getStatusCode());
+	}
+	//更新优惠券状态
+	@Async
+	@Scheduled(cron="0 0 3 * * ?")
+	public void checkExripeOfCoupons(){
+		couponsService.changePast(CouponsStatusEnum.Expire.getStatusCode());
+	}
+	//更新购票用户是否活跃状态
+	@Async
+	@Scheduled(cron="0 0 3 * * ?")
+	public void checkTicketUsers(){
+		List<Ticketusers> ticketusersList = ticketusersService.getAllList();
+		if(ticketusersList.size()>0){
+			for(int i=0; i<ticketusersList.size(); i++){
+				List<Orders> orderList = orderService.getByOpenId(ticketusersList.get(i).getOpenID(), new SimpleDateFormat("yyyy-MM-dd").format(new Date(Long.parseLong(String.valueOf(new Date().getTime()-3l*30l*24l*60l*60l*1000l)))));
+				List<Goodsorders> goodsOrderList = goodsOrderService.getByOpenID(ticketusersList.get(i).getOpenID(), new SimpleDateFormat("yyyy-MM-dd").format(new Date(Long.parseLong(String.valueOf(new Date().getTime()-3l*30l*24l*60l*60l*1000l)))));
+				if(orderList.size()>0||goodsOrderList.size()>0){
+					ticketusersService.updateIsActive(1, ticketusersList.get(i).getOpenID());
+				}else{
+					ticketusersService.updateIsActive(0, ticketusersList.get(i).getOpenID());
+				}
+			}
+		}
+	}
+	public static void main(String[] args) {
+		System.out.println(new SimpleDateFormat("yyyy-MM-dd").format(new Date(Long.parseLong(String.valueOf(new Date().getTime()-3l*30l*24l*60l*60l*1000l)))));
+	}
 }

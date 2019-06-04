@@ -57,7 +57,7 @@ public class Dy1905ModelMapper {
     	}
     	String totalTime = model.getTotalTime().toString();
     	entity.setDuration(Integer.parseInt(totalTime));
-    	entity.setStandardPrice(model.getStandartPrice());
+    	entity.setStandardPrice(model.getSettlementPrice());
     	entity.setLowestPrice(model.getLowestPrice());;
     	entity.setSettlePrice(model.getSettlementPrice());
     	entity.setTicketFee(model.getFee());

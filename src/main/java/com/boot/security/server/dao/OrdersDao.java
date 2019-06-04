@@ -31,6 +31,9 @@ public interface OrdersDao {
 
 	@Select("select * from orders t where t.cinemacode=#{cinemacode} and t.printno = #{printno} and t.verifycode=#{verifycode}")
 	Orders getByPrintNo(@Param("cinemacode")String cinemacode, @Param("printno")String printno, @Param("verifycode")String verifycode);
+	
+	@Select("select * from orders t where t.cinemacode = #{cinemacode} and t.ordertradeno #{ordertradeno}")
+	Orders getByOrderTradeNo(@Param("cinemacode")String cinemacode,@Param("ordertradeno")String ordertradeno);
 
 	@Delete("delete from orders where id = #{id}")
 	int delete(Long id);
@@ -62,4 +65,7 @@ public interface OrdersDao {
     //查询未支付订单
     @Select("select * from orders t where t.userId=#{userid} and t.cinemaCode=#{cinemacode} and t.openID=#{openid} and orderStatus in(2,11) and autoUnlockDatetime>now()")
     List<Orders> getNonPayOrders(@Param("userid")Long userid,@Param("cinemacode")String cinemacode,@Param("openid")String openid);
+    
+    @Select("select * from orders t where t.openid =#{openid} and t.orderstatus in(8,10) and t.submittime >= #{time} order by t.printtime desc limit 0,1")
+    List<Orders> getByOpenId(@Param("openid")String openid,@Param("time")String time);
 }

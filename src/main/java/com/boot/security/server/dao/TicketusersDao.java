@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.boot.security.server.model.Ticketusers;
 
@@ -43,4 +44,9 @@ public interface TicketusersDao {
     
     List<Ticketusers> getTicketusers(@Param("params") Map<String, Object> params);
     
+    @Select("select * from ticketusers t where t.openid is not null and t.openid !='' ")
+    List<Ticketusers> getAllList();
+    
+    @Update("update ticketusers set isactive #{isactive} where openid ={openid}")
+    int updateIsActive(@Param("isactive")Integer isactive, @Param("openid")String openid);
 }

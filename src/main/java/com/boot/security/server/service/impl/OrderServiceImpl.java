@@ -142,8 +142,27 @@ public class OrderServiceImpl implements OrderService{
 
 	@Override
 	public List<Orders> getNonPayOrders(Long userid, String cinemaCode, String openID) {
-		// TODO Auto-generated method stub
 		return ordersDao.getNonPayOrders(userid, cinemaCode, openID);
+	}
+
+	@Override
+	public List<Orders> getByOpenId(String openid, String time) {
+		return ordersDao.getByOpenId(openid, time);
+	}
+
+	@Override
+	public Orders getByLockOrderCode(String cinemacode, String lockordercode) {
+		return ordersDao.getByLockOrderCode(cinemacode, lockordercode);
+	}
+
+	@Override
+	public int update(Orders orders) {
+		return ordersDao.update(orders);
+	}
+
+	@Override
+	public Orders getByOrderTradeNo(String cinemacode, String ordertradeno) {
+		return ordersDao.getByOrderTradeNo(cinemacode, ordertradeno);
 	}
 
 }

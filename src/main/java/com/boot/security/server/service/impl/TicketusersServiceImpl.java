@@ -35,4 +35,14 @@ public class TicketusersServiceImpl implements TicketusersService{
 		return ticketusersDao.getByopenids(openid);
 	}
 
+	@Override
+	public List<Ticketusers> getAllList() {
+		return ticketusersDao.getAllList();
+	}
+
+	@Override
+	public int updateIsActive(Integer isactive, String openid) {
+		return ticketusersDao.updateIsActive(isactive, openid);
+	}
+
 }

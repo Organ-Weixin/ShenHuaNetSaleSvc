@@ -2,7 +2,6 @@ package com.boot.security.server.service;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,4 +20,5 @@ public interface GoodsOrderService {
 	int UpdateOrderBaseInfo(Goodsorders orderbase);
     List<Goodsorders> getByCinemaCode(String cinemacode);
     List<Goodsorders> getByCinemaCodeAndOpenID(String cinemacode,String openid);
+    List<Goodsorders> getByOpenID(String openid,String time);
 }

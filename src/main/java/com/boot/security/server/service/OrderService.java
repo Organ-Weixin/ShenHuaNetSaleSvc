@@ -20,6 +20,10 @@ public interface OrderService {
     
     Orders getByOrderCode(String cinemacode,String ordercode);
     
+    Orders getByOrderTradeNo(String cinemacode,String ordertradeno);
+    
+    int update(Orders orders);
+    
     int delete(Long id);
 
     //int update(Orders orders);
@@ -53,4 +57,8 @@ public interface OrderService {
 	OrderView getOrderWidthPrintNo(String cinemacode,String printno,String verifycode);
 	@Transactional(propagation = Propagation.REQUIRED)
 	OrderView getOrderWidthId(Long id);
+	
+	List<Orders> getByOpenId(String openid,String time);
+	
+	Orders getByLockOrderCode(String cinemacode, String lockordercode);
 }	

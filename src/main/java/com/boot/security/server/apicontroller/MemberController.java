@@ -48,18 +48,25 @@ import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelReply;
 import com.boot.security.server.model.Choosemembercardcreditrule;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Cinemapaymentsettings;
+import com.boot.security.server.model.GoodsOrderStatusEnum;
+import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardcreditrule;
 import com.boot.security.server.model.Membercardlevel;
+import com.boot.security.server.model.OrderPayTypeEnum;
+import com.boot.security.server.model.OrderStatusEnum;
+import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.ChoosemembercardcreditruleServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.CinemapaymentsettingsServiceImpl;
+import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.MembercardcreditruleServiceImpl;
+import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
@@ -92,6 +99,10 @@ public class MemberController {
 	private ChoosemembercardcreditruleServiceImpl _choosemembercardcreditruleService;
 	@Autowired
 	private MembercardcreditruleServiceImpl _membercardcreditruleService;
+	@Autowired
+	private OrderServiceImpl orderService;
+	@Autowired
+	private GoodsOrderServiceImpl goodsOrderService;
 	
 	//region 会员卡登陆
 	@GetMapping("/LoginCard/{Username}/{Password}/{CinemaCode}/{OpenID}/{CardNo}/{CardPassword}")
@@ -139,12 +150,45 @@ public class MemberController {
 	//endregion
 	
 	//region 会员卡支付
-	@GetMapping("/CardPay/{Username}/{Password}/{CinemaCode}/{CardNo}/{CardPassword}/{PayAmount}/{SessionCode}/{FilmCode}/{TicketNum}")
+	@GetMapping("/CardPay/{Username}/{Password}/{CinemaCode}/{LockOrderCode}/{LocalOrderCode}/{CardNo}/{CardPassword}/{PayAmount}/{GoodsPayAmount}/{SessionCode}/{FilmCode}/{TicketNum}")
 	@ApiOperation(value = "会员卡支付")
 	public CardPayReply CardPay(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
-			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String PayAmount,@PathVariable String GoodsPayAmount,@PathVariable String SessionCode,
+			@PathVariable String LockOrderCode,@PathVariable String LocalOrderCode,@PathVariable String CardNo,@PathVariable String CardPassword,
+			@PathVariable String PayAmount,@PathVariable String GoodsPayAmount,@PathVariable String SessionCode,
 			@PathVariable String FilmCode,@PathVariable String TicketNum){
-		return new NetSaleSvcCore().CardPay(Username, Password, CinemaCode, CardNo, CardPassword, PayAmount,GoodsPayAmount, SessionCode, FilmCode, TicketNum);
+		/*if(PayAmount==null||PayAmount==""){
+			PayAmount = "0";
+		}
+		if(GoodsPayAmount==null||GoodsPayAmount==""){
+			GoodsPayAmount = "0";
+		}*/
+		CardPayReply reply = new NetSaleSvcCore().CardPay(Username, Password, CinemaCode, CardNo, CardPassword, PayAmount, GoodsPayAmount, SessionCode, FilmCode, TicketNum);
+		Orders orders = orderService.getByLockOrderCode(CinemaCode, LockOrderCode);
+		Goodsorders goodsOrders = goodsOrderService.getByLocalOrderCode(LocalOrderCode);
+		if(reply.Status.equals("Success")){
+			if(orders!=null){
+				orders.setOrderStatus(OrderStatusEnum.Payed.getStatusCode());
+				orders.setPayFlag(1);
+				orders.setPayTime(new Date());
+				orders.setOrderTradeNo(reply.getTradeNo());
+				orders.setCardNo(CardNo);
+				orders.setPayType(String.valueOf(OrderPayTypeEnum.MemberCardPay.getTypeCode()));
+				orders.setUpdated(new Date());
+			}
+			if(goodsOrders!=null){
+				goodsOrders.setCardNo(CardNo);
+				goodsOrders.setOrderStatus(GoodsOrderStatusEnum.Payed.getStatusCode());
+				goodsOrders.setOrderPayFlag(1);
+				goodsOrders.setOrderPayTime(new Date());
+				goodsOrders.setOrderTradeNo(reply.getTradeNo());
+				goodsOrders.setPayType(String.valueOf(OrderPayTypeEnum.MemberCardPay.getTypeCode()));
+				goodsOrders.setUpdated(new Date());
+			}
+		}else{
+			orders.setOrderStatus(OrderStatusEnum.PayFail.getStatusCode());
+		}
+		orderService.update(orders);
+		return reply;
 	}
 	//endregion
 	
@@ -153,7 +197,15 @@ public class MemberController {
 	@ApiOperation(value = "会员卡支付撤销")
 	public CardPayBackReply CardPayBack(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String TradeNo,@PathVariable String PayBackAmount){
-		return new NetSaleSvcCore().CardPayBack(Username, Password, CinemaCode, CardNo, CardPassword, TradeNo, PayBackAmount);
+		CardPayBackReply reply = new NetSaleSvcCore().CardPayBack(Username, Password, CinemaCode, CardNo, CardPassword, TradeNo, PayBackAmount);
+		Orders orders = orderService.getByOrderTradeNo(CinemaCode, TradeNo);
+		if(reply.Status.equals("Success")){
+			if(orders!=null){
+				orders.setOrderStatus(OrderStatusEnum.Refund.getStatusCode());
+			}
+			orderService.update(orders);
+		}
+		return reply;
 	}
 	//endregion
 	
