@@ -471,7 +471,7 @@ public class ReplyExtension {
 
 	// region CardPayReply
 	public static boolean RequestInfoGuard(CardPayReply reply, String Username, String Password, String CinemaCode,
-			String CardNo, String CardPassword, String PayAmount, String SessionCode, String FilmCode,
+			String CardNo, String CardPassword, String PayAmount,String GoodsPayAmount, String SessionCode, String FilmCode,
 			String TicketNum) {
 		if (Username.isEmpty()) {
 			reply.SetNecessaryParamMissReply(Username);
@@ -495,6 +495,10 @@ public class ReplyExtension {
 		}
 		if (PayAmount.isEmpty()) {
 			reply.SetNecessaryParamMissReply(PayAmount);
+			return false;
+		}
+		if (GoodsPayAmount.isEmpty()) {
+			reply.SetNecessaryParamMissReply(GoodsPayAmount);
 			return false;
 		}
 		if (SessionCode.isEmpty()) {

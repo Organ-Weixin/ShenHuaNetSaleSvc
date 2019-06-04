@@ -142,9 +142,9 @@ public class MemberController {
 	@GetMapping("/CardPay/{Username}/{Password}/{CinemaCode}/{CardNo}/{CardPassword}/{PayAmount}/{SessionCode}/{FilmCode}/{TicketNum}")
 	@ApiOperation(value = "会员卡支付")
 	public CardPayReply CardPay(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
-			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String PayAmount,@PathVariable String SessionCode,
+			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String PayAmount,@PathVariable String GoodsPayAmount,@PathVariable String SessionCode,
 			@PathVariable String FilmCode,@PathVariable String TicketNum){
-		return new NetSaleSvcCore().CardPay(Username, Password, CinemaCode, CardNo, CardPassword, PayAmount, SessionCode, FilmCode, TicketNum);
+		return new NetSaleSvcCore().CardPay(Username, Password, CinemaCode, CardNo, CardPassword, PayAmount,GoodsPayAmount, SessionCode, FilmCode, TicketNum);
 	}
 	//endregion
 	

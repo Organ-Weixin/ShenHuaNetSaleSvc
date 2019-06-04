@@ -1322,7 +1322,7 @@ public class YkInterface implements ICTMSInterface {
 	 * 会员卡支付(凤凰佳影此接口单独调用)
 	 * */
 	@Override
-	public CTMSCardPayReply CardPay(Usercinemaview userCinema, String CardNo, String CardPassword, float PayAmount,
+	public CTMSCardPayReply CardPay(Usercinemaview userCinema, String CardNo, String CardPassword, float PayAmount,float GoodsPayAmount,
 			String SessionCode, String FilmCode, String TicketNum) throws Exception {
 		
 		return null;

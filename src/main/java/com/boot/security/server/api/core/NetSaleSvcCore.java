@@ -1381,10 +1381,10 @@ ScreenType,ListingPrice,LowestPrice))
 	//endregion
 	
 	//region 会员卡支付（完成）
-	public CardPayReply CardPay(String Username, String Password,String CinemaCode, String CardNo, String CardPassword, String PayAmount, String SessionCode, String FilmCode, String TicketNum)
+	public CardPayReply CardPay(String Username, String Password,String CinemaCode, String CardNo, String CardPassword, String PayAmount,String GoodsPayAmount, String SessionCode, String FilmCode, String TicketNum)
     {
         CardPayReply cardPayReply = new CardPayReply();
-        if (!ReplyExtension.RequestInfoGuard(cardPayReply,Username, Password,CinemaCode,CardNo,CardPassword,PayAmount,SessionCode,FilmCode,TicketNum))
+        if (!ReplyExtension.RequestInfoGuard(cardPayReply,Username, Password,CinemaCode,CardNo,CardPassword,PayAmount,GoodsPayAmount,SessionCode,FilmCode,TicketNum))
         {
             return cardPayReply;
         }
@@ -1417,14 +1417,14 @@ ScreenType,ListingPrice,LowestPrice))
             cardPayReply.SetSessionInvalidReply();
             return cardPayReply;
         }
-        return CardPay(cardPayReply, userCinema, CardNo,CardPassword,PayAmount,SessionCode,FilmCode,TicketNum);
+        return CardPay(cardPayReply, userCinema, CardNo,CardPassword,PayAmount,GoodsPayAmount,SessionCode,FilmCode,TicketNum);
     }
-	private CardPayReply CardPay(CardPayReply reply, Usercinemaview userCinema, String CardNo, String CardPassword, String PayAmount, String SessionCode, String FilmCode, String TicketNum)
+	private CardPayReply CardPay(CardPayReply reply, Usercinemaview userCinema, String CardNo, String CardPassword, String PayAmount,String GoodsPayAmount, String SessionCode, String FilmCode, String TicketNum)
     {
         _CTMSInterface = CTMSInterfaceFactory.Create(userCinema);
         CTMSCardPayReply CTMSReply=null;
         try {
-			CTMSReply = _CTMSInterface.CardPay(userCinema, CardNo,CardPassword,Float.parseFloat(PayAmount),SessionCode,FilmCode,TicketNum);
+			CTMSReply = _CTMSInterface.CardPay(userCinema, CardNo,CardPassword,Float.parseFloat(PayAmount),Float.parseFloat(GoodsPayAmount),SessionCode,FilmCode,TicketNum);
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

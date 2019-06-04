@@ -905,7 +905,7 @@ public class Dy1905Interface implements ICTMSInterface {
 		 * 会员卡支付（完成）
 		 * */
 		@Override
-		public CTMSCardPayReply CardPay(Usercinemaview userCinema, String CardNo, String CardPassword, float PayAmount,
+		public CTMSCardPayReply CardPay(Usercinemaview userCinema, String CardNo, String CardPassword, float PayAmount,float GoodsPayAmount,
 				String SessionCode, String FilmCode, String TicketNum) throws Exception {
 			CTMSCardPayReply reply = new CTMSCardPayReply();
 			String OrderID = String.valueOf(new Date().getTime());

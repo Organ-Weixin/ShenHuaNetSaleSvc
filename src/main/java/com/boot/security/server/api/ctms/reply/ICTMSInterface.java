@@ -43,7 +43,7 @@ public interface ICTMSInterface {
     //查询会员卡折扣
     CTMSQueryDiscountReply QueryDiscount(Usercinemaview userCinema, String TicketCount, String CardNo,String CardPassword, String LevelCode, String SessionCode, String SessionTime, String FilmCode,String ScreenType, String ListingPrice, String LowestPrice) throws Exception;
     //会员卡支付
-    CTMSCardPayReply CardPay(Usercinemaview userCinema, String CardNo, String CardPassword, float PayAmount, String SessionCode, String FilmCode, String TicketNum) throws Exception;
+    CTMSCardPayReply CardPay(Usercinemaview userCinema, String CardNo, String CardPassword, float PayAmount,float GoodsPayAmount, String SessionCode, String FilmCode, String TicketNum) throws Exception;
     //会员卡支付撤销
     CTMSCardPayBackReply CardPayBack(Usercinemaview userCinema, String CardNo, String CardPassword, String TradeNo, float PayBackAmount) throws Exception;
     //会员卡消费记录

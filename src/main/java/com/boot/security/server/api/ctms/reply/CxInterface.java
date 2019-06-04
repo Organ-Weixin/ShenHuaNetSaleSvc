@@ -676,11 +676,12 @@ public class CxInterface implements ICTMSInterface {
 	// endregion
 
 	// region 会员卡支付（完成）
-	public CTMSCardPayReply CardPay(Usercinemaview userCinema, String CardNo, String CardPassword, float PayAmount,
+	public CTMSCardPayReply CardPay(Usercinemaview userCinema, String CardNo, String CardPassword, float PayAmount,float GoodsPayAmount,
 			String SessionCode, String FilmCode, String TicketNum) {
 		CTMSCardPayReply reply = new CTMSCardPayReply();
 		String pTransactionNo = UUID.randomUUID().toString();
-		CxMemberConsumeResult cxReply = cxService.MemberConsume(userCinema, CardNo, CardPassword, PayAmount,
+		float RealPayAmount=PayAmount+GoodsPayAmount;//总会员卡支付金额=购票金额+卖品金额
+		CxMemberConsumeResult cxReply = cxService.MemberConsume(userCinema, CardNo, CardPassword, RealPayAmount,
 				SessionCode, FilmCode, TicketNum, pTransactionNo);
 		if (cxReply.getMemberConsumeResult().getResultCode().equals("0")) {
 			reply.setTradeNo(pTransactionNo);// 直接用本地交易生成的流水号退款
