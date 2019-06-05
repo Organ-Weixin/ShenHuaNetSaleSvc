@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -134,21 +135,17 @@ public class ConponController {
 				ModelMapper.MapForm(queryUserConponsBean, coupon);
 				Couponsgroup cou = _couponsgroupService.getByCinemaCodeAndGroupCode(cinema.getCode(),
 						coupon.getGroupCode());
-				System.out.println("111111111"+new Gson().toJson(cou));
 						if (cou != null) {
 							sum++;
 							queryUserConponsBean.setCinemaCode(cou.getCinemaCodes());
 							queryUserConponsBean.setRemark(cou.getRemark());
 							queryUserConponsBean.setGoodsCodes(cou.getGoodsCodes());
 							queryUserConponsBean.setFilmCodes(cou.getFilmCodes());
-							if (cou.getReductionPrice() != null) {
-								queryUserConponsBean.setPrice(String.valueOf(cou.getReductionPrice()));
-							}
-							if (cou.getCouponsType() != null) {
-								queryUserConponsBean.setTypeCode(String.valueOf(cou.getCouponsType()));
-							}
+							queryUserConponsBean.setPrice(cou.getReductionPrice());
+							queryUserConponsBean.setCouonsType(cou.getCouponsType());
 							queryUserConponsBean.setTitle(cou.getCouponsName());
 							queryUserConponsBean.setCanUseCinemaType(cou.getCanUseCinemaType());
+							queryUserConponsBean.setInitialAmount(cou.getInitialAmount());
 							// 获取可用影院名称
 							String cinemacodeList[] = cou.getCinemaCodes().split(",");
 							String cinemaname = "";
@@ -284,4 +281,5 @@ public class ConponController {
 		bindCouponsReply.setData(data);
 		return bindCouponsReply;
 	}
+	//@PostMapping("/")
 }

@@ -1,6 +1,5 @@
 package com.boot.security.server.apicontroller.reply;
 
-import java.util.Date;
 import java.util.List;
 
 public class QueryUserConponsReply extends BaseReply{
@@ -29,31 +28,30 @@ public class QueryUserConponsReply extends BaseReply{
 		public static class QueryUserConponsBean{
 			private Long ConponId;
 			private String CinemaCode;
-			private String TypeCode;
+			private Integer CouonsType;
 			private String GroupCode;
 			private String OpenID;
-			private String Price;
 			private String ConponCode;
-			private String GoodsCodes;
+			private Double Price;
+			private Double InitialAmount;
+			private boolean IsAllFilm;//true所有影片false部分影片
 			private String FilmCodes;
+			private String FilmName;
+			private boolean IsAllGoods;//true所有卖品，false部分卖品
+			private String GoodsCodes;
+			private String GoodsName;
 			private String EffectiveDate;
 			private String ExpireDate; 
 			private String Status;
 			private String UseDate;
-			private String ReceivedDate;
 			private String Title;
 			private String Remark;
-			
 			private Integer CanUseCinemaType;//可用门店类型
 			private String CinemaName;
 			private Integer ReductionType;//影片或卖品类型
-			private String FilmName;
-			private String GoodsName;
 			private Integer CanUsePeriodType;//可用时段类型 1：全部时段  2：部分时段
 			private String WeekDays;//可用时间 0：周日 1：周一 ...
 			private String TimePeriod;//可用时段-具体时间
-			private boolean IsAllFilm;//true所有影片false部分影片
-			private boolean IsAllGoods;//true所有卖品，false部分卖品
 			private Integer IsShare;//是否叠加
 			public Long getConponId() {
 				return ConponId;
@@ -67,11 +65,11 @@ public class QueryUserConponsReply extends BaseReply{
 			public void setCinemaCode(String cinemaCode) {
 				CinemaCode = cinemaCode;
 			}
-			public String getTypeCode() {
-				return TypeCode;
+			public Integer getCouonsType() {
+				return CouonsType;
 			}
-			public void setTypeCode(String typeCode) {
-				TypeCode = typeCode;
+			public void setCouonsType(Integer couonsType) {
+				CouonsType = couonsType;
 			}
 			public String getGroupCode() {
 				return GroupCode;
@@ -82,13 +80,19 @@ public class QueryUserConponsReply extends BaseReply{
 			public String getOpenID() {
 				return OpenID;
 			}
+			public Double getInitialAmount() {
+				return InitialAmount;
+			}
+			public void setInitialAmount(Double initialAmount) {
+				InitialAmount = initialAmount;
+			}
 			public void setOpenID(String openID) {
 				OpenID = openID;
 			}
-			public String getPrice() {
+			public Double getPrice() {
 				return Price;
 			}
-			public void setPrice(String price) {
+			public void setPrice(Double price) {
 				Price = price;
 			}
 			public String getConponCode() {
@@ -132,12 +136,6 @@ public class QueryUserConponsReply extends BaseReply{
 			}
 			public void setUseDate(String useDate) {
 				UseDate = useDate;
-			}
-			public String getReceivedDate() {
-				return ReceivedDate;
-			}
-			public void setReceivedDate(String receivedDate) {
-				ReceivedDate = receivedDate;
 			}
 			public String getTitle() {
 				return Title;

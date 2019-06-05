@@ -23,14 +23,33 @@
 										<div class="form-group">
 											<!-- id：
 											<input id="id" type="text" class="form-control" placeholder="id"> -->
-											<select class="form-control" style="width:180px;float:left;margin-left:1%" name="cinema" id="cinemaName">
+											<select class="form-control" style="width:180px;" name="cinema" id="cinemaName">
 												<option value="">选择影院</option>
+											</select>
+											<select class="form-control" style="width:180px;" id="reductionTypeSelect">
+												<option value="">适用于</option>
+												<option value="1">影片</option>
+												<option value="2">卖品</option>
+											</select>
+											<select class="form-control" style="width:180px;" id="couponsTypeSelect">
+												<option value="">优惠券类型</option>
+												<option value="1">代金券</option>
+												<option value="2">兑换券</option>
+											</select>
+											<select class="form-control" style="width:180px;" id="statusSelect">
+												<option value="">状态</option>
+												<option value="1">已启用</option>
+												<option value="0">未启用</option>
+												<option value="2">已过期</option>
 											</select>
 											<!-- <button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button> -->
 										</div>
 									</form>
 	                   			</td>
 	                   			<td align="right">
+	                   				<button class="layui-btn layui-btn-sm" id="clear">
+                                      	清空筛选条件
+                                    </button>
 	                   				<button class="layui-btn layui-btn-sm" id="choose">
                                       <i class="layui-icon">&#xe608;</i> 生成优惠券
                                     </button>
@@ -164,6 +183,9 @@ function init(){
     				d.Id = $("#id").val();
     				d.CinemaCodes = $("#cinemaName").val();
     				d.CinemaCodesList = $("#cinemacodes").val();
+    				d.ReductionType = $("#reductionTypeSelect").val();
+    				d.CouponsType = $("#couponsTypeSelect").val();
+    				d.Status = $("#statusSelect").val();
     			}
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
@@ -344,6 +366,18 @@ $("#tbody").on('click','.coupons',function(){
 $("#cinemaName").blur(function(){
 	example.ajax.reload();
 });
-
+$("#reductionTypeSelect").blur(function(){
+	example.ajax.reload();
+});
+$("#couponsTypeSelect").blur(function(){
+	example.ajax.reload();
+});
+$("#statusSelect").blur(function(){
+	example.ajax.reload();
+});
+$("#clear").click(function(){
+	$("select").val("");
+	example.ajax.reload();
+});
 init();
 </script>

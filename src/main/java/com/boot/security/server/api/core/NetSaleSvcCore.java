@@ -79,6 +79,7 @@ import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
+import com.boot.security.server.model.Goodscomponents;
 import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Membercard;
@@ -97,6 +98,7 @@ import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
+import com.boot.security.server.service.impl.GoodscomponentsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
@@ -122,6 +124,7 @@ public class NetSaleSvcCore {
 	 MemberCardLevelServiceImpl _memberCardLevelService=SpringUtil.getBean(MemberCardLevelServiceImpl.class);
 	 GoodsServiceImpl _goodsService=SpringUtil.getBean(GoodsServiceImpl.class);
 	 GoodsOrderServiceImpl _goodsOrderService=SpringUtil.getBean(GoodsOrderServiceImpl.class);
+	 GoodscomponentsServiceImpl _goodscomponentsService=SpringUtil.getBean(GoodscomponentsServiceImpl.class);
 	 protected static Logger log = LoggerFactory.getLogger(NetSaleSvcCore.class);
 	 
 	 public NetSaleSvcCore(){

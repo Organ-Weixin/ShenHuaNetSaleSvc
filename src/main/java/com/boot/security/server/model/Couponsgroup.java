@@ -19,6 +19,7 @@ public class Couponsgroup {
 	private String TimePeriod;
 	private Integer LimitNum;
 	private Integer ReductionType;
+	private Double InitialAmount;
 	private Double ReductionPrice;
 	private String FilmCodes;
 	private String GoodsCodes;
@@ -121,6 +122,12 @@ public class Couponsgroup {
 	}
 	public void setReductionType(Integer ReductionType) {
 		this.ReductionType = ReductionType;
+	}
+	public Double getInitialAmount() {
+		return InitialAmount;
+	}
+	public void setInitialAmount(Double initialAmount) {
+		InitialAmount = initialAmount;
 	}
 	public Double getReductionPrice() {
 		return ReductionPrice;

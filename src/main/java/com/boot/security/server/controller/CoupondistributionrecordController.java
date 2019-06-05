@@ -112,7 +112,9 @@ public class CoupondistributionrecordController {
     			openid += ticketusers.getOpenID()+",";
     			openIDs.add(ticketusers.getOpenID());
         	}
-    		coupondistributionrecord.setOpenID(openid.substring(0,openid.length()-1));
+    		if(coupondistributionrecord.getOpenID()!=null&&coupondistributionrecord.getOpenID()!=""){
+    			coupondistributionrecord.setOpenID(openid.substring(0,openid.length()-1));
+    		}
     	}
     	DefaultTransactionDefinition defaultTransactionDefinition = new DefaultTransactionDefinition();
         defaultTransactionDefinition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);

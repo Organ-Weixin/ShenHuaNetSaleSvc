@@ -150,6 +150,10 @@
 					</div>
 					<div style="margin-top:2%">
 						<input type="radio" name="reductionTypeRadio" value="2">卖品
+						<span id="goodinitialAmount">
+							&nbsp;&nbsp;满&nbsp;
+							<input type="text" style="width:10%" id="InitialAmount" name="initialAmount">&nbsp;
+						</span>
 						<span id="goodReduction">
 							&nbsp;&nbsp;减&nbsp;
 							<input type="text" style="width:10%" id="goodReductionPrice">&nbsp;金额
@@ -220,6 +224,7 @@
 	$("#CouponsType").val(getUrlParam("CouponsType"));
 	if(getUrlParam("CouponsType")==2){
 		$("#filmReduction").hide();
+		$("#goodinitialAmount").hide();
 		$("#goodReduction").hide();
 	}
 	//影片下拉多选
@@ -354,6 +359,7 @@
 					$("#Goods").css("display","none");
 					$("#Films").css("display","block");
 					$("#goodsDiv").css("display","none");
+					$("#InitialAmount").val(null);
 					$("#GoodsSelect").val(null);
 				}
 				if($(this).css("checked",true).val()==2){
@@ -455,6 +461,7 @@
 			}
 			$("#reductionType").val($('input:radio[name="reductionTypeRadio"]:checked').val());
 			if($("input:radio[name='reductionTypeRadio']:checked").val()==1){
+				$("#InitialAmount").val(null);
 				$("#goodReductionPrice").val(null);
 			}
 			if($("input:radio[name='reductionTypeRadio']:checked").val()==2){

@@ -62,6 +62,12 @@ public class CouponsgroupController {
     	couponsgroup.setFetchNumber(0);
     	couponsgroup.setRemainingNumber(couponsgroup.getCouponsNumber());
     	couponsgroup.setUsedNumber(0);
+    	if(couponsgroup.getInitialAmount()==null){
+    		couponsgroup.setInitialAmount(0.00);
+    	}
+    	if(couponsgroup.getReductionPrice()==null){
+    		couponsgroup.setReductionPrice(0.00);
+    	}
     	for(int i=0;i<couponsgroup.getCouponsNumber();i++){
     		Coupons coupons = new Coupons();
     		//优惠券编码--13位时间戳加5位随机数
@@ -96,8 +102,8 @@ public class CouponsgroupController {
     @GetMapping
     @ApiOperation(value = "列表")
     public PageTableResponse list(PageTableRequest request) {
-    	String CinemaCodes = request.getParams().get("CinemaCodesList").toString();
-    	String CinemaCodesList []  = CinemaCodes.split(",");
+    	/*String CinemaCodes = request.getParams().get("CinemaCodesList").toString();
+    	String CinemaCodesList []  = CinemaCodes.split(",");*/
         return new PageTableHandler(new CountHandler() {
 
             @Override
@@ -108,8 +114,10 @@ public class CouponsgroupController {
 
             @Override
             public List<Couponsgroup> list(PageTableRequest request) {
-            	if(request.getParams().get("CinemaCodes")!=null&&request.getParams().get("CinemaCodes").toString()!=""&&CinemaCodes.contains(request.getParams().get("CinemaCodes").toString())){
-            		return couponsgroupDao.list(request.getParams(), request.getOffset(), request.getLimit());
+            	/*if(request.getParams().get("CinemaCodes")!=null&&request.getParams().get("CinemaCodes").toString()!=""&&CinemaCodes.contains(request.getParams().get("CinemaCodes").toString())){
+            		List<Couponsgroup> cinemaCouponsList = couponsgroupDao.list(request.getParams(), request.getOffset(), request.getLimit());
+            		cinemaCouponsList.addAll(couponsgroupService.getAllCinemaCanUseCoupons());
+            		return cinemaCouponsList;
             	}else{
             		//传过去不存在的影院编码，清空list列表
             		request.getParams().put("CinemaCodes", "00000000");
@@ -133,9 +141,9 @@ public class CouponsgroupController {
                 	for(String str : set){
                 		list.add(couponsgroupService.getByGroupCode(str));
                 	}
-                	list.addAll(couponsgroupService.getAllCinemaCanUseCoupons());
-                	return list;
-            	}
+                	list.addAll(couponsgroupService.getAllCinemaCanUseCoupons());*/
+                	return couponsgroupDao.list(request.getParams(), request.getOffset(), request.getLimit());
+            	//}
             }
         }).handle(request);
     }

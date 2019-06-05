@@ -195,7 +195,6 @@ public class ModelMapper {
 		userConpon.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").format(entity.getExpireDate()));
 		userConpon.setStatus(String.valueOf(entity.getStatus()));
 		userConpon.setUseDate(String.valueOf(entity.getUsedDate()));
-		userConpon.setReceivedDate(String.valueOf(entity.getReceiveDate()));
 		return userConpon;
 		
 	}

@@ -47,6 +47,9 @@
 			<if test="params.ReductionType != null and params.ReductionType != ''">
 				and ReductionType = #{params.ReductionType} 
 			</if>
+			<if test="params.InitialAmount != null and params.InitialAmount != ''">
+				and InitialAmount = #{params.InitialAmount} 
+			</if>
 			<if test="params.ReductionPrice != null and params.ReductionPrice != ''">
 				and ReductionPrice = #{params.ReductionPrice} 
 			</if>
@@ -66,7 +69,7 @@
 				and CanUseCinemaType = #{params.CanUseCinemaType} 
 			</if>
 			<if test="params.CinemaCodes != null and params.CinemaCodes != ''">
-				and (CinemaCodes = #{params.CinemaCodes} or find_in_set(#{params.CinemaCodes},CinemaCodes))
+				and (CinemaCodes = #{params.CinemaCodes} or find_in_set(#{params.CinemaCodes},CinemaCodes) or CinemaCodes = '')
 			</if>
 			<if test="params.Status != null and params.Status != ''">
 				and Status = #{params.Status} 
@@ -157,6 +160,9 @@
 			</if>
 			<if test="ReductionType != null">
 				ReductionType = #{ReductionType}, 
+			</if>
+			<if test="InitialAmount != null">
+				InitialAmount = #{InitialAmount}, 
 			</if>
 			<if test="ReductionPrice != null">
 				ReductionPrice = #{ReductionPrice}, 

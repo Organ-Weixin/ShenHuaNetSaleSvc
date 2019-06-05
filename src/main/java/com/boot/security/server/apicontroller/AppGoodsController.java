@@ -63,7 +63,6 @@ import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Goodstype;
 import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
-import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
@@ -635,4 +634,10 @@ public class AppGoodsController {
 		return refundpaymentReply;
 	}
 	//endregion
+	public static void main(String[] args) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(new Date());
+		int weekday = c.get(Calendar.DAY_OF_WEEK);
+		System.out.println(weekday);
+	}
 }
