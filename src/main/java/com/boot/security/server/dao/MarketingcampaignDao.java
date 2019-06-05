@@ -24,14 +24,17 @@ public interface MarketingcampaignDao {
 
     int update(Marketingcampaign marketingcampaign);
     
+    //改变营销活动状态
     @Update("update marketingcampaign set status = #{status} where id = #{id}")
     int changestatus(@Param("status") Integer status,@Param("id") Long id);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into marketingcampaign(ActivityName, ActivityType, TicketsType,AppointmentNumber, AppointTime, RestrictionType, RestrictionNumber, CinemaCodes, CinemaCodesType, ScreenCodes, ScreenCodesType,FilmCodesType,FilmCodes, CouponPrice,FixedAmount,StartDate, EndDate, SumNumber,RemainingNumber, IsSuperposition,IsUseCoupon, Status) values(#{ActivityName}, #{ActivityType}, #{TicketsType},#{AppointmentNumber}, #{AppointTime}, #{RestrictionType}, #{RestrictionNumber}, #{CinemaCodes}, #{CinemaCodesType}, #{ScreenCodes}, #{ScreenCodesType},#{FilmCodesType},#{FilmCodes}, #{CouponPrice},#{FixedAmount},#{StartDate}, #{EndDate}, #{SumNumber},#{RemainingNumber}, #{IsSuperposition},#{IsUseCoupon}, #{Status})")
+    @Insert("insert into marketingcampaign(ActivityName, ActivityType, TicketsType, AppointmentNumber, AppointTime, RestrictionType, RestrictionNumber, CinemaCodes, CinemaCodesType, ScreenCodes, ScreenCodesType, FilmCodesType, FilmCodes, CouponPrice, FixedAmount, StartDate, EndDate, SumNumber, RemainingNumber, StartTime, EndTime, IsSuperposition, IsUseCoupon, Status) values(#{ActivityName}, #{ActivityType}, #{TicketsType}, #{AppointmentNumber}, #{AppointTime}, #{RestrictionType}, #{RestrictionNumber}, #{CinemaCodes}, #{CinemaCodesType}, #{ScreenCodes}, #{ScreenCodesType}, #{FilmCodesType}, #{FilmCodes}, #{CouponPrice}, #{FixedAmount}, #{StartDate}, #{EndDate}, #{SumNumber}, #{RemainingNumber}, #{StartTime}, #{EndTime}, #{IsSuperposition}, #{IsUseCoupon}, #{Status})")
     int save(Marketingcampaign marketingcampaign);
+    
     
     int count(@Param("params") Map<String, Object> params);
 
     List<Marketingcampaign> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+
 }

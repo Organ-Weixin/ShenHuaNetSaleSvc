@@ -1,25 +1,18 @@
 package com.boot.security.server.api.ctms.reply;
 
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.Get;
-import org.xmlunit.util.Convert;
+import org.aspectj.weaver.ast.Or;
 
-import com.boot.security.server.api.core.CreateGoodsOrderQueryXml;
-import com.boot.security.server.api.core.ModelMapper;
-import com.boot.security.server.api.core.SubmitGoodsOrderReply.SubmitGoodsOrderReplyOrder;
+import com.alibaba.fastjson.JSONObject;
 import com.boot.security.server.api.ctms.reply.MtxGetCardTraceRecordResult.ResBean.CardTraceRecordsBean.CardTraceRecordBean;
 import com.boot.security.server.api.ctms.reply.MtxGetCardTypeResult.ResBean.MemberTypesBean.MemberTypeBean;
 import com.boot.security.server.api.ctms.reply.MtxGetCinemaPlanResult.ResBean.CinemaPlansBean.CinemaPlanBean;
@@ -29,7 +22,6 @@ import com.boot.security.server.api.ctms.reply.MtxGetHallResult.ResBean.HallsBea
 import com.boot.security.server.api.ctms.reply.MtxGetPlanSiteStateResult.ResBean.PlanSiteStatesBean.PlanSiteStateBean;
 import com.boot.security.server.api.ctms.reply.MtxGetSPInfosResult.GetSPInfosBean;
 import com.boot.security.server.api.ctms.reply.MtxGetSPInfosResult.GetSPInfosBean.GetSPInfoBean;
-import com.boot.security.server.api.ctms.reply.YkGetGoodsResult.DataBean.GoodsBean.GoodsResult;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Filminfo;
@@ -44,7 +36,8 @@ import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
-
+import com.boot.security.server.model.Orders;
+import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
 import com.boot.security.server.model.SessionSeat;
@@ -52,7 +45,6 @@ import com.boot.security.server.model.SessionSeatStatusEnum;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
-import com.boot.security.server.service.MemberCardService;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
@@ -63,9 +55,9 @@ import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
-import com.boot.security.server.utils.JaxbXmlUtil;
 import com.boot.security.server.utils.SpringUtil;
 import com.google.gson.Gson;
+import com.mysql.fabric.xmlrpc.base.Array;
 
 import cn.cmts.main.webservice.WebService;
 import cn.cmts.pay.webservice.Webservice;
@@ -90,8 +82,6 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSQueryCinemaReply QueryCinema(Usercinemaview userCinema) {
 		CTMSQueryCinemaReply reply = new CTMSQueryCinemaReply();
 		MtxGetHallResult mtxReply = mtxService.GetHall(userCinema);
-		// System.out.println("开始执行操作-------------------"+ new
-		// Gson().toJson(mtxReply));
 		if ("0".equals(mtxReply.getGetHallResult().getResultCode())) {
 			// 更新影厅信息
 			List<Screeninfo> newScreens = new ArrayList<Screeninfo>();
@@ -119,7 +109,6 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSQuerySeatReply QuerySeat(Usercinemaview userCinema, Screeninfo screen) throws Exception {
 		CTMSQuerySeatReply reply = new CTMSQuerySeatReply();
 		MtxGetHallAllSeatResult mtxReply = mtxService.GetHallAllSeat(userCinema, screen);
-		// System.out.println("开始执行操作-------------------" + new
 		if ("0".equals(mtxReply.getResultCode())) {
 			// 更新影厅座位信息
 			if (_screenseatinfoService.getByCinemaCodeAndScreenCode(userCinema.getCinemaCode(),
@@ -156,8 +145,6 @@ public class MtxInterface implements ICTMSInterface {
 			throws Exception {
 		CTMSQuerySessionReply reply = new CTMSQuerySessionReply();
 		MtxGetCinemaPlanResult mtxReply = mtxService.GetCinemaPlan(userCinema, StartDate, EndDate);
-		// System.out.println("开始执行查询排期操作-------------------"+ new
-		// Gson().toJson(mtxReply));
 		Date newDate = new Date();
 		String s = new SimpleDateFormat("yyyy-MM-dd").format(newDate);
 		s += " 01:00:00";
@@ -208,8 +195,6 @@ public class MtxInterface implements ICTMSInterface {
 	@Override
 	public CTMSQueryFilmReply QueryFilm(Usercinemaview userCinema, Date StartDate, Date EndDate) throws Exception {
 		CTMSQueryFilmReply reply = new CTMSQueryFilmReply();
-		// System.out.println("开始执行查询影片信息操作-------------------" + new
-		// Gson().toJson(reply));
 		// 从排期中获取影片接口
 		QuerySession(userCinema, StartDate, EndDate);// 调用查询排期列表
 		// 根据影片名称分组，去除影片重复数据
@@ -253,7 +238,6 @@ public class MtxInterface implements ICTMSInterface {
 			SessionSeatStatusEnum Status) throws Exception {
 		CTMSQuerySessionSeatReply reply = new CTMSQuerySessionSeatReply();
 		MtxGetPlanSiteStateResult mtxReply = mtxService.GetPlanSiteState(userCinema, SessionCode, Status);
-		// System.out.println("开始执行查询排期座位操作-------------------"+ new Gson().toJson(mtxReply));
 		if ("0".equals(mtxReply.getGetPlanSiteStateResult().getResultCode())) {
 			List<SessionSeat> newSessionSeat = new ArrayList<SessionSeat>();
 			List<PlanSiteStateBean> planSiteStateBeans = mtxReply.getGetPlanSiteStateResult().getPlanSiteStates()
@@ -296,7 +280,6 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSLockSeatReply LockSeat(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSLockSeatReply reply = new CTMSLockSeatReply();
 		MtxLiveRealCheckSeatStateResult mtxReply = mtxService.LiveRealCheckSeatState(userCinema, order);
-//		System.out.println("开始锁定座位操作-------------------" + new Gson().toJson(mtxReply));
 		if ("0".equals(mtxReply.getRealCheckSeatStateResult().getResultCode())) {
 			Date newDate = new Date();
 			order.getOrderBaseInfo().setLockOrderCode(mtxReply.getRealCheckSeatStateResult().getOrderNo());
@@ -318,7 +301,6 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSReleaseSeatReply ReleaseSeat(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSReleaseSeatReply reply = new CTMSReleaseSeatReply();
 		MtxUnLockOrderCenCinResult mtxUnLockReply = mtxService.UnLockOrderCenCin(userCinema, order);
-//		System.out.println("开始解锁座位操作-------------------" + new Gson().toJson(mtxUnLockReply));
 		if ("0".equals(mtxUnLockReply.getUnLockOrderCenCinResult().getResultCode())) {
 			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Released.getStatusCode());
 			reply.Status = StatusEnum.Success;
@@ -336,7 +318,6 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSSubmitOrderReply SubmitOrder(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSSubmitOrderReply reply = new CTMSSubmitOrderReply();
 		MtxSellTicketResult mtxReply = mtxService.SellTicket(userCinema, order);
-//		System.out.println("提交订单返回：" + new Gson().toJson(mtxReply));
 		if ("0".equals(mtxReply.getSellTicketResult().getResultCode())) {
 			Date newDate = new Date();
 			order.getOrderBaseInfo().setSubmitOrderCode(mtxReply.getSellTicketResult().getOrderNo());
@@ -361,7 +342,6 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSQueryPrintReply QueryPrint(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSQueryPrintReply reply = new CTMSQueryPrintReply();
 		MtxGetOrderStatusResult mtxReply = mtxService.GetOrderStatus(userCinema, order);
-//		System.out.println("查询出票状态返回返回：" + new Gson().toJson(mtxReply));
 		if ("0".equals(mtxReply.getGetOrderStatusResult().getResultCode())) {
 			if ("8".equals(mtxReply.getGetOrderStatusResult().getOrderStatus())) { // 8已打票
 				order.getOrderBaseInfo().setPrintStatus(1);
@@ -382,7 +362,6 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSRefundTicketReply RefundTicket(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSRefundTicketReply reply = new CTMSRefundTicketReply();
 		MtxBackTicketResult mtxBackTicketReply = mtxService.BackTicket(userCinema, order);
-//		System.out.println("退票返回：" + new Gson().toJson(mtxBackTicketReply));
 		if ("0".equals(mtxBackTicketReply.getBackTicketResult().getResultCode())) {
 			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Refund.getStatusCode());
 			order.getOrderBaseInfo().setRefundTime(new Date());
@@ -399,7 +378,6 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSQueryOrderReply QueryOrder(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSQueryOrderReply reply = new CTMSQueryOrderReply();
 		MtxGetOrderStatusResult mtxReply = mtxService.GetOrderStatus(userCinema, order);
-//		System.out.println("查询订单信息返回：" + new Gson().toJson(mtxReply));
 		if ("0".equals(mtxReply.getGetOrderStatusResult().getResultCode())
 				&& ("7".equals(mtxReply.getGetOrderStatusResult().getOrderStatus())
 						|| "8".equals(mtxReply.getGetOrderStatusResult().getOrderStatus())
@@ -431,7 +409,6 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSQueryTicketReply QueryTicket(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSQueryTicketReply reply = new CTMSQueryTicketReply();
 		MtxAppPrintTicketResult mtxReply = mtxService.AppPrintTicket(userCinema, order, "0");
-//		System.out.println("查询影票信息返回：" + new Gson().toJson(mtxReply));
 		Date newDate = new Date();
 		String st = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderBaseInfo().getSessionTime());
 		Date dd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(st);
@@ -481,7 +458,6 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSFetchTicketReply FetchTicket(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSFetchTicketReply reply = new CTMSFetchTicketReply();
 		MtxAppPrintTicketResult mtxReply = mtxService.AppPrintTicket(userCinema, order, "1");
-		// System.out.println("确认出票返回：" + new Gson().toJson(mtxReply));
 		Date newDate = new Date();
 		String st = new SimpleDateFormat().format(order.getOrderBaseInfo().getSessionTime());
 		Date dd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(st);
@@ -510,7 +486,6 @@ public class MtxInterface implements ICTMSInterface {
 		CTMSCardRegisterReply reply = new CTMSCardRegisterReply();
 		MtxRegisterCardResult mtxReply = mtxCardService.RegisterCard(userCinema, CardPassword, LevelCode, InitialAmount,
 				CardUserName, MobilePhone, IDNumber, Sex);
-		System.out.println("带卡号的会员卡开户接口返回：" + new Gson().toJson(mtxReply));
 		if ("0".equals(mtxReply.getRegisterMemberReturn().getResultCode())) {
 			Membercard mem=new Membercard();
 			mem.setCinemaCode(userCinema.getCinemaCode());
@@ -584,7 +559,6 @@ public class MtxInterface implements ICTMSInterface {
 			throws Exception {
 		CTMSQueryCardReply reply = new CTMSQueryCardReply();
 		MtxQueryCardResult mtxReply = mtxCardService.QueryCard(userCinema, CardNo, CardPassword);
-//		System.out.println("查询会员卡账户信息返回：" + new Gson().toJson(mtxReply));
 		if ("0".equals(mtxReply.getQueryCardReturn().getResultCode())) {
 			// 修改会员卡信息
 			Membercard memcard = _memberCardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
@@ -640,7 +614,6 @@ public class MtxInterface implements ICTMSInterface {
 		CTMSQueryDiscountReply reply = new CTMSQueryDiscountReply();
 		MtxGetDiscountResult mtxReply = mtxCardService.GetDiscount(userCinema, TicketCount, CardNo, CardPassword,
 				LevelCode, SessionCode, SessionTime, FilmCode, ScreenType, ListingPrice, LowestPrice);
-		// System.out.println("折扣查询返回："+new Gson().toJson(mtxReply));
 		if ("0".equals(mtxReply.getGetDiscountReturn().getResultCode())) {
 			reply.setCinemaCode(userCinema.getCinemaCode());
 			reply.setDiscountType(Integer.valueOf(mtxReply.getGetDiscountReturn().getDiscountType()));
@@ -661,12 +634,9 @@ public class MtxInterface implements ICTMSInterface {
 		CTMSCardPayReply reply = new CTMSCardPayReply();
 		MtxSerialCardPayResult mtxReply = mtxCardService.SerialCardPay(userCinema, CardNo, CardPassword, PayAmount,
 				SessionCode, FilmCode, TicketNum);
-		// System.out.println("会员卡支付（流水号必传）、预算接口返回2222222："+new
-		// Gson().toJson(mtxReply));
 		if ("0".equals(mtxReply.getResultCode())) {
 			reply.setTradeNo(mtxReply.getGroundTradeNo());
 			reply.setDeductAmount(Float.valueOf(mtxReply.getDeductMoney()));
-
 			reply.Status = StatusEnum.Success;
 		} else {
 			reply.Status = StatusEnum.Failure;
@@ -683,7 +653,6 @@ public class MtxInterface implements ICTMSInterface {
 		CTMSCardPayBackReply reply = new CTMSCardPayBackReply();
 		MtxSerialCardPayBackResult mtxReply = mtxCardService.SerialCardPayBack(userCinema, CardNo, CardPassword,
 				TradeNo, PayBackAmount);
-//		System.out.println("会员卡冲费（撤销）接口（流水号必传）返回222：" + new Gson().toJson(mtxReply));
 		if ("0".equals(mtxReply.getResultCode())) {
 			reply.setTradeNo(mtxReply.getTraceNoCenter());
 
@@ -703,7 +672,6 @@ public class MtxInterface implements ICTMSInterface {
 		CTMSQueryCardTradeRecordReply reply = new CTMSQueryCardTradeRecordReply();
 		MtxGetCardTraceRecordResult mtxReply = mtxCardService.GetCardTraceRecord(userCinema, CardNo, CardPassword,
 				StartDate, EndDate, PageSize, PageNum);
-//		System.out.println("查询会员卡交易记录接口返回：" + new Gson().toJson(mtxReply));
 		if ("0".equals(mtxReply.getGetCardTraceRecordReturn().getResultCode())) {
 			List<CardTradeRecord> cardTR = new ArrayList<CardTradeRecord>();
 			List<CardTraceRecordBean> cardTraceRecords = mtxReply.getGetCardTraceRecordReturn().getCardTraceRecords()
@@ -715,7 +683,6 @@ public class MtxInterface implements ICTMSInterface {
 				ctr.setTradeType(cardTraceRecord.getTraceTypeNo());
 				ctr.setTradeTime((new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 						.parse(cardTraceRecord.getTraceDate() + " " + cardTraceRecord.getTraceTime())));
-System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(cardTraceRecord.getTraceDate() + " " + cardTraceRecord.getTraceTime())));
 				ctr.setTradePrice(Float.valueOf(cardTraceRecord.getPrice()));
 				ctr.setCinemaName(cardTraceRecord.getCinemaName());
 				cardTR.add(ctr);
@@ -736,7 +703,6 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 		CTMSCardChargeReply reply = new CTMSCardChargeReply();
 		MtxSerialCardRechargeResult mtxReply = mtxCardService.SerialCardRecharge(userCinema, CardNo, CardPassword,
 				ChargeType, ChargeAmount);
-//		System.out.println("会员卡充值接口返回：" + new Gson().toJson(mtxReply));
 		if ("0".equals(mtxReply.getResultCode())) {
 			reply.Status = StatusEnum.Success;
 		} else {
@@ -752,7 +718,6 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 	public CTMSQueryCardLevelReply QueryCardLevel(Usercinemaview userCinema) throws Exception {
 		CTMSQueryCardLevelReply reply = new CTMSQueryCardLevelReply();
 		MtxGetCardTypeResult mtxReply = mtxCardService.GetCardType(userCinema);
-		// System.out.println("获取影院会员卡级别接口返回："+new Gson().toJson(mtxReply));
 		if ("0".equals(mtxReply.getGetCardTypeReturn().getResultCode())) {
 			List<Membercardlevel> membercardlevel = new ArrayList<Membercardlevel>();
 			List<MemberTypeBean> memberTypeBeans = mtxReply.getGetCardTypeReturn().getMemberTypes().getMemberType();
@@ -782,7 +747,6 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 		public CTMSQueryGoodsReply QueryGoods(Usercinemaview userCinema) throws Exception {
 			CTMSQueryGoodsReply reply = new CTMSQueryGoodsReply();
 			MtxGetSPInfosResult mtxReply = mtxService.GetSPInfos(userCinema);
-//			System.out.println("获取影院卖品信息返回：" + new Gson().toJson(mtxReply));
 			if ("0".equals(mtxReply.getResultCode())) {
 				List<Goods> goods = new ArrayList<Goods>();
 				List<GetSPInfosBean> getSPInfosBeans = mtxReply.getSpinfos();
@@ -798,7 +762,6 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 					if(flag){
 						//删除本地有的而查出来没有的
 						_goodsService.deleteByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), goo.getGoodsCode());
-						System.out.println("删除本地有的而查出来没有的");
 					}
 				}
 				for (GetSPInfosBean getSPInfosBean : getSPInfosBeans) {
@@ -826,7 +789,6 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 					goo.setIsRecommand(0);//是否推荐  默认0
 					goo.setUpdated(new Date());//更新时间
 					if (getSPInfosBean.getComponents() != null && getSPInfosBean.getComponents().size() > 0) {
-//						System.err.println("获取到套餐，套餐:"+getSPInfosBean.getComponents());
 						goo.setIsPackage(1);//是否套餐，1套餐
 							List<GetSPInfosBean.GetSPInfoBean> getSPInfoBeans=getSPInfosBean.getComponents();
 							for(GetSPInfoBean getSPInfoBean:getSPInfoBeans){
@@ -878,7 +840,7 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 	public CTMSCreateGoodsOrderReply CreateGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
 			throws Exception {
 		CTMSCreateGoodsOrderReply reply = new CTMSCreateGoodsOrderReply();
-		reply.setOrderCode(order.getOrderBaseInfo().getLocalOrderCode());
+		reply.setOrderCode(order.getOrderBaseInfo().getOrderCode());
 		reply.Status = StatusEnum.Success;
 		return reply;
 	}
@@ -888,17 +850,14 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 			throws Exception {
 		CTMSSubmitGoodsOrderReply reply=new CTMSSubmitGoodsOrderReply();
 		MtxConfirmSPInfoResult mtxReply=mtxService.ConfirmSPInfo(userCinema, order);
-//		System.out.println("提交卖品接口返回：" + new Gson().toJson(mtxReply));
 		if("0".equals(mtxReply.getResultCode())){
 			order.getOrderBaseInfo().setOrderCode(mtxReply.getOrderNo());
 			order.getOrderBaseInfo().setPickUpCode(mtxReply.getValidCode());
 			order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
 			reply.Status = StatusEnum.Success;
-//			System.out.println("提交卖品接口成功");
 		}else{
 			order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.SubmitFail.getStatusCode());
 			reply.Status=StatusEnum.Failure;
-//			System.out.println("提交卖品接口失败");
 		}
 		reply.ErrorCode=mtxReply.getResultCode();
 		return reply;
@@ -915,7 +874,6 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 	public CTMSRefundGoodsReply RefundGoods(Usercinemaview userCinema, GoodsOrderView order) throws Exception {
 		CTMSRefundGoodsReply reply=new CTMSRefundGoodsReply();
 		MtxBackSellGoodsResult mtxReply=mtxService.BackSellGoods(userCinema, order);
-		System.out.println("退卖品接口返回：" + new Gson().toJson(mtxReply));
 		if("0".equals(mtxReply.getBackSellGoodsResult().getResultCode())){
 			order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Refund.getStatusCode());
 			order.getOrderBaseInfo().setRefundTime(new Date());
@@ -926,12 +884,55 @@ System.out.println("测试"+(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c
 		reply.ErrorCode=mtxReply.getBackSellGoodsResult().getResultCode();
 		return reply;
 	}
+	
+	//混合下单  电影票+卖品(未完成)
 	@Override
 	public CTMSSubmitMixOrderReply SubmitMixOrder(Usercinemaview userCinema, OrderView order, GoodsOrderView goodsorder)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		CTMSSubmitMixOrderReply reply=new CTMSSubmitMixOrderReply();
+		boolean flag=order.getOrderBaseInfo().getCardNo() == null?false:true;//是否使用会员卡
+		Sessioninfo sessioninfo=_sessioninfoService.getSessionCode(userCinema.getCinemaCode(), order.getOrderBaseInfo().getScreenCode());
+		///
+		List<Map<String, Object>> ticketList=new ArrayList<Map<String,Object>>();
+		Orders orders=order.getOrderBaseInfo();
+			Map<String,Object> orderMap = new LinkedHashMap<String,Object>();
+			orderMap.put("OrderNo",orders.getSubmitOrderCode());
+			orderMap.put("ValidCode",orders.getVerifyCode());
+			if(flag){
+				orderMap.put("isDiscount", true);
+			}
+			ticketList.add(orderMap);
+		////
+		List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
+		Goodsorders goodsorders=goodsorder.getOrderBaseInfo();
+			Map<String,Object> goodsOrderMap=new LinkedHashMap<String,Object>();
+			goodsOrderMap.put("orderNo",goodsorders.getOrderCode());
+			goodsOrderMap.put("validCode", goodsorders.getVerifyCode());
+		if(flag){
+			goodsOrderMap.put("isDiscount", true);
+		}
+		goodsList.add(goodsOrderMap);
+		////
+		JSONObject input =new JSONObject();
+		input.put("partnerCode", order.getOrderBaseInfo().getUserId());
+		input.put("placeNo", userCinema.getCinemaCode());
+		input.put("partnerId", order.getOrderBaseInfo().getSerialNum());//SerialNum满天星存储订单流水号；PaySeqNo 会员卡交易流水号 
+		input.put("cardId", order.getOrderBaseInfo().getCardNo());
+		input.put("mobilePhone", order.getOrderBaseInfo().getMobilePhone());
+		input.put("traceTypeNo", 01);
+		input.put("oldPrice", order.getOrderBaseInfo().getTotalPrice());
+		input.put("tracePrice", order.getOrderBaseInfo().getTotalFee());
+		input.put("discount", 0);
+		input.put("featureNo", sessioninfo.getFeatureNo());
+		input.put("filmNo",sessioninfo.getFilmCode());
+		input.put("ticketNum",order.getOrderBaseInfo().getTicketCount());
+		input.put("passWord", goodsorder.getOrderBaseInfo().getCardPassword());
+		input.put("price", goodsorder.getOrderBaseInfo().getTotalPrice());
+		input.put("tracePrice", goodsorder.getOrderBaseInfo().getTotalFee());
+		String data=input.toJSONString();
+   
+		
+		return reply;
 	}
-
 	
 }

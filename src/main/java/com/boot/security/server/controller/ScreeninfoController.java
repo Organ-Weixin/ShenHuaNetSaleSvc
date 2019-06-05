@@ -1,5 +1,6 @@
 package com.boot.security.server.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,7 @@ import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.dao.ScreeninfoDao;
-import com.boot.security.server.model.Goods;
-import com.boot.security.server.model.Goodstype;
 import com.boot.security.server.model.Screeninfo;
-import com.boot.security.server.model.Sessioninfo;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -85,9 +83,22 @@ public class ScreeninfoController {
     public void delete(@PathVariable String ccode) {
         screeninfoDao.deleteByCinemaCode(ccode);
     }
+    //营销活动-获取影院对应的影厅
     @RequestMapping("/getScreenByCinemaCode")
     @ApiOperation(value = "根据影院编码获取对应影厅")
-    public List<Screeninfo> getScreenByCinemaCode(@RequestParam("cinemacodes")String cinemacodes){
-		return screeninfoDao.getScreenByCinemaCode(cinemacodes);
+    public List<Screeninfo> getScreenByCinemaCode(@RequestParam("cinemacode")String cinemacode){
+    	List list=new ArrayList();
+    	String screenList[] =cinemacode.split(",");
+    		String screenName="";	
+    		for(int i=0;i<screenList.length;i++){
+    			List<Screeninfo> screen=screeninfoDao.getByCinemaCode(screenList[i]);
+    			if(screen.size()>0){
+    				list.addAll(screen);
+    			}
+    			if(screen!=null){
+    				screenName+=screen+",";
+    			}
+    		}
+		return list;
     }
 }

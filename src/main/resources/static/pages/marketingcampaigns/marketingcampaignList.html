@@ -252,22 +252,6 @@ function del(id){
     });
 }
 
-/*  $("#tbody").on('click','.change',function(){
-	var status = "";
-	if($(this).attr('title')==1){
-		status = 0;
-	}else{
-		status = 1;
-	}
-	$.ajax({
-		url:'/marketingcampaigns/changestatus',
-		data:{"status":status,"id":$(this).val()},
-		type:'post',
-		success:function(data){
-			window.location.href="marketingcampaignList.html";
-		}
-	}); 
-});  */  
 $("#tbody").on('click','.change',function(){
 	var status ="";
 	if($(this).attr('title')==1){

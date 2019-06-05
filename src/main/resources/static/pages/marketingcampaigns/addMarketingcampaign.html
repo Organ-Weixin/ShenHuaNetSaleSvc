@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>票务促销-新建营销活动</title>
+
+<link rel="stylesheet" href="../../layui/css/layui.css" media="all" /> 
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="../../css/select-addl.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../css/select-krajee.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../css/select.min.css"/>
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<input type="hidden" id="userId">
+	<input type="hidden" id="roleId">
+	<input type="hidden" id="CinemaCodes">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<div class='form-group' style="margin-top:3%;">
+				<label class='col-md-2 control-label'>活动名称</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='activityName' id='ActivityName' data-bv-notempty='true' data-bv-notempty-message='活动名称不能为空' style="width:30%;">
+				</div>
+			</div>
+		<div class='form-group'>
+					<label class='col-md-2 control-label'>活动方式</label>
+					<div class='col-md-10'>
+						<select class="form-control" style="width:15%;" name="activityType" id="ActivityType">
+							<!-- <option value="">活动方式</option> -->
+							<option value="1" name="option1">立减</option>
+							<option value="2" name="option1">固定价</option>
+							<option value="3" name="option1">最低发行价</option>
+						</select>
+					</div>
+		</div>
+		<div class='form-group' id="CouponPrice1">
+				<label class='col-md-2 control-label'>立减金额</label>
+				<div class='col-md-10'>
+<input class='form-control' placeholder='优惠金额(元)' style="width:15%;float:left;" type='text' name='couponPrice' id='CouponPrice' data-bv-notempty='true' data-bv-notempty-message='立减金额不能为空'>
+				</div>
+		</div>	
+ <div class='form-group' style="display: none;" id="CouponPrice2">
+				<label class='col-md-2 control-label'>固定金额</label>
+				<div class='col-md-10'>
+<input class='form-control'placeholder='固定金额(元)' style="width:15%;float:left;" type='text' name='fixedAmount' id='FixedAmount' data-bv-notempty='true' data-bv-notempty-message='固定金额不能为空'>
+			</div>
+</div> 
+<div class='form-group' style="width=3%;">
+				<label class='col-md-2 control-label' id='appointTime1'>活动票数</label>
+				<div class='col-md-10' style="font-size:15px">
+					<input type="hidden" id="TicketsType" name="ticketsType" >
+					<div>
+						<input type="radio" name="TicketsTypeRadio" value="1" id="TicketsTypeRadio"> 不限数量
+						<input type="radio" name="TicketsTypeRadio" value="2"> 指定数量
+						<input type="radio" name="TicketsTypeRadio" value="3"> 分天限量
+					</div>
+					 <div style="margin-top:2%">
+						<div id="TicketsType2" style="display:none">
+						<input type="text" name="sumNumber" id="SumNumber" style="width: 15%;><font style="margin-left:5px;font-size: 18px;">(张)</font>
+					</div>
+					</div>
+					<div style="margin-top:2%">
+					<div id="TicketsType3" style="display:none">
+                 每天<input type="text"  id="appointTime" name="appointTime" style="width:15%">活动开始,每天限量<input type="text" name="appointmentNumber" id="AppointmentNumber" style="width:15%;margin-left:1%"> 张活动票
+					</div>
+					</div>
+					</div>
+</div>
+		<div class='form-group' style="width=2%;">
+				<label class='col-md-2 control-label'>每人限购</label>
+				<div class='col-md-10' style="font-size:15px">
+					<input type="hidden" id="RestrictionType" name="restrictionType">
+					<div>
+						<input type="radio" name="RestrictionTypeRadio" value="1"> 不限
+						<input type="radio" name="RestrictionTypeRadio" value="2"> 指定张数
+					</div>
+					<div style="margin-top:1%">
+						
+						<div id="RestrictionType2" style="display:none">
+						<input type="text" name="restrictionNumber" id="RestrictionNumber" style="width: 15%;><font style="margin-left:5px;font-size: 18px;">(张)</font>
+						</div>
+					</div>
+			</div>
+	</div>
+<!--选择影城-->
+	<div class='form-group' style="margin-top:2%">
+				<label class='col-md-2 control-label'>选择影城</label>
+				<div class='col-md-10' style="font-size:15px">
+					<input type="hidden" id="cinemaCodesType" name="cinemaCodesType" >
+					<div>
+						<input type="radio" name="CinemaCodesTypeRadio" value="1"> 全部影城
+							<input type="radio" name="CinemaCodesTypeRadio" value="2"> 指定影城
+					</div>
+					<div style="margin-top:1%">
+					
+						<div id="Cinemas" style="margin-top:1%;display:none">
+							<input type="hidden" id="cinemaCodes" name="cinemaCodes">
+							<input type="hidden" id="AllCinemaCodes">
+							<select id="CinemasSelect" class="form-control" multiple data-s2-options="s2options" data-krajee-select2="selectcinema">
+							</select>
+						</div>
+					</div>
+				</div>
+	</div>
+<!--选择影厅-->
+		<div class='form-group' style="margin-top:2%">
+				<label class='col-md-2 control-label'>选择影厅</label>
+				<div class='col-md-10' style="font-size:15px">
+					<input type="hidden" id="screenCodesType" name="screenCodesType">
+					<div>
+						<input type="radio" name="ScreenCodesTypeRadio" value="1"> 全部影厅
+							<input type="radio" name="ScreenCodesTypeRadio" value="2" > 指定影厅
+					</div>
+					<div style="margin-top:1%">
+					
+						<div id="Screens" style="margin-top:1%;display:none">
+							<input type="hidden" id="screenCodes" name="screenCodes">
+							<input type="hidden" id="AllScreenCodes">
+							<select id="ScreensSelect" class="form-control" multiple data-s2-options="s2options" data-krajee-select2="selectscreen">
+							</select>
+						</div>
+					</div>
+				</div>
+	</div>
+<!--选择影片-->
+ 		  <div class='form-group' style="margin-top:2%">
+				<label class='col-md-2 control-label'>选择影片</label>
+				<div class='col-md-10' style="font-size:15px">
+					<input type="hidden" id="filmCodesType" name="filmCodesType">
+					<div>
+						<input type="radio" name="FilmCodesTypeRadio" value="1"> 全部影片
+						<input type="radio" name="FilmCodesTypeRadio" value="2"> 指定影片参与
+							<input type="radio" name="FilmCodesTypeRadio" value="3"> 指定影片不参与
+					</div>
+					<div style="margin-top:1%">
+						
+						<div id="Films2" style="margin-top:1%;display:none">
+							<input type="hidden" id="filmCodes" name="filmCodes">
+							<input type="hidden" id="AllFilmCodes">
+							<select id="FilmsSelect" class="form-control" multiple data-s2-options="s2options" data-krajee-select2="selectfilm">
+							</select>
+						</div>
+					</div>
+			<!-- 	<div style="margin-top:2%">
+						<div id="Films3" style="margin-top:2%;display:none">
+							<input type="hidden" id="filmCodes" name="filmCodes">
+							<input type="hidden" id="AllFilmCodes">
+							<select id="FilmsSelect" class="form-control" multiple data-s2-options="s2options" data-krajee-select2="selectfilm">
+							</select>
+						</div>
+					</div> -->
+				</div>
+	</div> 
+<div class='form-group' style="margin-top:2%">
+				<label class='col-md-2 control-label' id='StartDate1'>活动时间</font></label>
+				<div class='col-md-10'>
+					<div style="margin-top:1%" >
+			 		<input type="text" id="StartDate" placeholder="活动开始日期" name="startDate">
+						<input type="text" id="EndDate" placeholder="活动结束日期" name="endDate" style="margin-left:1%">
+					</div>
+					</div>
+	</div>
+
+<div class='form-group' style="margin-top:2%" >
+				<label class='col-md-2 control-label' id='canUseDate1'>指定放映时间</font></label>
+				<div class='col-md-10'>
+					<div style="margin-top:1%" > 
+						 		<!-- <div style="float:left">
+									<input type="hidden" id="timePeriod" name="timePeriod">
+								</div>  -->
+								<div id="canUseDate" style="float:left;width:55%;"  >
+							 		<input type="text" class="canUseDateStart" id="StartTime" placeholder="放映开始时间" name="startTime">
+									<input type="text" class="canUseDateEnd" id="EndTime" placeholder="放映结束时间" name="endTime"style="margin-left:1%">
+							 		<span style="margin-left:2%;cursor: pointer;" id="addTime"><i class="layui-icon">&#xe608;</i>添加放映时间</span>
+								</div>
+							 </div>		 	
+			</div>
+	</div>				
+<div class='form-group'>
+					<label class='col-md-2 control-label'>优惠共享</label>
+					<div class='col-md-10'>
+						<select class="form-control" style="width:15%;" name="isSuperposition" id="IsSuperposition">
+							<!-- <option value="">活动方式</option> -->
+							<option value="1">与其他优惠叠加</option>
+							<option value="0">不与其他优惠叠加</option>
+						</select>
+					</div>
+		</div>
+		<div class='form-group'>
+					<label class='col-md-2 control-label'>是否可使用优惠券</label>
+					<div class='col-md-10'>
+						<select class="form-control" style="width:15%;" name="isUseCoupon" id="IsUseCoupon">
+							<!-- <option value="">活动方式</option> -->
+							<option value="1">是</option>
+							<option value="0">否</option>
+						</select>
+					</div>
+		</div>
+		<div class='form-group'>
+					<label class='col-md-2 control-label'>启用状态</label>
+					<div class='col-md-10'>
+						<select class="form-control" style="width:15%;" name="status" id="Status">
+							<!-- <option value="">活动方式</option> -->
+							<option value="1">启用</option>
+							<option value="0">不启用</option>
+						</select>
+					</div>
+		</div>
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="location.href='marketingcampaignList.html'">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="add()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript" src="../../js/select2.full.min.js"></script>
+	<script type="text/javascript" src="../../js/select2-krajee.min.js"></script>
+	<script type="text/javascript">
+		　
+	
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		    var laydate = layui.laydate;
+		    //layui时间选择器
+		    laydate.render({
+			      elem: '#appointTime'
+			      ,eventElem: '#appointTime1'
+			      ,type:'time'
+			      ,format:'HH:mm:ss'
+			      ,trigger: 'click'
+			    });
+		    //点击触发
+		    laydate.render({
+		      elem: '#StartDate'
+		      ,eventElem: '#StartDate1'
+		      ,type: 'datetime'
+		      ,trigger: 'click'
+		    });
+			laydate.render({
+			      elem: '#EndDate'
+			      ,eventElem: '#StartDate1'
+			      ,type: 'datetime'
+			      ,trigger: 'click'
+			    });   
+			laydate.render({
+			      elem: '#StartTime'
+			      ,eventElem: '#StartTime'
+			      ,type:'time'
+				  ,format:'HH:mm:ss'
+			      ,trigger: 'click'
+			    });  
+			laydate.render({
+			      elem: '#EndTime'
+			      ,eventElem: '#EndTime'
+			      ,type:'time'
+				  ,format:'HH:mm:ss'
+			      ,trigger: 'click'
+			    });  
+		});
+///////////////////////
+//添加可用时段
+		$("#addTime").click(function(){ 
+			var canUserDate = "<span class ='aa'><input style='margin-top:1%' type='text' class='canUseDateStart'id='StartTime' name='startTime'placeholder='放映开始时间'>&nbsp;";
+			canUserDate = canUserDate + "<input style='margin-top:1%;margin-left:1%' type='text' class='canUseDateEnd' id='EndTime' name='endTime'placeholder='放映结束时间'>";
+			canUserDate = canUserDate + "<font style='margin-left:3%;cursor: pointer;' class='delTime'>删除</font></span><br>";
+			$("#canUseDate").append(canUserDate);
+		});
+		//删除可用时段
+		$("#canUseDate").on('click','.delTime',function(){
+			$(this).parent().remove();
+		})
+//////活动方式选择//////
+		  $("#ActivityType").change(function() {
+			var ActivityType = $(this).val();
+			if(ActivityType == 1){
+				$("#CouponPrice1").show().addClass("show");
+				$("#CouponPrice2").hide().removeClass("show");
+			}else if (ActivityType == 2) {
+				$("#CouponPrice2").show().addClass("show");
+				$("#CouponPrice1").hide().removeClass("show");
+			} else if (ActivityType == 3) {
+				$("#CouponPrice2").hide().removeClass("show");
+				$("#CouponPrice1").hide().removeClass("show");
+			}
+		})
+		//////活动票数选择//////
+		$("input:radio[name='TicketsTypeRadio']").click(function() {
+			if ($(this).css("checked", true).val() == 1) {
+				$("#TicketsType2").css("display", "none");
+				$("#TicketsType3").css("display", "none");
+				$("input[class='checkTicketsType2']").removeAttr("checked");
+				$("input[class='TicketsType3']").removeAttr("checked");
+				$("#TicketsType").val($(this).css("checked", true).val());//活动票数选择-不限票数
+			}
+			if ($(this).css("checked", true).val() == 2) {
+				$("#TicketsType2").css("display", "block");
+				$("#TicketsType3").css("display", "none");
+				$("input[class='TicketsType2']").removeAttr("checked");
+				$("input[class='TicketsType3']").removeAttr("checked");
+				$("#TicketsType").val($(this).css("checked", true).val());//活动票数选择-指定票数
+			}
+			if ($(this).css("checked", true).val() == 3) {
+				$("#TicketsType2").css("display", "none");
+				$("input[class='checkTicketsType2']").removeAttr("checked");
+				$("#TicketsType3").css("display", "block");
+				$("input[class='TicketsType3']").removeAttr("checked");
+				$("#TicketsType").val($(this).css("checked", true).val());//活动票数选择-分天限量
+			}
+		});
+		//////每人限购选择//////
+		$("input:radio[name='RestrictionTypeRadio']").click(
+				function() {
+					if ($(this).css("checked", true).val() == 1) {
+						$("#RestrictionType2").css("display", "none");
+						$("input[class='checkRestrictionType2']").removeAttr("checked");
+						$("#RestrictionType").val($(this).css("checked", true).val());//每人限购选择--不限数量
+					}
+					if ($(this).css("checked", true).val() == 2) {
+						$("#RestrictionType2").css("display", "block");
+						$("input[class='checkRestrictionType2']").removeAttr("checked");
+						$("#RestrictionType").val($(this).css("checked", true).val());//每人限购选择--指定票数
+					}
+				});
+		//////获取登陆人信息//////
+		initUser();
+		function initUser(){
+			$.ajax({
+				type : 'get',
+				url : '/users/current',
+				async : false,
+				success : function(data) {
+					$("#userId").val(data.id);
+					$("#roleId").val(data.roleId);
+				}
+			});
+		}
+////////////影城选择//////
+		$("input:radio[name='CinemaCodesTypeRadio']").click(function() {
+			if ($(this).css("checked", true).val() == 1) {
+				$("#Cinemas").css("display", "none");
+				$("input[class='checkCinemas']").removeAttr("checked");
+				$("#cinemaCodesType").val($(this).css("checked", true).val() );//影城选择--全部影城
+			}
+			if ($(this).css("checked", true).val() == 2) {
+				$("#Cinemas").css("display", "block");
+				$("input[class='checkCinemas']").removeAttr("checked");
+				$("#cinemaCodesType").val($(this).css("checked", true).val());//影城选择-指定影城
+				$("#cinemaCodes").val($("#CinemasSelect").val());//指定影城-编码
+				 //getScreens($("#CinemasSelect").val());
+				//getFilms($("#CinemasSelect").val()); 
+			}
+		});
+	//////影院下拉多选//////
+	var cinemaoptions = {"doReset":true,"doToggle":true,"doOrder":false};
+	window.cinemaoptions = {"theme":"krajee","width":"50%","placeholder":"请选择影院","language":"zh-CN"};
+	if (jQuery('#CinemasSelect').data('selectcinema')){
+		jQuery('#CinemasSelect').select2('destroy');
+	}
+	jQuery.when(jQuery('#CinemasSelect').select2(cinemaoptions)).done(initS2Loading('CinemasSelect','cinemaoptions'));
+///////////////////////////
+	window.onload=function(){
+		//////获取影院列表/////
+		getCinema();
+		function getCinema(){
+			$.ajax({
+				url:'/users/getCinemaName',
+				data:{"id":$("#userId").val(),"roleId":$("#roleId").val()},
+				type:'post',
+				success:function(data){
+					var cinemacodes = "";
+					for(var i=0; i<data.length; i++){
+						var option = "<option value='"+data[i].cinemaCode+"'>"+data[i].cinemaName+"</option>";
+						cinemacodes +=data[i].cinemaCode+",";
+						$("#CinemasSelect").append(option);
+					}
+					$("#AllCinemaCodes").val(cinemacodes.substring(0,cinemacodes.length-1));
+				}
+			});
+		}
+	}
+	//根据选择的影院触发获取影厅--获取影片
+	$("#CinemasSelect").blur(function(){
+		alert(011111111);
+		getScreens($("#CinemasSelect").val());
+		getFilms($("#CinemasSelect").val()); 
+	})
+//////////影厅选择//////
+		$("input:radio[name='ScreenCodesTypeRadio']").click(function() {
+			if ($(this).css("checked", true).val() == 1) {
+				$("#Screens").css("display", "none");
+				$("input[class='checkScreens']").removeAttr("checked");
+				$("#screenCodesType").val($(this).css("checked", true).val());//影厅选择-全部影厅
+				$("#screenCodes").val(null);//指定影厅--影厅编码
+			}
+			if ($(this).css("checked", true).val() == 2) {
+				$("#Screens").css("display", "block");
+				$("input[class='checkScreens']").removeAttr("checked");
+				$("#screenCodesType").val($(this).css("checked", true).val());//影厅选择-指定影厅
+				$("#screenCodes").val($("#ScreensSelect").val());//指定影厅--影厅编码
+			}
+		});
+	//////影厅下拉多选//////
+		var screenoptions = {"doReset":true,"doToggle":true,"doOrder":false};
+		window.screenoptions = {"theme":"krajee","width":"50%","placeholder":"请选择影厅","language":"zh-CN"};
+		if (jQuery('#ScreensSelect').data('selectscreen')){
+			jQuery('#ScreensSelect').select2('destroy');
+		}
+		jQuery.when(jQuery('#ScreensSelect').select2(screenoptions)).done(initS2Loading('ScreensSelect','screenoptions'));
+		//获取影厅列表
+		function getScreens(cinemacodes){
+			$.ajax({
+				url:'/screeninfos/getScreenByCinemaCode?cinemacodes='+cinemacodes,
+				type:'post',
+				success:function(data){
+					$("#ScreensSelect").text('请选择影厅');
+					for(var i=0;i<data.length;i++){
+						var option = "<option value='"+data[i].scode+"'>"+data[i].sname+"</option>";
+						$("#ScreensSelect").append(option); 
+					}
+				}
+			});
+		}
+///////////////影片选择///////////////////////
+		$("input:radio[name='FilmCodesTypeRadio']").click(function() {
+			if ($(this).css("checked", true).val() == 1) {
+				$("#Films2").css("display", "none");
+				$("input[class='checkFilms']").removeAttr("checked");
+				$("#Films3").css("display", "none");
+				$("input[class='checkFilms']").removeAttr("checked");
+				$("#filmCodesType").val($(this).css("checked", true).val());//影片选择-全部影片
+				$("#filmCodes").val(null);//全部影片--编码默认null
+			}
+			if ($(this).css("checked", true).val() == 2) {
+				$("#Films2").css("display", "block");
+				$("input[class='checkFilms']").removeAttr("checked");
+				$("#Films3").css("display", "none");
+				$("input[class='checkFilms']").removeAttr("checked");
+				$("#filmCodesType").val($(this).css("checked", true).val());//影片选择-指定影片参与
+				$("#filmCodes").val($("#FilmsSelect").val());//指定影片参与--编码
+			}
+			if ($(this).css("checked", true).val() == 3) {
+				$("#Films3").css("display", "block");
+				$("input[class='checkFilms']").removeAttr("checked");
+				$("#Films2").css("display", "none");
+				$("input[class='checkFilms']").removeAttr("checked");
+				$("#filmCodesType").val($(this).css("checked", true).val());//影片选择-指定影片不参与
+				$("#filmCodes").val($("#FilmsSelect").val());//指定影片不参与--编码
+			}
+		});
+		//影片下拉多选
+		var filmoptions = {"doReset":true,"doToggle":true,"doOrder":false};
+		window.filmoptions = {"theme":"krajee","width":"50%","placeholder":"请选择影片","language":"zh-CN"};
+		if (jQuery('#FilmsSelect').data('selectfilm')){
+			jQuery('#FilmsSelect').select2('destroy');
+		}
+		jQuery.when(jQuery('#FilmsSelect').select2(filmoptions)).done(initS2Loading('FilmsSelect','filmoptions'));
+		//获取影片列表
+		function getFilms(cinemacodes){
+			$.ajax({
+				url:'/sessioninfos/getFilmsByCinemaCode?cinemacodes='+cinemacodes,
+				type:'post',
+				success:function(data){
+					$("#FilmsSelect").text('请选择影片');
+					for(var i=0;i<data.length;i++){
+						var option = "<option value='"+data[i].filmCode+"'>"+data[i].filmName+"</option>";
+						$("#FilmsSelect").append(option); 
+					}
+				}
+			});
+		}
+//////////添加方法///////
+		function add() {
+			//活动票数验证
+			if($("input:radio[name='TicketsTypeRadio']:checked").length<=0){
+				layer.msg("请选择一个参与活动票数类型!");
+			}else{
+				if($("input:radio[name='TicketsTypeRadio']:checked").val()==2&&($("#SumNumber").val()==null||$("#SumNumber").val()=="")){
+					layer.msg("请指定活动票数数量!");
+				}
+				if($("input:radio[name='TicketsTypeRadio']:checked").val()==3&&($("#AppointmentNumber").val()==null||$("#AppointmentNumber").val()=="")){
+					layer.msg("请输入每天限量的活动票数!");
+					if($("#AppointmentNumber").val()<1){
+						layer.msg("活动票数应为最低不小于1的数字!");
+					}
+				}
+			}
+			//每人限购验证
+			if($("input:radio[name='RestrictionTypeRadio']:checked").length<=0){
+				layer.msg("请选择一个每人限购类型!");
+			}else{
+				if($("input:radio[name='TicketsTypeRadio']:checked").val()==2&&($("#RestrictionNumber").val()==null||$("#RestrictionNumber").val()=="")){
+					layer.msg("请输入每人限购数量!");
+				}
+			}
+			//选择影城验证
+			if($("input:radio[name='CinemaCodesTypeRadio']:checked").length<=0){
+				layer.msg("请选择一个活动影城类型!");
+			}else{
+				if($("input:radio[name='CinemaCodesTypeRadio']:checked").val()==2&&($("#cinemaCodes").val()==null||$("#cinemaCodes").val()=="")){
+					layer.msg("请至少选择一家影城!");
+				}
+			}
+			//选择影厅验证
+			if($("input:radio[name='ScreenCodesTypeRadio']:checked").length<=0){
+				layer.msg("请选择一个活动影城类型!");
+			}else{
+				if($("input:radio[name='ScreenCodesTypeRadio']:checked").val()==2&&($("#screenCodes").val()==null||$("#screenCodes").val()=="")){
+					layer.msg("请至少选择一个影厅!");
+				}
+			}
+			//选择影片验证
+			if($("input:radio[name='FilmCodesTypeRadio']:checked").length<=0){
+				layer.msg("请选择一个活动影片类型!");
+			}else{
+				if($("input:radio[name='FilmCodesTypeRadio']:checked").val()==2&&($("#filmCodes").val()==null||$("#filmCodes").val()=="")){
+					layer.msg("请至少选择一个影片!");
+				}
+				if($("input:radio[name='FilmCodesTypeRadio']:checked").val()==3&&($("#filmCodes").val()==null||$("#filmCodes").val()=="")){
+					layer.msg("请至少选择一个影片!");
+				}
+			}
+			//选择影片验证
+			if($("#StartDate").val()==null||$("#StartDate").val()==""){
+				layer.msg("请选择活动开始日期!");
+			}
+			if($("#EndDate").val()==null||$("#EndDate").val()==""){
+				layer.msg("请选择活动结束日期!");
+			}
+			
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+			if (!bootstrapValidator.isValid()) {
+				return;
+			}
+
+			var formdata = $("#form").serializeObject();
+
+		 	$.ajax({
+				type : 'post',
+				url : '/marketingcampaigns',
+				contentType : "application/json; charset=utf-8",
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("添加成功", {
+						shift : -1,
+						time : 1000
+					}, function() {
+						location.href = "marketingcampaignList.html";
+					});
+				}
+			}); 
+		}
+	</script>
+</body>
+</html>
