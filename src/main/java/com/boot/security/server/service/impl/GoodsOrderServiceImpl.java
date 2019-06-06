@@ -93,4 +93,9 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
 		// TODO Auto-generated method stub
 		return ordersDao.getByOpenID(openid, time);
 	}
+	@Override
+	public int update(Goodsorders goodsorders) {
+		// TODO Auto-generated method stub
+		return ordersDao.update(goodsorders);
+	}
 }

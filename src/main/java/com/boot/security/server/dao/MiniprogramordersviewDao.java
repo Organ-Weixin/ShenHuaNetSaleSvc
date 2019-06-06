@@ -10,7 +10,6 @@ import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Miniprogramordersview;
 
 @Mapper
@@ -32,6 +31,6 @@ public interface MiniprogramordersviewDao {
 
     List<Miniprogramordersview> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
 
-    @Select("select * from miniprogramordersview t where t.cinemacode = #{cinemacode} and t.openid=#{openid} and orderstatus=8")
+    @Select("select * from miniprogramordersview t where t.cinemacode = #{cinemacode} and t.openid=#{openid} and (orderstatus=8 or orderstatus=9 or orderstatus=10)")
     List<Miniprogramordersview> getByCinemaCodeAndOpenID(@Param("cinemacode")String cinemacode,@Param("openid")String openid);
 }

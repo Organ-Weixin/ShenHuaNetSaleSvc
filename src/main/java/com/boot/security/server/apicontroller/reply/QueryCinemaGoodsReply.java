@@ -30,12 +30,12 @@ public class QueryCinemaGoodsReply extends BaseReply{
 
 		public  class QueryCinemaGoods{
 			private String GoodsName;//小食名称
-			private String GoodsCount;//小食数量
+			private Integer GoodsCount;//小食数量
 			private String PickUpCode;//取货码
 			private String CinemaName;//影院名称
 			private String Address;//影院地址
 			private String CinemaPhone;//影院电话
-			private String SubTotalSettleAmount;//实付金额
+			private Double SubTotalSettleAmount;//实付金额
 			private String OrderCode;//订单号
 			private Date Created;//购买时间
 			private String MobilePhone;//手机号码
@@ -46,10 +46,10 @@ public class QueryCinemaGoodsReply extends BaseReply{
 			public void setGoodsName(String goodsName) {
 				GoodsName = goodsName;
 			}
-			public String getGoodsCount() {
+			public Integer getGoodsCount() {
 				return GoodsCount;
 			}
-			public void setGoodsCount(String goodsCount) {
+			public void setGoodsCount(Integer goodsCount) {
 				GoodsCount = goodsCount;
 			}
 			public String getPickUpCode() {
@@ -76,10 +76,10 @@ public class QueryCinemaGoodsReply extends BaseReply{
 			public void setCinemaPhone(String cinemaPhone) {
 				CinemaPhone = cinemaPhone;
 			}
-			public String getSubTotalSettleAmount() {
+			public Double getSubTotalSettleAmount() {
 				return SubTotalSettleAmount;
 			}
-			public void setSubTotalSettleAmount(String subTotalSettleAmount) {
+			public void setSubTotalSettleAmount(Double subTotalSettleAmount) {
 				SubTotalSettleAmount = subTotalSettleAmount;
 			}
 			public String getOrderCode() {

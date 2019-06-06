@@ -571,16 +571,18 @@ public class AppUserController {
 				for(Goodsorderdetails goodsorderdetails:goodsorderdetailsList){
 					queryCinemaGoods.setGoodsName(goodsorderdetails.getGoodsName());
 				}
-				if(goodsorders.getGoodsCount()!=null){
-				queryCinemaGoods.setGoodsCount(String.valueOf(goodsorders.getGoodsCount()));
-				}
+				queryCinemaGoods.setGoodsCount(goodsorders.getGoodsCount());
 				queryCinemaGoods.setPickUpCode(goodsorders.getPickUpCode());
 				queryCinemaGoods.setCinemaName(cinema.getName());
 				queryCinemaGoods.setAddress(cinema.getAddress());
 				queryCinemaGoods.setCinemaPhone(cinema.getCinemaPhone());
-				if(goodsorders.getTotalSettlePrice()!=null){
-				queryCinemaGoods.setSubTotalSettleAmount(String.valueOf(goodsorders.getTotalSettlePrice()));
+				/*if(goodsorders.getCouponsPrice()==null){
+					goodsorders.setCouponsPrice(0.00);
 				}
+				if(goodsorders.getTotalFee()==null){
+					goodsorders.setTotalFee(0.00);
+				}*/
+				queryCinemaGoods.setSubTotalSettleAmount(goodsorders.getTotalSettlePrice());
 				queryCinemaGoods.setOrderCode(goodsorders.getOrderCode());
 				queryCinemaGoods.setCreated(goodsorders.getCreated());
 				queryCinemaGoods.setMobilePhone(goodsorders.getMobilePhone());

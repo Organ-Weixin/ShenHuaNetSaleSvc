@@ -1414,11 +1414,13 @@ ScreenType,ListingPrice,LowestPrice))
             return cardPayReply;
         }
         //验证排期是否存在
-        Sessioninfo session = _sessionInfoService.getByCinemaCodeAndSessionCodeAndUserId(CinemaCode, SessionCode,userCinema.getUserId());
-        if (session == null)
-        {
-            cardPayReply.SetSessionInvalidReply();
-            return cardPayReply;
+        if(!SessionCode.equals(null)&&!SessionCode.equals("")){
+        	 Sessioninfo session = _sessionInfoService.getByCinemaCodeAndSessionCodeAndUserId(CinemaCode, SessionCode,userCinema.getUserId());
+             if (session == null)
+             {
+                 cardPayReply.SetSessionInvalidReply();
+                 return cardPayReply;
+             }
         }
         return CardPay(cardPayReply, userCinema, CardNo,CardPassword,PayAmount,GoodsPayAmount,SessionCode,FilmCode,TicketNum);
     }

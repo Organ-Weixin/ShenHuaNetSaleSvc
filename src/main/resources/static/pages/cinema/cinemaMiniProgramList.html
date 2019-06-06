@@ -26,7 +26,7 @@
 									</form>
 	                   			</td>
 	                   			<td align="right">												   
-	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addCinemaMiniProgramAccounts.html'">
+	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addCinemaMiniProgram.html'">
                                       <i class="layui-icon">&#xe608;</i> 新建小程序账号配置
                                     </button>
 	                   			</td>
@@ -105,7 +105,7 @@
 								"orderable":false,
 						        "render": function (data, type, row) {
                 		           var id = row['id'];
-                		           var href = "updateCinemaMiniProgramAccounts.html?id=" + id;
+                		           var href = "updateCinemaMiniProgram.html?id=" + id;
                                    var edit = buttonEdit(href, "", pers);
                 		           var del = buttonDel(id, "", pers);
                                    return edit + del;

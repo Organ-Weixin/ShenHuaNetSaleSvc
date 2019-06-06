@@ -501,18 +501,6 @@ public class ReplyExtension {
 			reply.SetNecessaryParamMissReply(GoodsPayAmount);
 			return false;
 		}
-		if (SessionCode.isEmpty()) {
-			reply.SetNecessaryParamMissReply(SessionCode);
-			return false;
-		}
-		if (FilmCode.isEmpty()) {
-			reply.SetNecessaryParamMissReply(FilmCode);
-			return false;
-		}
-		if (TicketNum.isEmpty()) {
-			reply.SetNecessaryParamMissReply(TicketNum);
-			return false;
-		}
 		return true;
 	}
 	// endregion

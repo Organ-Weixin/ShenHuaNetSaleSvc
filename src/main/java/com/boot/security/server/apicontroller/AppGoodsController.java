@@ -420,7 +420,6 @@ public class AppGoodsController {
 				return prePayParametersReply;
 			}
 		}
-		
 		//region 计算优惠券
 		String CouponsCode = QueryJson.getCouponsCode();
 		if(!CouponsCode.equals("")&&!CouponsCode.equals(null)){
@@ -431,6 +430,7 @@ public class AppGoodsController {
 				if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
 					ifCanUse=false;
 				}
+				System.out.println("状态通过"+CouponsCode);
 				// 不在有效期范围内
 				if (couponsview.getCoupons().getEffectiveDate().getTime() > new Date().getTime()
 						|| couponsview.getCoupons().getExpireDate().getTime() <= new Date().getTime()) {
@@ -473,12 +473,14 @@ public class AppGoodsController {
 				//如果减免类型是卖品
 				if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==2){
 					//循环判断每个卖品是不是在可使用优惠的卖品里面
-					for(Goodsorderdetails goodsdetail:order.getOrderGoodsDetails()){
-						if(couponsview.getCouponsgroup().getGoodsCodes().indexOf(goodsdetail.getGoodsCode())==-1){
-							ifCanUse=false;
-							break;
-						}else{
-							continue;
+					if(!couponsview.getCouponsgroup().getGoodsCodes().equals(null)||!couponsview.getCouponsgroup().getGoodsCodes().equals("")){
+						for(Goodsorderdetails goodsdetail:order.getOrderGoodsDetails()){
+							if(couponsview.getCouponsgroup().getGoodsCodes().indexOf(goodsdetail.getGoodsCode())==-1){
+								ifCanUse=false;
+								break;
+							}else{
+								continue;
+							}
 						}
 					}
 					//如果到最后还是可以使用

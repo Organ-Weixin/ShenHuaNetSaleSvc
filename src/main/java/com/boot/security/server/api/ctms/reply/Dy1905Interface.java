@@ -1223,6 +1223,13 @@ public class Dy1905Interface implements ICTMSInterface {
 					GoodsPrice += ","+orderGoodsDetails.get(i).getSettlePrice()*Integer.valueOf(orderGoodsDetails.get(i).getGoodsCount());
 				}
 			}
+			String	pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() 
+			+ order.getOrderBaseInfo().getLocalOrderCode().substring(0,20)
+			+ GoodsCode + GoodsCount + GoodsPrice + order.getOrderBaseInfo().getMobilePhone() + String.valueOf(new Date().getTime()).substring(0,10)
+			+ order.getOrderBaseInfo().getTotalPrice() + order.getOrderBaseInfo().getTotalSettlePrice() 
+			+ order.getOrderBaseInfo().getDeliveryType() + order.getOrderBaseInfo().getDeliveryAddress()
+			+ order.getOrderBaseInfo().getDeliveryTime() + order.getOrderBaseInfo().getDeliveryMark()
+			+ userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
 			param.put("pAppCode",userCinema.getDefaultUserName());
 			param.put("pCinemaID",userCinema.getCinemaId());
 			param.put("pNetOrder",order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
@@ -1233,35 +1240,12 @@ public class Dy1905Interface implements ICTMSInterface {
 			param.put("pOrderTime",String.valueOf(new Date().getTime()).substring(0,10));
 			param.put("pTotalPrice",String.valueOf(order.getOrderBaseInfo().getTotalPrice()));
 			param.put("pPayPrice",String.valueOf(order.getOrderBaseInfo().getTotalSettlePrice()));
-			String pVerifyInfo;
-			if((order.getOrderBaseInfo().getCardNo()==null||order.getOrderBaseInfo().getCardNo()=="")
-				&&(order.getOrderBaseInfo().getCardPassword()==null||order.getOrderBaseInfo().getCardPassword()=="")){
-				pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() 
-				+ order.getOrderBaseInfo().getLocalOrderCode().substring(0,20)
-				+ GoodsCode + GoodsCount + GoodsPrice + order.getOrderBaseInfo().getMobilePhone() + String.valueOf(new Date().getTime()).substring(0,10)
-				+ order.getOrderBaseInfo().getTotalPrice() + order.getOrderBaseInfo().getTotalSettlePrice() 
-				+ order.getOrderBaseInfo().getDeliveryType() + order.getOrderBaseInfo().getDeliveryAddress()
-				+ order.getOrderBaseInfo().getDeliveryTime() + order.getOrderBaseInfo().getDeliveryMark()
-				+ userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
-			}else{
-				pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() 
-				+ order.getOrderBaseInfo().getLocalOrderCode().substring(0,20)
-				+ GoodsCode + GoodsCount + GoodsPrice + order.getOrderBaseInfo().getMobilePhone() + String.valueOf(new Date().getTime()).substring(0,10)
-				+ order.getOrderBaseInfo().getTotalPrice() + order.getOrderBaseInfo().getTotalSettlePrice() 
-				+ order.getOrderBaseInfo().getCardNo() + order.getOrderBaseInfo().getCardPassword() 
-				+ order.getOrderBaseInfo().getDeliveryType() + order.getOrderBaseInfo().getDeliveryAddress()
-				+ order.getOrderBaseInfo().getDeliveryTime() + order.getOrderBaseInfo().getDeliveryMark()
-				+ userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
-				param.put("pCardNo",order.getOrderBaseInfo().getCardNo());
-				param.put("pCardPwd",order.getOrderBaseInfo().getCardPassword());
-			}
 			param.put("pDeliveryType",String.valueOf(order.getOrderBaseInfo().getDeliveryType()));
 			param.put("pSeat",order.getOrderBaseInfo().getDeliveryAddress());
 			param.put("pDeliveryTime",order.getOrderBaseInfo().getDeliveryTime());
 			param.put("pMark",order.getOrderBaseInfo().getDeliveryMark());
 			param.put("pVerifyInfo",pVerifyInfo);
 			String GoodsOrderResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/GoodsOrder",param,"UTF-8");
-			System.out.println("提交卖品订单"+GoodsOrderResult);
 			Gson gson = new Gson();
 			Dy1905GoodsOrderResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(GoodsOrderResult,"GoodsOrderResult"), Dy1905GoodsOrderResult.class);
 			if(Dy1905Reply.getGoodsOrderResult().getResultCode().equals("0")){

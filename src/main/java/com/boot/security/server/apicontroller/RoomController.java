@@ -47,7 +47,7 @@ import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
-import com.boot.security.server.websocket.ChatRoomServer;
+//import com.boot.security.server.websocket.ChatRoomServer;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -113,14 +113,14 @@ public class RoomController {
 			screenRoom.setScreenName(screeninfo==null?"":screeninfo.getSName());
 			screenRoom.setFilmName(sessioninfo.getFilmName());
 			Date startTime = sessioninfo.getStartTime();
-			screenRoom.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startTime));
+			screenRoom.setStartTime(new SimpleDateFormat("HH:mm:ss").format(startTime));
 			Integer duration = sessioninfo.getDuration();
-			screenRoom.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(startTime.getTime()+1000*60*duration)));
+			screenRoom.setEndTime(new SimpleDateFormat("HH:mm:ss").format(new Date(startTime.getTime()+1000*60*duration)));
 			
 			Filminfo film = _filminfoService.getByFilmCode(sessioninfo.getFilmCode());
 			screenRoom.setImage(film==null?"":film.getImage());
 			rooms.add(screenRoom);
-			new ChatRoomServer().OpenRoom(screenRoom.getRoomCode(), screenRoom); //开启聊天室
+			//new ChatRoomServer().OpenRoom(screenRoom.getRoomCode(), screenRoom); //开启聊天室
 		}
 		reply.setData(rooms);
 		reply.SetSuccessReply();

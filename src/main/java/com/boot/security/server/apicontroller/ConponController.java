@@ -34,7 +34,6 @@ import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
-import com.google.gson.Gson;
 import com.boot.security.server.apicontroller.reply.QueryUserConponsReply.QueryUserConponsBeans;
 import com.boot.security.server.apicontroller.reply.BindCouponsReply.BindCouponsReplyBind;
 import io.swagger.annotations.ApiOperation;
@@ -281,5 +280,4 @@ public class ConponController {
 		bindCouponsReply.setData(data);
 		return bindCouponsReply;
 	}
-	//@PostMapping("/")
 }

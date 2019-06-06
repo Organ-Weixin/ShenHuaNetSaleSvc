@@ -156,17 +156,26 @@ public class MemberController {
 			@PathVariable String LockOrderCode,@PathVariable String LocalOrderCode,@PathVariable String CardNo,@PathVariable String CardPassword,
 			@PathVariable String PayAmount,@PathVariable String GoodsPayAmount,@PathVariable String SessionCode,
 			@PathVariable String FilmCode,@PathVariable String TicketNum){
-		/*if(PayAmount==null||PayAmount==""){
-			PayAmount = "0";
+		if(SessionCode.equals(SessionCode)){
+			SessionCode = "";
 		}
-		if(GoodsPayAmount==null||GoodsPayAmount==""){
-			GoodsPayAmount = "0";
-		}*/
-		CardPayReply reply = new NetSaleSvcCore().CardPay(Username, Password, CinemaCode, CardNo, CardPassword, PayAmount, GoodsPayAmount, SessionCode, FilmCode, TicketNum);
+		if(FilmCode.equals(FilmCode)){
+			FilmCode = "";
+		}
+		if(TicketNum.equals(TicketNum)){
+			TicketNum = "";
+		}
 		Orders orders = orderService.getByLockOrderCode(CinemaCode, LockOrderCode);
+		if(orders!=null){
+			PayAmount = String.valueOf(orders.getTotalSalePrice());
+		}
 		Goodsorders goodsOrders = goodsOrderService.getByLocalOrderCode(LocalOrderCode);
-		if(reply.Status.equals("Success")){
-			if(orders!=null){
+		if(goodsOrders!=null){
+			GoodsPayAmount = String.valueOf(goodsOrders.getTotalSettlePrice());
+		}
+		CardPayReply reply = new NetSaleSvcCore().CardPay(Username, Password, CinemaCode, CardNo, CardPassword, PayAmount, GoodsPayAmount, SessionCode, FilmCode, TicketNum);
+		if(orders!=null){
+			if(reply.Status.equals("Success")){
 				orders.setOrderStatus(OrderStatusEnum.Payed.getStatusCode());
 				orders.setPayFlag(1);
 				orders.setPayTime(new Date());
@@ -174,8 +183,13 @@ public class MemberController {
 				orders.setCardNo(CardNo);
 				orders.setPayType(String.valueOf(OrderPayTypeEnum.MemberCardPay.getTypeCode()));
 				orders.setUpdated(new Date());
+			}else{
+				orders.setOrderStatus(OrderStatusEnum.PayFail.getStatusCode());
 			}
-			if(goodsOrders!=null){
+			orderService.update(orders);
+		}
+		if(goodsOrders!=null){
+			if(reply.Status.equals("Success")){
 				goodsOrders.setCardNo(CardNo);
 				goodsOrders.setOrderStatus(GoodsOrderStatusEnum.Payed.getStatusCode());
 				goodsOrders.setOrderPayFlag(1);
@@ -183,11 +197,11 @@ public class MemberController {
 				goodsOrders.setOrderTradeNo(reply.getTradeNo());
 				goodsOrders.setPayType(String.valueOf(OrderPayTypeEnum.MemberCardPay.getTypeCode()));
 				goodsOrders.setUpdated(new Date());
+			}else{
+				goodsOrders.setOrderStatus(GoodsOrderStatusEnum.PayFail.getStatusCode());
 			}
-		}else{
-			orders.setOrderStatus(OrderStatusEnum.PayFail.getStatusCode());
+			goodsOrderService.update(goodsOrders);
 		}
-		orderService.update(orders);
 		return reply;
 	}
 	//endregion

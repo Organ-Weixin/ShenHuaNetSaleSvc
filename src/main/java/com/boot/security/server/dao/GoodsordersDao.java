@@ -40,7 +40,7 @@ public interface GoodsordersDao {
     @Select("select * from goodsorders t where t.cinemacode = #{cinemacode}")
     List<Goodsorders> getByCinemaCode(String cinemacode);
     
-    @Select("select * from goodsorders t where t.cinemacode = #{cinemacode} and t.openid=#{openid}")
+    @Select("select * from goodsorders t where t.cinemacode = #{cinemacode} and t.openid=#{openid} and(orderstatus = 3 or orderstatus = 7 or orderstatus = 8 or orderstatus = 10)")
     List<Goodsorders> getByCinemaCodeAndOpenID(@Param("cinemacode")String cinemacode,@Param("openid")String openid);
     
     @Select("select * from goodsorders t where t.openid = #{openid} and t.orderstatus in (7,10) and t.submittime #{time} order by t.submittime desc limit 0,1")
