@@ -27,6 +27,7 @@ public class Cinema extends BaseEntity<Long> {
 	private Date Created;
 	private Date Updated;
 	private String CinemaId;
+	private Integer IsUseLowestPriceReport;
 	
 	private Date GoodsUpdated; //影院卖品更新时间
 
@@ -167,6 +168,13 @@ public class Cinema extends BaseEntity<Long> {
 	}
 	public void setCinemaId(String CinemaId) {
 		this.CinemaId = CinemaId;
+	}
+	
+	public Integer getIsUseLowestPriceReport() {
+		return IsUseLowestPriceReport;
+	}
+	public void setIsUseLowestPriceReport(Integer isUseLowestPriceReport) {
+		IsUseLowestPriceReport = isUseLowestPriceReport;
 	}
 	public Date getGoodsUpdated() {
 		return GoodsUpdated;

@@ -23,6 +23,7 @@ public class Usercinemaview extends BaseEntity<Long> {
 	private String DefaultPassword;
 	private String RealUserName;
 	private String RealPassword;
+	private Integer IsUseLowestPriceReport;
 
 	public String getRealUserName() {
 		return UserName==null||UserName.isEmpty() ? DefaultUserName : UserName;
@@ -175,5 +176,14 @@ public class Usercinemaview extends BaseEntity<Long> {
 	public void setDefaultPassword(String DefaultPassword) {
 		this.DefaultPassword = DefaultPassword;
 	}
+
+	public Integer getIsUseLowestPriceReport() {
+		return IsUseLowestPriceReport;
+	}
+
+	public void setIsUseLowestPriceReport(Integer isUseLowestPriceReport) {
+		IsUseLowestPriceReport = isUseLowestPriceReport;
+	}
+	
 
 }

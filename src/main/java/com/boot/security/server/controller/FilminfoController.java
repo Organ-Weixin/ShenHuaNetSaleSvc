@@ -118,10 +118,11 @@ public class FilminfoController {
             if(file!=null){
                 String originalName = file.getOriginalFilename();
                 suffix=originalName.substring(originalName.lastIndexOf(".")+1);//文件后缀
-                returnroot=request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+request.getContextPath()+"/upload/filmImage";
+                returnroot=request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+request.getContextPath()+"/upload";
                 //上线路径
                 //onlinePath=path.getParentFile().getParentFile().getParent()+File.separator+"uploads"+File.separator;
-                saveroot=ResourceUtils.getURL("classpath:").getPath()+File.separator+"static/upload/filmImage";
+                //saveroot=ResourceUtils.getURL("classpath:").getPath()+File.separator+"static/upload/filmImage";
+        		saveroot=new File(System.getProperty("catalina.home")).getAbsolutePath()+File.separator+"webapps/upload";
                 path=new SimpleDateFormat("yyyyMM").format(new Date());
                 fileName=new Date().getTime()+new Random().nextInt(1000)+"." +suffix;//新的文件名
                 File files =new File(saveroot+ File.separator +path+ File.separator);

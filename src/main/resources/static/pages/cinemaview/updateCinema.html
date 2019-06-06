@@ -179,6 +179,16 @@
 					<input class='form-control' placeholder='' type='text' name='cinemaPhone' id='CinemaPhone' data-bv-notempty='true' data-bv-notempty-message='影院电话'>
 				</div>
 			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>是否使用最低价上报<font style="color:red">*</font></label>
+				<div class='col-md-10'>
+					<select class="form-control" id="IsUseLowestPriceReport" name="isUseLowestPriceReport">
+								<option selected="selected" value="">请选择...</option>
+								<option value="0">否</option>
+								<option value="1">是</option>
+						</select>
+				</div>
+			</div>
 				</div> 
 			<div class="form-actions">
 				<div class="row" align="center">
@@ -232,6 +242,7 @@
 						$('#TicketHint').val(data.ticketHint);
 						$('#CinemaLabel').val(data.cinemaLabel);
 						$('#CinemaPhone').val(data.cinemaPhone);
+						$('#IsUseLowestPriceReport').val(data.isUseLowestPriceReport);
 					}
 				});
 			}

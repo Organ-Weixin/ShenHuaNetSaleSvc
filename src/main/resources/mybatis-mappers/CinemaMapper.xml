@@ -156,6 +156,9 @@
 			<if test="CinemaId != null">
 				CinemaId = #{CinemaId}, 
 			</if>
+			<if test="IsUseLowestPriceReport != null">
+				IsUseLowestPriceReport = #{IsUseLowestPriceReport}, 
+			</if>
 		</set>
 
 		where t.Id = #{Id}

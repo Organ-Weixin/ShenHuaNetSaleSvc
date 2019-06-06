@@ -186,6 +186,9 @@
 			<if test="DeliveryMark != null">
 				DeliveryMark = #{DeliveryMark}, 
 			</if>
+			<if test="IsReady != null">
+				IsReady = #{IsReady}, 
+			</if>
 			<if test="OrderPayFlag != null">
 				OrderPayFlag = #{OrderPayFlag}, 
 			</if>

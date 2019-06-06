@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -64,6 +66,7 @@ import com.boot.security.server.apicontroller.reply.QueryUserOrdersReply.UserOrd
 import com.boot.security.server.apicontroller.reply.RefundPaymentReply.RefundPaymentReplyOrder;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.apicontroller.reply.PrePayGoodsOrderQueryJson.PrePayGoodsOrderQueryJsonGoods;
+import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Cinemapaymentsettings;
 import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.CouponsStatusEnum;
@@ -128,6 +131,7 @@ public class OrderController {
 	private GoodsOrderServiceImpl _goodsOrderService;
 	@Autowired
 	private HttpServletRequest request;
+	protected static Logger log = LoggerFactory.getLogger(OrderController.class);
 
 	// region 锁座
 	// @PostMapping("/LockSeat")
@@ -513,7 +517,8 @@ public class OrderController {
 				}
 			}
 		}
-		// 价格计算
+		
+		//region 购票价格计算（得到最终上报价，最终销售价，最终服务费）
 		Double SubmitPrice;// 最终上报价格
 		Double SalePrice;// 最终销售价格
 		Double TicketFee;// 最终服务费
@@ -536,13 +541,34 @@ public class OrderController {
 		Double priceplanFee = null == priceplan.getTicketFee() ? 0 : priceplan.getTicketFee();
 		Double priceplanAddFee = null == priceplan.getAddFee() ? 0 : priceplan.getAddFee();
 		Double priceplanCinemaAllowance = null == priceplan.getCinemaAllowance() ? 0 : priceplan.getCinemaAllowance();
-		// 上报价=场次标准价+场次服务费
-		SubmitPrice = sessioninfo.getStandardPrice() + sessioninfo.getTicketFee();
-		// 服务费=场次服务费+场次增值服务费-场次影院补贴+价格设置表服务费+价格设置表增值服务费-价格设置表影院补贴
-		TicketFee = sessioninfo.getTicketFee() + sessioninfo.getAddFee() - sessioninfo.getCinemaAllowance()
-				+ priceplanFee + priceplanAddFee - priceplanCinemaAllowance;
-		// 销售价=真实标准价+服务费
-		SalePrice = priceplanPrice + TicketFee;
+		Double basisSubmitPrice;//基础上报价格=标准价/最低价
+		System.out.println("====="+userCinema.getIsUseLowestPriceReport());
+		if(userCinema.getIsUseLowestPriceReport()==1){
+			basisSubmitPrice=sessioninfo.getLowestPrice();
+		}else{
+			basisSubmitPrice=sessioninfo.getStandardPrice();
+		}
+		System.out.println("-----"+userCinema.getIsUseLowestPriceReport());
+		if(userCinema.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
+			//如果是辰星系统
+			// 上报价=场次标准价+场次服务费+场次增值服务费
+			SubmitPrice = basisSubmitPrice + sessioninfo.getTicketFee()+sessioninfo.getAddFee();
+			// 服务费=场次服务费+场次增值服务费-场次影院补贴
+			TicketFee = sessioninfo.getTicketFee() + sessioninfo.getAddFee() - sessioninfo.getCinemaAllowance();
+			// 销售价=真实标准价+服务费
+			SalePrice = priceplanPrice + TicketFee;
+		}else
+		{
+			//其他系统
+			//上报价=场次标准价+服务费（后台设置影院服务费）
+			SubmitPrice=basisSubmitPrice+priceplanFee;
+			// 服务费=价格设置表服务费+价格设置表增值服务费-价格设置表影院补贴
+		    TicketFee = priceplanFee + priceplanAddFee - priceplanCinemaAllowance;
+		    // 销售价=真实标准价+服务费
+		 	SalePrice = priceplanPrice + TicketFee;
+		}
+		//endregion
+		
 		// 循环处理每一个座位
 		//region 更新优惠券和价格到订单详细
 		for (Orderseatdetails seat : order.getOrderSeatDetails()) {
@@ -552,50 +578,7 @@ public class OrderController {
 			if(!CouponsCode.equals("")&&!CouponsCode.equals(null)){
 				CouponsView couponsview = _couponsService.getWithCouponsCode(CouponsCode);
 				if(couponsview.getCoupons()!=null){
-					boolean ifCanUse = true;
-					//优惠券状态不对
-					if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
-						ifCanUse=false;
-					}
-					// 不在有效期范围内
-					if (couponsview.getCoupons().getEffectiveDate().getTime() > new Date().getTime()
-							|| couponsview.getCoupons().getExpireDate().getTime() <= new Date().getTime()) {
-						ifCanUse = false;
-					}
-					if (couponsview.getCouponsgroup().getCanUsePeriodType() == 2) {
-						Calendar c = Calendar.getInstance();
-						c.setTime(new Date());
-						int weekday = c.get(Calendar.DAY_OF_WEEK);// 1周日，2周一，7周六
-						//不在指定周几
-						if (!couponsview.getCouponsgroup().getWeekDays().contains(String.valueOf(weekday))) {
-							ifCanUse = false;
-						}
-						String[] timeperiods=couponsview.getCouponsgroup().getTimePeriod().split(",");
-						SimpleDateFormat dateFormater = new SimpleDateFormat("HHmm");
-						boolean ifintimeperiod=false;
-						for(String timeperiod:timeperiods){
-							int stime= Integer.parseInt(timeperiod.split("-")[0].replace(":",""));
-							int etime= Integer.parseInt(timeperiod.split("-")[1].replace(":",""));
-							int date= Integer.parseInt(dateFormater.format(new Date()));
-							if(date>stime&&date<etime){
-								ifintimeperiod = true;
-								break;
-							}else
-							{
-								continue;
-							}
-						}
-						//不在所有的可用时间段内
-						if(!ifintimeperiod){
-							ifCanUse = false;
-							}
-					}
-					//如果是部分门店可用，并且当前订单的影院不在可用门店里面
-					if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
-						if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(order.getOrderBaseInfo().getCinemaCode())==-1){
-							ifCanUse = false;
-						}
-					}
+                    boolean ifCanUse=CouponsCanUse(couponsview,order.getOrderBaseInfo().getCinemaCode());
 					//如果减免类型是影片
 					if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1){
 						if(couponsview.getCouponsgroup().getFilmCodes().indexOf(order.getOrderBaseInfo().getFilmCode())>-1){
@@ -612,6 +595,7 @@ public class OrderController {
 			}
 		}
 		//endregion
+		
 		//总优惠金额=所有座位的优惠金额相加
 		for(int i=0; i<order.getOrderSeatDetails().size(); i++){
 			if(order.getOrderSeatDetails().get(i).getConponCode()==null||order.getOrderSeatDetails().get(i).getConponCode()==""){
@@ -860,13 +844,30 @@ public class OrderController {
 		Double priceplanFee = null == priceplan.getTicketFee() ? 0 : priceplan.getTicketFee();
 		Double priceplanAddFee = null == priceplan.getAddFee() ? 0 : priceplan.getAddFee();
 		Double priceplanCinemaAllowance = null == priceplan.getCinemaAllowance() ? 0 : priceplan.getCinemaAllowance();
-		// 上报价=场次标准价+场次服务费
-		SubmitPrice = sessioninfo.getStandardPrice() + sessioninfo.getTicketFee();
-		// 服务费=场次服务费+场次增值服务费-场次影院补贴+价格设置表服务费+价格设置表增值服务费-价格设置表影院补贴
-		TicketFee = sessioninfo.getTicketFee() + sessioninfo.getAddFee() - sessioninfo.getCinemaAllowance()
-				+ priceplanFee + priceplanAddFee - priceplanCinemaAllowance;
-		// 销售价=真实标准价+服务费
-		SalePrice = priceplanPrice + TicketFee;
+		Double basisSubmitPrice;//基础上报价格=标准价/最低价
+		if(userCinema.getIsUseLowestPriceReport()==1){
+			basisSubmitPrice=sessioninfo.getLowestPrice();
+		}else{
+			basisSubmitPrice=sessioninfo.getStandardPrice();
+		}
+		if(userCinema.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
+			//如果是辰星系统
+			// 上报价=场次标准价+场次服务费+场次增值服务费
+			SubmitPrice = basisSubmitPrice + sessioninfo.getTicketFee()+sessioninfo.getAddFee();
+			// 服务费=场次服务费+场次增值服务费-场次影院补贴
+			TicketFee = sessioninfo.getTicketFee() + sessioninfo.getAddFee() - sessioninfo.getCinemaAllowance();
+			// 销售价=真实标准价+服务费
+			SalePrice = priceplanPrice + TicketFee;
+		}else
+		{
+			//其他系统
+			//上报价=场次标准价+服务费（后台设置影院服务费）
+			SubmitPrice=basisSubmitPrice+priceplanFee;
+			// 服务费=价格设置表服务费+价格设置表增值服务费-价格设置表影院补贴
+		    TicketFee = priceplanFee + priceplanAddFee - priceplanCinemaAllowance;
+		    // 销售价=真实标准价+服务费
+		 	SalePrice = priceplanPrice + TicketFee;
+		}
 		// 循环处理每一个座位
 		//region 更新优惠券和价格到订单详细
 		for (Orderseatdetails seat : order.getOrderSeatDetails()) {

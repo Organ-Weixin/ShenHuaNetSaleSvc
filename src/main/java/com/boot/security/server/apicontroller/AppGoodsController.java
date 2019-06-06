@@ -160,6 +160,7 @@ public class AppGoodsController {
 				orderbase.setDeliveryType(QueryJson.getDeliveryType());
 				orderbase.setDeliveryAddress(QueryJson.getDeliveryAddress());
 				orderbase.setDeliveryTime(QueryJson.getDeliveryTime());
+				orderbase.setIsReady(QueryJson.getIsReady());
 				_goodsOrderService.UpdateOrderBaseInfo(orderbase);
 			}
 			return reply;
@@ -430,7 +431,6 @@ public class AppGoodsController {
 				if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
 					ifCanUse=false;
 				}
-				System.out.println("状态通过"+CouponsCode);
 				// 不在有效期范围内
 				if (couponsview.getCoupons().getEffectiveDate().getTime() > new Date().getTime()
 						|| couponsview.getCoupons().getExpireDate().getTime() <= new Date().getTime()) {

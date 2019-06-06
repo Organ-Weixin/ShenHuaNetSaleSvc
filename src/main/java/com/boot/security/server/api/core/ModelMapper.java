@@ -274,8 +274,6 @@ public class ModelMapper {
 		order.setTotalSettlePrice(0D);//暂时设为0
 		order.setTotalFee(0D);//暂时设为0
 		order.setMobilePhone(queryXmlObj.getMobilePhone());
-		order.setCardNo(queryXmlObj.getCardNo());
-		order.setCardPassword(queryXmlObj.getCardPassword());
 		order.setUpdated(new Date());
 		if (order.getOrderPayType() != null && OrderPayTypeEnum.MemberCardPay.getTypeCode() == order.getOrderPayType()) {
 			order.setPaySeqNo(queryXmlObj.getPaySeqNo());

@@ -10,8 +10,6 @@ public class SubmitGoodsOrderQueryXml {
 	private String OrderCode;
 	private String PaySeqNo;//满天星会员卡支付交易号
 	private String MobilePhone;
-	private String CardNo;//1905会员卡支付需要
-	private String CardPassword;//1905会员卡支付需要
 	private SubmitGoodsOrderQueryXmlGoodsList GoodsList;
 	public String getCinemaCode() {
 		return CinemaCode;
@@ -36,18 +34,6 @@ public class SubmitGoodsOrderQueryXml {
 	}
 	public void setMobilePhone(String mobilePhone) {
 		MobilePhone = mobilePhone;
-	}
-	public String getCardNo() {
-		return CardNo;
-	}
-	public void setCardNo(String cardNo) {
-		CardNo = cardNo;
-	}
-	public String getCardPassword() {
-		return CardPassword;
-	}
-	public void setCardPassword(String cardPassword) {
-		CardPassword = cardPassword;
 	}
 	public SubmitGoodsOrderQueryXmlGoodsList getGoodsList() {
 		return GoodsList;

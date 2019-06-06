@@ -7,6 +7,7 @@ public class CreateGoodsOrderQueryJson {
 	private int DeliveryType;//送货类型
 	private String DeliveryAddress;//送货地址
 	private String DeliveryTime;//送货时间
+	private int IsReady;//是否备餐
 	private String QueryXml;
 	public String getUserName() {
 		return UserName;
@@ -43,6 +44,13 @@ public class CreateGoodsOrderQueryJson {
 	}
 	public void setDeliveryTime(String deliveryTime) {
 		DeliveryTime = deliveryTime;
+	}
+	
+	public int getIsReady() {
+		return IsReady;
+	}
+	public void setIsReady(int isReady) {
+		IsReady = isReady;
 	}
 	public String getQueryXml() {
 		return QueryXml;

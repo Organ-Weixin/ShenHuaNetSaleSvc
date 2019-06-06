@@ -80,6 +80,7 @@ import javax.annotation.Resource;
 import java.awt.*;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -1018,12 +1019,17 @@ public class WebService {
 			map.put("OrderCode",orderview.getOrderBaseInfo().getLocalOrderCode());
 			map.put("MobilePhone",orderview.getOrderBaseInfo().getMobilePhone());
 			StringBuffer SaleMerInfos = new StringBuffer();
+			JSONObject MerExtend=new JSONObject();
+			MerExtend.put("is_ready",orderview.getOrderBaseInfo().getIsReady());
+			MerExtend.put("ready_time",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+			MerExtend.put("take_type",orderview.getOrderBaseInfo().getDeliveryType());
+			MerExtend.put("meal_remark",orderview.getOrderBaseInfo().getDeliveryMark());
 			orderview.getOrderGoodsDetails()
 					.forEach(n -> SaleMerInfos.append(n.getGoodsCode())// 商品编码
 							.append(n.getGoodsName())//商品名称
 							.append(new DecimalFormat("#0.00").format(n.getStandardPrice()))// 销售价
 							.append(n.getGoodsCount())//商品数量
-							.append("{}")//商品详情扩展信息（JSON格式）
+							.append(MerExtend)//商品详情扩展信息（JSON格式）
 							.append(n.getShowSeqNo()));
 			map.put("SaleMerInfos", SaleMerInfos.toString());
 			map.put("Compress", "0");
@@ -1046,7 +1052,7 @@ public class WebService {
 				saleMer.setMerName(orderdetail.getGoodsName());
 				saleMer.setMerPrice(new DecimalFormat("#0.00").format(orderdetail.getStandardPrice()));
 				saleMer.setSaleAmount(orderdetail.getGoodsCount());
-				saleMer.setMerExtend("{}");
+				saleMer.setMerExtend(MerExtend.toString());
 				saleMer.setSeqNo(orderdetail.getShowSeqNo().toString());
 				saleMerInfo.add(saleMer);
 			}
