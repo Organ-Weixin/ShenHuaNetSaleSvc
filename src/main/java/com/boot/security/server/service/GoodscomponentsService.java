@@ -14,6 +14,8 @@ public interface GoodscomponentsService {
 	    
 	    int deleteByGoodsCode(String goodscode);
 	    
+	    int deleteByPackageCode(String cinemacode,String packagecode);
+	    
 	    int update(Goodscomponents goodscomponents);
 	    
 	    int save(Goodscomponents goodscomponents);

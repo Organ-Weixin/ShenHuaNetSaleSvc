@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boot.security.server.page.table.PageTableRequest;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
+import com.boot.security.server.service.impl.GoodscomponentsServiceImpl;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.api.core.NetSaleSvcCore;
 import com.boot.security.server.api.core.QueryGoodsReply;
 import com.boot.security.server.dao.GoodsDao;
 import com.boot.security.server.model.Goods;
+import com.boot.security.server.model.Goodscomponents;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -31,6 +33,8 @@ public class GoodsController {
 
     @Autowired
     private GoodsDao goodsDao;
+    @Autowired
+    private GoodscomponentsServiceImpl goodscomponentsService;
 
     @PostMapping
     @ApiOperation(value = "保存")
@@ -49,6 +53,30 @@ public class GoodsController {
     @PutMapping
     @ApiOperation(value = "修改")
     public Goods update(@RequestBody Goods goods) {
+    	List<Goodscomponents> goodscomponentsList = goodscomponentsService.getByPackageCode(goods.getCinemaCode(), goods.getGoodsCode());
+    	if(goods.getRecommendCode()==null||goods.getRecommendCode()==""){
+    		goods.setIsRecommand(0);
+    		if(goodscomponentsList.size()>0){
+    			goodscomponentsService.deleteByPackageCode(goods.getCinemaCode(), goods.getGoodsCode());
+    		}
+    	}else{
+    		goods.setIsRecommand(1);
+    		Goodscomponents goodscomponents = new Goodscomponents();
+    		goodscomponents.setCinemaCode(goods.getCinemaCode());
+    		goodscomponents.setPackageCode(goods.getGoodsCode());
+    		goodscomponents.setPackageName(goods.getGoodsName());
+    		goodscomponents.setPackagePic(goods.getGoodsPic());
+    		goodscomponents.setGoodsCode(goods.getGoodsCode());
+    		goodscomponents.setGoodsName(goods.getGoodsName());
+    		goodscomponents.setGoodsCount("1");
+    		goodscomponents.setGoodsStandardPrice(goods.getStandardPrice());
+    		goodscomponents.setGoodsSettlePrice(goods.getSettlePrice());
+    		goodscomponents.setPackageStandardPrice(goods.getStandardPrice());
+    		goodscomponents.setPackageSettlePrice(goods.getSettlePrice());
+    		goodscomponents.setRecommendCode(goods.getRecommendCode());
+    		goodscomponents.setStatus(1);
+    		goodscomponentsService.save(goodscomponents);
+    	}
         goodsDao.update(goods);
 
         return goods;

@@ -111,12 +111,12 @@ public class MemberController {
 			@PathVariable String OpenID,@PathVariable String CardNo,@PathVariable String CardPassword){
 		LoginCardReply loginCardReply = new NetSaleSvcCore().LoginCard(Username, Password, CinemaCode, CardNo, CardPassword);
 		if(loginCardReply.Status.equals("Success")){
-			Membercardlevel membercardlevel = _memberCardLevelService.getByCinemaCodeAndLevelCode(loginCardReply.getCinemaCode(), loginCardReply.getCard().getLevelCode());
+			/*Membercardlevel membercardlevel = _memberCardLevelService.getByCinemaCodeAndLevelCode(loginCardReply.getCinemaCode(), loginCardReply.getCard().getLevelCode());
 			if(membercardlevel==null||membercardlevel.getStatus()!=1){
 				loginCardReply.setCard(null);
 				loginCardReply.SetCardLevelNonsupportReply();
 				return loginCardReply;
-			}
+			}*/
 			Membercard membercard = _memberCardService.getByCardNo(CinemaCode, CardNo);
 			membercard.setOpenId(OpenID);
 			membercard.setStatus(1);

@@ -353,6 +353,9 @@ public class AppGoodsController {
         
         //返回
         List<ComponetsReply> data = new ArrayList<ComponetsReply>();
+        if(Integer.valueOf(seatNum)>3){
+        	seatNum = "3";
+        }
         List<Goodscomponents> componentslist = goodscomponentsService.getByRecommendCode(cinemaCode, seatNum);
         for(Goodscomponents component : componentslist){
         	ComponetsReply newComponent = new ComponetsReply();

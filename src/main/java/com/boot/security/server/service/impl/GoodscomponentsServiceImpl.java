@@ -58,5 +58,9 @@ public class GoodscomponentsServiceImpl implements GoodscomponentsService{
 	public List<Goodscomponents> getByPackageCode(String cinemacode, String packagecode) {
 		return goodscomponentsDao.getByPackageCode(cinemacode, packagecode);
 	}
+	@Override
+	public int deleteByPackageCode(String cinemacode, String packagecode) {
+		return goodscomponentsDao.deleteByPackageCode(cinemacode, packagecode);
+	}
 	
 }

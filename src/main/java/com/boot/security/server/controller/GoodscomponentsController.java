@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.security.server.page.table.PageTableRequest;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
+import com.boot.security.server.service.impl.GoodscomponentsServiceImpl;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.utils.UserUtil;
@@ -38,6 +40,8 @@ public class GoodscomponentsController {
     private GoodscomponentsDao goodscomponentsDao;
     @Autowired
     private GoodsDao goodsDao;
+    @Autowired
+    private GoodscomponentsServiceImpl goodscomponentsService;
 
     @PostMapping
     @ApiOperation(value = "保存")
@@ -162,5 +166,12 @@ public class GoodscomponentsController {
     @ApiOperation(value = "根据套餐编码删除")
     public void deleteByPackageCode(@PathVariable String cinemaCode, @PathVariable String packageCode) {
         goodscomponentsDao.deleteByPackageCode(cinemaCode, packageCode);
+    }
+    
+    @RequestMapping("/getRecommandCode")
+    @ApiOperation(value = "获取推荐套餐编码")
+    public List<Goodscomponents> getRecommandCode(@RequestParam("cinemacode")String cinemacode,@RequestParam("packagecode")String packagecode){
+    	List<Goodscomponents> goodscomponentsList = goodscomponentsService.getByPackageCode(cinemacode, packagecode);
+    	return goodscomponentsList;
     }
 }

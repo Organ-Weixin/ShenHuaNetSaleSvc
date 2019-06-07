@@ -11,6 +11,7 @@
 			<h2>商品信息</h2>
 			<input type="hidden" id="Id" name="id">
 			<input type="hidden" id="CinemaCode" name="cinemaCode">
+			<input type="hidden" id="GoodsCode" name="goodsCode">
 			<div class='form-group'>
 				<input type="hidden" name="goodsType"  id="GoodsType"/>
 				<label class='col-md-2 control-label'>商品分类：</label>
@@ -30,7 +31,7 @@
 			<div class='form-group'>
 				<label class='col-md-2 control-label'>商品名称：</label>
 				<div class='col-md-10'>
-					<input class='form-control' type='text' name='goodsName' id='GoodsName' readonly='readonly'>
+					<input class='form-control' type='text' name='goodsName' id='GoodsName'>
 				</div>
 			</div>
 			<div class='form-group'>
@@ -56,6 +57,17 @@
 				<label class='col-md-2 control-label'>展示顺序：</label>
 				<div class='col-md-10'>
 					<input class='form-control' type='text' name='showSeqNo' id='ShowSeqNo' >
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>推荐类型：</label>
+				<div class='col-md-10'>
+					<select id="recommendSelect" name="recommendCode">
+						<option value="">选择推荐类型</option>
+						<option value="1">单人套餐</option>
+						<option value="2">双人套餐</option>
+						<option value="3">多人套餐</option>
+					</select>
 				</div>
 			</div>
 			
@@ -157,9 +169,28 @@
 						$('#GoodsStatus').val(data.goodsStatus);
 						$('#IsRecommand').val(data.isRecommand);
 						$('#IsPackage').val(data.isPackage);
+						if(data.isRecommand==1){
+							getRecommandCode(data.cinemaCode,data.goodsCode);
+						}
 					}
 				});
 			}
+		}
+		
+		function getRecommandCode(cinemacode,packagecode){
+			$.ajax({
+				url:'/goodscomponentss/getRecommandCode',
+				data:{
+					"cinemacode":cinemacode,
+					"packagecode":packagecode
+				},
+				type:'post',
+				success:function(data){
+					if(data.length>0){
+						$("#recommendSelect").val(data[0].recommendCode);
+					}
+				}
+			});
 		}
 
 		function update() {

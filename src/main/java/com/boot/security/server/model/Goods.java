@@ -26,6 +26,7 @@ public class Goods {
 	
 	private String CinemaName;	//后台需要
 	private String TypeName;
+	private String RecommendCode;
 
 	public Long getId() {
 		return Id;
@@ -152,6 +153,12 @@ public class Goods {
 	}
 	public void setTypeName(String typeName) {
 		TypeName = typeName;
+	}
+	public String getRecommendCode() {
+		return RecommendCode;
+	}
+	public void setRecommendCode(String recommendCode) {
+		RecommendCode = recommendCode;
 	}
 	
 }
