@@ -21,6 +21,7 @@ import com.boot.security.server.api.ctms.reply.Dy1905GoodsListResult.ResBean.Goo
 import com.boot.security.server.api.ctms.reply.Dy1905LockSeatCustomResult.ResBean.SeatInfosBean.SeatInfoBean;
 import com.boot.security.server.api.ctms.reply.Dy1905MakeMemberCardResult.ResBean.CardInfoBean;
 import com.boot.security.server.api.ctms.reply.Dy1905MemberTypeListResult.ResBean.TypesBean.TypeBean.LevelsBean.LevelBean;
+import com.boot.security.server.apicontroller.reply.SellTicketCustomMemberReply;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
@@ -31,8 +32,10 @@ import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.LoveFlagEnum;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
+import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
+import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
@@ -41,15 +44,20 @@ import com.boot.security.server.model.SessionSeatStatusEnum;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
+import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
+import com.boot.security.server.service.impl.OrderServiceImpl;
+import com.boot.security.server.service.impl.OrderseatdetailsServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
+import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
+import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.HttpHelper;
 import com.boot.security.server.utils.MD5Util;
 import com.boot.security.server.utils.SpringUtil;
@@ -69,6 +77,10 @@ public class Dy1905Interface implements ICTMSInterface {
 	MemberCardLevelServiceImpl memberCardLevelService = SpringUtil.getBean(MemberCardLevelServiceImpl.class);
 	GoodsServiceImpl goodsService = SpringUtil.getBean(GoodsServiceImpl.class);
 	GoodsOrderServiceImpl goodsOrderService = SpringUtil.getBean(GoodsOrderServiceImpl.class);
+	UserCinemaViewServiceImpl userCinemaViewService = SpringUtil.getBean(UserCinemaViewServiceImpl.class);
+	OrderServiceImpl orderService = SpringUtil.getBean(OrderServiceImpl.class);
+	OrderseatdetailsServiceImpl orderseatdetailsService = SpringUtil.getBean(OrderseatdetailsServiceImpl.class);
+	UserInfoServiceImpl userInfoService = SpringUtil.getBean(UserInfoServiceImpl.class);
 	/*
 	 * 查询影院信息（完成）
 	 * */
@@ -938,7 +950,111 @@ public class Dy1905Interface implements ICTMSInterface {
 			reply.ErrorMessage = Dy1905Reply.getMemberCardDeductResult().getResultMsg();
 			return reply;
 		}
-		
+		/*
+		 * 会员卡购票
+		 * */
+		public SellTicketCustomMemberReply SellTicketCustomMember(String Username,String Password,String CinemaCode,String LockOrderCode,String CardNo,String CardPassword) throws Exception{
+			SellTicketCustomMemberReply reply = new SellTicketCustomMemberReply();
+			// 获取用户信息
+			Userinfo UserInfo = userInfoService.getByUserCredential(Username, Password);
+			if (UserInfo == null) {
+				reply.SetUserCredentialInvalidReply();
+				return reply;
+			}
+			// 验证影院是否存在且可访问
+			Usercinemaview userCinema = userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),CinemaCode);
+			if (userCinema == null) {
+				reply.SetCinemaInvalidReply();
+				return reply;
+			}
+			//验证订单是否存在
+			Orders orders = orderService.getByLockOrderCode(CinemaCode, LockOrderCode);
+			if(orders == null){
+				reply.SetOrderNotExistReply();
+				return reply;
+			}
+			//获取会员价格
+			CTMSQueryDiscountReply discountReply = QueryDiscount(userCinema, null, CardNo, CardPassword, null, orders.getSessionCode(), null, null, null, null, null);
+			Sessioninfo sessioninfo = sessioninfoService.getBySessionCode(userCinema.getUserId(), CinemaCode, orders.getSessionCode());
+			if(sessioninfo == null){
+				reply.SetSessionInvalidReply();
+				return reply;
+			}
+			//获取会员卡等级
+			Membercard membercard = memberCardService.getByCardNo(CinemaCode, CardNo);
+			if(membercard == null){
+				reply.SetMemberCardInvalidReply();
+				return reply;
+			}
+			String UseMonthCard;
+			if(membercard.getLevelCode().equals("4")){
+				UseMonthCard = "1";
+			}else{
+				UseMonthCard = "0";
+			}
+			List<Orderseatdetails> orderseatdetailsList = orderseatdetailsService.getByOrderId(orders.getId());
+			//更新订单详细表
+			for(Orderseatdetails orderseatdetails:orderseatdetailsList){
+				orderseatdetails.setSalePrice(Double.valueOf(discountReply.getPrice()));
+				orderseatdetailsService.update(orderseatdetails);
+			}
+			Map<String,String> param = new LinkedHashMap<String,String>();
+			param.put("pAppCode", userCinema.getDefaultUserName());
+			param.put("pOrderID", LockOrderCode);
+			//循环遍历出座位号、会员价、服务费
+			String SeatCode = null;
+			String MemberPrice = null;
+			String Fee = null;
+			SeatCode = orderseatdetailsList.get(0).getSeatCode();
+			MemberPrice = String.valueOf(orderseatdetailsList.get(0).getSalePrice());
+			Fee = String.valueOf(orderseatdetailsList.get(0).getFee());
+			if(orderseatdetailsList.size()>1){
+				for(int i=1;i<orderseatdetailsList.size();i++){
+					SeatCode += ","+orderseatdetailsList.get(i).getSeatCode();
+					MemberPrice += ","+orderseatdetailsList.get(i).getSalePrice();
+					Fee += ","+orderseatdetailsList.get(i).getFee();
+				}
+			}
+			param.put("pSeatNo", SeatCode);
+			param.put("pMemberPrice", MemberPrice);
+			param.put("pFee", Fee);
+			param.put("pLowestPrice", String.valueOf(sessioninfo.getLowestPrice()));
+			param.put("pCardNo", CardNo);
+			param.put("pCardPwd", CardPassword);
+			param.put("pUseMonthCard", UseMonthCard);
+			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + LockOrderCode + SeatCode + MemberPrice + Fee 
+					+ sessioninfo.getLowestPrice() + CardNo + CardPassword + UseMonthCard + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
+			param.put("pVerifyInfo", pVerifyInfo);
+			String SellTicketCustomMemberResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/SellTicketCustom/member",param,"UTF-8");
+			System.out.println(SellTicketCustomMemberResult);
+			Gson gson = new Gson();
+			Dy1905SellTicketCustomMemberResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(SellTicketCustomMemberResult,"SellTicketResult"), Dy1905SellTicketCustomMemberResult.class);
+			if(Dy1905Reply.getSellTicketResult().getResultCode().equals("0")){
+				System.out.println("会员卡卡号"+CardNo);
+				reply.setOrderNo(Dy1905Reply.getSellTicketResult().getOrderNo());
+				reply.setPrintNo(Dy1905Reply.getSellTicketResult().getPrintNo());
+				reply.setVerifyCode(Dy1905Reply.getSellTicketResult().getVerifyCode());
+				reply.SetSuccessReply();
+				//更新订单表
+				orders.setOrderStatus(OrderStatusEnum.Payed.getStatusCode());
+				orders.setUpdated(new Date());
+				orders.setSubmitTime(new Date());
+				orders.setPayTime(new Date());
+				orders.setOrderPayType(OrderPayTypeEnum.MemberCardPay.getTypeCode());
+				orders.setCardNo(CardNo);
+				orders.setErrorMessage(Dy1905Reply.getSellTicketResult().getResultMsg());
+				orders.setSubmitOrderCode(Dy1905Reply.getSellTicketResult().getOrderNo());
+				orders.setPrintNo(Dy1905Reply.getSellTicketResult().getPrintNo());
+				orders.setVerifyCode(Dy1905Reply.getSellTicketResult().getVerifyCode());
+				orders.setTotalPrice(orderseatdetailsList.get(0).getPrice()*orders.getTicketCount());
+				orders.setTotalFee(orderseatdetailsList.get(0).getFee()*orders.getTicketCount());
+				orders.setTotalSalePrice(orderseatdetailsList.get(0).getSalePrice()*orders.getTicketCount());
+				orderService.update(orders);
+			}
+			reply.ErrorCode = Dy1905Reply.getSellTicketResult().getResultCode();
+			reply.ErrorMessage = Dy1905Reply.getSellTicketResult().getResultMsg();
+			return reply;
+		}
 		/*
 		 * 会员卡支付撤销（无）
 		 * */
@@ -1387,5 +1503,9 @@ public class Dy1905Interface implements ICTMSInterface {
 			reply.ErrorCode = orderReply.ErrorCode;
 			reply.ErrorMessage = orderReply.ErrorMessage;
 			return reply;
+		}
+		public static void main(String[] args) {
+			String pVerifyInfo = MD5Util.MD5Encode("1000000035" + "1559986441248nkyngxk" + "66a16ca61f729e0c846983f8c0f4fd53","UTF-8").toLowerCase();
+			System.out.println(pVerifyInfo);
 		}
 }

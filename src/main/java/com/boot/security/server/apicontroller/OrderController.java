@@ -543,6 +543,9 @@ public class OrderController {
 		Double priceplanCinemaAllowance = null == priceplan.getCinemaAllowance() ? 0 : priceplan.getCinemaAllowance();
 		Double basisSubmitPrice;//基础上报价格=标准价/最低价
 		System.out.println("====="+userCinema.getIsUseLowestPriceReport());
+		if(userCinema.getIsUseLowestPriceReport()==null){
+			userCinema.setIsUseLowestPriceReport(0);
+		}
 		if(userCinema.getIsUseLowestPriceReport()==1){
 			basisSubmitPrice=sessioninfo.getLowestPrice();
 		}else{

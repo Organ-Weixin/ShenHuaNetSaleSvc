@@ -33,6 +33,7 @@ import com.boot.security.server.apicontroller.reply.PrePayParametersReply;
 import com.boot.security.server.apicontroller.reply.QueryCardLevelReply;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByPhoneReply;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
+import com.boot.security.server.apicontroller.reply.SellTicketCustomMemberReply;
 import com.boot.security.server.apicontroller.reply.QueryCardLevelReply.QueryCardLevelReplyCard;
 import com.boot.security.server.apicontroller.reply.QueryCardLevelReply.QueryCardLevelReplyCard.QueryCardLevelReplyCardLeve;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardByOpenIDReply.QueryMemberCardByOpenIDReplyOpenIDCard;
@@ -156,7 +157,7 @@ public class MemberController {
 			@PathVariable String LockOrderCode,@PathVariable String LocalOrderCode,@PathVariable String CardNo,@PathVariable String CardPassword,
 			@PathVariable String PayAmount,@PathVariable String GoodsPayAmount,@PathVariable String SessionCode,
 			@PathVariable String FilmCode,@PathVariable String TicketNum){
-		if(SessionCode.equals(SessionCode)){
+		/*if(SessionCode.equals(SessionCode)){
 			SessionCode = "";
 		}
 		if(FilmCode.equals(FilmCode)){
@@ -164,7 +165,7 @@ public class MemberController {
 		}
 		if(TicketNum.equals(TicketNum)){
 			TicketNum = "";
-		}
+		}*/
 		Orders orders = orderService.getByLockOrderCode(CinemaCode, LockOrderCode);
 		if(orders!=null){
 			PayAmount = String.valueOf(orders.getTotalSalePrice());
@@ -181,7 +182,7 @@ public class MemberController {
 				orders.setPayTime(new Date());
 				orders.setOrderTradeNo(reply.getTradeNo());
 				orders.setCardNo(CardNo);
-				orders.setPayType(String.valueOf(OrderPayTypeEnum.MemberCardPay.getTypeCode()));
+				orders.setOrderPayType(OrderPayTypeEnum.MemberCardPay.getTypeCode());
 				orders.setUpdated(new Date());
 			}else{
 				orders.setOrderStatus(OrderStatusEnum.PayFail.getStatusCode());
@@ -195,7 +196,7 @@ public class MemberController {
 				goodsOrders.setOrderPayFlag(1);
 				goodsOrders.setOrderPayTime(new Date());
 				goodsOrders.setOrderTradeNo(reply.getTradeNo());
-				goodsOrders.setPayType(String.valueOf(OrderPayTypeEnum.MemberCardPay.getTypeCode()));
+				goodsOrders.setOrderPayType(OrderPayTypeEnum.MemberCardPay.getTypeCode());
 				goodsOrders.setUpdated(new Date());
 			}else{
 				goodsOrders.setOrderStatus(GoodsOrderStatusEnum.PayFail.getStatusCode());
@@ -203,6 +204,15 @@ public class MemberController {
 			goodsOrderService.update(goodsOrders);
 		}
 		return reply;
+	}
+	//endregion
+	
+	//region 1905会员卡购票
+	@GetMapping("/SellTicketCustomMember/{Username}/{Password}/{CinemaCode}/{LockOrderCode}/{CardNo}/{CardPassword}")
+	@ApiOperation(value = "会员卡购票（1905）")
+	public SellTicketCustomMemberReply SellTicketCustomMember(@PathVariable String Username,@PathVariable String Password,
+			@PathVariable String CinemaCode,@PathVariable String LockOrderCode,@PathVariable String CardNo,@PathVariable String CardPassword) throws Exception{
+		return new Dy1905Interface().SellTicketCustomMember(Username, Password, CinemaCode, LockOrderCode, CardNo, CardPassword);
 	}
 	//endregion
 	

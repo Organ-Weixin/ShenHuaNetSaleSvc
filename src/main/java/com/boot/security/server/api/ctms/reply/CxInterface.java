@@ -601,10 +601,10 @@ public class CxInterface implements ICTMSInterface {
 				membercard.setUserName(cxReply.getQueryMemberInfoResult().getUserName());
 				membercard.setSex(cxReply.getQueryMemberInfoResult().getSex());
 				membercard.setCreditNum(cxReply.getQueryMemberInfoResult().getCreditNum());
-				if(cxReply.getQueryMemberInfoResult().getBirthday()!=null){
+				/*if(cxReply.getQueryMemberInfoResult().getBirthday()!=null){
 					membercard.setBirthday(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 							.parse(cxReply.getQueryMemberInfoResult().getBirthday()));
-				}
+				}*/
 				// 更新
 				_membercardService.Update(membercard);
 			} else {

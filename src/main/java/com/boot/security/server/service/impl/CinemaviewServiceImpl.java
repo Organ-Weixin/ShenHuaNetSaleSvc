@@ -39,7 +39,6 @@ public class CinemaviewServiceImpl implements CinemaviewService{
 	}
 	@Override
 	public List<Cinemaview> list(Map<String, Object> params, Integer offset, Integer limit) {
-		return null;
+		return cinemaviewDao.list(params, offset, limit);
 	}
-	
 }
