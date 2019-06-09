@@ -10,6 +10,7 @@ public class Sessioninfoview {
 	private String CinemaName;
 	private String ScreenCode;
 	private String ScreenName;
+	private String ScreenType;
 	private Long UserID;
 	private String Company;
 	private String FilmCode;
@@ -64,7 +65,12 @@ public class Sessioninfoview {
 	public void setScreenName(String screenName) {
 		ScreenName = screenName;
 	}
-	
+	public String getScreenType() {
+		return ScreenType;
+	}
+	public void setScreenType(String screenType) {
+		ScreenType = screenType;
+	}
 	public Long getUserID() {
 		return UserID;
 	}

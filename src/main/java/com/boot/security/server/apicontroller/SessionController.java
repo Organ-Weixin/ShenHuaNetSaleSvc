@@ -247,6 +247,7 @@ public class SessionController {
 						QueryFimlSessionPriceReplySession sessionReply = new QueryFimlSessionPriceReplySession();
 						Sessioninfoview sessioninfoview = _sessioninfoviewService.getByCinemaCodeAndSessionCode(oneDateSession.getCCode(), oneDateSession.getSCode());
 						if(sessioninfoview!=null){
+							sessionReply.setScreenType(sessioninfoview.getScreenType());
 							if(sessioninfoview.getListingPrice()==null){
 								sessioninfoview.setListingPrice(0.00);
 							}

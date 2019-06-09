@@ -85,6 +85,7 @@ public class QueryFimlSessionPriceReply extends BaseReply{
 				private String SessionCode;
 				private String ScreenCode;
 				private String ScreenName;
+				private String ScreenType;
 				private String Language;
 				private Double SettlePrice;
 				private Double StandardPrice;
@@ -115,6 +116,12 @@ public class QueryFimlSessionPriceReply extends BaseReply{
 				}
 				public void setScreenName(String screenName) {
 					ScreenName = screenName;
+				}
+				public String getScreenType() {
+					return ScreenType;
+				}
+				public void setScreenType(String screenType) {
+					ScreenType = screenType;
 				}
 				public String getLanguage() {
 					return Language;
