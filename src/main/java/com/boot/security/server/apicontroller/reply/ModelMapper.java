@@ -132,7 +132,9 @@ public class ModelMapper {
 		if(entity.getBirthday()!=null){
 			membercard.setBirthday(new SimpleDateFormat("yyyy-MM-dd").format(entity.getBirthday()));
 		}
-		membercard.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").format(entity.getExpireDate()));
+		if(entity.getExpireDate()!=null){
+			membercard.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").format(entity.getExpireDate()));
+		}
 		if(entity.getStatus()!=null){
 			membercard.setStatus(String.valueOf(entity.getStatus()));
 		}else{

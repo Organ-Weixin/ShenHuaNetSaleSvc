@@ -83,6 +83,7 @@ public class QueryFimlSessionPriceReply extends BaseReply{
 			}
 			public static class QueryFimlSessionPriceReplySession{
 				private String SessionCode;
+				private String SessionTime;
 				private String ScreenCode;
 				private String ScreenName;
 				private String ScreenType;
@@ -104,6 +105,12 @@ public class QueryFimlSessionPriceReply extends BaseReply{
 				}
 				public void setSessionCode(String sessionCode) {
 					SessionCode = sessionCode;
+				}
+				public String getSessionTime() {
+					return SessionTime;
+				}
+				public void setSessionTime(String sessionTime) {
+					SessionTime = sessionTime;
 				}
 				public String getScreenCode() {
 					return ScreenCode;
