@@ -26,12 +26,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Document;
 
@@ -101,6 +103,7 @@ import com.boot.security.server.utils.MD5Util;
 import com.boot.security.server.utils.StrUtil;
 import com.boot.security.server.utils.WxPayUtil;
 import com.boot.security.server.utils.XmlHelper;
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import freemarker.template.utility.StringUtil;
@@ -542,7 +545,7 @@ public class OrderController {
 		Double priceplanAddFee = null == priceplan.getAddFee() ? 0 : priceplan.getAddFee();
 		Double priceplanCinemaAllowance = null == priceplan.getCinemaAllowance() ? 0 : priceplan.getCinemaAllowance();
 		Double basisSubmitPrice;//基础上报价格=标准价/最低价
-		System.out.println("====="+userCinema.getIsUseLowestPriceReport());
+		//System.out.println("====="+userCinema.getIsUseLowestPriceReport());
 		if(userCinema.getIsUseLowestPriceReport()==null){
 			userCinema.setIsUseLowestPriceReport(0);
 		}
@@ -551,7 +554,7 @@ public class OrderController {
 		}else{
 			basisSubmitPrice=sessioninfo.getStandardPrice();
 		}
-		System.out.println("-----"+userCinema.getIsUseLowestPriceReport());
+		//System.out.println("-----"+userCinema.getIsUseLowestPriceReport());
 		if(userCinema.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
 			//如果是辰星系统
 			// 上报价=场次标准价+场次服务费+场次增值服务费
@@ -640,16 +643,23 @@ public class OrderController {
 	// endregion
 
 	// region 异步接收微信支付返回
-	public void WxPayNotify() throws Exception {
+	@RequestMapping(value = "/WxPayNotify", produces = "application/json;charset=UTF-8")
+	// @RequestDescription("支付回调地址")
+	@ResponseBody
+	public void WxPayNotify(HttpServletRequest request) throws Exception {
 		// 读取返回内容
 		Map<String, String> returnmap = WxPayUtil.WxPayNotify(request);
+		//log.info("++++++++++++++++"+new Gson().toJson(returnmap));
 		if (returnmap.get("isWXsign").equals("True")) {
 			// 得到订单Id
 			Long OrderID = Long.parseLong(returnmap.get("out_trade_no").substring("yyyyMMddHHmmss".length() + 8));
 			OrderView order = _orderService.getOrderWidthId(OrderID);
 			if (returnmap.get("return_code").equals("SUCCESS") && returnmap.get("result_code").equals("SUCCESS")) {
 				// 更新订单主表
-				if (order.getOrderBaseInfo().getPayFlag() != 1) {
+				if(order.getOrderBaseInfo().getPayFlag()==null){
+					order.getOrderBaseInfo().setPayFlag(0);
+				}
+				if (order.getOrderBaseInfo().getPayFlag() == 0) {
 					order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Payed.getStatusCode());
 					order.getOrderBaseInfo().setUpdated(new Date());
 					order.getOrderBaseInfo().setOrderPayType(OrderPayTypeEnum.WxPay.getTypeCode());
@@ -734,6 +744,12 @@ public class OrderController {
 			String resultcodeValue = XmlHelper.getNodeValue(document, "/xml/result_code");
 			String refundidValue=XmlHelper.getNodeValue(document,"/xml/refund_id");
 			if (resultcodeValue.equals("SUCCESS")) {
+				//更新订单信息
+				order.setOrderStatus(OrderStatusEnum.PayBack.getStatusCode());
+				order.setRefundTradeNo(refundidValue);
+				order.setRefundTime(new Date());
+				_orderService.update(order);
+				//准备返回
 				refundpaymentReply.setData(new RefundPaymentReplyOrder());
 				refundpaymentReply.getData().setOrderCode(order.getLockOrderCode());
 				refundpaymentReply.getData().setOrderStatus(OrderStatusEnum.CastToEnum(order.getOrderStatus()).getStatusName());
@@ -848,6 +864,9 @@ public class OrderController {
 		Double priceplanAddFee = null == priceplan.getAddFee() ? 0 : priceplan.getAddFee();
 		Double priceplanCinemaAllowance = null == priceplan.getCinemaAllowance() ? 0 : priceplan.getCinemaAllowance();
 		Double basisSubmitPrice;//基础上报价格=标准价/最低价
+		if(userCinema.getIsUseLowestPriceReport()==null){
+			userCinema.setIsUseLowestPriceReport(0);
+		}
 		if(userCinema.getIsUseLowestPriceReport()==1){
 			basisSubmitPrice=sessioninfo.getLowestPrice();
 		}else{
@@ -968,18 +987,23 @@ public class OrderController {
 	//endregion
 	
 	//region 联合预支付微信异步返回
-	public void WxPayMixNotify() throws Exception {
+	@RequestMapping(value = "/WxPayMixNotify", produces = "application/json;charset=UTF-8")
+	// @RequestDescription("支付回调地址")
+	@ResponseBody
+	public void WxPayMixNotify(HttpServletRequest request) throws Exception {
 		// 读取返回内容
 		Map<String, String> returnmap = WxPayUtil.WxPayNotify(request);
 		if (returnmap.get("isWXsign").equals("True")) {
-			
 			//region 更新购票订单
 			// 得到订单Id
 			Long OrderID = Long.parseLong(returnmap.get("out_trade_no").substring("yyyyMMddHHmmss".length() + 8));
 			OrderView order = _orderService.getOrderWidthId(OrderID);
 			if (returnmap.get("return_code").equals("SUCCESS") && returnmap.get("result_code").equals("SUCCESS")) {
 				// 更新购票订单主表
-				if (order.getOrderBaseInfo().getPayFlag() != 1) {
+				if(order.getOrderBaseInfo().getPayFlag()==null){
+					order.getOrderBaseInfo().setPayFlag(0);
+				}
+				if (order.getOrderBaseInfo().getPayFlag() == 0) {
 					order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Payed.getStatusCode());
 					order.getOrderBaseInfo().setUpdated(new Date());
 					order.getOrderBaseInfo().setOrderPayType(OrderPayTypeEnum.WxPay.getTypeCode());
@@ -1013,7 +1037,10 @@ public class OrderController {
 			Goodsorders goodsorder = _goodsOrderService.getByLocalOrderCode(order.getOrderBaseInfo().getLockOrderCode());
 			if (returnmap.get("return_code").equals("SUCCESS") && returnmap.get("result_code").equals("SUCCESS")) {
 				// 更新订单主表
-				if (goodsorder.getOrderPayFlag() != 1) {
+				if(goodsorder.getOrderPayFlag()==null){
+					goodsorder.setOrderPayFlag(0);
+				}
+				if (goodsorder.getOrderPayFlag()==0) {
 					goodsorder.setOrderStatus(OrderStatusEnum.Payed.getStatusCode());
 					goodsorder.setUpdated(new Date());
 					goodsorder.setOrderPayType(OrderPayTypeEnum.WxPay.getTypeCode());
@@ -1099,6 +1126,17 @@ public class OrderController {
 			String resultcodeValue = XmlHelper.getNodeValue(document, "/xml/result_code");
 			String refundidValue=XmlHelper.getNodeValue(document,"/xml/refund_id");
 			if (resultcodeValue.equals("SUCCESS")) {
+				//更新订单信息
+				order.setOrderStatus(OrderStatusEnum.PayBack.getStatusCode());
+				order.setRefundTradeNo(refundidValue);
+				order.setRefundTime(new Date());
+				_orderService.update(order);
+				//更新卖品订单
+				goodsorder.setOrderStatus(GoodsOrderStatusEnum.PayBack.getStatusCode());
+				goodsorder.setRefundTradeNo(refundidValue);
+				goodsorder.setRefundTime(new Date());
+				_goodsOrderService.update(goodsorder);
+				//准备返回参数
 				refundpaymentReply.setData(new RefundPaymentReplyOrder());
 				refundpaymentReply.getData().setOrderCode(order.getLockOrderCode());
 				refundpaymentReply.getData().setOrderStatus(OrderStatusEnum.CastToEnum(order.getOrderStatus()).getStatusName());

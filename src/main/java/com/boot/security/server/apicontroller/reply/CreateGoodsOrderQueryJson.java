@@ -8,6 +8,7 @@ public class CreateGoodsOrderQueryJson {
 	private String DeliveryAddress;//送货地址
 	private String DeliveryTime;//送货时间
 	private int IsReady;//是否备餐
+	private String DeliveryMark;//备注
 	private String QueryXml;
 	public String getUserName() {
 		return UserName;
@@ -51,6 +52,13 @@ public class CreateGoodsOrderQueryJson {
 	}
 	public void setIsReady(int isReady) {
 		IsReady = isReady;
+	}
+	
+	public String getDeliveryMark() {
+		return DeliveryMark;
+	}
+	public void setDeliveryMark(String deliveryMark) {
+		DeliveryMark = deliveryMark;
 	}
 	public String getQueryXml() {
 		return QueryXml;

@@ -16,6 +16,7 @@ import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 
 import freemarker.template.utility.StringUtil;
 
@@ -107,6 +108,29 @@ public class StrUtil {
 	        }  
 	        return ipAddress; 
 	}
+	public static class returnCitySN{
+		private String cip;
+		private String cid;
+		private String cname;
+		public String getCip() {
+			return cip;
+		}
+		public void setCip(String cip) {
+			this.cip = cip;
+		}
+		public String getCid() {
+			return cid;
+		}
+		public void setCid(String cid) {
+			this.cid = cid;
+		}
+		public String getCname() {
+			return cname;
+		}
+		public void setCname(String cname) {
+			this.cname = cname;
+		}
+	}
 	
 	/**
 	 * 取得外网ip
@@ -114,11 +138,12 @@ public class StrUtil {
 	public static String getMyIP() throws IOException {
         InputStream ins = null;
         try {
-            String l = "http://2019.ip138.com/ic.asp";
+            //String l = "http://2019.ip138.com/ic.asp";
+        	String l="http://pv.sohu.com/cityjson?ie=utf-8";
             URL url = new URL(l);
             URLConnection con = url.openConnection();
             ins = con.getInputStream();
-            InputStreamReader isReader = new InputStreamReader(ins, "gb2312");
+            InputStreamReader isReader = new InputStreamReader(ins, "utf-8");
             BufferedReader bReader = new BufferedReader(isReader);
             StringBuffer webContent = new StringBuffer();
             String str = null;
@@ -126,9 +151,11 @@ public class StrUtil {
                 webContent.append(str);
             }
             //System.out.println(webContent);
-            int start = webContent.indexOf("[") + 1;
-            int end = webContent.indexOf("]");
-            return webContent.substring(start, end);
+            int start = webContent.indexOf("{");
+            int end = webContent.indexOf("}")+1;
+            String JsonStr=webContent.substring(start, end);
+            returnCitySN citysn = new Gson().fromJson(JsonStr, returnCitySN.class);
+            return citysn.getCip();
         } finally {
             if (ins != null) {
                 ins.close();

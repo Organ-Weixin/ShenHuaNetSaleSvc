@@ -168,6 +168,9 @@
 			<if test="GoodsCount != null">
 				GoodsCount = #{GoodsCount}, 
 			</if>
+			<if test="RefundTradeNo != null">
+				RefundTradeNo = #{RefundTradeNo},
+			</if>
 			<if test="RefundTime != null">
 				RefundTime = #{RefundTime}, 
 			</if>

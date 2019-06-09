@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Document;
 
@@ -161,6 +162,7 @@ public class AppGoodsController {
 				orderbase.setDeliveryAddress(QueryJson.getDeliveryAddress());
 				orderbase.setDeliveryTime(QueryJson.getDeliveryTime());
 				orderbase.setIsReady(QueryJson.getIsReady());
+				orderbase.setDeliveryMark(QueryJson.getDeliveryMark());
 				_goodsOrderService.UpdateOrderBaseInfo(orderbase);
 			}
 			return reply;
@@ -533,7 +535,10 @@ public class AppGoodsController {
 	// endregion
 	
 	//region 异步接收微信支付返回
-	public void WxPayNotify() throws Exception {
+	@RequestMapping(value = "/WxPayNotify", produces = "application/json;charset=UTF-8")
+	// @RequestDescription("支付回调地址")
+	@ResponseBody
+	public void WxPayNotify(HttpServletRequest request) throws Exception {
 		// 读取返回内容
 		Map<String, String> returnmap = WxPayUtil.WxPayNotify(request);
 		if (returnmap.get("isWXsign").equals("True")) {
@@ -542,7 +547,10 @@ public class AppGoodsController {
 			Goodsorders order = _goodsOrderService.getById(OrderID);
 			if (returnmap.get("return_code").equals("SUCCESS") && returnmap.get("result_code").equals("SUCCESS")) {
 				// 更新订单主表
-				if (order.getOrderPayFlag() != 1) {
+				if(order.getOrderPayFlag()==null){
+					order.setOrderPayFlag(0);
+				}
+				if (order.getOrderPayFlag()==0) {
 					order.setOrderStatus(OrderStatusEnum.Payed.getStatusCode());
 					order.setUpdated(new Date());
 					order.setOrderPayType(OrderPayTypeEnum.WxPay.getTypeCode());
@@ -625,6 +633,12 @@ public class AppGoodsController {
 			String resultcodeValue = XmlHelper.getNodeValue(document, "/xml/result_code");
 			String refundidValue=XmlHelper.getNodeValue(document,"/xml/refund_id");
 			if (resultcodeValue.equals("SUCCESS")) {
+				//更新卖品订单
+				order.setOrderStatus(GoodsOrderStatusEnum.PayBack.getStatusCode());
+				order.setRefundTradeNo(refundidValue);
+				order.setRefundTime(new Date());
+				_goodsOrderService.update(order);
+				//准备返回参数
 				refundpaymentReply.setData(new RefundPaymentReplyOrder());
 				refundpaymentReply.getData().setOrderCode(order.getLocalOrderCode());
 				refundpaymentReply.getData().setOrderStatus(GoodsOrderStatusEnum.CastToEnum(order.getOrderStatus()).getStatusName());

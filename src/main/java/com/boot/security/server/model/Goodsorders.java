@@ -20,6 +20,7 @@ public class Goodsorders extends BaseEntity<Long> {
 	private Date Updated;
 	private String MobilePhone;
 	private Integer GoodsCount;
+	private String RefundTradeNo;
 	private Date RefundTime;
 	private Date PickUpTime;
 	private Integer DeliveryType;
@@ -135,6 +136,13 @@ public class Goodsorders extends BaseEntity<Long> {
 	}
 	public void setGoodsCount(Integer GoodsCount) {
 		this.GoodsCount = GoodsCount;
+	}
+	
+	public String getRefundTradeNo() {
+		return RefundTradeNo;
+	}
+	public void setRefundTradeNo(String refundTradeNo) {
+		RefundTradeNo = refundTradeNo;
 	}
 	public Date getRefundTime() {
 		return RefundTime;

@@ -78,12 +78,12 @@ public class WxPayUtil {
 		map.put("sign", sign);
 		// 把参数组装成xml
 		String data = getXml(map);
-		System.out.println(data);
+		//System.out.println(data);
 		String UnifiedOrderUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 		String strPrepayXml = HttpHelper.sendPostByHttpUrlConnection(UnifiedOrderUrl, data, "UTF-8");
 		// 获取prepay_id
 		String strPrePayXml2 = strPrepayXml.replace("<![CDATA[", "").replace("]]>", "");
-		System.out.println("============="+strPrePayXml2);
+		//System.out.println("============="+strPrePayXml2);
 		Document document = XmlHelper.StringTOXml(strPrePayXml2);
 		String resultcodeValue = XmlHelper.getNodeValue(document, "/xml/result_code");
 		String errcodeValue=XmlHelper.getNodeValue(document, "/xml/err_code");
@@ -118,11 +118,13 @@ public class WxPayUtil {
 	//region 处理回调
 	public static Map<String, String> WxPayNotify(HttpServletRequest request) throws Exception{
 		StringBuffer resultBuffer = new StringBuffer();
-		BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream(),"gb2312"));
+		BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
 		String temp;
 		while ((temp = br.readLine()) != null) {
 			resultBuffer.append(temp);
 		}
+		br.close();
+		System.out.println("-------------"+resultBuffer.toString());
 		//为了得到影院配置
 		Document document=XmlHelper.StringTOXml(resultBuffer.toString());
 		String outtradenoValue=XmlHelper.getNodeValue(document,"/xml/out_trade_no");
@@ -165,7 +167,7 @@ public class WxPayUtil {
 			sb.append(entry.getKey() + "=" + entry.getValue() + "&");
 		}
 		sb.append(key + "=" + value);
-		System.out.println(sb);
+		//System.out.println(sb);
 		String sign = MD5Util.MD5Encode(sb.toString(), charset).toUpperCase();
 		return sign;
 	}
@@ -197,14 +199,15 @@ public class WxPayUtil {
 		map.put("nonce_str",nonce_str.toLowerCase());
 		map.put("op_user_id",WxpayMchId);
 		map.put("out_refund_no",TradeNo);//商家退款单号
-		map.put("out_trade_no","");
-		map.put("refund_fee",RefundFee);
-		map.put("total_fee",RefundFee);
+		//map.put("out_trade_no","");
+		map.put("refund_fee","1");//RefundFee
+		map.put("total_fee","1");//RefundFee
 		map.put("transaction_id",OrderTradeNo);
 		String sign = getSign(map, "key", WxpayKey, "UTF-8");
 		map.put("sign",sign);
 		// 把参数组装成xml
 		String data = getXml(map);
+		System.out.println(data);
 		String url = "https://api.mch.weixin.qq.com/secapi/pay/refund";//微信退款接口地址
 		//初始化证书
 		initCert(WxpayMchId,CinemaCode,WxpayRefundCert);
@@ -218,6 +221,7 @@ public class WxPayUtil {
         //本地或者服务器的证书位置（证书在微信支付申请成功发来的通知邮件中）
 		//String cert=ResourceUtils.getURL("classpath:").getPath()+File.separator+"static/cert/"+CinemaCode+"/"+WxpayRefundCert;
 		String cert=new File(System.getProperty("catalina.home")).getAbsolutePath()+File.separator+"webapps/cert/"+CinemaCode+"/"+WxpayRefundCert;
+		//System.out.println("退款证书："+cert);
 		//私钥（在安装证书时设置）
 		String password = WxpayMchId;
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
@@ -255,7 +259,7 @@ public class WxPayUtil {
 		
         String result = null;
         HttpPost httpPost = new HttpPost(url);
-        
+        //System.out.println("传输内容："+data);
         //得指明使用UTF-8编码，否则到API服务器XML的中文不能被成功识别
         StringEntity postEntity = new StringEntity(data, "UTF-8");
         httpPost.addHeader("Content-Type", "text/xml");
@@ -267,6 +271,7 @@ public class WxPayUtil {
             HttpResponse response = httpClient.execute(httpPost);
             HttpEntity entity = response.getEntity();
             result = EntityUtils.toString(entity, "UTF-8");
+            //System.out.println("result:"+result);
         } catch (Exception e) {
         } finally {
             httpPost.abort();

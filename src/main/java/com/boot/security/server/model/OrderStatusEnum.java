@@ -11,7 +11,8 @@ public enum OrderStatusEnum {
 	Complete("完成",8),
 	Refund("已退票",9),
 	Payed("已支付",10),
-	PayFail("支付失败",11);
+	PayFail("支付失败",11),
+	PayBack("已退款",12);
 	private String StatusName;
 	private int StatusCode;
 	OrderStatusEnum(String StatusName,int StatusCode){
