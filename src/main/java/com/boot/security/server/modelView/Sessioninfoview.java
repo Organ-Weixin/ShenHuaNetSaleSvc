@@ -18,6 +18,7 @@ public class Sessioninfoview {
 	private Integer Duration;
 	private String Language;
 	private Double StandardPrice;
+	private Double ListingPrice;
 	private Double LowestPrice;
 	private Double TicketFee;
 	private Double AddFee;
@@ -111,6 +112,12 @@ public class Sessioninfoview {
 	}
 	public void setStandardPrice(Double standardPrice) {
 		StandardPrice = standardPrice;
+	}
+	public Double getListingPrice() {
+		return ListingPrice;
+	}
+	public void setListingPrice(Double listingPrice) {
+		ListingPrice = listingPrice;
 	}
 	public Double getLowestPrice() {
 		return LowestPrice;

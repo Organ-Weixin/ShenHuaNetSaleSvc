@@ -27,6 +27,7 @@ import com.boot.security.server.api.core.QueryCardTradeRecordReply;
 import com.boot.security.server.api.core.QueryDiscountReply;
 import com.boot.security.server.api.ctms.reply.Dy1905GetMemberCardByMobileReply;
 import com.boot.security.server.api.ctms.reply.Dy1905Interface;
+import com.boot.security.server.apicontroller.reply.MemberCardPayReply;
 import com.boot.security.server.apicontroller.reply.MemberCardUnbindReply;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.PrePayParametersReply;
@@ -213,6 +214,15 @@ public class MemberController {
 	public SellTicketCustomMemberReply SellTicketCustomMember(@PathVariable String Username,@PathVariable String Password,
 			@PathVariable String CinemaCode,@PathVariable String LockOrderCode,@PathVariable String CardNo,@PathVariable String CardPassword) throws Exception{
 		return new Dy1905Interface().SellTicketCustomMember(Username, Password, CinemaCode, LockOrderCode, CardNo, CardPassword);
+	}
+	//endregion
+	
+	//region 1905会员卡混合支付
+	@GetMapping("/MemberCardPay/{Username}/{Password}/{CinemaCode}/{LockOrderCode}/{LocalOrderCode}/{CardNo}/{CardPassword}")
+	@ApiOperation(value = "会员卡混合支付（1905）")
+	public MemberCardPayReply MemberCardPay(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
+			@PathVariable String LockOrderCode,@PathVariable String LocalOrderCode,@PathVariable String CardNo,@PathVariable String CardPassword) throws Exception{
+		return new Dy1905Interface().MemberCardPay(Username, Password, CinemaCode, LockOrderCode, LocalOrderCode, CardNo, CardPassword);
 	}
 	//endregion
 	

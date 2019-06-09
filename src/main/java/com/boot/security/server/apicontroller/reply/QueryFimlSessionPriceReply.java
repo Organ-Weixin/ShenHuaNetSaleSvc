@@ -88,6 +88,12 @@ public class QueryFimlSessionPriceReply extends BaseReply{
 				private String Language;
 				private Double SettlePrice;
 				private Double StandardPrice;
+				private Double ListingPrice;
+				private Double LowestPrice;
+				private Double TicketFee;
+				private Double AddFee;
+				private Double CinemaAllowance;
+				private Double Price;
 				private Double MemberPrice;
 				private String BeginTime;
 				private String EndTime;
@@ -127,6 +133,42 @@ public class QueryFimlSessionPriceReply extends BaseReply{
 				}
 				public void setStandardPrice(Double standardPrice) {
 					StandardPrice = standardPrice;
+				}
+				public Double getListingPrice() {
+					return ListingPrice;
+				}
+				public void setListingPrice(Double listingPrice) {
+					ListingPrice = listingPrice;
+				}
+				public Double getLowestPrice() {
+					return LowestPrice;
+				}
+				public void setLowestPrice(Double lowestPrice) {
+					LowestPrice = lowestPrice;
+				}
+				public Double getTicketFee() {
+					return TicketFee;
+				}
+				public void setTicketFee(Double ticketFee) {
+					TicketFee = ticketFee;
+				}
+				public Double getAddFee() {
+					return AddFee;
+				}
+				public void setAddFee(Double addFee) {
+					AddFee = addFee;
+				}
+				public Double getCinemaAllowance() {
+					return CinemaAllowance;
+				}
+				public void setCinemaAllowance(Double cinemaAllowance) {
+					CinemaAllowance = cinemaAllowance;
+				}
+				public Double getPrice() {
+					return Price;
+				}
+				public void setPrice(Double price) {
+					Price = price;
 				}
 				public Double getMemberPrice() {
 					return MemberPrice;

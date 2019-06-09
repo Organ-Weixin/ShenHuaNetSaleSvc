@@ -21,6 +21,7 @@ import com.boot.security.server.api.ctms.reply.Dy1905GoodsListResult.ResBean.Goo
 import com.boot.security.server.api.ctms.reply.Dy1905LockSeatCustomResult.ResBean.SeatInfosBean.SeatInfoBean;
 import com.boot.security.server.api.ctms.reply.Dy1905MakeMemberCardResult.ResBean.CardInfoBean;
 import com.boot.security.server.api.ctms.reply.Dy1905MemberTypeListResult.ResBean.TypesBean.TypeBean.LevelsBean.LevelBean;
+import com.boot.security.server.apicontroller.reply.MemberCardPayReply;
 import com.boot.security.server.apicontroller.reply.SellTicketCustomMemberReply;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.Cinema;
@@ -29,6 +30,7 @@ import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.Goodsorderdetails;
+import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.LoveFlagEnum;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
@@ -45,10 +47,12 @@ import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
+import com.boot.security.server.modelView.Goodsorderdetailsview;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
+import com.boot.security.server.service.impl.GoodsorderdetailsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
@@ -77,6 +81,7 @@ public class Dy1905Interface implements ICTMSInterface {
 	MemberCardLevelServiceImpl memberCardLevelService = SpringUtil.getBean(MemberCardLevelServiceImpl.class);
 	GoodsServiceImpl goodsService = SpringUtil.getBean(GoodsServiceImpl.class);
 	GoodsOrderServiceImpl goodsOrderService = SpringUtil.getBean(GoodsOrderServiceImpl.class);
+	GoodsorderdetailsServiceImpl goodsorderdetailsService = SpringUtil.getBean(GoodsorderdetailsServiceImpl.class);
 	UserCinemaViewServiceImpl userCinemaViewService = SpringUtil.getBean(UserCinemaViewServiceImpl.class);
 	OrderServiceImpl orderService = SpringUtil.getBean(OrderServiceImpl.class);
 	OrderseatdetailsServiceImpl orderseatdetailsService = SpringUtil.getBean(OrderseatdetailsServiceImpl.class);
@@ -918,7 +923,7 @@ public class Dy1905Interface implements ICTMSInterface {
 		@Override
 		public CTMSCardPayReply CardPay(Usercinemaview userCinema, String CardNo, String CardPassword, float PayAmount,float GoodsPayAmount,
 				String SessionCode, String FilmCode, String TicketNum) throws Exception {
-			CTMSCardPayReply reply = new CTMSCardPayReply();
+			/*CTMSCardPayReply reply = new CTMSCardPayReply();
 			String OrderID = String.valueOf(new Date().getTime());
 			for (int i = 0; i < 5; i++) {
 	            // 得到随机字母
@@ -947,8 +952,8 @@ public class Dy1905Interface implements ICTMSInterface {
 				reply.Status = StatusEnum.Failure;
 			}
 			reply.ErrorCode = Dy1905Reply.getMemberCardDeductResult().getResultCode();
-			reply.ErrorMessage = Dy1905Reply.getMemberCardDeductResult().getResultMsg();
-			return reply;
+			reply.ErrorMessage = Dy1905Reply.getMemberCardDeductResult().getResultMsg();*/
+			return null;
 		}
 		/*
 		 * 会员卡购票
@@ -975,6 +980,10 @@ public class Dy1905Interface implements ICTMSInterface {
 			}
 			//获取会员价格
 			CTMSQueryDiscountReply discountReply = QueryDiscount(userCinema, null, CardNo, CardPassword, null, orders.getSessionCode(), null, null, null, null, null);
+			if(discountReply.Status != StatusEnum.Success){
+				reply.Status.equals(discountReply.Status);
+				return reply;
+			}
 			Sessioninfo sessioninfo = sessioninfoService.getBySessionCode(userCinema.getUserId(), CinemaCode, orders.getSessionCode());
 			if(sessioninfo == null){
 				reply.SetSessionInvalidReply();
@@ -986,6 +995,7 @@ public class Dy1905Interface implements ICTMSInterface {
 				reply.SetMemberCardInvalidReply();
 				return reply;
 			}
+			//验证会员卡
 			String UseMonthCard;
 			if(membercard.getLevelCode().equals("4")){
 				UseMonthCard = "1";
@@ -1001,7 +1011,7 @@ public class Dy1905Interface implements ICTMSInterface {
 			Map<String,String> param = new LinkedHashMap<String,String>();
 			param.put("pAppCode", userCinema.getDefaultUserName());
 			param.put("pOrderID", LockOrderCode);
-			//循环遍历出座位号、会员价、服务费
+			//循环遍历出座位号、会员卡支付价、服务费
 			String SeatCode = null;
 			String MemberPrice = null;
 			String Fee = null;
@@ -1026,17 +1036,15 @@ public class Dy1905Interface implements ICTMSInterface {
 					+ sessioninfo.getLowestPrice() + CardNo + CardPassword + UseMonthCard + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
 			param.put("pVerifyInfo", pVerifyInfo);
 			String SellTicketCustomMemberResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/SellTicketCustom/member",param,"UTF-8");
-			System.out.println(SellTicketCustomMemberResult);
 			Gson gson = new Gson();
 			Dy1905SellTicketCustomMemberResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(SellTicketCustomMemberResult,"SellTicketResult"), Dy1905SellTicketCustomMemberResult.class);
 			if(Dy1905Reply.getSellTicketResult().getResultCode().equals("0")){
-				System.out.println("会员卡卡号"+CardNo);
 				reply.setOrderNo(Dy1905Reply.getSellTicketResult().getOrderNo());
 				reply.setPrintNo(Dy1905Reply.getSellTicketResult().getPrintNo());
 				reply.setVerifyCode(Dy1905Reply.getSellTicketResult().getVerifyCode());
 				reply.SetSuccessReply();
 				//更新订单表
-				orders.setOrderStatus(OrderStatusEnum.Payed.getStatusCode());
+				orders.setOrderStatus(OrderStatusEnum.Complete.getStatusCode());
 				orders.setUpdated(new Date());
 				orders.setSubmitTime(new Date());
 				orders.setPayTime(new Date());
@@ -1049,10 +1057,73 @@ public class Dy1905Interface implements ICTMSInterface {
 				orders.setTotalPrice(orderseatdetailsList.get(0).getPrice()*orders.getTicketCount());
 				orders.setTotalFee(orderseatdetailsList.get(0).getFee()*orders.getTicketCount());
 				orders.setTotalSalePrice(orderseatdetailsList.get(0).getSalePrice()*orders.getTicketCount());
-				orderService.update(orders);
+			}else{
+				orders.setOrderStatus(OrderStatusEnum.SubmitFail.getStatusCode());
 			}
+			orderService.update(orders);
 			reply.ErrorCode = Dy1905Reply.getSellTicketResult().getResultCode();
 			reply.ErrorMessage = Dy1905Reply.getSellTicketResult().getResultMsg();
+			return reply;
+		}
+		/*
+		 * 会员卡混合支付
+		 * */
+		public MemberCardPayReply MemberCardPay(String Username,String Password,String CinemaCode,String LockOrderCode,String LocalOrderCode,
+				String CardNo,String CardPassword) throws Exception{
+			MemberCardPayReply reply = new MemberCardPayReply();
+			//会员卡支付卖品
+			// 获取用户信息
+			Userinfo UserInfo = userInfoService.getByUserCredential(Username, Password);
+			if (UserInfo == null) {
+				reply.SetUserCredentialInvalidReply();
+				return reply;
+			}
+			// 验证影院是否存在且可访问
+			Usercinemaview userCinema = userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),CinemaCode);
+			if (userCinema == null) {
+				reply.SetCinemaInvalidReply();
+				return reply;
+			}
+			Goodsorders orderBaseInfo = goodsOrderService.getByLocalOrderCode(LocalOrderCode);
+			if(orderBaseInfo==null){
+				reply.SetOrderNotExistReply();
+				return reply;
+			}
+			List<Goodsorderdetails> orderGoodsDetailsList = goodsorderdetailsService.getByOrderId(orderBaseInfo.getId());
+			GoodsOrderView order = new GoodsOrderView();
+			order.setOrderBaseInfo(orderBaseInfo);
+			order.setOrderGoodsDetails(orderGoodsDetailsList);
+			CTMSSubmitGoodsOrderReply goodsReply = SubmitGoodsOrder(userCinema, order);
+			if(goodsReply.Status != StatusEnum.Success){
+				reply.Status.equals(goodsReply.Status);
+				reply.ErrorCode = goodsReply.ErrorCode;
+				reply.ErrorMessage = goodsReply.ErrorMessage;
+				return reply;
+			}
+			//会员卡购票
+			SellTicketCustomMemberReply ticketReply = SellTicketCustomMember(Username, Password, CinemaCode, LockOrderCode, CardNo, CardPassword);
+			if(!ticketReply.Status.equals("Success")){
+				reply.Status.equals(ticketReply.Status);
+				reply.ErrorCode = ticketReply.ErrorCode;
+				reply.ErrorMessage = ticketReply.ErrorMessage;
+				boolean result = true;
+				for(int i=0; i<3; i++){
+					if(RefundGoods(userCinema, order).Status == StatusEnum.Success){
+						break;
+					}else{
+						result = false;
+					}
+				}
+				if(!result){
+					reply.ErrorMessage = "卖品出现异常";
+				}
+				return reply;
+			}
+			reply.SetSuccessReply();
+			reply.setOrderNo(ticketReply.getOrderNo());
+			reply.setVerifyCode(ticketReply.getVerifyCode());
+			reply.setPrintNo(ticketReply.getPrintNo());
+			reply.setPickNo(goodsReply.getPickNo());
 			return reply;
 		}
 		/*
@@ -1339,13 +1410,6 @@ public class Dy1905Interface implements ICTMSInterface {
 					GoodsPrice += ","+orderGoodsDetails.get(i).getSettlePrice()*Integer.valueOf(orderGoodsDetails.get(i).getGoodsCount());
 				}
 			}
-			String	pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() 
-			+ order.getOrderBaseInfo().getLocalOrderCode().substring(0,20)
-			+ GoodsCode + GoodsCount + GoodsPrice + order.getOrderBaseInfo().getMobilePhone() + String.valueOf(new Date().getTime()).substring(0,10)
-			+ order.getOrderBaseInfo().getTotalPrice() + order.getOrderBaseInfo().getTotalSettlePrice() 
-			+ order.getOrderBaseInfo().getDeliveryType() + order.getOrderBaseInfo().getDeliveryAddress()
-			+ order.getOrderBaseInfo().getDeliveryTime() + order.getOrderBaseInfo().getDeliveryMark()
-			+ userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
 			param.put("pAppCode",userCinema.getDefaultUserName());
 			param.put("pCinemaID",userCinema.getCinemaId());
 			param.put("pNetOrder",order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
@@ -1356,6 +1420,28 @@ public class Dy1905Interface implements ICTMSInterface {
 			param.put("pOrderTime",String.valueOf(new Date().getTime()).substring(0,10));
 			param.put("pTotalPrice",String.valueOf(order.getOrderBaseInfo().getTotalPrice()));
 			param.put("pPayPrice",String.valueOf(order.getOrderBaseInfo().getTotalSettlePrice()));
+			String pVerifyInfo;
+			if((order.getOrderBaseInfo().getCardNo()==null||order.getOrderBaseInfo().getCardNo()=="")
+				&&(order.getOrderBaseInfo().getCardPassword()==null||order.getOrderBaseInfo().getCardPassword()=="")){
+				pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() 
+				+ order.getOrderBaseInfo().getLocalOrderCode().substring(0,20)
+				+ GoodsCode + GoodsCount + GoodsPrice + order.getOrderBaseInfo().getMobilePhone() + String.valueOf(new Date().getTime()).substring(0,10)
+				+ order.getOrderBaseInfo().getTotalPrice() + order.getOrderBaseInfo().getTotalSettlePrice() 
+				+ order.getOrderBaseInfo().getDeliveryType() + order.getOrderBaseInfo().getDeliveryAddress()
+				+ order.getOrderBaseInfo().getDeliveryTime() + order.getOrderBaseInfo().getDeliveryMark()
+				+ userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
+			}else{
+				pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() 
+				+ order.getOrderBaseInfo().getLocalOrderCode().substring(0,20)
+				+ GoodsCode + GoodsCount + GoodsPrice + order.getOrderBaseInfo().getMobilePhone() + String.valueOf(new Date().getTime()).substring(0,10)
+				+ order.getOrderBaseInfo().getTotalPrice() + order.getOrderBaseInfo().getTotalSettlePrice() 
+				+ order.getOrderBaseInfo().getCardNo() + order.getOrderBaseInfo().getCardPassword() 
+				+ order.getOrderBaseInfo().getDeliveryType() + order.getOrderBaseInfo().getDeliveryAddress()
+				+ order.getOrderBaseInfo().getDeliveryTime() + order.getOrderBaseInfo().getDeliveryMark()
+				+ userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
+				param.put("pCardNo",order.getOrderBaseInfo().getCardNo());
+				param.put("pCardPwd",order.getOrderBaseInfo().getCardPassword());
+			}
 			param.put("pDeliveryType",String.valueOf(order.getOrderBaseInfo().getDeliveryType()));
 			param.put("pSeat",order.getOrderBaseInfo().getDeliveryAddress());
 			param.put("pDeliveryTime",order.getOrderBaseInfo().getDeliveryTime());
@@ -1368,6 +1454,7 @@ public class Dy1905Interface implements ICTMSInterface {
 				order.getOrderBaseInfo().setOrderCode(order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
 				order.getOrderBaseInfo().setPickUpCode(Dy1905Reply.getGoodsOrderResult().getOrderNo());
 				order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
+				reply.setPickNo(Dy1905Reply.getGoodsOrderResult().getOrderNo());
 				reply.Status = StatusEnum.Success;
 			}else{
 				order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.SubmitFail.getStatusCode());

@@ -247,7 +247,24 @@ public class SessionController {
 						QueryFimlSessionPriceReplySession sessionReply = new QueryFimlSessionPriceReplySession();
 						Sessioninfoview sessioninfoview = _sessioninfoviewService.getByCinemaCodeAndSessionCode(oneDateSession.getCCode(), oneDateSession.getSCode());
 						if(sessioninfoview!=null){
-							sessionReply.setMemberPrice(sessioninfoview.getMemberPrice());
+							if(sessioninfoview.getListingPrice()==null){
+								sessioninfoview.setListingPrice(0.00);
+							}
+							sessionReply.setListingPrice(sessioninfoview.getListingPrice());
+							sessionReply.setLowestPrice(sessioninfoview.getLowestPrice());
+							sessionReply.setTicketFee(sessioninfoview.getTicketFee());
+							sessionReply.setAddFee(sessioninfoview.getAddFee());
+							sessionReply.setCinemaAllowance(sessioninfoview.getCinemaAllowance());
+							if(sessioninfoview.getPrice()==null){
+								sessionReply.setPrice(sessioninfoview.getPrice());
+							}else{
+								sessionReply.setPrice(sessioninfoview.getPrice());
+							}
+							if(sessioninfoview.getMemberPrice()==null){
+								sessionReply.setMemberPrice(sessioninfoview.getStandardPrice());
+							}else{
+								sessionReply.setMemberPrice(sessioninfoview.getMemberPrice());
+							}
 						}
 						sessionReply.setScreenCode(oneDateSession.getScreenCode());
 						sessionReply.setSessionCode(oneDateSession.getSCode());

@@ -1414,7 +1414,7 @@ ScreenType,ListingPrice,LowestPrice))
             return cardPayReply;
         }
         //验证排期是否存在
-        if(!SessionCode.equals(null)&&!SessionCode.equals("")){
+        if(SessionCode!=""&&SessionCode!=null&&!SessionCode.equals("null")){
         	 Sessioninfo session = _sessionInfoService.getByCinemaCodeAndSessionCodeAndUserId(CinemaCode, SessionCode,userCinema.getUserId());
              if (session == null)
              {
