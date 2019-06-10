@@ -285,7 +285,7 @@ public class OrderController {
 			if(filminfo!=null&&filminfo.getDuration()!=null){
 				String endtime = String.valueOf(adminorderview.getSessiontime().getTime()+Integer.valueOf(filminfo.getDuration())*60*1000);
 				SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-				data.setShowTime(adminorderview.getSessiontime()+"-"+sdf.format(new Date(Long.parseLong(endtime))));
+				data.setShowTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(adminorderview.getSessiontime())+"-"+sdf.format(new Date(Long.parseLong(endtime))));
 			}
 			data.setScreenCode(adminorderview.getScreencode());
 			Screeninfo screeninfo = screeninfoService.getByScreenCode(CinemaCode, orders.getScreenCode());
