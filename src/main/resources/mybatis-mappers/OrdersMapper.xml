@@ -495,10 +495,48 @@
 			<if test="PaySeqNo != null">
 				PaySeqNo = #{PaySeqNo}, 
 			</if>
+			<if test="TotalLoveSeatDifferences != null">
+				TotalLoveSeatDifferences = #{TotalLoveSeatDifferences}, 
+			</if>
+			<if test="FeePayType != null">
+				FeePayType = #{FeePayType}, 
+			</if>
+			<if test="TotalGuestPayFee != null">
+				TotalGuestPayFee = #{TotalGuestPayFee}, 
+			</if>
+			<if test="TotalConponPrice != null">
+				TotalConponPrice = #{TotalConponPrice}, 
+			</if>
+			<if test="RefundTradeNo != null">
+				RefundTradeNo = #{RefundTradeNo}, 
+			</if>
+			<if test="PayFlag != null">
+				PayFlag = #{PayFlag}, 
+			</if>
+			<if test="OrderPayType != null">
+				OrderPayType = #{OrderPayType}, 
+			</if>
+			<if test="PayTime != null">
+				PayTime = #{PayTime}, 
+			</if>
+			<if test="OrderTradeNo != null">
+				OrderTradeNo = #{OrderTradeNo}, 
+			</if>
+			<if test="CardNo != null">
+				CardNo = #{CardNo}, 
+			</if>
 			<if test="IDCardNumber != null">
 				IDCardNumber = #{IDCardNumber}, 
 			</if>
+			<if test="MarketingCode != null">
+				MarketingCode = #{MarketingCode}, 
+			</if>
+			<if test="OpenID != null">
+				OpenID = #{OpenID}, 
+			</if>
+
 		</set>
-		where t.Id = #{Id}
+
+		where t.id = #{id}
 	</update>
 </mapper>

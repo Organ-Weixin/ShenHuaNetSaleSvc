@@ -93,21 +93,22 @@
 			<if test="SubTotalSettleAmount != null">
 				SubTotalSettleAmount = #{SubTotalSettleAmount}, 
 			</if>
-			<if test="Created != null">
-				Created = #{Created}, 
-			</if>
-			<if test="Updated != null">
-				Updated = #{Updated}, 
-			</if>
 			<if test="IsPackage != null">
 				IsPackage = #{IsPackage}, 
 			</if>
 			<if test="GoodsDetail != null">
 				GoodsDetail = #{GoodsDetail}, 
 			</if>
-            <if test="ShowSeqNo != null">
-				ShowSeqNo = #{ShowSeqNo},
+			<if test="ShowSeqNo != null">
+				ShowSeqNo = #{ShowSeqNo}, 
 			</if>
+			<if test="Created != null">
+				Created = #{Created}, 
+			</if>
+			<if test="Updated != null">
+				Updated = #{Updated}, 
+			</if>
+
 		</set>
 
 		where t.id = #{id}

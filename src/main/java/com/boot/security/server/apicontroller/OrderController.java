@@ -587,8 +587,19 @@ public class OrderController {
                     boolean ifCanUse=CouponsCanUse(couponsview,order.getOrderBaseInfo().getCinemaCode());
 					//如果减免类型是影片
 					if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1){
-						if(couponsview.getCouponsgroup().getFilmCodes().indexOf(order.getOrderBaseInfo().getFilmCode())>-1){
-							//当前优惠券可以使用，把券码和优惠价格更新到订单详细表
+						
+						if(!couponsview.getCouponsgroup().getFilmCodes().equals(null)&&!couponsview.getCouponsgroup().getFilmCodes().equals("")){
+							
+							if(couponsview.getCouponsgroup().getFilmCodes().indexOf(order.getOrderBaseInfo().getFilmCode())>-1){
+								//当前优惠券可以使用，把券码和优惠价格更新到订单详细表
+								seat.setConponCode(couponsview.getCoupons().getCouponsCode());
+								seat.setConponPrice(couponsview.getCouponsgroup().getReductionPrice());
+							}else{
+								seat.setConponPrice(0D);//当前影片不在可优惠的影片列表
+							}
+						}else
+						{
+							//所有影片可用
 							seat.setConponCode(couponsview.getCoupons().getCouponsCode());
 							seat.setConponPrice(couponsview.getCouponsgroup().getReductionPrice());
 						}
@@ -654,7 +665,9 @@ public class OrderController {
 			// 得到订单Id
 			Long OrderID = Long.parseLong(returnmap.get("out_trade_no").substring("yyyyMMddHHmmss".length() + 8));
 			OrderView order = _orderService.getOrderWidthId(OrderID);
+			//log.info("++++++++++++++++"+new Gson().toJson(order));
 			if (returnmap.get("return_code").equals("SUCCESS") && returnmap.get("result_code").equals("SUCCESS")) {
+				//log.info("--------");
 				// 更新订单主表
 				if(order.getOrderBaseInfo().getPayFlag()==null){
 					order.getOrderBaseInfo().setPayFlag(0);
@@ -666,7 +679,7 @@ public class OrderController {
 					order.getOrderBaseInfo().setPayFlag(1);
 					order.getOrderBaseInfo().setPayTime(new Date());
 					order.getOrderBaseInfo().setOrderTradeNo(returnmap.get("transaction_id"));
-					_orderService.UpdateOrderBaseInfo(order.getOrderBaseInfo());
+					_orderService.update(order.getOrderBaseInfo());
 				}
 				// 更新优惠券已使用
 				for (Orderseatdetails seat : order.getOrderSeatDetails()) {
@@ -901,11 +914,22 @@ public class OrderController {
 				boolean ifCanUse=CouponsCanUse(couponsview,order.getOrderBaseInfo().getCinemaCode());
 				//如果减免类型是影片
 				if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1){
-					if(couponsview.getCouponsgroup().getFilmCodes().indexOf(order.getOrderBaseInfo().getFilmCode())>-1){
-						//当前优惠券可以使用，把券码和优惠价格更新到订单详细表
+					if(!couponsview.getCouponsgroup().getFilmCodes().equals(null)&&!couponsview.getCouponsgroup().getFilmCodes().equals(""))
+					{
+						if(couponsview.getCouponsgroup().getFilmCodes().indexOf(order.getOrderBaseInfo().getFilmCode())>-1){
+							//当前优惠券可以使用，把券码和优惠价格更新到订单详细表
+							seat.setConponCode(couponsview.getCoupons().getCouponsCode());
+							seat.setConponPrice(couponsview.getCouponsgroup().getReductionPrice());
+						}else{
+							seat.setConponPrice(0D);//当前影片不在优惠的影片列表内
+						}
+					}else
+					{
+						//所有影片可用
 						seat.setConponCode(couponsview.getCoupons().getCouponsCode());
 						seat.setConponPrice(couponsview.getCouponsgroup().getReductionPrice());
 					}
+					
 				}else{
 					seat.setConponPrice(0D);//如果优惠券类型是卖品，更新优惠金额为0
 				}
@@ -933,13 +957,16 @@ public class OrderController {
 			boolean ifCanUse=CouponsCanUse(couponsview,goodsorder.getOrderBaseInfo().getCinemaCode());
 			//如果减免类型是卖品
 			if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==2){
-				//循环判断每个卖品是不是在可使用优惠的卖品里面
-				for(Goodsorderdetails goodsdetail:goodsorder.getOrderGoodsDetails()){
-					if(couponsview.getCouponsgroup().getGoodsCodes().indexOf(goodsdetail.getGoodsCode())==-1){
-						ifCanUse=false;
-						break;
-					}else{
-						continue;
+				if(!couponsview.getCouponsgroup().getGoodsCodes().equals(null)&&!couponsview.getCouponsgroup().getGoodsCodes().equals("")){
+					//如果可使用卖品列表不为空，循环判断每个卖品是不是在可使用优惠的卖品里面
+					for(Goodsorderdetails goodsdetail:goodsorder.getOrderGoodsDetails()){
+						if(couponsview.getCouponsgroup().getGoodsCodes().indexOf(goodsdetail.getGoodsCode())==-1){
+							ifCanUse=false;
+							goodsorder.getOrderBaseInfo().setCouponsPrice(0D);
+							break;
+						}else{
+							continue;
+						}
 					}
 				}
 				//如果到最后还是可以使用
@@ -947,6 +974,8 @@ public class OrderController {
 					//当前优惠券可以使用,把优惠券更新到卖品订单表
 					goodsorder.getOrderBaseInfo().setCouponsCode(couponsview.getCoupons().getCouponsCode());
 					goodsorder.getOrderBaseInfo().setCouponsPrice(couponsview.getCouponsgroup().getReductionPrice());
+				}else{
+					goodsorder.getOrderBaseInfo().setCouponsPrice(0D);//优惠券不可使用
 				}
 			}else{
 				goodsorder.getOrderBaseInfo().setCouponsPrice(0D);//如果优惠券类型不是卖品，更新优惠金额为0
@@ -1010,7 +1039,7 @@ public class OrderController {
 					order.getOrderBaseInfo().setPayFlag(1);
 					order.getOrderBaseInfo().setPayTime(new Date());
 					order.getOrderBaseInfo().setOrderTradeNo(returnmap.get("transaction_id"));
-					_orderService.UpdateOrderBaseInfo(order.getOrderBaseInfo());
+					_orderService.update(order.getOrderBaseInfo());
 				}
 				// 更新优惠券已使用
 				for (Orderseatdetails seat : order.getOrderSeatDetails()) {
@@ -1172,25 +1201,26 @@ public class OrderController {
 			if (!couponsview.getCouponsgroup().getWeekDays().contains(String.valueOf(weekday))) {
 				ifCanUse = false;
 			}
-			String[] timeperiods=couponsview.getCouponsgroup().getTimePeriod().split(",");
-			SimpleDateFormat dateFormater = new SimpleDateFormat("HHmm");
-			boolean ifintimeperiod=false;
-			for(String timeperiod:timeperiods){
-				int stime= Integer.parseInt(timeperiod.split("-")[0].replace(":",""));
-				int etime= Integer.parseInt(timeperiod.split("-")[1].replace(":",""));
-				int date= Integer.parseInt(dateFormater.format(new Date()));
-				if(date>stime&&date<etime){
-					ifintimeperiod = true;
-					break;
-				}else
-				{
-					continue;
+			if(!couponsview.getCouponsgroup().getTimePeriod().equals(null)&&!couponsview.getCouponsgroup().getTimePeriod().equals(""))
+			{
+				String[] timeperiods=couponsview.getCouponsgroup().getTimePeriod().split(",");
+				SimpleDateFormat dateFormater = new SimpleDateFormat("HHmm");
+				boolean ifintimeperiod=false;
+				for(String timeperiod:timeperiods){
+					int stime= Integer.parseInt(timeperiod.split("-")[0].replace(":",""));
+					int etime= Integer.parseInt(timeperiod.split("-")[1].replace(":",""));
+					int date= Integer.parseInt(dateFormater.format(new Date()));
+					if(date>stime&&date<etime){
+						ifintimeperiod = true;
+						break;
+					}else
+					{
+						continue;
+					}
 				}
+				//不在所有的可用时间段内
+				if(!ifintimeperiod){ifCanUse = false;}
 			}
-			//不在所有的可用时间段内
-			if(!ifintimeperiod){
-				ifCanUse = false;
-				}
 		}
 		//如果是部分门店可用，并且当前订单的影院不在可用门店里面
 		if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
