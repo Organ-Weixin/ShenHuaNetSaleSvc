@@ -110,7 +110,7 @@ import freemarker.template.utility.StringUtil;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/Api/Order")
+@RequestMapping("/Api/Order") 
 public class OrderController {
 	@Autowired
 	private UserInfoServiceImpl _userInfoService;
