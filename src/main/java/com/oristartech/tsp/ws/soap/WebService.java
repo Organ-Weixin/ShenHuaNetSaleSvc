@@ -776,13 +776,13 @@ public class WebService {
 	//endregion
 	
 	//region 会员卡支付（完成）
-	public static CxMemberConsumeResult  MemberConsume(Usercinemaview userCinema,String pLoginNum, String pLmsPassword, float pAmount, String SessionCode, String FilmCode, String TicketNum,String pTransactionNo){
+	public static CxMemberConsumeResult  MemberConsume(Usercinemaview userCinema,String pLoginNum, String pLmsPassword, float pAmount,float pGoodsAmount, String SessionCode, String FilmCode, String TicketNum,String pTransactionNo){
 		try{
 			//DecimalFormat df = new DecimalFormat("0.00");df.format(disprice)
 			String pOrderCode=UUID.randomUUID().toString().replace("-","");
 			String realLmsPassword=MD5Util.MD5Encode(pLmsPassword,"UTF-8");
 			Map<String,Object> param = new LinkedHashMap();
-			String strAmount=new DecimalFormat("0.00").format(pAmount);
+			String strAmount=new DecimalFormat("0.00").format(pAmount+pGoodsAmount);
 			param.put("pAppCode", userCinema.getRealUserName());
 			param.put("pCinemaCode",userCinema.getCinemaCode());
 			param.put("pLoginNum", pLoginNum);
@@ -791,14 +791,14 @@ public class WebService {
 			param.put("pAmount",strAmount);
 			param.put("pOrderCode",pOrderCode);
 			param.put("pTransactionNo",pTransactionNo);
-			param.put("pTicketAmount", "0.00");
-			param.put("pGoodsAmount", "0.00");
+			param.put("pTicketAmount", new DecimalFormat("0.00").format(pAmount));
+			param.put("pGoodsAmount", new DecimalFormat("0.00").format(pGoodsAmount));
 			param.put("pIntegralAmount",strAmount);
 			param.put("pIntegralMultiple", "0.00");
 			//param.put("pGoods", "");
 			param.put("pCompress", "0");
 			log.info(param.toString());
-			String result = WebService.cinemaTss(userCinema.getUrl()).memberConsume(userCinema.getRealUserName(),userCinema.getCinemaCode(),pLoginNum,realLmsPassword,"手机APP",pAmount,pOrderCode,pTransactionNo,0f, 0f,pAmount, 0f,null,"0",MD5Util.getCxSign(param,userCinema.getRealPassword()));
+			String result = WebService.cinemaTss(userCinema.getUrl()).memberConsume(userCinema.getRealUserName(),userCinema.getCinemaCode(),pLoginNum,realLmsPassword,"手机APP",pAmount+pGoodsAmount,pOrderCode,pTransactionNo,pAmount, pGoodsAmount,pAmount+pGoodsAmount, 0f,null,"0",MD5Util.getCxSign(param,userCinema.getRealPassword()));
 			Gson gson = new Gson();
 			log.info(result);
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result,"MemberConsumeResult"),CxMemberConsumeResult.class);

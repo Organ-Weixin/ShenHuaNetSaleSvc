@@ -568,7 +568,7 @@ public class CxInterface implements ICTMSInterface {
 			if (membercard == null) {
 				Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
 				String cinemacodes = "";
-				if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+				if(cinema!=null&&cinema.getIsGeneralStore()==1){
 					CinemaMiniProgramAccounts cinemaMiniProgramAccounts = _cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
 			    	if(cinemaMiniProgramAccounts!=null){
 			    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = _cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
@@ -628,7 +628,7 @@ public class CxInterface implements ICTMSInterface {
 			} else {
 				Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
 				String cinemacodes = "";
-				if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+				if(cinema!=null&&cinema.getIsGeneralStore()==1){
 					CinemaMiniProgramAccounts cinemaMiniProgramAccounts = _cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
 			    	if(cinemaMiniProgramAccounts!=null){
 			    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = _cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
@@ -712,8 +712,8 @@ public class CxInterface implements ICTMSInterface {
 			String SessionCode, String FilmCode, String TicketNum) {
 		CTMSCardPayReply reply = new CTMSCardPayReply();
 		String pTransactionNo = UUID.randomUUID().toString();
-		float RealPayAmount=PayAmount+GoodsPayAmount;//总会员卡支付金额=购票金额+卖品金额
-		CxMemberConsumeResult cxReply = cxService.MemberConsume(userCinema, CardNo, CardPassword, RealPayAmount,
+		//float RealPayAmount=PayAmount+GoodsPayAmount;//总会员卡支付金额=购票金额+卖品金额
+		CxMemberConsumeResult cxReply = cxService.MemberConsume(userCinema, CardNo, CardPassword, PayAmount,GoodsPayAmount,
 				SessionCode, FilmCode, TicketNum, pTransactionNo);
 		if (cxReply.getMemberConsumeResult().getResultCode().equals("0")) {
 			reply.setTradeNo(pTransactionNo);// 直接用本地交易生成的流水号退款
@@ -853,7 +853,7 @@ public class CxInterface implements ICTMSInterface {
         {
 			Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
 			String cinemacodes = "";
-			if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+			if(cinema!=null&&cinema.getIsGeneralStore()==1){
 				CinemaMiniProgramAccounts cinemaMiniProgramAccounts = _cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
 		    	if(cinemaMiniProgramAccounts!=null){
 		    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = _cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());

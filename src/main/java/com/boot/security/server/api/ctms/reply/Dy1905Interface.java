@@ -48,7 +48,6 @@ import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
-import com.boot.security.server.modelView.Goodsorderdetailsview;
 import com.boot.security.server.service.impl.CinemaMiniProgramAccountsServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
@@ -853,7 +852,7 @@ public class Dy1905Interface implements ICTMSInterface {
 				Membercard membercard = memberCardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
 				Cinema cinema = cinemaService.getByCinemaCode(userCinema.getCinemaCode());
 				String cinemacodes = "";
-				if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+				if(cinema!=null&&cinema.getIsGeneralStore()==1){
 					CinemaMiniProgramAccounts cinemaMiniProgramAccounts = cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
 			    	if(cinemaMiniProgramAccounts!=null){
 			    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
@@ -1279,7 +1278,7 @@ public class Dy1905Interface implements ICTMSInterface {
 			if(Dy1905Reply.getMakeMemberCardResult().getResultCode().equals("0")){
 				Cinema cinema = cinemaService.getByCinemaCode(userCinema.getCinemaCode());
 				String cinemacodes = "";
-				if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+				if(cinema!=null&&cinema.getIsGeneralStore()==1){
 					CinemaMiniProgramAccounts cinemaMiniProgramAccounts = cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
 			    	if(cinemaMiniProgramAccounts!=null){
 			    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());

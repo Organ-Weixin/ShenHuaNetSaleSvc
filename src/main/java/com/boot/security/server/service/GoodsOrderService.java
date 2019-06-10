@@ -22,4 +22,5 @@ public interface GoodsOrderService {
     List<Goodsorders> getByCinemaCodeAndOpenID(String cinemacode,String openid);
     List<Goodsorders> getByOpenID(String openid,String time);
     int update(Goodsorders goodsorders);
+    Goodsorders getByOrderTradeNo(String cinemacode,String ordertradeno);
 }

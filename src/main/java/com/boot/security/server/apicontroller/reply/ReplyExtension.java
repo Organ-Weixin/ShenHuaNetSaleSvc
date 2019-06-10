@@ -823,6 +823,29 @@ public class ReplyExtension {
 		return true;
 	}
 	//endregion
+	
+	//region QueryGoodsOrderReply
+	public static boolean RequestInfoGuard(QueryTicketOrderReply reply,String Username,String Password,String CinemaCode,String OrderCode){
+		if (Username==null || "".equals(Username)) {
+			reply.SetNecessaryParamMissReply("UserName");
+			return false;
+		}
+		if (Password==null || "".equals(Password)) {
+			reply.SetNecessaryParamMissReply("Password");
+			return false;
+		}
+		if (CinemaCode==null || "".equals(CinemaCode)) {
+			reply.SetNecessaryParamMissReply("CinemaCode");
+			return false;
+		}
+		if (OrderCode==null || "".equals(OrderCode)) {
+			reply.SetNecessaryParamMissReply("OrderCode");
+			return false;
+		}
+		return true;
+	}
+	//endregion
+	
 	//region QueryGoodsOrderReply
 		public static boolean RequestInfoGuard(QueryFilmSessionsReply reply,String Username,String Password,String CinemaCode){
 			if (Username==null || "".equals(Username)) {

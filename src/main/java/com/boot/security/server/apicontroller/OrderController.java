@@ -55,12 +55,14 @@ import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson;
 import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson.PrePayOrderQueryJsonSeat;
 import com.boot.security.server.apicontroller.reply.PrePayParametersReply;
 import com.boot.security.server.apicontroller.reply.PrePayParametersReply.PrePayParametersReplyParameter;
+import com.boot.security.server.apicontroller.reply.QueryTicketOrderReply.QueryTicketOrderReplyOrder;
 import com.boot.security.server.apicontroller.reply.QueryLocalOrderReply;
 import com.boot.security.server.apicontroller.reply.QueryLocalOrderReply.QueryLocalOrder;
 import com.boot.security.server.apicontroller.reply.QueryLocalOrderReply.QueryLocalOrder.Seats;
 import com.boot.security.server.apicontroller.reply.QueryNonPayOrdersReply;
 import com.boot.security.server.apicontroller.reply.QueryNonPayOrdersReply.NonPayOrders;
 import com.boot.security.server.apicontroller.reply.QueryNonPayOrdersReply.NonPayOrders.NonPayOrder;
+import com.boot.security.server.apicontroller.reply.QueryTicketOrderReply;
 import com.boot.security.server.apicontroller.reply.QueryUserOrdersReply;
 import com.boot.security.server.apicontroller.reply.RefundPaymentReply;
 import com.boot.security.server.apicontroller.reply.QueryUserOrdersReply.UserOrders;
@@ -68,11 +70,14 @@ import com.boot.security.server.apicontroller.reply.QueryUserOrdersReply.UserOrd
 import com.boot.security.server.apicontroller.reply.RefundPaymentReply.RefundPaymentReplyOrder;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.apicontroller.reply.PrePayGoodsOrderQueryJson.PrePayGoodsOrderQueryJsonGoods;
+import com.boot.security.server.model.Adminorderview;
+import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Cinemapaymentsettings;
 import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.CouponsView;
+import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.Goodsorderdetails;
@@ -88,8 +93,11 @@ import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
+import com.boot.security.server.service.impl.AdminorderviewServiceImpl;
+import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.CinemapaymentsettingsServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
+import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.service.impl.PriceplanServiceImpl;
@@ -105,6 +113,7 @@ import com.boot.security.server.utils.WxPayUtil;
 import com.boot.security.server.utils.XmlHelper;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+
 
 import freemarker.template.utility.StringUtil;
 import io.swagger.annotations.ApiOperation;
@@ -130,6 +139,14 @@ public class OrderController {
 	PriceplanServiceImpl _priceplanService;
 	@Autowired
 	TicketusersServiceImpl _ticketUserService;
+	@Autowired
+	CinemaServiceImpl cinemaService;
+	@Autowired
+	FilminfoServiceImpl filminfoService;
+	@Autowired
+	AdminorderviewServiceImpl adminorderviewService;
+	@Autowired
+	ScreeninfoServiceImpl screeninfoService;
 	@Autowired
 	private GoodsOrderServiceImpl _goodsOrderService;
 	@Autowired
@@ -207,13 +224,88 @@ public class OrderController {
 	//endregion
 		
 	//region 查询订单
-	@GetMapping("/QueryOrder/{UserName}/{Password}/{CinemaCode}/{OrderCode}")
+	/*@GetMapping("/QueryOrder/{UserName}/{Password}/{CinemaCode}/{OrderCode}")
 	@ApiOperation(value = "查询订单")
 	public QueryOrderReply QueryOrder(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String OrderCode){
 		QueryOrderReply orderReply = NetSaleSvcCore.getInstance().QueryOrder(UserName, Password, CinemaCode, OrderCode);
 //		System.out.println("查询订单----"+new Gson().toJson(orderReply));
 		return orderReply;
+	}*/
+	//endregion
+	
+	//region 查询订单
+	@GetMapping("/QueryTicketOrder/{UserName}/{Password}/{CinemaCode}/{OrderCode}")
+	@ApiOperation(value = "查询订单")
+	public QueryTicketOrderReply QueryTicketOrder(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
+			@PathVariable String OrderCode){
+		QueryTicketOrderReply ticketOrderReply = new QueryTicketOrderReply();
+		// 校验参数
+		if (!ReplyExtension.RequestInfoGuard(ticketOrderReply, UserName, Password, CinemaCode, OrderCode)) {
+			return ticketOrderReply;
+		}
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
+		if (UserInfo == null) {
+			ticketOrderReply.SetUserCredentialInvalidReply();
+			return ticketOrderReply;
+		}
+		// 验证影院是否存在且可访问
+		Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),CinemaCode);
+		if (userCinema == null) {
+			ticketOrderReply.SetCinemaInvalidReply();
+			return ticketOrderReply;
+		}
+		// 验证订单是否存在
+		Orders orders = _orderService.getByOrderCode(CinemaCode, OrderCode);
+		if(orders == null){
+			ticketOrderReply.SetOrderNotExistReply();
+			return ticketOrderReply;
+		}
+		QueryTicketOrderReplyOrder data = new QueryTicketOrderReplyOrder();
+		//影院信息
+		Cinema cinema = cinemaService.getByCinemaCode(CinemaCode);
+		if(cinema!=null){
+			data.setCinemaCode(cinema.getCode());
+			data.setCinemaName(cinema.getName());
+			data.setCinemaAddress(cinema.getAddress());
+			data.setCinemaPhone(cinema.getCinemaPhone());
+		}
+		//影片信息
+		Filminfo filminfo = filminfoService.getByFilmCode(orders.getFilmCode());
+		if(filminfo!=null){
+			data.setFilmCode(filminfo.getFilmCode());
+			data.setFilmName(filminfo.getFilmName());
+			data.setFilmImage(filminfo.getImage());
+			data.setFilmType(filminfo.getType());
+		}
+		//排期信息
+		Adminorderview adminorderview = adminorderviewService.getByOrderCode(CinemaCode, OrderCode);
+		if(adminorderview!=null){
+			if(filminfo!=null&&filminfo.getDuration()!=null){
+				String endtime = String.valueOf(adminorderview.getSessiontime().getTime()+Integer.valueOf(filminfo.getDuration())*60*1000);
+				SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+				data.setShowTime(adminorderview.getSessiontime()+"-"+sdf.format(new Date(Long.parseLong(endtime))));
+			}
+			data.setScreenCode(adminorderview.getScreencode());
+			Screeninfo screeninfo = screeninfoService.getByScreenCode(CinemaCode, orders.getScreenCode());
+			if(screeninfo!=null){
+				data.setScreenName(screeninfo.getSName());
+			}
+			data.setSeat(adminorderview.getSeat());
+		}
+		data.setCount(orders.getTicketCount());
+		data.setPrintNo(orders.getPrintNo());
+		if(orders.getPayTime()!=null){
+			data.setPayTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orders.getPayTime()));
+		}
+		data.setPrintType(orders.getPrintStatus());
+		data.setRealAmount(orders.getTotalSalePrice());
+		data.setOrderCode(orders.getSubmitOrderCode());
+		data.setMobilePhone(orders.getMobilePhone());
+		ticketOrderReply.setData(data);
+		ticketOrderReply.SetSuccessReply();
+		return ticketOrderReply;
 	}
 	//endregion
 	

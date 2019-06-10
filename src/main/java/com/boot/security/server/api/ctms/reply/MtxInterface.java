@@ -493,7 +493,7 @@ public class MtxInterface implements ICTMSInterface {
 		if ("0".equals(mtxReply.getRegisterMemberReturn().getResultCode())) {
 			Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
 			String cinemacodes = "";
-			if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+			if(cinema!=null&&cinema.getIsGeneralStore()==1){
 				CinemaMiniProgramAccounts cinemaMiniProgramAccounts = _cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
 		    	if(cinemaMiniProgramAccounts!=null){
 		    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = _cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
@@ -541,7 +541,7 @@ public class MtxInterface implements ICTMSInterface {
 			if (memcard == null) {
 				Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
 				String cinemacodes = "";
-				if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+				if(cinema!=null&&cinema.getIsGeneralStore()==1){
 					CinemaMiniProgramAccounts cinemaMiniProgramAccounts = _cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
 			    	if(cinemaMiniProgramAccounts!=null){
 			    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = _cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
@@ -610,7 +610,7 @@ public class MtxInterface implements ICTMSInterface {
 			} else {
 				Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
 				String cinemacodes = "";
-				if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+				if(cinema!=null&&cinema.getIsGeneralStore()==1){
 					CinemaMiniProgramAccounts cinemaMiniProgramAccounts = _cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
 			    	if(cinemaMiniProgramAccounts!=null){
 			    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = _cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());

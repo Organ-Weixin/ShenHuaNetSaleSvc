@@ -233,11 +233,18 @@ public class MemberController {
 			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String TradeNo,@PathVariable String PayBackAmount){
 		CardPayBackReply reply = new NetSaleSvcCore().CardPayBack(Username, Password, CinemaCode, CardNo, CardPassword, TradeNo, PayBackAmount);
 		Orders orders = orderService.getByOrderTradeNo(CinemaCode, TradeNo);
-		if(reply.Status.equals("Success")){
-			if(orders!=null){
-				orders.setOrderStatus(OrderStatusEnum.Refund.getStatusCode());
+		Goodsorders goodsorders = goodsOrderService.getByOrderTradeNo(CinemaCode, TradeNo);
+		if(orders!=null){
+			if(reply.Status.equals("Success")){
+				orders.setOrderStatus(OrderStatusEnum.PayBack.getStatusCode());
+				orderService.update(orders);
 			}
-			orderService.update(orders);
+		}
+		if(goodsorders!=null){
+			if(reply.Status.equals("Success")){
+				goodsorders.setOrderStatus(GoodsOrderStatusEnum.PayBack.getStatusCode());
+				goodsOrderService.update(goodsorders);
+			}
 		}
 		return reply;
 	}

@@ -1180,7 +1180,7 @@ public class YkInterface implements ICTMSInterface {
 					} else {	//新增
 						Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
 						String cinemacodes = "";
-						if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+						if(cinema!=null&&cinema.getIsGeneralStore()==1){
 							CinemaMiniProgramAccounts cinemaMiniProgramAccounts = _cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
 					    	if(cinemaMiniProgramAccounts!=null){
 					    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = _cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
@@ -1252,7 +1252,7 @@ public class YkInterface implements ICTMSInterface {
 					} else {	//新增
 						Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
 						String cinemacodes = "";
-						if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+						if(cinema!=null&&cinema.getIsGeneralStore()==1){
 							CinemaMiniProgramAccounts cinemaMiniProgramAccounts = _cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
 					    	if(cinemaMiniProgramAccounts!=null){
 					    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = _cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
@@ -1642,7 +1642,7 @@ public class YkInterface implements ICTMSInterface {
 			if("SUCCESS".equals(ykResult.getData().getBizCode())){
 				Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
 				String cinemacodes = "";
-				if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+				if(cinema!=null&&cinema.getIsGeneralStore()==1){
 					CinemaMiniProgramAccounts cinemaMiniProgramAccounts = _cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
 			    	if(cinemaMiniProgramAccounts!=null){
 			    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = _cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
