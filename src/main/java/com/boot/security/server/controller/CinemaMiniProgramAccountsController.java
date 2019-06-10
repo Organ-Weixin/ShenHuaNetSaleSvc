@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.security.server.page.table.PageTableRequest;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
+import com.boot.security.server.service.impl.CinemaMiniProgramAccountsServiceImpl;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.dao.CinemaMiniProgramAccountsDao;
@@ -28,6 +30,8 @@ public class CinemaMiniProgramAccountsController {
 
     @Autowired
     private CinemaMiniProgramAccountsDao cinemaminiprogramaccountsDao;
+    @Autowired
+    private CinemaMiniProgramAccountsServiceImpl cinemaMiniProgramAccountsService;
 
     @PostMapping
     @ApiOperation(value = "保存")
@@ -72,5 +76,17 @@ public class CinemaMiniProgramAccountsController {
     @ApiOperation(value = "删除")
     public void delete(@PathVariable Long id) {
         cinemaminiprogramaccountsDao.delete(id);
+    }
+    
+    @RequestMapping("/getAppIdByCinemaCode")
+    @ApiOperation(value = "获取影院APPID")
+    public CinemaMiniProgramAccounts getAppIdByCinemaCode(@RequestParam("cinemacode")String cinemacode){
+    	return cinemaMiniProgramAccountsService.getByCinemaCode(cinemacode);
+    }
+    
+    @RequestMapping("/getCinemaCodeByAppId")
+    @ApiOperation(value = "获取appid下的所有影院")
+    public List<CinemaMiniProgramAccounts> getCinemaCodeByAppId(@RequestParam("appid")String appid){
+    	return cinemaMiniProgramAccountsService.getByAppId(appid);
     }
 }

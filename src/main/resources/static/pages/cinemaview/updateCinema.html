@@ -189,7 +189,6 @@
 						</select>
 				</div>
 			</div>
-				</div> 
 			<div class="form-actions">
 				<div class="row" align="center">
 					<div class="col-md-12">
@@ -247,6 +246,7 @@
 				});
 			}
 		}
+		
 		getTitle();
 		function getTitle(){
 			$.ajax({
@@ -264,8 +264,8 @@
 			})
 		}
 		
-		
 		function update() {
+			
 			$('#form').bootstrapValidator();
 			var bootstrapValidator = $("#form").data('bootstrapValidator');
 			bootstrapValidator.validate();
@@ -287,7 +287,6 @@
 				}
 			});
 		}
-		
 	</script>
 </body>
 </html>

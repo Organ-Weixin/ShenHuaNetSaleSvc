@@ -25,6 +25,7 @@ import com.boot.security.server.apicontroller.reply.MemberCardPayReply;
 import com.boot.security.server.apicontroller.reply.SellTicketCustomMemberReply;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.Cinema;
+import com.boot.security.server.model.CinemaMiniProgramAccounts;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
@@ -48,6 +49,7 @@ import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.modelView.Goodsorderdetailsview;
+import com.boot.security.server.service.impl.CinemaMiniProgramAccountsServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
@@ -86,6 +88,7 @@ public class Dy1905Interface implements ICTMSInterface {
 	OrderServiceImpl orderService = SpringUtil.getBean(OrderServiceImpl.class);
 	OrderseatdetailsServiceImpl orderseatdetailsService = SpringUtil.getBean(OrderseatdetailsServiceImpl.class);
 	UserInfoServiceImpl userInfoService = SpringUtil.getBean(UserInfoServiceImpl.class);
+	CinemaMiniProgramAccountsServiceImpl cinemaMiniProgramAccountsService = SpringUtil.getBean(CinemaMiniProgramAccountsServiceImpl.class);
 	/*
 	 * 查询影院信息（完成）
 	 * */
@@ -848,8 +851,22 @@ public class Dy1905Interface implements ICTMSInterface {
 			com.boot.security.server.api.ctms.reply.Dy1905MemberInfoResult.ResBean.CardInfoBean cardInfo = Dy1905Reply.getMemberInfoResult().getCardInfo();
 			if(Dy1905Reply.getMemberInfoResult().getResultCode().equals("0")){
 				Membercard membercard = memberCardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
+				Cinema cinema = cinemaService.getByCinemaCode(userCinema.getCinemaCode());
+				String cinemacodes = "";
+				if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+					CinemaMiniProgramAccounts cinemaMiniProgramAccounts = cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
+			    	if(cinemaMiniProgramAccounts!=null){
+			    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
+			    		if(cinemaMiniProgramAccountsList.size()>0){
+			    			for(int i=0; i<cinemaMiniProgramAccountsList.size(); i++){
+			    				cinemacodes +=cinemaMiniProgramAccountsList.get(i).getCinemaCode()+",";
+			    			}
+			    		}
+			    	}
+				}
 				if(membercard==null){
 					membercard = new Membercard();
+					membercard.setCinemaCodes(cinemacodes.substring(0,cinemacodes.length()-1));
 					membercard.setCinemaCode(userCinema.getCinemaCode());
 					membercard.setCardPassword(CardPassword);
 					membercard.setMobilePhone(cardInfo.getMobile());
@@ -1260,8 +1277,22 @@ public class Dy1905Interface implements ICTMSInterface {
 			Membercardlevel membercardlevel = memberCardLevelService.getByCinemaCodeAndLevelCode(userCinema.getCinemaCode(), LevelCode);
 			CardInfoBean cardInfo = Dy1905Reply.getMakeMemberCardResult().getCardInfo();
 			if(Dy1905Reply.getMakeMemberCardResult().getResultCode().equals("0")){
+				Cinema cinema = cinemaService.getByCinemaCode(userCinema.getCinemaCode());
+				String cinemacodes = "";
+				if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+					CinemaMiniProgramAccounts cinemaMiniProgramAccounts = cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
+			    	if(cinemaMiniProgramAccounts!=null){
+			    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
+			    		if(cinemaMiniProgramAccountsList.size()>0){
+			    			for(int i=0; i<cinemaMiniProgramAccountsList.size(); i++){
+			    				cinemacodes +=cinemaMiniProgramAccountsList.get(i).getCinemaCode()+",";
+			    			}
+			    		}
+			    	}
+				}
 				Membercard membercard = new Membercard();
 				membercard.setCinemaCode(userCinema.getCinemaCode());
+				membercard.setCinemaCodes(cinemacodes);
 				membercard.setCardPassword(CardPassword);
 				membercard.setMobilePhone(MobilePhone);
 				membercard.setLevelCode(LevelCode);

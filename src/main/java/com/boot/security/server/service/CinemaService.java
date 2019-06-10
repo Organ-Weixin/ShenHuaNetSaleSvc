@@ -16,4 +16,6 @@ public interface CinemaService {
 	
 	List<Cinema> AllCinema();
 	
+	int changeGeneralStore(Integer isgeneralstore,String cinemacodes);
+	
 }

@@ -107,7 +107,6 @@
 var pers = checkPermission();
 
 var orderStatusEnum = showDictSelect("orderstatus", "orderStatusEnum", true);
-var payType = showDictSelect("paytype", "payType", true);
 
 var example;
 function init(){
@@ -182,9 +181,16 @@ function init(){
 				{"data" : "addfee", "defaultContent" : "","orderable":false},
 				{"data" : "fee", "defaultContent" : "","orderable":false},
 				{"data" : "cinemaallowance", "defaultContent" : "","orderable":false},
-				{"data" : "paytype", "defaultContent" : "","orderable":false,
+				{"data" : "orderpaytype", "defaultContent" : "","orderable":false,
 					"render": function (data, type, row) {
-                    	return payType[data];
+						var orderpaytype = "";
+                    	if(data==1){
+                    		orderpaytype = "微信";
+                    	}
+                    	if(data==2){
+                    		orderpaytype = "会员卡";
+                    	}
+                    	return orderpaytype;
                   	}	
 				},
 				{"data" : "created", "defaultContent" : "","orderable":false},

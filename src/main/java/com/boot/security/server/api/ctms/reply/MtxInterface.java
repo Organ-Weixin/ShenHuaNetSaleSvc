@@ -24,6 +24,8 @@ import com.boot.security.server.api.ctms.reply.MtxGetSPInfosResult.GetSPInfosBea
 import com.boot.security.server.api.ctms.reply.MtxGetSPInfosResult.GetSPInfosBean.GetSPInfoBean;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
+import com.boot.security.server.model.Cinema;
+import com.boot.security.server.model.CinemaMiniProgramAccounts;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
@@ -45,6 +47,7 @@ import com.boot.security.server.model.SessionSeatStatusEnum;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
+import com.boot.security.server.service.impl.CinemaMiniProgramAccountsServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
@@ -57,6 +60,7 @@ import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.utils.SpringUtil;
 import com.google.gson.Gson;
+import com.mysql.fabric.xmlrpc.base.Array;
 
 import cn.cmts.main.webservice.WebService;
 import cn.cmts.pay.webservice.Webservice;
@@ -73,6 +77,7 @@ public class MtxInterface implements ICTMSInterface {
 	 GoodsServiceImpl _goodsService=SpringUtil.getBean(GoodsServiceImpl.class);
 	 GoodsOrderServiceImpl _goodsOrderService=SpringUtil.getBean(GoodsOrderServiceImpl.class);
 	GoodscomponentsServiceImpl _goodscomponentsService=SpringUtil.getBean(GoodscomponentsServiceImpl.class);
+	CinemaMiniProgramAccountsServiceImpl _cinemaMiniProgramAccountsService = SpringUtil.getBean(CinemaMiniProgramAccountsServiceImpl.class);
 	//会员卡
 	 private Webservice mtxCardService;
 	 MemberCardServiceImpl _memberCardService=SpringUtil.getBean(MemberCardServiceImpl.class);
@@ -486,8 +491,22 @@ public class MtxInterface implements ICTMSInterface {
 		MtxRegisterCardResult mtxReply = mtxCardService.RegisterCard(userCinema, CardPassword, LevelCode, InitialAmount,
 				CardUserName, MobilePhone, IDNumber, Sex);
 		if ("0".equals(mtxReply.getRegisterMemberReturn().getResultCode())) {
+			Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
+			String cinemacodes = "";
+			if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+				CinemaMiniProgramAccounts cinemaMiniProgramAccounts = _cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
+		    	if(cinemaMiniProgramAccounts!=null){
+		    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = _cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
+		    		if(cinemaMiniProgramAccountsList.size()>0){
+		    			for(int i=0; i<cinemaMiniProgramAccountsList.size(); i++){
+		    				cinemacodes +=cinemaMiniProgramAccountsList.get(i).getCinemaCode()+",";
+		    			}
+		    		}
+		    	}
+			}
 			Membercard mem=new Membercard();
 			mem.setCinemaCode(userCinema.getCinemaCode());
+			mem.setCinemaCodes(cinemacodes);
 			mem.setCardPassword(CardPassword);
 			mem.setMobilePhone(MobilePhone);
 			mem.setLevelCode(LevelCode);
@@ -520,8 +539,22 @@ public class MtxInterface implements ICTMSInterface {
 			// 添加会员卡信息
 			Membercard memcard = _memberCardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
 			if (memcard == null) {
+				Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
+				String cinemacodes = "";
+				if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+					CinemaMiniProgramAccounts cinemaMiniProgramAccounts = _cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
+			    	if(cinemaMiniProgramAccounts!=null){
+			    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = _cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
+			    		if(cinemaMiniProgramAccountsList.size()>0){
+			    			for(int i=0; i<cinemaMiniProgramAccountsList.size(); i++){
+			    				cinemacodes +=cinemaMiniProgramAccountsList.get(i).getCinemaCode()+",";
+			    			}
+			    		}
+			    	}
+				}
 				Membercard mem = new Membercard();
 				mem.setCinemaCode(userCinema.getCinemaCode());
+				mem.setCinemaCodes(cinemacodes);
 				mem.setCardNo(mtxReply.getLoginCardReturn().getCardId());
 				mem.setCardPassword(CardPassword);
 				mem.setMobilePhone(mtxReply.getLoginCardReturn().getPhoneNumber());
@@ -575,8 +608,22 @@ public class MtxInterface implements ICTMSInterface {
 				// 更新
 				_memberCardService.Update(memcard);
 			} else {
+				Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
+				String cinemacodes = "";
+				if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+					CinemaMiniProgramAccounts cinemaMiniProgramAccounts = _cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
+			    	if(cinemaMiniProgramAccounts!=null){
+			    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = _cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
+			    		if(cinemaMiniProgramAccountsList.size()>0){
+			    			for(int i=0; i<cinemaMiniProgramAccountsList.size(); i++){
+			    				cinemacodes +=cinemaMiniProgramAccountsList.get(i).getCinemaCode()+",";
+			    			}
+			    		}
+			    	}
+				}
 				Membercard memcard1 = new Membercard();
 				memcard1.setCinemaCode(userCinema.getCinemaCode());
+				memcard1.setCinemaCodes(cinemacodes);
 				memcard1.setCardNo(CardNo);
 				memcard1.setCardPassword(CardPassword);
 				memcard1.setMobilePhone(mtxReply.getQueryCardReturn().getMobilePhone());

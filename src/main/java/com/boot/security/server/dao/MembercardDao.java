@@ -31,7 +31,7 @@ public interface MembercardDao {
     int memberCardUnbind(@Param("cinemacode") String cinemacode,@Param("cardno") String cardno);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into membercard(Id, CinemaCode, CardNo, CardPassword, MobilePhone, LevelCode, LevelName, Score, Balance, UserName, Sex, CreditNum, Birthday, ExpireDate, CreateTime, Updated, Status) values(#{Id}, #{CinemaCode}, #{CardNo}, #{CardPassword}, #{MobilePhone}, #{LevelCode}, #{LevelName}, #{Score}, #{Balance}, #{UserName}, #{Sex}, #{CreditNum}, #{Birthday}, #{ExpireDate}, #{CreateTime}, #{Updated}, 0)")
+    @Insert("insert into membercard(Id, CinemaCode, CardNo, CardPassword, MobilePhone, LevelCode, LevelName, Score, Balance, UserName, Sex, CreditNum, Birthday, ExpireDate, CreateTime,CinemaCodes, Updated, Status) values(#{Id}, #{CinemaCode}, #{CardNo}, #{CardPassword}, #{MobilePhone}, #{LevelCode}, #{LevelName}, #{Score}, #{Balance}, #{UserName}, #{Sex}, #{CreditNum}, #{Birthday}, #{ExpireDate}, #{CreateTime},#{CinemaCodes}, #{Updated}, 0)")
     int save(Membercard membercard);
     
     int count(@Param("params") Map<String, Object> params);
@@ -44,9 +44,12 @@ public interface MembercardDao {
     @Select("select * from membercard where (ExpireDate >now() or ExpireDate is null) and openid is not null and find_in_set(cinemacode,#{cinemacodes})")
     List<Membercard> getByCinemaCodes(String cinemacodes);
     
-    @Select("select * from membercard t where t.cinemacode = #{cinemacode} and t.openid = #{openid} and t.status =1")
+    @Select("select * from membercard t where (t.cinemacode = #{cinemacode} or find_in_set(#{cinemacode},t.cinemacodes)) and t.openid = #{openid} and t.status =1")
     List<Membercard> getByCinemaCodeAndOpenID(@Param("cinemacode") String cinemacode,@Param("openid") String openid);
     
     @Select("select * from membercard t where t.cinemacode = #{cinemacode} and t.cardno = #{cardno} and t.cardpassword =#{cardpassword}")
     Membercard checkMemberCard(@Param("cinemacode") String cinemacode,@Param("cardno") String cardno,@Param("cardpassword") String cardpassword);
+    
+    @Update("update membercard set cinemacodes = #{cinemacode} where find_in_set(cinemacode,#{cinemacodes}) or cinemacodes =#{cinemacodes}")
+    int changeMemberCinemaCode(@Param("cinemacode")String cinemacode,@Param("cinemacodes")String cinemacodes);
 }

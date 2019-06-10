@@ -46,4 +46,7 @@ public interface CinemaDao {
     
     @Select("select * from cinema")
     List<Cinema> AllCinema();
+    
+    @Update("update cinema set isgeneralstore = #{isgeneralstore} where find_in_set(code,#{cinemacodes})")
+    int changeGeneralStore(@Param("isgeneralstore")Integer isgeneralstore,@Param("cinemacodes")String cinemacodes);
 }

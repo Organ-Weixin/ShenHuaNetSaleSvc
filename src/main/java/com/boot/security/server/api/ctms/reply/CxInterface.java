@@ -28,6 +28,7 @@ import com.boot.security.server.api.ctms.reply.CxApplyFetchTicketResult.ResBean.
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Cinema;
+import com.boot.security.server.model.CinemaMiniProgramAccounts;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
@@ -40,6 +41,7 @@ import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.YesOrNoEnum;
+import com.boot.security.server.service.impl.CinemaMiniProgramAccountsServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
@@ -71,7 +73,9 @@ public class CxInterface implements ICTMSInterface {
 	SessioninfoServiceImpl _sessioninfoService = SpringUtil.getBean(SessioninfoServiceImpl.class);
 	MemberCardServiceImpl _membercardService = SpringUtil.getBean(MemberCardServiceImpl.class);
 	MemberCardLevelServiceImpl _membercardlevelService = SpringUtil.getBean(MemberCardLevelServiceImpl.class);
-	GoodsServiceImpl _goodsService=SpringUtil.getBean(GoodsServiceImpl.class);
+	GoodsServiceImpl _goodsService = SpringUtil.getBean(GoodsServiceImpl.class);
+	CinemaMiniProgramAccountsServiceImpl _cinemaMiniProgramAccountsService = SpringUtil.getBean(CinemaMiniProgramAccountsServiceImpl.class);
+	
 	private static final String pCompress = "0";
 
 	protected static Logger log = LoggerFactory.getLogger(CxInterface.class);
@@ -562,8 +566,22 @@ public class CxInterface implements ICTMSInterface {
 			// 添加会员卡信息
 			Membercard membercard = _membercardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
 			if (membercard == null) {
+				Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
+				String cinemacodes = "";
+				if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+					CinemaMiniProgramAccounts cinemaMiniProgramAccounts = _cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
+			    	if(cinemaMiniProgramAccounts!=null){
+			    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = _cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
+			    		if(cinemaMiniProgramAccountsList.size()>0){
+			    			for(int i=0; i<cinemaMiniProgramAccountsList.size(); i++){
+			    				cinemacodes +=cinemaMiniProgramAccountsList.get(i).getCinemaCode()+",";
+			    			}
+			    		}
+			    	}
+				}
 				membercard = new Membercard();
 				membercard.setCinemaCode(userCinema.getCinemaCode());
+				membercard.setCinemaCodes(cinemacodes);
 				membercard.setCardNo(CardNo);
 				membercard.setCardPassword(CardPassword);
 				membercard.setMobilePhone(cxReply.getVerifyMemberLoginResult().getPhoneNum());
@@ -608,8 +626,22 @@ public class CxInterface implements ICTMSInterface {
 				// 更新
 				_membercardService.Update(membercard);
 			} else {
+				Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
+				String cinemacodes = "";
+				if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+					CinemaMiniProgramAccounts cinemaMiniProgramAccounts = _cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
+			    	if(cinemaMiniProgramAccounts!=null){
+			    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = _cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
+			    		if(cinemaMiniProgramAccountsList.size()>0){
+			    			for(int i=0; i<cinemaMiniProgramAccountsList.size(); i++){
+			    				cinemacodes +=cinemaMiniProgramAccountsList.get(i).getCinemaCode()+",";
+			    			}
+			    		}
+			    	}
+				}
 				membercard = new Membercard();
 				membercard.setCinemaCode(userCinema.getCinemaCode());
+				membercard.setCinemaCodes(cinemacodes);
 				membercard.setCardNo(CardNo);
 				membercard.setCardPassword(CardPassword);
 				membercard.setMobilePhone(cxReply.getQueryMemberInfoResult().getMobileNum());
@@ -819,8 +851,22 @@ public class CxInterface implements ICTMSInterface {
 		CxPhoneNumRegResult cxReply=cxService.PhoneNumReg(userCinema, CardPassword, LevelCode, InitialAmount, CardUserName, MobilePhone, IDNumber, Sex);
 		if (cxReply.getPhoneNumRegResult().getResultCode().equals("0"))
         {
+			Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
+			String cinemacodes = "";
+			if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+				CinemaMiniProgramAccounts cinemaMiniProgramAccounts = _cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
+		    	if(cinemaMiniProgramAccounts!=null){
+		    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = _cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
+		    		if(cinemaMiniProgramAccountsList.size()>0){
+		    			for(int i=0; i<cinemaMiniProgramAccountsList.size(); i++){
+		    				cinemacodes +=cinemaMiniProgramAccountsList.get(i).getCinemaCode()+",";
+		    			}
+		    		}
+		    	}
+			}
 			Membercard membercard = new Membercard();
 			membercard.setCinemaCode(userCinema.getCinemaCode());
+			membercard.setCinemaCodes(cinemacodes);
 			membercard.setCardNo(MobilePhone);//辰星系统卡号就是手机号
 			membercard.setCardPassword(CardPassword);
 			membercard.setMobilePhone(MobilePhone);

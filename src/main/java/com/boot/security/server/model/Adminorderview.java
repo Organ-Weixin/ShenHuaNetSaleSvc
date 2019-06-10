@@ -16,7 +16,7 @@ public class Adminorderview extends BaseEntity<Long> {
 	private Double addfee;
 	private Double fee;
 	private Double cinemaallowance;
-	private String paytype;
+	private String orderpaytype;
 	private Date created;
 	private String filmticketcode;
 	private String ticketinfocode;
@@ -96,11 +96,11 @@ public class Adminorderview extends BaseEntity<Long> {
 	public void setCinemaallowance(Double cinemaallowance) {
 		this.cinemaallowance = cinemaallowance;
 	}
-	public String getPaytype() {
-		return paytype;
+	public String getOrderpaytype() {
+		return orderpaytype;
 	}
-	public void setPaytype(String paytype) {
-		this.paytype = paytype;
+	public void setOrderpaytype(String orderpaytype) {
+		this.orderpaytype = orderpaytype;
 	}
 	public Date getCreated() {
 		return created;

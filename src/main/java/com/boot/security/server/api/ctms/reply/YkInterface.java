@@ -40,6 +40,7 @@ import com.boot.security.server.api.ctms.reply.YkqueryBalanceResult.DataBean.Bal
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Cinema;
+import com.boot.security.server.model.CinemaMiniProgramAccounts;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
@@ -58,6 +59,7 @@ import com.boot.security.server.model.SessionSeatStatusEnum;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
+import com.boot.security.server.service.impl.CinemaMiniProgramAccountsServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
@@ -82,6 +84,7 @@ public class YkInterface implements ICTMSInterface {
 	MemberCardServiceImpl memberCardService = SpringUtil.getBean(MemberCardServiceImpl.class);
 	MemberCardLevelServiceImpl memberCardLevelService = SpringUtil.getBean(MemberCardLevelServiceImpl.class);
 	GoodsServiceImpl goodsService = SpringUtil.getBean(GoodsServiceImpl.class);
+	CinemaMiniProgramAccountsServiceImpl _cinemaMiniProgramAccountsService = SpringUtil.getBean(CinemaMiniProgramAccountsServiceImpl.class);
 	/*
 	 * 查询影院信息
 	 */
@@ -1175,8 +1178,22 @@ public class YkInterface implements ICTMSInterface {
 						memberCardService.Update(memercard);
 						
 					} else {	//新增
+						Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
+						String cinemacodes = "";
+						if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+							CinemaMiniProgramAccounts cinemaMiniProgramAccounts = _cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
+					    	if(cinemaMiniProgramAccounts!=null){
+					    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = _cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
+					    		if(cinemaMiniProgramAccountsList.size()>0){
+					    			for(int i=0; i<cinemaMiniProgramAccountsList.size(); i++){
+					    				cinemacodes +=cinemaMiniProgramAccountsList.get(i).getCinemaCode()+",";
+					    			}
+					    		}
+					    	}
+						}
 						memercard = new Membercard();
 						memercard.setCinemaCode(userCinema.getCinemaCode());
+						memercard.setCinemaCodes(cinemacodes);
 						memercard.setCardNo(balance.getCardNumber());
 						memercard.setCardPassword(CardPassword);	//暂存明文
 						memercard.setBalance(Double.valueOf(balance.getBalance()));
@@ -1233,9 +1250,23 @@ public class YkInterface implements ICTMSInterface {
 						memberCardService.Update(memercard);
 						
 					} else {	//新增
+						Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
+						String cinemacodes = "";
+						if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+							CinemaMiniProgramAccounts cinemaMiniProgramAccounts = _cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
+					    	if(cinemaMiniProgramAccounts!=null){
+					    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = _cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
+					    		if(cinemaMiniProgramAccountsList.size()>0){
+					    			for(int i=0; i<cinemaMiniProgramAccountsList.size(); i++){
+					    				cinemacodes +=cinemaMiniProgramAccountsList.get(i).getCinemaCode()+",";
+					    			}
+					    		}
+					    	}
+						}
 						memercard = new Membercard();
 						YkModelMapper.MapToEntity(card, memercard);
 						memercard.setCinemaCode(userCinema.getCinemaCode());
+						memercard.setCinemaCodes(cinemacodes);
 						memercard.setCardNo(card.getCardNumber());
 						memercard.setCreateTime(new Date());
 						memercard.setStatus(0);
@@ -1609,9 +1640,23 @@ public class YkInterface implements ICTMSInterface {
 		YkRegisterCardResult ykResult = gson.fromJson(registerCardResult, YkRegisterCardResult.class);
 		if("0".equals(ykResult.getRetCode())){
 			if("SUCCESS".equals(ykResult.getData().getBizCode())){
+				Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
+				String cinemacodes = "";
+				if(cinema!=null&&cinema.getIsOpenSnacks()==1){
+					CinemaMiniProgramAccounts cinemaMiniProgramAccounts = _cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
+			    	if(cinemaMiniProgramAccounts!=null){
+			    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = _cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
+			    		if(cinemaMiniProgramAccountsList.size()>0){
+			    			for(int i=0; i<cinemaMiniProgramAccountsList.size(); i++){
+			    				cinemacodes +=cinemaMiniProgramAccountsList.get(i).getCinemaCode()+",";
+			    			}
+			    		}
+			    	}
+				}
 				//插入数据库
 				Membercard membercard = new Membercard();
 				membercard.setCinemaCode(userCinema.getCinemaCode());
+				membercard.setCinemaCodes(cinemacodes);
 				membercard.setCardNo(ykResult.getData().getData().getCardNumber());
 				membercard.setCardPassword(CardPassword);	//暂存明文
 				membercard.setMobilePhone(MobilePhone);

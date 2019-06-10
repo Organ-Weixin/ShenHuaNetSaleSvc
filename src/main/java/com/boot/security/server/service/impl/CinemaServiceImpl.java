@@ -43,4 +43,9 @@ public class CinemaServiceImpl implements CinemaService {
 		return cinemaDao.AllCinema();
 	}
 
+	@Override
+	public int changeGeneralStore(Integer isgeneralstore, String cinemacodes) {
+		return cinemaDao.changeGeneralStore(isgeneralstore, cinemacodes);
+	}
+
 }

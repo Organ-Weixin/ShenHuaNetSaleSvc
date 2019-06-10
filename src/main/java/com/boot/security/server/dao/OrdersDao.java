@@ -32,7 +32,7 @@ public interface OrdersDao {
 	@Select("select * from orders t where t.cinemacode=#{cinemacode} and t.printno = #{printno} and t.verifycode=#{verifycode}")
 	Orders getByPrintNo(@Param("cinemacode")String cinemacode, @Param("printno")String printno, @Param("verifycode")String verifycode);
 	
-	@Select("select * from orders t where t.cinemacode = #{cinemacode} and t.ordertradeno #{ordertradeno}")
+	@Select("select * from orders t where t.cinemacode = #{cinemacode} and t.ordertradeno = #{ordertradeno}")
 	Orders getByOrderTradeNo(@Param("cinemacode")String cinemacode,@Param("ordertradeno")String ordertradeno);
 
 	@Delete("delete from orders where id = #{id}")

@@ -28,6 +28,7 @@ public class Cinema extends BaseEntity<Long> {
 	private Date Updated;
 	private String CinemaId;
 	private Integer IsUseLowestPriceReport;
+	private Integer IsGeneralStore;
 	
 	private Date GoodsUpdated; //影院卖品更新时间
 
@@ -181,6 +182,12 @@ public class Cinema extends BaseEntity<Long> {
 	}
 	public void setGoodsUpdated(Date goodsUpdated) {
 		GoodsUpdated = goodsUpdated;
+	}
+	public Integer getIsGeneralStore() {
+		return IsGeneralStore;
+	}
+	public void setIsGeneralStore(Integer isGeneralStore) {
+		IsGeneralStore = isGeneralStore;
 	}
 	
 }

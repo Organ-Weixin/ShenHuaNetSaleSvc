@@ -21,4 +21,6 @@ public interface MemberCardService {
 	List<Membercard> getByCinemaCodeAndOpenID(String cinemacode,String openid);
 	
 	Membercard checkMemberCard(String cinemacode,String cardno,String cardpassword);
+	
+	int changeMemberCinemaCode(String cinemacode,String cinemacodes);
 }

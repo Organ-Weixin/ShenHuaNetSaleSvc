@@ -21,6 +21,7 @@ public class Membercard extends BaseEntity<Long> {
 	private Date Birthday;
 	private Date ExpireDate;
 	private Date CreateTime;
+	private String CinemaCodes;
 	private Date Updated;
 	private Integer Status;
 
@@ -131,6 +132,12 @@ public class Membercard extends BaseEntity<Long> {
 	}
 	public void setUpdated(Date updated) {
 		Updated = updated;
+	}
+	public String getCinemaCodes() {
+		return CinemaCodes;
+	}
+	public void setCinemaCodes(String cinemaCodes) {
+		CinemaCodes = cinemaCodes;
 	}
 	
 }

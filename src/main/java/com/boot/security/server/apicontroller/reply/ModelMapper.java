@@ -323,18 +323,32 @@ public class ModelMapper {
 		order.setTotalPrice(ov.getOrderBaseInfo().getTotalPrice());
 		order.setTotalSettlePrice(ov.getOrderBaseInfo().getTotalSettlePrice());
 		order.setTotalFee(ov.getOrderBaseInfo().getTotalFee());
-		order.setSubmitTime(dateformat.format(ov.getOrderBaseInfo().getSubmitTime()));
-		order.setCreated(dateformat.format(ov.getOrderBaseInfo().getCreated()));
+		if(ov.getOrderBaseInfo().getSubmitTime()!=null){
+			order.setSubmitTime(dateformat.format(ov.getOrderBaseInfo().getSubmitTime()));
+		}
+		if(ov.getOrderBaseInfo().getCreated()!=null){
+			order.setCreated(dateformat.format(ov.getOrderBaseInfo().getCreated()));
+		}
 		order.setMobilePhone(ov.getOrderBaseInfo().getMobilePhone());
 		order.setGoodsCount(ov.getOrderBaseInfo().getGoodsCount());
-		order.setRefundTime(dateformat.format(ov.getOrderBaseInfo().getRefundTime()));
-		order.setPickUpTime(dateformat.format(ov.getOrderBaseInfo().getPickUpTime()));
+		if(ov.getOrderBaseInfo().getRefundTime()!=null){
+			order.setRefundTime(dateformat.format(ov.getOrderBaseInfo().getRefundTime()));
+		}
+		if(ov.getOrderBaseInfo().getPickUpTime()!=null){
+			order.setPickUpTime(dateformat.format(ov.getOrderBaseInfo().getPickUpTime()));
+		}
 		order.setDeliveryType(ov.getOrderBaseInfo().getDeliveryType().toString());
 		order.setDeliveryAddress(ov.getOrderBaseInfo().getDeliveryAddress());
 		order.setDeliveryTime(ov.getOrderBaseInfo().getDeliveryTime());
-		order.setOrderPayFlag(ov.getOrderBaseInfo().getOrderPayFlag()==1?"已支付":"未支付");
-		order.setOrderPayType(ov.getOrderBaseInfo().getOrderPayType().toString());
-		order.setOrderPayTime(dateformat.format(ov.getOrderBaseInfo().getOrderPayTime()));
+		if(ov.getOrderBaseInfo().getOrderPayFlag()!=null){
+			order.setOrderPayFlag(ov.getOrderBaseInfo().getOrderPayFlag()==1?"已支付":"未支付");
+		}
+		if(ov.getOrderBaseInfo().getOrderPayType()!=null){
+			order.setOrderPayType(ov.getOrderBaseInfo().getOrderPayType().toString());
+		}
+		if(ov.getOrderBaseInfo().getOrderPayTime()!=null){
+			order.setOrderPayTime(dateformat.format(ov.getOrderBaseInfo().getOrderPayTime()));
+		}
 		order.setOrderTradeNo(ov.getOrderBaseInfo().getOrderTradeNo());
 		order.setCardNo(ov.getOrderBaseInfo().getCardNo());
 		order.setCardPassword(ov.getOrderBaseInfo().getCardPassword());
@@ -349,9 +363,13 @@ public class ModelMapper {
 			replygoods.setSettlePrice(orderdetail.getSettlePrice());
 			replygoods.setChannelFee(orderdetail.getChannelFee());
 			replygoods.setGoodsCount(orderdetail.getGoodsCount());
-			replygoods.setIsPackage(orderdetail.getIsPackage()==1?"是":"否");
+			if(orderdetail.getIsPackage()!=null){
+				replygoods.setIsPackage(orderdetail.getIsPackage()==1?"是":"否");
+			}
 			replygoods.setGoodsDetail(orderdetail.getGoodsDetail());
-			replygoods.setShowSeqNo(orderdetail.getShowSeqNo());
+			if(orderdetail.getShowSeqNo()!=null){
+				replygoods.setShowSeqNo(orderdetail.getShowSeqNo());
+			}
 			order.getGoodsList().getGoods().add(replygoods);
 		}
 		return order;

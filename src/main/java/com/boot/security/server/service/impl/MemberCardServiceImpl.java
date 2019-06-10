@@ -62,4 +62,10 @@ public class MemberCardServiceImpl implements MemberCardService {
 		return membercardDao.checkMemberCard(cinemacode, cardno, cardpassword);
 	}
 
+	@Override
+	public int changeMemberCinemaCode(String cinemacode, String cinemacodes) {
+		// TODO Auto-generated method stub
+		return membercardDao.changeMemberCinemaCode(cinemacode, cinemacodes);
+	}
+
 }

@@ -13,6 +13,7 @@ public class Cinemaview extends BaseEntity<Long> {
 	private Integer CinemaOpen;
 	private Integer IsOpenSnacks;
 	private Integer CinemaType;
+	private Integer IsGeneralStore;
 
 
 	public Long getId() {
@@ -80,6 +81,12 @@ public class Cinemaview extends BaseEntity<Long> {
 	}
 	public void setCinemaType(Integer CinemaType) {
 		this.CinemaType = CinemaType;
+	}
+	public Integer getIsGeneralStore() {
+		return IsGeneralStore;
+	}
+	public void setIsGeneralStore(Integer isGeneralStore) {
+		IsGeneralStore = isGeneralStore;
 	}
 
 }

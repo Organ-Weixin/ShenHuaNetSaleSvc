@@ -32,6 +32,9 @@
 			<if test="params.CinemaId != null and params.CinemaId != ''">
 				and CinemaId = #{params.CinemaId} 
 			</if>
+			<if test="params.IsGeneralStore != null and params.IsGeneralStore != ''">
+				and IsGeneralStore = #{params.IsGeneralStore} 
+			</if>
 		
 		</where>
 	</sql>
@@ -158,6 +161,9 @@
 			</if>
 			<if test="IsUseLowestPriceReport != null">
 				IsUseLowestPriceReport = #{IsUseLowestPriceReport}, 
+			</if>
+			<if test="IsGeneralStore != null">
+				IsGeneralStore = #{IsGeneralStore}, 
 			</if>
 		</set>
 

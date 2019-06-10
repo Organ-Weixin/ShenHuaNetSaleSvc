@@ -57,6 +57,7 @@
 									<th>接口类型</th>
 									<th>开通状态</th>
 									<th>是否开通套餐</th>
+									<th>会员卡门店通用</th>
 									<th>放映厅功能</th>
 									<th>操作</th>
                                 </tr>
@@ -129,6 +130,19 @@
 	                					return IsOpenSnacks[data];
 	              					}		
 	              	},
+	              	{"data" : "isGeneralStore", "defaultContent" : "",
+						"render":function(data,type,row){
+							var cinemaCode = row['code'];
+							var isGeneralStore = "";
+							if(data==1){
+								isGeneralStore = "<button value='"+cinemaCode+"' title='0' class='generalStore'>关闭</button>";
+							}
+							if(data==0){
+								isGeneralStore = "<button value='"+cinemaCode+"' title='1' class='generalStore'>开通</button>";
+							}
+							return isGeneralStore;
+						}	              		
+	              	},
 	              	{				"data" : "", 
 				  					"defaultContent" : "",
 									"render": function (data, type, row) {
@@ -156,6 +170,17 @@
 	
 	layui.use('layer', function(){
 	    var layer = layui.layer;
+	});
+	//会员卡门店通用
+	$("tbody").on('click','.generalStore',function(){
+		$.ajax({
+			url:'/cinemas/changeGeneralStore',
+			data:{"isgeneralstore":$(this).attr('title'),"cinemacode":$(this).val()},
+			type:'post',
+			success:function(data){
+				window.location.href="cinemaviewList.html";
+			}
+		});
 	});
 	
 	//读取放映厅
