@@ -68,4 +68,8 @@ public interface OrdersDao {
     
     @Select("select * from orders t where t.openid =#{openid} and t.orderstatus in(8,10) and t.submittime >= #{time} order by t.printtime desc limit 0,1")
     List<Orders> getByOpenId(@Param("openid")String openid,@Param("time")String time);
+    
+    @Select("select * from orders t where t.openid =#{openid} and t.orderstatus = #{orderstatus} and t.filmcode = #{filmcode} and t.sessiontime < #{sessiontime}")
+    List<Orders> checkUserOrders(@Param("openid")String openid,@Param("orderstatus")Integer orderstatus,
+    		@Param("filmcode")String filmcode,@Param("sessiontime")String sessiontime);
 }

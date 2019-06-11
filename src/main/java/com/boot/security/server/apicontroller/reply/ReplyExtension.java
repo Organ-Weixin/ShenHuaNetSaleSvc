@@ -1265,4 +1265,71 @@ public class ReplyExtension {
 		return true;
 	}
 	//endregion
+	
+	//region UserWantedFilmReply
+	public static boolean RequestInfoGuard(UserWantedFilmReply reply, String Username, String Password, String OpenID, String FilmCode, String Status) {
+		if (Username == null || "".equals(Username)) {
+			reply.SetNecessaryParamMissReply("Username");
+			return false;
+		}
+		if (Password == null || "".equals(Password)) {
+			reply.SetNecessaryParamMissReply("Password");
+			return false;
+		}
+		if (OpenID == null || "".equals(OpenID)) {
+			reply.SetNecessaryParamMissReply("OpenID");
+			return false;
+		}
+		if (FilmCode == null || "".equals(FilmCode)) {
+			reply.SetNecessaryParamMissReply("FilmCode");
+			return false;
+		}
+		if (Status == null || "".equals(Status)) {
+			reply.SetNecessaryParamMissReply("Status");
+			return false;
+		}
+		return true;
+	}
+	//endregion
+	
+	//region QueryWantedFilmReply
+	public static boolean RequestInfoGuard(QueryWantedFilmReply reply, String Username, String Password,String OpenID) {
+		if (Username == null || "".equals(Username)) {
+			reply.SetNecessaryParamMissReply("Username");
+			return false;
+		}
+		if (Password == null || "".equals(Password)) {
+			reply.SetNecessaryParamMissReply("Password");
+			return false;
+		}
+		if (OpenID == null || "".equals(OpenID)) {
+			reply.SetNecessaryParamMissReply("OpenID");
+			return false;
+		}
+		return true;
+	}
+	//endregion
+	
+	//region CheckUserFilmOrdersReply
+	public static boolean RequestInfoGuard(CheckUserFilmOrdersReply reply, String Username, String Password, String OpenID, String FilmCode) {
+		if (Username == null || "".equals(Username)) {
+			reply.SetNecessaryParamMissReply("Username");
+			return false;
+		}
+		if (Password == null || "".equals(Password)) {
+			reply.SetNecessaryParamMissReply("Password");
+			return false;
+		}
+		if (OpenID == null || "".equals(OpenID)) {
+			reply.SetNecessaryParamMissReply("OpenID");
+			return false;
+		}
+		if (FilmCode == null || "".equals(FilmCode)) {
+			reply.SetNecessaryParamMissReply("FilmCode");
+			return false;
+		}
+		return true;
+	}
+	//endregion
+	
 }

@@ -25,7 +25,7 @@ public interface FilminfoDao {
     @Select("select * from filminfo  where filmname like '%${filmname}%'")
     List<Filminfo> getFilmByFilmName(@Param("filmname") String filmname);
     
-    @Select("select * from filminfo  where filmcode=#{filmcode}")
+    @Select("select * from filminfo  where filmcode=#{filmcode} group by id")
     List<Filminfo> getFilmByFilmCode(String filmcode);
     
     @Delete("delete from filminfo where id = #{id}")

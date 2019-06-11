@@ -1,6 +1,9 @@
 package com.boot.security.server.apicontroller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -220,7 +223,7 @@ public class ConponController {
 	@GetMapping("/BindCoupons/{UserName}/{Password}/{CinemaCode}/{OpenID}/{CouponsCode}")
 	@ApiOperation(value = "绑定优惠券")
 	public BindCouponsReply BindCoupons(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
-			@PathVariable String OpenID,@PathVariable String CouponsCode){
+			@PathVariable String OpenID,@PathVariable String CouponsCode) throws ParseException{
 		BindCouponsReply bindCouponsReply = new BindCouponsReply();
 		//校验参数
 		if(!ReplyExtension.RequestInfoGuard(bindCouponsReply, UserName, Password, CinemaCode, OpenID, CouponsCode)){
@@ -266,6 +269,14 @@ public class ConponController {
 		coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
 		coupons.setOpenID(OpenID);
 		coupons.setReceiveDate(new Date());
+		//更新有效期
+		if(couponsgroup.getValidityType()==2){
+			Calendar c = Calendar.getInstance();
+			c.add(Calendar.DAY_OF_MONTH, couponsgroup.getEffectiveDays());
+			coupons.setEffectiveDate(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(c.getTime())));
+			c.add(Calendar.DAY_OF_MONTH, couponsgroup.getValidityDays());
+			coupons.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(c.getTime())));
+		}
 		if(_couponsService.update(coupons)>0){
 			//更新优惠券数量
 			couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()+1);

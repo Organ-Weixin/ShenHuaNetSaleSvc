@@ -280,19 +280,23 @@ public class OrderController {
 			data.setFilmType(filminfo.getType());
 		}
 		//排期信息
-		Adminorderview adminorderview = adminorderviewService.getByOrderCode(CinemaCode, OrderCode);
-		if(adminorderview!=null){
+		List<Adminorderview> adminorderviewList = adminorderviewService.getByOrderCode(CinemaCode, OrderCode);
+		if(adminorderviewList.size()>0){
 			if(filminfo!=null&&filminfo.getDuration()!=null){
-				String endtime = String.valueOf(adminorderview.getSessiontime().getTime()+Integer.valueOf(filminfo.getDuration())*60*1000);
+				String endtime = String.valueOf(adminorderviewList.get(0).getSessiontime().getTime()+Integer.valueOf(filminfo.getDuration())*60*1000);
 				SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-				data.setShowTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(adminorderview.getSessiontime())+"-"+sdf.format(new Date(Long.parseLong(endtime))));
+				data.setShowTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(adminorderviewList.get(0).getSessiontime())+"-"+sdf.format(new Date(Long.parseLong(endtime))));
 			}
-			data.setScreenCode(adminorderview.getScreencode());
+			data.setScreenCode(orders.getScreenCode());
 			Screeninfo screeninfo = screeninfoService.getByScreenCode(CinemaCode, orders.getScreenCode());
 			if(screeninfo!=null){
 				data.setScreenName(screeninfo.getSName());
 			}
-			data.setSeat(adminorderview.getSeat());
+			List<String> seatList = new ArrayList<>();
+			for(Adminorderview adminorderview:adminorderviewList){
+				seatList.add(adminorderview.getSeat());
+			}
+			data.setSeat(seatList);
 		}
 		data.setCount(orders.getTicketCount());
 		data.setPrintNo(orders.getPrintNo());

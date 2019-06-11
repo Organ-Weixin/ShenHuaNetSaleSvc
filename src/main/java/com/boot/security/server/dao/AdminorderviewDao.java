@@ -35,5 +35,5 @@ public interface AdminorderviewDao {
     List<Adminorderview> getByCinemaCode(String cinemacode);
     
     @Select("select * from adminorderview t where t.cinemacode = #{cinemacode} and submitordercode = #{ordercode}")
-    Adminorderview getByOrderCode(@Param("cinemacode")String cinemacode,@Param("ordercode")String ordercode);
+    List<Adminorderview> getByOrderCode(@Param("cinemacode")String cinemacode,@Param("ordercode")String ordercode);
 }

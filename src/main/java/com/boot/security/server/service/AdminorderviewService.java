@@ -1,8 +1,10 @@
 package com.boot.security.server.service;
 
+import java.util.List;
+
 import com.boot.security.server.model.Adminorderview;
 
 public interface AdminorderviewService {
 	
-	Adminorderview getByOrderCode(String cinemacode,String ordercode);
+	List<Adminorderview> getByOrderCode(String cinemacode,String ordercode);
 }

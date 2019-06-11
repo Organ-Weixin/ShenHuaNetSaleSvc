@@ -1,5 +1,7 @@
 package com.boot.security.server.apicontroller.reply;
 
+import java.util.List;
+
 public class QueryTicketOrderReply extends BaseReply{
 	private QueryTicketOrderReplyOrder data;
 
@@ -22,8 +24,6 @@ public class QueryTicketOrderReply extends BaseReply{
 		private String ShowTime;
 		private String ScreenCode;
 		private String ScreenName;
-		private String SeatNo;
-		private String Seat;
 		private Integer Count;
 		private String PrintNo;
 		private Integer PrintType;
@@ -31,6 +31,7 @@ public class QueryTicketOrderReply extends BaseReply{
 		private String OrderCode;
 		private String PayTime;
 		private String MobilePhone;
+		private List<String> Seat;
 		public String getCinemaCode() {
 			return CinemaCode;
 		}
@@ -97,18 +98,6 @@ public class QueryTicketOrderReply extends BaseReply{
 		public void setScreenName(String screenName) {
 			ScreenName = screenName;
 		}
-		public String getSeatNo() {
-			return SeatNo;
-		}
-		public void setSeatNo(String seatNo) {
-			SeatNo = seatNo;
-		}
-		public String getSeat() {
-			return Seat;
-		}
-		public void setSeat(String seat) {
-			Seat = seat;
-		}
 		public Integer getCount() {
 			return Count;
 		}
@@ -150,6 +139,12 @@ public class QueryTicketOrderReply extends BaseReply{
 		}
 		public void setMobilePhone(String mobilePhone) {
 			MobilePhone = mobilePhone;
+		}
+		public List<String> getSeat() {
+			return Seat;
+		}
+		public void setSeat(List<String> seat) {
+			Seat = seat;
 		}
 		
 	}
