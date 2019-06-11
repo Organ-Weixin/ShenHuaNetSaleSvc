@@ -32,6 +32,7 @@ public class QueryMemberCardLevelReply extends BaseReply{
 			private String levelName;
 			private Double CardCostFee;
 			private Double MemberFee;
+			private String MemberCardImage;
 			private String RuleCode;
 			private String RuleName;
 			private Integer RuleType;
@@ -54,6 +55,12 @@ public class QueryMemberCardLevelReply extends BaseReply{
 			}
 			public String getRuleCode() {
 				return RuleCode;
+			}
+			public String getMemberCardImage() {
+				return MemberCardImage;
+			}
+			public void setMemberCardImage(String memberCardImage) {
+				MemberCardImage = memberCardImage;
 			}
 			public void setRuleCode(String ruleCode) {
 				RuleCode = ruleCode;

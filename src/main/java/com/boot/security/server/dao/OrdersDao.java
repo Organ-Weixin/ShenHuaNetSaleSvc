@@ -72,4 +72,8 @@ public interface OrdersDao {
     @Select("select * from orders t where t.openid =#{openid} and t.orderstatus = #{orderstatus} and t.filmcode = #{filmcode} and t.sessiontime < #{sessiontime}")
     List<Orders> checkUserOrders(@Param("openid")String openid,@Param("orderstatus")Integer orderstatus,
     		@Param("filmcode")String filmcode,@Param("sessiontime")String sessiontime);
+    
+    //查询订单出票状态
+    @Select("select * from orders where cinemacode = #{cinemacode} and (orderstatus = 6 or orderstatus = 8 or orderstatus = 10) and printno is not null and verifycode is not null and (printstatus !=1 or printstatus is null)")
+    List<Orders> getCinemaOrders(String cinemacode);
 }

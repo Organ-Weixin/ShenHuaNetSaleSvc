@@ -63,4 +63,6 @@ public interface OrderService {
 	Orders getByLockOrderCode(String cinemacode, String lockordercode);
 	
 	List<Orders> checkUserOrders(String openid,Integer orderstatus,String filmcode,String sessiontime);
+	
+	List<Orders> getCinemaOrders(String cinemacode);
 }	

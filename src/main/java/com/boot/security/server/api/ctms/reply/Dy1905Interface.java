@@ -995,11 +995,11 @@ public class Dy1905Interface implements ICTMSInterface {
 				return reply;
 			}
 			//获取会员价格
-			CTMSQueryDiscountReply discountReply = QueryDiscount(userCinema, null, CardNo, CardPassword, null, orders.getSessionCode(), null, null, null, null, null);
+			/*CTMSQueryDiscountReply discountReply = QueryDiscount(userCinema, null, CardNo, CardPassword, null, orders.getSessionCode(), null, null, null, null, null);
 			if(discountReply.Status != StatusEnum.Success){
 				reply.Status.equals(discountReply.Status);
 				return reply;
-			}
+			}*/
 			Sessioninfo sessioninfo = sessioninfoService.getBySessionCode(userCinema.getUserId(), CinemaCode, orders.getSessionCode());
 			if(sessioninfo == null){
 				reply.SetSessionInvalidReply();
@@ -1020,10 +1020,10 @@ public class Dy1905Interface implements ICTMSInterface {
 			}
 			List<Orderseatdetails> orderseatdetailsList = orderseatdetailsService.getByOrderId(orders.getId());
 			//更新订单详细表
-			for(Orderseatdetails orderseatdetails:orderseatdetailsList){
+			/*for(Orderseatdetails orderseatdetails:orderseatdetailsList){
 				orderseatdetails.setSalePrice(Double.valueOf(discountReply.getPrice()));
 				orderseatdetailsService.update(orderseatdetails);
-			}
+			}*/
 			Map<String,String> param = new LinkedHashMap<String,String>();
 			param.put("pAppCode", userCinema.getDefaultUserName());
 			param.put("pOrderID", LockOrderCode);

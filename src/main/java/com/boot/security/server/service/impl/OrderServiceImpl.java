@@ -170,4 +170,9 @@ public class OrderServiceImpl implements OrderService{
 		return ordersDao.checkUserOrders(openid, orderstatus, filmcode, sessiontime);
 	}
 
+	@Override
+	public List<Orders> getCinemaOrders(String cinemacode) {
+		return ordersDao.getCinemaOrders(cinemacode);
+	}
+
 }

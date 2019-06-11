@@ -23,6 +23,9 @@ import com.boot.security.server.apicontroller.reply.Jscode2sessionReply;
 import com.boot.security.server.apicontroller.reply.MobilePhoneRegisterReply;
 import com.boot.security.server.apicontroller.reply.MobilePhoneRegisterReply.MobilePhoneRegisterBean;
 import com.boot.security.server.apicontroller.reply.QueryRoomGiftRecordReply.QueryRoomGiftRecord;
+import com.boot.security.server.apicontroller.reply.QueryUserNumberReply.QueryUserNumberReplyUserNumber;
+import com.boot.security.server.apicontroller.reply.QueryUserConponsReply;
+import com.boot.security.server.apicontroller.reply.QueryUserNumberReply;
 import com.boot.security.server.apicontroller.reply.QueryWantedFilmReply;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.QueryCinemaGoodsReply;
@@ -417,6 +420,46 @@ public class AppUserController {
 		reply.setData(sendverify);
 		reply.SetSuccessReply();
 		return reply;
+	}
+	
+	@GetMapping("/QueryUserNumber/{UserName}/{Password}/{CinemaCode}/{OpenID}")
+	@ApiOperation(value = "用户数量")
+	public QueryUserNumberReply QueryUserNumber(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
+			@PathVariable String OpenID){
+		QueryUserNumberReply queryUserNumberReply = new QueryUserNumberReply();
+		QueryCinemaTicketReply queryCinemaTicketReply = QueryCinemaTicket(UserName, Password, CinemaCode, OpenID);
+		QueryCinemaGoodsReply queryCinemaGoodsReply = QueryCinemaGoods(UserName, Password, CinemaCode, OpenID);
+		/*RoomGiftInput input = new RoomGiftInput();
+		input.setUserName(UserName);
+		input.setPassword(Password);
+		input.setCinemaCode(CinemaCode);
+		input.setOpenID(OpenID);
+		QueryRoomGiftRecordReply queryRoomGiftRecordReply = QueryGiftRecord(input);*/
+		QueryUserConponsReply queryUserConponsReply = new ConponController().QueryUserConpons(UserName, Password, CinemaCode, OpenID, "All");
+		QueryUserNumberReplyUserNumber data = new QueryUserNumberReplyUserNumber();
+		if(queryCinemaTicketReply.Status.equals("Success")&&!queryCinemaTicketReply.getData().equals("null")){
+			data.setTicketCount(queryCinemaTicketReply.getData().getCount());
+		}else{
+			data.setTicketCount(0);
+		}
+		if(queryCinemaGoodsReply.Status.equals("Success")&&!queryCinemaGoodsReply.getData().equals("null")){
+			data.setGoodsCount(queryCinemaGoodsReply.getData().getCount());
+		}else{
+			data.setGoodsCount(0);
+		}
+		/*if(queryRoomGiftRecordReply.Status.equals("Success")&&!queryRoomGiftRecordReply.getData().equals("null")){
+			data.setGiftCount(queryRoomGiftRecordReply.getData().size());
+		}else{
+			data.setGiftCount(0);
+		}*/
+		if(queryUserConponsReply.Status.equals("Success")&&!queryUserConponsReply.getData().equals("null")){
+			data.setCouponsCount(queryUserConponsReply.getData().getConponCount());
+		}else{
+			data.setCouponsCount(0);
+		}
+		queryUserNumberReply.setData(data);
+		queryUserNumberReply.SetSuccessReply();
+		return queryUserNumberReply;
 	}
 	
 	@PostMapping("/QueryGiftRecord")
