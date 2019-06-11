@@ -197,7 +197,6 @@ public class MemberController {
 			@PathVariable String LockOrderCode,@PathVariable String LocalOrderCode,@PathVariable String CardNo,@PathVariable String CardPassword,
 			@PathVariable String PayAmount,@PathVariable String GoodsPayAmount,@PathVariable String SessionCode,
 			@PathVariable String FilmCode,@PathVariable String TicketNum,@PathVariable String CouponsCodes){
-		Double originalGoodsPayAmount=0D;//原始的卖品支付金额（订单中未优惠）
 		Double ticketCouponsPrice=0D;//影票优惠总金额
 		Double goodsCouponsPrice=0D;//卖品优惠总金额
 		Double realPayAmount=0D;//实际购票订单支付金额
@@ -346,7 +345,7 @@ public class MemberController {
 		}
 		//实际购票金额=原始金额-优惠券优惠金额
 		realPayAmount=order.getOrderBaseInfo().getTotalSalePrice()-ticketCouponsPrice;
-		realGoodsPayAmount=originalGoodsPayAmount-goodsCouponsPrice;
+		realGoodsPayAmount=goodsOrder.getOrderBaseInfo().getTotalSettlePrice() - goodsCouponsPrice;
 		
 		CardPayReply reply = new NetSaleSvcCore().CardPay(Username, Password, CinemaCode, CardNo, CardPassword,String.valueOf(realPayAmount),String.valueOf(realGoodsPayAmount), SessionCode, FilmCode, TicketNum);
 		
