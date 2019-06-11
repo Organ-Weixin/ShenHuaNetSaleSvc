@@ -60,7 +60,6 @@ import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.utils.SpringUtil;
 import com.google.gson.Gson;
-import com.mysql.fabric.xmlrpc.base.Array;
 
 import cn.cmts.main.webservice.WebService;
 import cn.cmts.pay.webservice.Webservice;

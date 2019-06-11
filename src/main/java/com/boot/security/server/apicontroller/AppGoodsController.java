@@ -75,6 +75,7 @@ import com.boot.security.server.service.impl.GoodsTypeServiceImpl;
 import com.boot.security.server.service.impl.GoodscomponentsServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
+import com.boot.security.server.utils.CouponsUtil;
 import com.boot.security.server.utils.WxPayUtil;
 import com.boot.security.server.utils.XmlHelper;
 import com.google.gson.JsonSyntaxException;
@@ -431,7 +432,7 @@ public class AppGoodsController {
 		if(!CouponsCode.equals("")&&!CouponsCode.equals(null)){
 			CouponsView couponsview = _couponsService.getWithCouponsCode(CouponsCode);
 			if(couponsview.getCoupons()!=null){
-				boolean ifCanUse=CouponsCanUse(couponsview,order.getOrderBaseInfo().getCinemaCode());
+				boolean ifCanUse=CouponsUtil.CouponsCanUse(couponsview,order.getOrderBaseInfo().getCinemaCode());
 				//如果减免类型是卖品
 				if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==2){
 					if(!couponsview.getCouponsgroup().getGoodsCodes().equals(null)&&!couponsview.getCouponsgroup().getGoodsCodes().equals("")){
@@ -520,14 +521,16 @@ public class AppGoodsController {
 					_goodsOrderService.UpdateOrderBaseInfo(order);
 				}
 				// 更新优惠券已使用
-				if (!order.getCouponsCode().equals("")) {
+				if (!order.getCouponsCode().equals(null)&&!order.getCouponsCode().equals("")) {
 					CouponsView couponsview=_couponsService.getWithCouponsCode(order.getCouponsCode());
-					couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
-					couponsview.getCoupons().setUsedDate(new Date());
-					//使用数量+1
-					couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
-					//更新优惠券及优惠券分组表
-					_couponsService.update(couponsview);
+					if(couponsview!=null){
+						couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
+						couponsview.getCoupons().setUsedDate(new Date());
+						//使用数量+1
+						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+						//更新优惠券及优惠券分组表
+						_couponsService.update(couponsview);
+					}
 				}
 			} else {
 				order.setOrderStatus(OrderStatusEnum.PayFail.getStatusCode());
@@ -598,6 +601,18 @@ public class AppGoodsController {
 				order.setRefundTradeNo(refundidValue);
 				order.setRefundTime(new Date());
 				_goodsOrderService.update(order);
+				//退优惠券
+				if(!order.getCouponsCode().equals(null)&&!order.getCouponsCode().equals("")){
+					CouponsView couponsview = _couponsService.getWithCouponsCode(order.getCouponsCode());
+					if(couponsview!=null){
+						couponsview.getCoupons().setStatus(CouponsStatusEnum.Fetched.getStatusCode());
+						couponsview.getCoupons().setUsedDate(null);
+						//使用数量-1
+						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()-1);
+						//更新优惠券及优惠券分组表
+						_couponsService.update(couponsview);
+					}
+				}
 				//准备返回参数
 				refundpaymentReply.setData(new RefundPaymentReplyOrder());
 				refundpaymentReply.getData().setOrderCode(order.getLocalOrderCode());
@@ -613,58 +628,8 @@ public class AppGoodsController {
 		return refundpaymentReply;
 	}
 	
-	//region 判断优惠券是否可用
-	private boolean CouponsCanUse(CouponsView couponsview,String CinemaCode){
-		boolean ifCanUse = true;
-		//优惠券状态不对
-		if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
-			ifCanUse=false;
-		}
-		// 不在有效期范围内
-		if (couponsview.getCoupons().getEffectiveDate().getTime() > new Date().getTime()
-				|| couponsview.getCoupons().getExpireDate().getTime() <= new Date().getTime()) {
-			ifCanUse = false;
-		}
-		if (couponsview.getCouponsgroup().getCanUsePeriodType() == 2) {
-			Calendar c = Calendar.getInstance();
-			c.setTime(new Date());
-			int weekday = c.get(Calendar.DAY_OF_WEEK);// 1周日，2周一，7周六
-			//不在指定周几
-			if (!couponsview.getCouponsgroup().getWeekDays().contains(String.valueOf(weekday))) {
-				ifCanUse = false;
-			}
-			if(!couponsview.getCouponsgroup().getTimePeriod().equals(null)&&!couponsview.getCouponsgroup().getTimePeriod().equals(""))
-			{
-				String[] timeperiods=couponsview.getCouponsgroup().getTimePeriod().split(",");
-				SimpleDateFormat dateFormater = new SimpleDateFormat("HHmm");
-				boolean ifintimeperiod=false;
-				for(String timeperiod:timeperiods){
-					int stime= Integer.parseInt(timeperiod.split("-")[0].replace(":",""));
-					int etime= Integer.parseInt(timeperiod.split("-")[1].replace(":",""));
-					int date= Integer.parseInt(dateFormater.format(new Date()));
-					if(date>stime&&date<etime){
-						ifintimeperiod = true;
-						break;
-					}else
-					{
-						continue;
-					}
-				}
-				//不在所有的可用时间段内
-				if(!ifintimeperiod){ifCanUse = false;}
-			}
-		}
-		//如果是部分门店可用，并且当前订单的影院不在可用门店里面
-		if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
-			if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(CinemaCode)==-1){
-				ifCanUse = false;
-			}
-		}
-		return ifCanUse;
-	}
 	//endregion
 	
-	//endregion
 	public static void main(String[] args) {
 		Calendar c = Calendar.getInstance();
 		c.setTime(new Date());

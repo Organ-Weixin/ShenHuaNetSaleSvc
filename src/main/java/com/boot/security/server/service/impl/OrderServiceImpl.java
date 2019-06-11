@@ -99,12 +99,12 @@ public class OrderServiceImpl implements OrderService{
 
 	@Override
 	public int UpdateOrderBaseInfo(Orders orderbase) {
-		return ordersDao.updateByLockOrderCode(orderbase);
+		return ordersDao.update(orderbase);
 	}
 
 	@Override
 	public int Update(OrderView orderview) {
-		ordersDao.updateByLockOrderCode(orderview.getOrderBaseInfo());
+		ordersDao.update(orderview.getOrderBaseInfo());
 		for(Orderseatdetails orderseat:orderview.getOrderSeatDetails()){
 			orderseatdetailssDao.update(orderseat);
 		}
