@@ -106,7 +106,7 @@ public class AppGoodsController {
 	private CouponsServiceImpl _couponsService;
 	@Autowired
     private HttpServletRequest request;
-
+	
 	//region 查询影院卖品信息
 	@GetMapping("/QueryGoods/{UserName}/{Password}/{CinemaCode}")
 	@ApiOperation(value = "查询影院卖品信息")
@@ -427,45 +427,10 @@ public class AppGoodsController {
 				return prePayParametersReply;
 			}
 		}
-		//region 计算优惠券
-		String CouponsCode = QueryJson.getCouponsCode();
-		if(!CouponsCode.equals("")&&!CouponsCode.equals(null)){
-			CouponsView couponsview = _couponsService.getWithCouponsCode(CouponsCode);
-			if(couponsview.getCoupons()!=null){
-				boolean ifCanUse=CouponsUtil.CouponsCanUse(couponsview,order.getOrderBaseInfo().getCinemaCode());
-				//如果减免类型是卖品
-				if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==2){
-					if(!couponsview.getCouponsgroup().getGoodsCodes().equals(null)&&!couponsview.getCouponsgroup().getGoodsCodes().equals("")){
-						//循环判断每个卖品是不是在可使用优惠的卖品里面
-						for(Goodsorderdetails goodsdetail:order.getOrderGoodsDetails()){
-							if(couponsview.getCouponsgroup().getGoodsCodes().indexOf(goodsdetail.getGoodsCode())==-1){
-								ifCanUse=false;
-								order.getOrderBaseInfo().setCouponsPrice(0D);
-								break;
-							}else{
-								continue;
-							}
-						}
-					}
-					//如果到最后还是可以使用
-					if(ifCanUse){
-						//当前优惠券可以使用,把优惠券更新到卖品订单表
-						order.getOrderBaseInfo().setCouponsCode(couponsview.getCoupons().getCouponsCode());
-						order.getOrderBaseInfo().setCouponsPrice(couponsview.getCouponsgroup().getReductionPrice());
-					}else{
-						order.getOrderBaseInfo().setCouponsPrice(0D);//优惠券不可使用
-					}
-				}else{
-					order.getOrderBaseInfo().setCouponsPrice(0D);//如果优惠券类型是卖品，更新优惠金额为0
-				}
-			}else{
-				order.getOrderBaseInfo().setCouponsPrice(0D);//找不到优惠券，更新优惠金额为0
-			}
-		}
-		//endregion
-		
-		//更新卖品订单主表
-		_goodsOrderService.UpdateOrderBaseInfo(order.getOrderBaseInfo());
+		//得到优惠券组
+		String CouponsCodes=QueryJson.getCouponsCode();
+		//更新优惠券价格
+		Map<String,Double> map=new CouponsUtil().getCouponsPrice(QueryJson.getCinemaCode(),"",QueryJson.getOrderCode(), CouponsCodes);
 		//region 准备支付参数
 		//总支付金额=总结算金额-优惠金额
 		Double TotalPrice;

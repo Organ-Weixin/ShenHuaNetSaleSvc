@@ -110,6 +110,14 @@ public class OrderServiceImpl implements OrderService{
 		}
 		return 1;//暂时
 	}
+	
+	@Override
+	public OrderView getOrderWidthTradeNo(String cinemacode, String ordertradeno) {
+		OrderView orderview=new OrderView();
+		orderview.setOrderBaseInfo(ordersDao.getByOrderTradeNo(cinemacode, ordertradeno));
+		orderview.setOrderSeatDetails(orderseatdetailssDao.getByOrderId(orderview.getOrderBaseInfo().getId()));
+		return orderview;
+	}
 
 	@Override
 	public OrderView getOrderWidthPrintNo(String cinemacode, String printno,String verifycode) {

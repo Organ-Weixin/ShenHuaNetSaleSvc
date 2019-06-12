@@ -66,6 +66,7 @@ public class CinemaActivityController {
 				queryActivity.setTitle(activity.getTitle());
 				queryActivity.setImage(activity.getImage());
 				queryActivity.setLinkUrl(activity.getLinkUrl());
+				queryActivity.setGradeCode(activity.getGradeCode());
 				queryActivityList.add(queryActivity);
 			}
 			data.setCount(activityList.size());

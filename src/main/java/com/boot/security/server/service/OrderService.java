@@ -57,6 +57,8 @@ public interface OrderService {
 	OrderView getOrderWidthPrintNo(String cinemacode,String printno,String verifycode);
 	@Transactional(propagation = Propagation.REQUIRED)
 	OrderView getOrderWidthId(Long id);
+	@Transactional(propagation = Propagation.REQUIRED)
+	OrderView getOrderWidthTradeNo(String cinemacode,String ordertradeno);
 	
 	List<Orders> getByOpenId(String openid,String time);
 	

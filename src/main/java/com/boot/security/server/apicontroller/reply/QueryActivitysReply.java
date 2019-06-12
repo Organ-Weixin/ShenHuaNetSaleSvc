@@ -29,6 +29,7 @@ public class QueryActivitysReply extends BaseReply{
 		}
 		public static class QueryActivity {
 			private String CinemaCode;
+			private String GradeCode;
 			private String Title;
 			private String Image;
 			private String LinkUrl;
@@ -38,6 +39,12 @@ public class QueryActivitysReply extends BaseReply{
 			}
 			public void setCinemaCode(String cinemaCode) {
 				CinemaCode = cinemaCode;
+			}
+			public String getGradeCode() {
+				return GradeCode;
+			}
+			public void setGradeCode(String gradeCode) {
+				GradeCode = gradeCode;
 			}
 			public String getTitle() {
 				return Title;

@@ -619,114 +619,17 @@ public class OrderController {
 				}
 			}
 		}
-		
-		//region 购票价格计算（得到最终上报价，最终销售价，最终服务费）
-		Double SubmitPrice;// 最终上报价格
-		Double SalePrice;// 最终销售价格
-		Double TicketFee;// 最终服务费
-		int TicketCount = order.getOrderBaseInfo().getTicketCount();// 总票数
-
-		Sessioninfo sessioninfo = _sessioninfoService.getBySessionCode(order.getOrderBaseInfo().getUserId(),
-				order.getOrderBaseInfo().getCinemaCode(), order.getOrderBaseInfo().getSessionCode());
-		List<Priceplan> priceplans = _priceplanService.getByCode(order.getOrderBaseInfo().getUserId(),
-				order.getOrderBaseInfo().getCinemaCode(), order.getOrderBaseInfo().getFilmCode(),
-				order.getOrderBaseInfo().getSessionCode());
-		// 得到价格计划
-		Priceplan priceplan = new Priceplan();
-		if (priceplans.size() > 1) {
-			priceplan = priceplans.stream().filter((Priceplan s) -> s.getType() == 1).collect(Collectors.toList())
-					.get(0);
-		} else if (priceplans.size() == 1) {
-			priceplan = priceplans.get(0);
-		}
-		Double priceplanPrice = null == priceplan.getPrice() ? sessioninfo.getStandardPrice() : priceplan.getPrice();
-		Double priceplanFee = null == priceplan.getTicketFee() ? 0 : priceplan.getTicketFee();
-		Double priceplanAddFee = null == priceplan.getAddFee() ? 0 : priceplan.getAddFee();
-		Double priceplanCinemaAllowance = null == priceplan.getCinemaAllowance() ? 0 : priceplan.getCinemaAllowance();
-		Double basisSubmitPrice;//基础上报价格=标准价/最低价
-		//System.out.println("====="+userCinema.getIsUseLowestPriceReport());
-		if(userCinema.getIsUseLowestPriceReport()==null){
-			userCinema.setIsUseLowestPriceReport(0);
-		}
-		if(userCinema.getIsUseLowestPriceReport()==1){
-			basisSubmitPrice=sessioninfo.getLowestPrice();
-		}else{
-			basisSubmitPrice=sessioninfo.getStandardPrice();
-		}
-		//System.out.println("-----"+userCinema.getIsUseLowestPriceReport());
-		if(userCinema.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
-			//如果是辰星系统
-			// 上报价=场次标准价+场次服务费+场次增值服务费
-			SubmitPrice = basisSubmitPrice + sessioninfo.getTicketFee()+sessioninfo.getAddFee();
-			// 服务费=场次服务费+场次增值服务费-场次影院补贴
-			TicketFee = sessioninfo.getTicketFee() + sessioninfo.getAddFee() - sessioninfo.getCinemaAllowance();
-			// 销售价=真实标准价+服务费
-			SalePrice = priceplanPrice + TicketFee;
-		}else
-		{
-			//其他系统
-			//上报价=场次标准价+服务费（后台设置影院服务费）
-			SubmitPrice=basisSubmitPrice+priceplanFee;
-			// 服务费=价格设置表服务费+价格设置表增值服务费-价格设置表影院补贴
-		    TicketFee = priceplanFee + priceplanAddFee - priceplanCinemaAllowance;
-		    // 销售价=真实标准价+服务费
-		 	SalePrice = priceplanPrice + TicketFee;
-		}
-		//endregion
-		
-		// 循环处理每一个座位
-		//region 更新优惠券和价格到订单详细
-		for (Orderseatdetails seat : order.getOrderSeatDetails()) {
-			String CouponsCode = QueryJson.getSeats().stream()
-					.filter((PrePayOrderQueryJsonSeat s) -> s.getSeatCode().equals(seat.getSeatCode()))
-					.collect(Collectors.toList()).get(0).getCouponsCode();
-			if(!CouponsCode.equals("")&&!CouponsCode.equals(null)){
-				CouponsView couponsview = _couponsService.getWithCouponsCode(CouponsCode);
-				if(couponsview.getCoupons()!=null){
-                    boolean ifCanUse=CouponsUtil.CouponsCanUse(couponsview,order.getOrderBaseInfo().getCinemaCode());
-					//如果减免类型是影片
-					if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1){
-						
-						if(!couponsview.getCouponsgroup().getFilmCodes().equals(null)&&!couponsview.getCouponsgroup().getFilmCodes().equals("")){
-							
-							if(couponsview.getCouponsgroup().getFilmCodes().indexOf(order.getOrderBaseInfo().getFilmCode())>-1){
-								//当前优惠券可以使用，把券码和优惠价格更新到订单详细表
-								seat.setConponCode(couponsview.getCoupons().getCouponsCode());
-								seat.setConponPrice(couponsview.getCouponsgroup().getReductionPrice());
-							}else{
-								seat.setConponPrice(0D);//当前影片不在可优惠的影片列表
-							}
-						}else
-						{
-							//所有影片可用
-							seat.setConponCode(couponsview.getCoupons().getCouponsCode());
-							seat.setConponPrice(couponsview.getCouponsgroup().getReductionPrice());
-						}
-					}else{
-						seat.setConponPrice(0D);//如果优惠券类型是卖品，更新优惠金额为0
-					}
-				}else{
-					seat.setConponPrice(0D);//找不到优惠券，更新优惠金额为0
-				}
+		//得到优惠券列表
+		StringBuilder CouponsCodes=new StringBuilder();
+		for (PrePayOrderQueryJsonSeat seat : QueryJson.getSeats()) {
+			if(!seat.getCouponsCode().equals("")){
+				CouponsCodes.append(seat.getCouponsCode()).append(",");
 			}
 		}
-		//endregion
+		CouponsCodes.deleteCharAt(CouponsCodes.length()-1);//去掉最后一个“，”
+		//计算更新优惠价格
+		Map<String,Double> map=new CouponsUtil().getCouponsPrice(QueryJson.getCinemaCode(),QueryJson.getOrderCode(),"", CouponsCodes.toString());
 		
-		//总优惠金额=所有座位的优惠金额相加
-		for(int i=0; i<order.getOrderSeatDetails().size(); i++){
-			if(order.getOrderSeatDetails().get(i).getConponCode()==null||order.getOrderSeatDetails().get(i).getConponCode()==""){
-				order.getOrderSeatDetails().get(i).setConponPrice(0.00);
-			}
-		}
-		Double TotalConponPrice = order.getOrderSeatDetails().stream().mapToDouble(Orderseatdetails::getConponPrice).sum();
-		// 更新订单信息
-		// 总上报金额=上报价*总票数
-		order.getOrderBaseInfo().setTotalPrice(SubmitPrice * TicketCount);
-		order.getOrderBaseInfo().setTotalFee(TicketFee * TicketCount);
-		order.getOrderBaseInfo().setTotalSalePrice(SalePrice * TicketCount);
-		order.getOrderBaseInfo().setTotalConponPrice(TotalConponPrice);
-		//更新订单
-		_orderService.Update(order);
 		//region 准备支付参数
 		Calendar cal=Calendar.getInstance();
 		cal.setTime(order.getOrderBaseInfo().getSessionTime());
@@ -947,160 +850,19 @@ public class OrderController {
 			prePayParametersReply.SetGoodsCountInvalidReply();
 			return prePayParametersReply;
 		}
-		//验证优惠券是否使用(卖品)
-		if(!QueryJson.getCouponsCode().isEmpty()){
-			Coupons coupons = _couponsService.getByCouponsCode(QueryJson.getCouponsCode());
-			if (coupons.getStatus() != 1)// 不是已领取状态
-			{
-				prePayParametersReply.SetCouponsNotExistOrUsedReply();
-				return prePayParametersReply;
-			}
-		}
-		// 验证优惠券是否使用（购票）
+		//得到优惠券组
+		StringBuilder CouponsCodes=new StringBuilder();
 		for (PrePayMixOrderQueryJsonSeat seat : QueryJson.getSeats()) {
-			if (!seat.getCouponsCode().isEmpty()) {
-				Coupons coupons = _couponsService.getByCouponsCode(seat.getCouponsCode());
-				if (coupons.getStatus() != 1)// 不是已领取状态
-				{
-					prePayParametersReply.SetCouponsNotExistOrUsedReply();
-					return prePayParametersReply;
-				}
+			if (!seat.getCouponsCode().equals("")) {
+				CouponsCodes.append(seat.getCouponsCode()).append(",");
 			}
 		}
-		
-		//region 重新计算票价
-		Double SubmitPrice;// 最终上报价格
-		Double SalePrice;// 最终销售价格
-		Double TicketFee;// 最终服务费
-		int TicketCount = order.getOrderBaseInfo().getTicketCount();// 总票数
-
-		Sessioninfo sessioninfo = _sessioninfoService.getBySessionCode(order.getOrderBaseInfo().getUserId(),
-				order.getOrderBaseInfo().getCinemaCode(), order.getOrderBaseInfo().getSessionCode());
-		List<Priceplan> priceplans = _priceplanService.getByCode(order.getOrderBaseInfo().getUserId(),
-				order.getOrderBaseInfo().getCinemaCode(), order.getOrderBaseInfo().getFilmCode(),
-				order.getOrderBaseInfo().getSessionCode());
-		// 得到价格计划
-		Priceplan priceplan = new Priceplan();
-		if (priceplans.size() > 1) {
-			priceplan = priceplans.stream().filter((Priceplan s) -> s.getType() == 1).collect(Collectors.toList())
-					.get(0);
-		} else if (priceplans.size() == 1) {
-			priceplan = priceplans.get(0);
+		if(!QueryJson.getCouponsCode().equals("")){
+			CouponsCodes.append(QueryJson.getCouponsCode()).append(",");
 		}
-		Double priceplanPrice = null == priceplan.getPrice() ? sessioninfo.getStandardPrice() : priceplan.getPrice();
-		Double priceplanFee = null == priceplan.getTicketFee() ? 0 : priceplan.getTicketFee();
-		Double priceplanAddFee = null == priceplan.getAddFee() ? 0 : priceplan.getAddFee();
-		Double priceplanCinemaAllowance = null == priceplan.getCinemaAllowance() ? 0 : priceplan.getCinemaAllowance();
-		Double basisSubmitPrice;//基础上报价格=标准价/最低价
-		if(userCinema.getIsUseLowestPriceReport()==null){
-			userCinema.setIsUseLowestPriceReport(0);
-		}
-		if(userCinema.getIsUseLowestPriceReport()==1){
-			basisSubmitPrice=sessioninfo.getLowestPrice();
-		}else{
-			basisSubmitPrice=sessioninfo.getStandardPrice();
-		}
-		if(userCinema.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
-			//如果是辰星系统
-			// 上报价=场次标准价+场次服务费+场次增值服务费
-			SubmitPrice = basisSubmitPrice + sessioninfo.getTicketFee()+sessioninfo.getAddFee();
-			// 服务费=场次服务费+场次增值服务费-场次影院补贴
-			TicketFee = sessioninfo.getTicketFee() + sessioninfo.getAddFee() - sessioninfo.getCinemaAllowance();
-			// 销售价=真实标准价+服务费
-			SalePrice = priceplanPrice + TicketFee;
-		}else
-		{
-			//其他系统
-			//上报价=场次标准价+服务费（后台设置影院服务费）
-			SubmitPrice=basisSubmitPrice+priceplanFee;
-			// 服务费=价格设置表服务费+价格设置表增值服务费-价格设置表影院补贴
-		    TicketFee = priceplanFee + priceplanAddFee - priceplanCinemaAllowance;
-		    // 销售价=真实标准价+服务费
-		 	SalePrice = priceplanPrice + TicketFee;
-		}
-		// 循环处理每一个座位
-		//region 更新优惠券和价格到订单详细
-		for (Orderseatdetails seat : order.getOrderSeatDetails()) {
-			String CouponsCode = QueryJson.getSeats().stream()
-					.filter((PrePayMixOrderQueryJsonSeat s) -> s.getSeatCode().equals(seat.getSeatCode()))
-					.collect(Collectors.toList()).get(0).getCouponsCode();
-			CouponsView couponsview = _couponsService.getWithCouponsCode(CouponsCode);
-			if(couponsview.getCoupons()!=null){
-				boolean ifCanUse=CouponsUtil.CouponsCanUse(couponsview,order.getOrderBaseInfo().getCinemaCode());
-				//如果减免类型是影片
-				if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1){
-					if(!couponsview.getCouponsgroup().getFilmCodes().equals(null)&&!couponsview.getCouponsgroup().getFilmCodes().equals(""))
-					{
-						if(couponsview.getCouponsgroup().getFilmCodes().indexOf(order.getOrderBaseInfo().getFilmCode())>-1){
-							//当前优惠券可以使用，把券码和优惠价格更新到订单详细表
-							seat.setConponCode(couponsview.getCoupons().getCouponsCode());
-							seat.setConponPrice(couponsview.getCouponsgroup().getReductionPrice());
-						}else{
-							seat.setConponPrice(0D);//当前影片不在优惠的影片列表内
-						}
-					}else
-					{
-						//所有影片可用
-						seat.setConponCode(couponsview.getCoupons().getCouponsCode());
-						seat.setConponPrice(couponsview.getCouponsgroup().getReductionPrice());
-					}
-					
-				}else{
-					seat.setConponPrice(0D);//如果优惠券类型是卖品，更新优惠金额为0
-				}
-			}else{
-				seat.setConponPrice(0D);//找不到优惠券，更新优惠金额为0
-			}
-		}
-		//endregion
-		//总优惠金额=所有座位的优惠金额相加
-		Double TotalConponPrice=order.getOrderSeatDetails().stream().mapToDouble(Orderseatdetails::getConponPrice).sum();
-		// 更新订单信息
-		// 总上报金额=上报价*总票数
-		order.getOrderBaseInfo().setTotalPrice(SubmitPrice * TicketCount);
-		order.getOrderBaseInfo().setTotalFee(TicketFee * TicketCount);
-		order.getOrderBaseInfo().setTotalSalePrice(SalePrice * TicketCount);
-		order.getOrderBaseInfo().setTotalConponPrice(TotalConponPrice);
-		//更新订单
-		_orderService.Update(order);
-		//endregion
-		
-		//region 重新计算卖品价格
-		String CouponsCode = QueryJson.getCouponsCode();
-		CouponsView couponsview = _couponsService.getWithCouponsCode(CouponsCode);
-		if(couponsview.getCoupons()!=null){
-			boolean ifCanUse=CouponsUtil.CouponsCanUse(couponsview,goodsorder.getOrderBaseInfo().getCinemaCode());
-			//如果减免类型是卖品
-			if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==2){
-				if(!couponsview.getCouponsgroup().getGoodsCodes().equals(null)&&!couponsview.getCouponsgroup().getGoodsCodes().equals("")){
-					//如果可使用卖品列表不为空，循环判断每个卖品是不是在可使用优惠的卖品里面
-					for(Goodsorderdetails goodsdetail:goodsorder.getOrderGoodsDetails()){
-						if(couponsview.getCouponsgroup().getGoodsCodes().indexOf(goodsdetail.getGoodsCode())==-1){
-							ifCanUse=false;
-							goodsorder.getOrderBaseInfo().setCouponsPrice(0D);
-							break;
-						}else{
-							continue;
-						}
-					}
-				}
-				//如果到最后还是可以使用
-				if(ifCanUse){
-					//当前优惠券可以使用,把优惠券更新到卖品订单表
-					goodsorder.getOrderBaseInfo().setCouponsCode(couponsview.getCoupons().getCouponsCode());
-					goodsorder.getOrderBaseInfo().setCouponsPrice(couponsview.getCouponsgroup().getReductionPrice());
-				}else{
-					goodsorder.getOrderBaseInfo().setCouponsPrice(0D);//优惠券不可使用
-				}
-			}else{
-				goodsorder.getOrderBaseInfo().setCouponsPrice(0D);//如果优惠券类型不是卖品，更新优惠金额为0
-			}
-		}else{
-			goodsorder.getOrderBaseInfo().setCouponsPrice(0D);//找不到优惠券，更新优惠金额为0
-		}
-		//更新卖品订单主表
-		_goodsOrderService.UpdateOrderBaseInfo(goodsorder.getOrderBaseInfo());
-		//endregion
+		CouponsCodes.deleteCharAt(CouponsCodes.length()-1);//去掉最后一个“，”
+		//计算优惠金额
+		Map<String,Double> map=new CouponsUtil().getCouponsPrice(QueryJson.getCinemaCode(),QueryJson.getOrderCode(),QueryJson.getOrderCode(), CouponsCodes.toString());
 		
 		//region 准备支付参数
 		Double TotalGoodsOrderPrice = goodsorder.getOrderBaseInfo().getTotalSettlePrice()-goodsorder.getOrderBaseInfo().getCouponsPrice();

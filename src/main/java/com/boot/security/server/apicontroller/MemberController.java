@@ -7,7 +7,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +31,7 @@ import com.boot.security.server.api.core.QueryCardTradeRecordReply;
 import com.boot.security.server.api.core.QueryDiscountReply;
 import com.boot.security.server.api.ctms.reply.Dy1905GetMemberCardByMobileReply;
 import com.boot.security.server.api.ctms.reply.Dy1905Interface;
+import com.boot.security.server.apicontroller.reply.GoodsOrderMemberReply;
 import com.boot.security.server.apicontroller.reply.MemberCardPayReply;
 import com.boot.security.server.apicontroller.reply.MemberCardUnbindReply;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
@@ -197,161 +200,14 @@ public class MemberController {
 			@PathVariable String LockOrderCode,@PathVariable String LocalOrderCode,@PathVariable String CardNo,@PathVariable String CardPassword,
 			@PathVariable String PayAmount,@PathVariable String GoodsPayAmount,@PathVariable String SessionCode,
 			@PathVariable String FilmCode,@PathVariable String TicketNum,@PathVariable String CouponsCodes){
-		Double ticketCouponsPrice=0D;//影票优惠总金额
-		Double goodsCouponsPrice=0D;//卖品优惠总金额
-		Double realPayAmount=0D;//实际购票订单支付金额
-		Double realGoodsPayAmount=0D;//实际卖品支付金额
+		Map<String,Double> map=new CouponsUtil().getCouponsPrice(CinemaCode,LockOrderCode,LocalOrderCode,CouponsCodes);
+		CardPayReply reply = new NetSaleSvcCore().CardPay(Username, Password, CinemaCode, CardNo, CardPassword,String.valueOf(map.get("realPayAmount")),String.valueOf(map.get("realGoodsPayAmount")), SessionCode, FilmCode, TicketNum);
 		OrderView order = orderService.getOrderWidthLockOrderCode(CinemaCode, LockOrderCode);
 		GoodsOrderView goodsOrder = goodsOrderService.getWithLocalOrderCode(CinemaCode,LocalOrderCode);
-		//region 优惠券价格计算
-		if(!CouponsCodes.equals(null)&&!CouponsCodes.equals("null")&&!CouponsCodes.equals("")){
-			String[] CouponsCodesArr=CouponsCodes.split(",");
-			for(int i=0;i<CouponsCodesArr.length;i++){//为了设置到对应的座位上，这里用i循环
-				String CouponsCode=CouponsCodesArr[i];
-				if(!CouponsCode.equals("")&&!CouponsCode.equals(null)){
-					CouponsView couponsview = _couponsService.getWithCouponsCode(CouponsCode);
-					if(couponsview.getCoupons()!=null){
-	                    boolean ifCanUse=CouponsUtil.CouponsCanUse(couponsview,CinemaCode);
-						//如果减免类型是影片 并且传入的影片编码不为空，说明是购票订单
-						if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1&&!FilmCode.equals(null)&&!FilmCode.equals("null")){
-							if(!couponsview.getCouponsgroup().getFilmCodes().equals(null)&&!couponsview.getCouponsgroup().getFilmCodes().equals("")){
-								if(couponsview.getCouponsgroup().getFilmCodes().indexOf(FilmCode)>-1){
-									//当前优惠券可以使用，把券码和优惠价格更新到订单详细表
-									order.getOrderSeatDetails().get(i).setConponCode(couponsview.getCoupons().getCouponsCode());
-									order.getOrderSeatDetails().get(i).setConponPrice(couponsview.getCouponsgroup().getReductionPrice());
-								}else{
-									order.getOrderSeatDetails().get(i).setConponPrice(0D);//当前影片不在可优惠的影片列表
-								}
-							}else{
-								//所有影片可用
-								order.getOrderSeatDetails().get(i).setConponCode(couponsview.getCoupons().getCouponsCode());
-								order.getOrderSeatDetails().get(i).setConponPrice(couponsview.getCouponsgroup().getReductionPrice());
-							}
-						}
-						//如果减免类型是卖品
-						if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==2&&goodsOrder!=null){
-							if(!couponsview.getCouponsgroup().getGoodsCodes().equals(null)&&!couponsview.getCouponsgroup().getGoodsCodes().equals("")){
-								//循环判断每个卖品是不是在可使用优惠的卖品里面
-								for(Goodsorderdetails goodsdetail:goodsOrder.getOrderGoodsDetails()){
-									if(couponsview.getCouponsgroup().getGoodsCodes().indexOf(goodsdetail.getGoodsCode())==-1){
-										ifCanUse=false;
-										goodsOrder.getOrderBaseInfo().setCouponsPrice(0D);
-										break;
-									}else{
-										continue;
-									}
-								}
-							}
-							//如果到最后还是可以使用
-							if(ifCanUse){
-								//当前优惠券可以使用,把优惠券更新到卖品订单表
-								goodsOrder.getOrderBaseInfo().setCouponsCode(couponsview.getCoupons().getCouponsCode());
-								goodsOrder.getOrderBaseInfo().setCouponsPrice(couponsview.getCouponsgroup().getReductionPrice());
-							}else{
-								goodsOrder.getOrderBaseInfo().setCouponsPrice(0D);//优惠券不可使用
-							}
-						}else{
-							//如果不满足影票优惠券并且购票订单存在，也不满足卖品优惠券并且卖品订单存在，则不用处理
-						}
-					}else{
-					   //找不到优惠券，不用处理
-					}
-				}
-			}
-		}
-		//endregion
-
-		if(order!=null){
-			//region 购票价格计算（得到最终上报价，最终销售价，最终服务费）
-			Double SubmitPrice;// 最终上报价格
-			Double SalePrice;// 最终销售价格
-			Double TicketFee;// 最终服务费
-			int TicketCount = order.getOrderBaseInfo().getTicketCount();// 总票数
-			Userinfo UserInfo = _userInfoService.getByUserCredential(Username,Password);
-			Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),CinemaCode);
-			Sessioninfo sessioninfo = _sessioninfoService.getBySessionCode(order.getOrderBaseInfo().getUserId(),
-					order.getOrderBaseInfo().getCinemaCode(), order.getOrderBaseInfo().getSessionCode());
-			List<Priceplan> priceplans = _priceplanService.getByCode(order.getOrderBaseInfo().getUserId(),
-					order.getOrderBaseInfo().getCinemaCode(), order.getOrderBaseInfo().getFilmCode(),
-					order.getOrderBaseInfo().getSessionCode());
-			// 得到价格计划
-			Priceplan priceplan = new Priceplan();
-			if (priceplans.size() > 1) {
-				priceplan = priceplans.stream().filter((Priceplan s) -> s.getType() == 1).collect(Collectors.toList())
-						.get(0);
-			} else if (priceplans.size() == 1) {
-				priceplan = priceplans.get(0);
-			}
-			Double priceplanMemberPrice = null == priceplan.getMemberPrice() ? sessioninfo.getStandardPrice() : priceplan.getMemberPrice();
-			//如果座位表中已有销售价，说明已设置会员卡折扣价
-			if(order.getOrderSeatDetails().get(0).getSalePrice()!=null&&order.getOrderSeatDetails().get(0).getSalePrice()!=0){
-				priceplanMemberPrice=order.getOrderSeatDetails().get(0).getSalePrice();
-			}
-			Double priceplanFee = null == priceplan.getTicketFee() ? 0 : priceplan.getTicketFee();
-			Double priceplanAddFee = null == priceplan.getAddFee() ? 0 : priceplan.getAddFee();
-			Double priceplanCinemaAllowance = null == priceplan.getCinemaAllowance() ? 0 : priceplan.getCinemaAllowance();
-			Double basisSubmitPrice;//基础上报价格=标准价/最低价
-			//System.out.println("====="+userCinema.getIsUseLowestPriceReport());
-			if(userCinema.getIsUseLowestPriceReport()==null){
-				userCinema.setIsUseLowestPriceReport(0);
-			}
-			if(userCinema.getIsUseLowestPriceReport()==1){
-				basisSubmitPrice=sessioninfo.getLowestPrice();
-			}else{
-				basisSubmitPrice=sessioninfo.getStandardPrice();
-			}
-			//System.out.println("-----"+userCinema.getIsUseLowestPriceReport());
-			if(userCinema.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
-				//如果是辰星系统
-				// 上报价=场次标准价+场次服务费+场次增值服务费
-				SubmitPrice = basisSubmitPrice + sessioninfo.getTicketFee()+sessioninfo.getAddFee();
-				// 服务费=场次服务费+场次增值服务费-场次影院补贴
-				TicketFee = sessioninfo.getTicketFee() + sessioninfo.getAddFee() - sessioninfo.getCinemaAllowance();
-				// 销售价=真实标准价+服务费
-				SalePrice = priceplanMemberPrice + TicketFee;
-			}else
-			{
-				//其他系统
-				//上报价=场次标准价+服务费（后台设置影院服务费）
-				SubmitPrice=basisSubmitPrice+priceplanFee;
-				// 服务费=价格设置表服务费+价格设置表增值服务费-价格设置表影院补贴
-			    TicketFee = priceplanFee + priceplanAddFee - priceplanCinemaAllowance;
-			    // 销售价=真实标准价+服务费
-			 	SalePrice = priceplanMemberPrice + TicketFee;
-			}
-			//endregion
-			
-			//总优惠金额=所有座位的优惠金额相加
-			for(int i=0; i<order.getOrderSeatDetails().size(); i++){
-				if(order.getOrderSeatDetails().get(i).getConponCode()==null||order.getOrderSeatDetails().get(i).getConponCode()==""){
-					order.getOrderSeatDetails().get(i).setConponPrice(0.00);
-				}
-			}
-			ticketCouponsPrice = order.getOrderSeatDetails().stream().mapToDouble(Orderseatdetails::getConponPrice).sum();
-			
-			// 更新订单信息
-			// 总上报金额=上报价*总票数
-			order.getOrderBaseInfo().setTotalPrice(SubmitPrice * TicketCount);
-			order.getOrderBaseInfo().setTotalFee(TicketFee * TicketCount);
-			order.getOrderBaseInfo().setTotalSalePrice(SalePrice * TicketCount);
-			order.getOrderBaseInfo().setTotalConponPrice(ticketCouponsPrice);
-			//更新订单
-			orderService.Update(order);
-		}
-		if(goodsOrder!=null){
-			goodsCouponsPrice=goodsOrder.getOrderBaseInfo().getCouponsPrice();
-			//更新卖品订单主表
-			goodsOrderService.UpdateOrderBaseInfo(goodsOrder.getOrderBaseInfo());
-		}
-		//实际购票金额=原始金额-优惠券优惠金额
-		realPayAmount=order.getOrderBaseInfo().getTotalSalePrice()-ticketCouponsPrice;
-		realGoodsPayAmount=goodsOrder.getOrderBaseInfo().getTotalSettlePrice() - goodsCouponsPrice;
-		
-		CardPayReply reply = new NetSaleSvcCore().CardPay(Username, Password, CinemaCode, CardNo, CardPassword,String.valueOf(realPayAmount),String.valueOf(realGoodsPayAmount), SessionCode, FilmCode, TicketNum);
-		
 		//region 更新订单支付状态
 		if(order!=null){
 			if(reply.Status.equals("Success")){
+				//更新订单
 				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Payed.getStatusCode());
 				order.getOrderBaseInfo().setPayFlag(1);
 				order.getOrderBaseInfo().setPayTime(new Date());
@@ -359,6 +215,20 @@ public class MemberController {
 				order.getOrderBaseInfo().setCardNo(CardNo);
 				order.getOrderBaseInfo().setOrderPayType(OrderPayTypeEnum.MemberCardPay.getTypeCode());
 				order.getOrderBaseInfo().setUpdated(new Date());
+				//更新优惠券已使用
+				for (Orderseatdetails seat : order.getOrderSeatDetails()) {
+					if (!seat.getConponCode().equals(null)&&!seat.getConponCode().equals("")) {
+						CouponsView couponsview=_couponsService.getWithCouponsCode(seat.getConponCode());
+						if(couponsview!=null){
+							couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
+							couponsview.getCoupons().setUsedDate(new Date());
+							//使用数量+1
+							couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+							//更新优惠券及优惠券分组表
+							_couponsService.update(couponsview);
+						}
+					}
+				}
 			}else{
 				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.PayFail.getStatusCode());
 			}
@@ -366,6 +236,7 @@ public class MemberController {
 		}
 		if(goodsOrder!=null){
 			if(reply.Status.equals("Success")){
+				//更新卖品订单
 				goodsOrder.getOrderBaseInfo().setCardNo(CardNo);
 				goodsOrder.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Payed.getStatusCode());
 				goodsOrder.getOrderBaseInfo().setOrderPayFlag(1);
@@ -373,6 +244,18 @@ public class MemberController {
 				goodsOrder.getOrderBaseInfo().setOrderTradeNo(reply.getTradeNo());
 				goodsOrder.getOrderBaseInfo().setOrderPayType(OrderPayTypeEnum.MemberCardPay.getTypeCode());
 				goodsOrder.getOrderBaseInfo().setUpdated(new Date());
+				// 更新优惠券已使用
+				if (!goodsOrder.getOrderBaseInfo().getCouponsCode().equals(null)&&!goodsOrder.getOrderBaseInfo().getCouponsCode().equals("")) {
+					CouponsView couponsview=_couponsService.getWithCouponsCode(goodsOrder.getOrderBaseInfo().getCouponsCode());
+					if(couponsview!=null){
+						couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
+						couponsview.getCoupons().setUsedDate(new Date());
+						//使用数量+1
+						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+						//更新优惠券及优惠券分组表
+						_couponsService.update(couponsview);
+					}
+				}
 			}else{
 				goodsOrder.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.PayFail.getStatusCode());
 			}
@@ -383,20 +266,35 @@ public class MemberController {
 	}
 	//endregion
 	
-	//region 1905会员卡购票
-	@GetMapping("/SellTicketCustomMember/{Username}/{Password}/{CinemaCode}/{LockOrderCode}/{CardNo}/{CardPassword}")
+	//region 1905会员卡支付+购票
+	@GetMapping("/SellTicketCustomMember/{Username}/{Password}/{CinemaCode}/{LockOrderCode}/{CardNo}/{CardPassword}/{CouponsCodes}")
 	@ApiOperation(value = "会员卡购票（1905）")
 	public SellTicketCustomMemberReply SellTicketCustomMember(@PathVariable String Username,@PathVariable String Password,
-			@PathVariable String CinemaCode,@PathVariable String LockOrderCode,@PathVariable String CardNo,@PathVariable String CardPassword) throws Exception{
+			@PathVariable String CinemaCode,@PathVariable String LockOrderCode,@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String CouponsCodes) throws Exception{
+		//更新一下座位价格
+		Map<String,Double> map=new CouponsUtil().getCouponsPrice(CinemaCode,LockOrderCode,"",CouponsCodes);
 		return new Dy1905Interface().SellTicketCustomMember(Username, Password, CinemaCode, LockOrderCode, CardNo, CardPassword);
 	}
 	//endregion
 	
-	//region 1905会员卡混合支付
-	@GetMapping("/MemberCardPay/{Username}/{Password}/{CinemaCode}/{LockOrderCode}/{LocalOrderCode}/{CardNo}/{CardPassword}")
+	//region 1905会员卡支付+卖品
+	@GetMapping("/GoodsOrderMember/{Username}/{Password}/{CinemaCode}/{LocalOrderCode}/{CardNo}/{CardPassword}/{CouponsCodes}")
+	@ApiOperation(value = "会员卡卖品（1905）")
+	public GoodsOrderMemberReply GoodsOrderMember(@PathVariable String Username,@PathVariable String Password,
+			@PathVariable String CinemaCode,@PathVariable String LocalOrderCode,@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String CouponsCodes) throws Exception{
+		//更新卖品优惠
+		Map<String,Double> map=new CouponsUtil().getCouponsPrice(CinemaCode,"",LocalOrderCode,CouponsCodes);
+		return new Dy1905Interface().GoodsOrderMember(Username, Password, CinemaCode, LocalOrderCode, CardNo, CardPassword);
+	}
+	//endregion
+	
+	//region 1905会员卡支付+购票+卖品
+	@GetMapping("/MemberCardPay/{Username}/{Password}/{CinemaCode}/{LockOrderCode}/{LocalOrderCode}/{CardNo}/{CardPassword}/{CouponsCodes}")
 	@ApiOperation(value = "会员卡混合支付（1905）")
 	public MemberCardPayReply MemberCardPay(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
-			@PathVariable String LockOrderCode,@PathVariable String LocalOrderCode,@PathVariable String CardNo,@PathVariable String CardPassword) throws Exception{
+			@PathVariable String LockOrderCode,@PathVariable String LocalOrderCode,@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String CouponsCodes) throws Exception{
+		//更新购票以及卖品优惠金额
+		Map<String,Double> map=new CouponsUtil().getCouponsPrice(CinemaCode,LockOrderCode,LocalOrderCode,CouponsCodes);
 		return new Dy1905Interface().MemberCardPay(Username, Password, CinemaCode, LockOrderCode, LocalOrderCode, CardNo, CardPassword);
 	}
 	//endregion
@@ -407,18 +305,48 @@ public class MemberController {
 	public CardPayBackReply CardPayBack(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String TradeNo,@PathVariable String PayBackAmount){
 		CardPayBackReply reply = new NetSaleSvcCore().CardPayBack(Username, Password, CinemaCode, CardNo, CardPassword, TradeNo, PayBackAmount);
-		Orders orders = orderService.getByOrderTradeNo(CinemaCode, TradeNo);
+		OrderView order = orderService.getOrderWidthTradeNo(CinemaCode, TradeNo);
 		Goodsorders goodsorders = goodsOrderService.getByOrderTradeNo(CinemaCode, TradeNo);
-		if(orders!=null){
+		if(order!=null){
 			if(reply.Status.equals("Success")){
-				orders.setOrderStatus(OrderStatusEnum.PayBack.getStatusCode());
-				orderService.update(orders);
+				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.PayBack.getStatusCode());
+				order.getOrderBaseInfo().setRefundTradeNo(reply.getTradeNo());
+				order.getOrderBaseInfo().setRefundTime(new Date());
+				orderService.update(order.getOrderBaseInfo());
+				//退优惠券
+				for(Orderseatdetails seat:order.getOrderSeatDetails()){
+					if(!seat.getConponCode().equals(null)&&!seat.getConponCode().equals("")){
+						CouponsView couponsview = _couponsService.getWithCouponsCode(seat.getConponCode());
+						if(couponsview!=null){
+							couponsview.getCoupons().setStatus(CouponsStatusEnum.Fetched.getStatusCode());
+							couponsview.getCoupons().setUsedDate(null);
+							//使用数量-1
+							couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()-1);
+							//更新优惠券及优惠券分组表
+							_couponsService.update(couponsview);
+						}
+					}
+				}
 			}
 		}
 		if(goodsorders!=null){
 			if(reply.Status.equals("Success")){
 				goodsorders.setOrderStatus(GoodsOrderStatusEnum.PayBack.getStatusCode());
+				goodsorders.setRefundTradeNo(reply.getTradeNo());
+				goodsorders.setRefundTime(new Date());
 				goodsOrderService.update(goodsorders);
+				//退优惠券
+				if(!goodsorders.getCouponsCode().equals(null)&&!goodsorders.getCouponsCode().equals("")){
+					CouponsView couponsview = _couponsService.getWithCouponsCode(goodsorders.getCouponsCode());
+					if(couponsview!=null){
+						couponsview.getCoupons().setStatus(CouponsStatusEnum.Fetched.getStatusCode());
+						couponsview.getCoupons().setUsedDate(null);
+						//使用数量-1
+						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()-1);
+						//更新优惠券及优惠券分组表
+						_couponsService.update(couponsview);
+					}
+				}
 			}
 		}
 		return reply;
