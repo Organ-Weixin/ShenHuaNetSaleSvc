@@ -12,7 +12,7 @@ public interface TicketuserfilmService {
 	
 	int deleteByFilmCode(String openid,String filmcode);
 
-	List<Ticketuserfilm> getByOpenId(String openid);
+	List<Ticketuserfilm> getByOpenId(String openid,Integer status);
 	
 	Ticketuserfilm getByFilmCode(String openid,String filmcode);
 }

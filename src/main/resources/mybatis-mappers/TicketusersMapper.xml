@@ -29,6 +29,9 @@
 			<if test="params.Sex != null and params.Sex != ''">
 				and Sex = #{params.Sex} 
 			</if>
+			<if test="params.Birthday != null and params.Birthday != ''">
+				and Birthday = #{params.Birthday} 
+			</if>
 			<if test="params.Country != null and params.Country != ''">
 				and Country = #{params.Country} 
 			</if>
@@ -100,6 +103,9 @@
 			</if>
 			<if test="Sex != null">
 				Sex = #{Sex}, 
+			</if>
+			<if test="Birthday != null">
+				Birthday = #{Birthday}, 
 			</if>
 			<if test="Country != null">
 				Country = #{Country}, 

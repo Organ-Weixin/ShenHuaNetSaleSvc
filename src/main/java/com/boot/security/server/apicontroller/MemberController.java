@@ -890,6 +890,7 @@ public class MemberController {
 	        	levelReply.setLevelName(membercardlevel.getLevelName());
 	        	levelReply.setCardCostFee(membercardlevel.getCardCostFee());
 	        	levelReply.setMemberFee(membercardlevel.getMemberFee());
+	        	levelReply.setMemberCardImage(membercardlevel.getPictureUrl());
 	        	levelReply.setStatus(membercardlevel.getStatus());
 	        	//会员卡类别规则
 	        	Choosemembercardcreditrule choosemembercardcreditrule =  _choosemembercardcreditruleService.getOpenTypeByLevelCode(CinemaCode, membercardlevel.getLevelCode());

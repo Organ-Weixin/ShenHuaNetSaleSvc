@@ -304,7 +304,9 @@ public class OrderController {
 		if(orders.getPayTime()!=null){
 			data.setPayTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orders.getPayTime()));
 		}
+		//订单信息
 		data.setPrintType(orders.getPrintStatus());
+		data.setVerifyCode(orders.getVerifyCode());
 		data.setRealAmount(orders.getTotalSalePrice());
 		data.setOrderCode(orders.getSubmitOrderCode());
 		data.setMobilePhone(orders.getMobilePhone());

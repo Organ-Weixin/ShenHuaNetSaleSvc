@@ -48,4 +48,7 @@ public interface GoodsordersDao {
     
     @Select("select * from goodsorders t where t.cinemacode =#{cinemacode} and t.ordertradeno = #{ordertradeno}")
     Goodsorders getByOrderTradeNo(@Param("cinemacode")String cinemacode,@Param("ordertradeno")String ordertradeno);
+    
+    @Select("select * from goodsorders t where t.cinemacode = #{cinemacode} and t.openid = #{openid} and t.orderstatus = #{orderstatus}")
+    List<Goodsorders> getUserGoodsOrders(@Param("cinemacode")String cinemacode,@Param("openid")String openid,@Param("orderstatus")Integer orderstatus);
 }

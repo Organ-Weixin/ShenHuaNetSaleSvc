@@ -175,4 +175,9 @@ public class OrderServiceImpl implements OrderService{
 		return ordersDao.getCinemaOrders(cinemacode);
 	}
 
+	@Override
+	public List<Orders> getUserOrders(String cinemacode, String openid, Integer orderstatus, Integer printstatus) {
+		return ordersDao.getUserOrders(cinemacode, openid, orderstatus, printstatus);
+	}
+
 }

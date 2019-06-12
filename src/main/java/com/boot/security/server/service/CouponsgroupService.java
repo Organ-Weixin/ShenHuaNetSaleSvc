@@ -27,4 +27,6 @@ public interface CouponsgroupService {
 	int update(Couponsgroup couponsgroup);
 	
 	int changePast(Integer status);
+	
+	Couponsgroup getUserCouponsGroup(String groupcode,Integer status,String cinemacode);
 }

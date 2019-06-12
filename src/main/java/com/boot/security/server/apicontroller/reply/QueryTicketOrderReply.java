@@ -27,6 +27,7 @@ public class QueryTicketOrderReply extends BaseReply{
 		private Integer Count;
 		private String PrintNo;
 		private Integer PrintType;
+		private String VerifyCode;
 		private Double RealAmount;
 		private String OrderCode;
 		private String PayTime;
@@ -115,6 +116,12 @@ public class QueryTicketOrderReply extends BaseReply{
 		}
 		public void setPrintType(Integer printType) {
 			PrintType = printType;
+		}
+		public String getVerifyCode() {
+			return VerifyCode;
+		}
+		public void setVerifyCode(String verifyCode) {
+			VerifyCode = verifyCode;
 		}
 		public Double getRealAmount() {
 			return RealAmount;

@@ -57,5 +57,9 @@ public class CouponsgroupServiceImpl implements CouponsgroupService{
 	public Couponsgroup getByCinemaCodeAndGroupCode(String cinemacodes, String groupcode) {
 		return couponsgroupDao.getByCinemaCodeAndGroupCode(cinemacodes, groupcode);
 	}
+	@Override
+	public Couponsgroup getUserCouponsGroup(String groupcode, Integer status, String cinemacode) {
+		return couponsgroupDao.getUserCouponsGroup(groupcode, status, cinemacode);
+	}
 
 }

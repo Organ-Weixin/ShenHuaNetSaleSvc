@@ -20,9 +20,9 @@ public class TicketuserfilmServiceImpl implements TicketuserfilmService{
 	}
 	
 	@Override
-	public List<Ticketuserfilm> getByOpenId(String openid) {
+	public List<Ticketuserfilm> getByOpenId(String openid,Integer status) {
 		// TODO Auto-generated method stub
-		return ticketuserfilmDao.getByOpenId(openid);
+		return ticketuserfilmDao.getByOpenId(openid,status);
 	}
 
 	@Override

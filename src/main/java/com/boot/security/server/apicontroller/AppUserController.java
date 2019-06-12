@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,22 +23,25 @@ import com.boot.security.server.apicontroller.reply.Jscode2sessionReply;
 import com.boot.security.server.apicontroller.reply.MobilePhoneRegisterReply;
 import com.boot.security.server.apicontroller.reply.MobilePhoneRegisterReply.MobilePhoneRegisterBean;
 import com.boot.security.server.apicontroller.reply.QueryRoomGiftRecordReply.QueryRoomGiftRecord;
+import com.boot.security.server.apicontroller.reply.QueryUserFilmReply;
 import com.boot.security.server.apicontroller.reply.QueryUserNumberReply.QueryUserNumberReplyUserNumber;
-import com.boot.security.server.apicontroller.reply.QueryUserConponsReply;
 import com.boot.security.server.apicontroller.reply.QueryUserNumberReply;
-import com.boot.security.server.apicontroller.reply.QueryWantedFilmReply;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.QueryCinemaGoodsReply;
 import com.boot.security.server.apicontroller.reply.QueryCinemaTicketReply;
 import com.boot.security.server.apicontroller.reply.QueryCinemaTicketReply.QueryCinemaTicket.CinemaTicket;
 import com.boot.security.server.apicontroller.reply.QueryCinemaGoodsReply.QueryCinemaGoodsReplyGoods.QueryCinemaGoods;
 import com.boot.security.server.apicontroller.reply.QueryRoomGiftRecordReply;
-import com.boot.security.server.apicontroller.reply.QueryWantedFilmReply.QueryWantedFilmReplyWantedFilm;
-import com.boot.security.server.apicontroller.reply.QueryWantedFilmReply.QueryWantedFilmReplyWantedFilm.QueryWantedFilmReplyFilm;
+import com.boot.security.server.apicontroller.reply.QueryUserFilmReply.QueryUserFilmReplyUserFilm;
+import com.boot.security.server.apicontroller.reply.QueryUserFilmReply.QueryUserFilmReplyUserFilm.QueryUserFilmReplyFilm;
+import com.boot.security.server.apicontroller.reply.QueryUserInfoReply;
+import com.boot.security.server.apicontroller.reply.QueryUserInfoReply.QueryUserInfoReplyUserInfo;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.apicontroller.reply.RoomGiftInput;
 import com.boot.security.server.apicontroller.reply.SendVerifyCodeReply;
 import com.boot.security.server.apicontroller.reply.SendVerifyCodeReply.SendVerifyCodeBean;
+import com.boot.security.server.apicontroller.reply.UpdateUserInfoReply;
+import com.boot.security.server.apicontroller.reply.UserInfo;
 import com.boot.security.server.apicontroller.reply.UserLoginInput;
 import com.boot.security.server.apicontroller.reply.UserLoginReply;
 import com.boot.security.server.apicontroller.reply.UserLoginReply.UserLoginResult;
@@ -49,6 +52,7 @@ import com.boot.security.server.dao.GoodsorderdetailsDao;
 import com.boot.security.server.dao.MiniprogramordersviewDao;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaMiniProgramAccounts;
+import com.boot.security.server.model.CouponGroupStatusEnum;
 import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.Couponsgroup;
@@ -65,6 +69,7 @@ import com.boot.security.server.model.Roomgiftuser;
 import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Ticketuserfilm;
 import com.boot.security.server.model.Ticketusers;
+import com.boot.security.server.model.UserFilmStatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaMiniProgramAccountsServiceImpl;
@@ -164,7 +169,6 @@ public class AppUserController {
 		
 		String url="https://api.weixin.qq.com/sns/jscode2session";
 		String returnStr = HttpHelper.sendPostByUrlConnection(url, param, "UTF-8");
-        System.out.println("用户登陆返回："+returnStr);
         Jscode2sessionReply jscode2sessionReply = new Gson().fromJson(returnStr, Jscode2sessionReply.class);
         if(jscode2sessionReply.getSession_key() == null){
         	userReply.Status = StatusEnum.Failure.getStatusCode();
@@ -422,41 +426,62 @@ public class AppUserController {
 		return reply;
 	}
 	
-	@GetMapping("/QueryUserNumber/{UserName}/{Password}/{CinemaCode}/{OpenID}")
-	@ApiOperation(value = "用户数量")
+	@GetMapping("/QueryUserResourceNumber/{UserName}/{Password}/{CinemaCode}/{OpenID}")
+	@ApiOperation(value = "用户资源数量")
 	public QueryUserNumberReply QueryUserNumber(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String OpenID){
 		QueryUserNumberReply queryUserNumberReply = new QueryUserNumberReply();
-		QueryCinemaTicketReply queryCinemaTicketReply = QueryCinemaTicket(UserName, Password, CinemaCode, OpenID);
-		QueryCinemaGoodsReply queryCinemaGoodsReply = QueryCinemaGoods(UserName, Password, CinemaCode, OpenID);
-		/*RoomGiftInput input = new RoomGiftInput();
-		input.setUserName(UserName);
-		input.setPassword(Password);
-		input.setCinemaCode(CinemaCode);
-		input.setOpenID(OpenID);
-		QueryRoomGiftRecordReply queryRoomGiftRecordReply = QueryGiftRecord(input);*/
-		QueryUserConponsReply queryUserConponsReply = new ConponController().QueryUserConpons(UserName, Password, CinemaCode, OpenID, "All");
+		// 校验参数
+		if (!ReplyExtension.RequestInfoGuard(queryUserNumberReply, UserName, Password, CinemaCode,OpenID)) {
+			return queryUserNumberReply;
+		}
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
+		if (UserInfo == null) {
+			queryUserNumberReply.SetUserCredentialInvalidReply();
+			return queryUserNumberReply;
+		}
+		//验证影院是否存在且可访问
+		Cinema cinema=_cinemaService.getByCinemaCode(CinemaCode);
+		if(cinema == null){
+			queryUserNumberReply.SetCinemaInvalidReply();
+			return queryUserNumberReply;
+		}
+		//验证用户OpenId是否存在
+		Ticketusers ticketuser = _ticketusersService.getByopenids(OpenID);
+		if(ticketuser == null){
+			queryUserNumberReply.SetOpenIDNotExistReply();
+			return queryUserNumberReply;
+		}
 		QueryUserNumberReplyUserNumber data = new QueryUserNumberReplyUserNumber();
-		if(queryCinemaTicketReply.Status.equals("Success")&&!queryCinemaTicketReply.getData().equals("null")){
-			data.setTicketCount(queryCinemaTicketReply.getData().getCount());
-		}else{
-			data.setTicketCount(0);
+		//影票数量
+		List<Orders> ordersList = orderService.getUserOrders(CinemaCode, OpenID, OrderStatusEnum.Complete.getStatusCode(), 1);
+		Integer ticketCount = 0;
+		if(ordersList.size()>0){
+			ticketCount = ordersList.stream().collect(Collectors.summingInt(Orders::getTicketCount));
 		}
-		if(queryCinemaGoodsReply.Status.equals("Success")&&!queryCinemaGoodsReply.getData().equals("null")){
-			data.setGoodsCount(queryCinemaGoodsReply.getData().getCount());
-		}else{
-			data.setGoodsCount(0);
+		data.setTicketCount(ticketCount);
+		//卖品数量
+		List<Goodsorders> goodsordersList = _goodsOrderService.getUserGoodsOrders(CinemaCode, OpenID, OrderStatusEnum.Complete.getStatusCode());
+		Integer goodsCount = 0;
+		if(goodsordersList.size()>0){
+			goodsCount = goodsordersList.stream().collect(Collectors.summingInt(Goodsorders::getGoodsCount));
 		}
-		/*if(queryRoomGiftRecordReply.Status.equals("Success")&&!queryRoomGiftRecordReply.getData().equals("null")){
-			data.setGiftCount(queryRoomGiftRecordReply.getData().size());
-		}else{
-			data.setGiftCount(0);
-		}*/
-		if(queryUserConponsReply.Status.equals("Success")&&!queryUserConponsReply.getData().equals("null")){
-			data.setCouponsCount(queryUserConponsReply.getData().getConponCount());
-		}else{
-			data.setCouponsCount(0);
+		data.setGoodsCount(goodsCount);
+		//优惠券数量
+		List<Coupons> couponsList = couponsService.getUserCoupons(OpenID, CouponsStatusEnum.Fetched.getStatusCode());
+		if(couponsList.size()>0){
+			for(Coupons coupons:couponsList){
+				Couponsgroup couponsgroup = couponsgroupService.getUserCouponsGroup(coupons.getGroupCode(), CouponGroupStatusEnum.Enabled.getStatusCode(), CinemaCode);
+				if(couponsgroup!=null){
+					List<Coupons> couponsReList = couponsService.getByGroupCode(couponsgroup.getGroupCode());
+					data.setCouponsCount(couponsReList.size());
+				}
+			}
 		}
+		//礼品数量
+		List<Roomgiftuser> roomgiftuserList = roomgiftuserService.getByOpenid(OpenID, CinemaCode);
+		data.setGiftCount(roomgiftuserList.size());
 		queryUserNumberReply.setData(data);
 		queryUserNumberReply.SetSuccessReply();
 		return queryUserNumberReply;
@@ -738,33 +763,40 @@ public class AppUserController {
 		return userWantedFilmReply;
 	}
 	
-	@GetMapping("/QueryWantedFilm/{UserName}/{Password}/{OpenID}")
-	@ApiOperation(value = "查看用户想看的电影列表")
-	public QueryWantedFilmReply QueryWantedFilm(@PathVariable String UserName,@PathVariable String Password,@PathVariable String OpenID){
-		QueryWantedFilmReply queryWantedFilmReply = new QueryWantedFilmReply();
-		if (!ReplyExtension.RequestInfoGuard(queryWantedFilmReply, UserName, Password, OpenID)) {
-			return queryWantedFilmReply;
+	@GetMapping("/QueryUserFilm/{UserName}/{Password}/{OpenID}/{Status}")
+	@ApiOperation(value = "查看用户电影列表")
+	public QueryUserFilmReply QueryUserFilm(@PathVariable String UserName,@PathVariable String Password,@PathVariable String OpenID,
+			@PathVariable String Status){
+		QueryUserFilmReply queryUserFilmReply = new QueryUserFilmReply();
+		if (!ReplyExtension.RequestInfoGuard(queryUserFilmReply, UserName, Password, OpenID ,Status)) {
+			return queryUserFilmReply;
 		}
 		// 获取用户信息
 		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
 		if (UserInfo == null) {
-			queryWantedFilmReply.SetUserCredentialInvalidReply();
-			return queryWantedFilmReply;
+			queryUserFilmReply.SetUserCredentialInvalidReply();
+			return queryUserFilmReply;
 		}
 		//验证用户OpenId是否存在
 		Ticketusers ticketuser = _ticketusersService.getByopenids(OpenID);
 		if(ticketuser == null){
-			queryWantedFilmReply.SetOpenIDNotExistReply();
-			return queryWantedFilmReply;
+			queryUserFilmReply.SetOpenIDNotExistReply();
+			return queryUserFilmReply;
 		}
-		QueryWantedFilmReplyWantedFilm data = new QueryWantedFilmReplyWantedFilm();
-		List<Ticketuserfilm> ticketuserfilmList = ticketuserfilmService.getByOpenId(OpenID);
+		QueryUserFilmReplyUserFilm data = new QueryUserFilmReplyUserFilm();
+		List<Ticketuserfilm> ticketuserfilmList = new ArrayList<Ticketuserfilm>();
+		if(Status.equals("1")){
+			ticketuserfilmList = ticketuserfilmService.getByOpenId(OpenID, UserFilmStatusEnum.Wanted.getStatusCode());
+		}
+		if(Status.equals("0")){
+			ticketuserfilmList = ticketuserfilmService.getByOpenId(OpenID, UserFilmStatusEnum.Looked.getStatusCode());
+		}
+		int count = 0;
 		if(ticketuserfilmList.size()>0){
-			int count = 0;
-			List<QueryWantedFilmReplyFilm> filmReplyList = new ArrayList<QueryWantedFilmReplyFilm>();
+			List<QueryUserFilmReplyFilm> filmReplyList = new ArrayList<QueryUserFilmReplyFilm>();
 			for(Ticketuserfilm ticketuserfilm:ticketuserfilmList){
 				Filminfo filminfo = _filminfoServiceImpl.getByFilmCode(ticketuserfilm.getFilmCode());
-				QueryWantedFilmReplyFilm filmReply = new QueryWantedFilmReplyFilm();
+				QueryUserFilmReplyFilm filmReply = new QueryUserFilmReplyFilm();
 				if(filminfo!=null){
 					count ++;
 					filmReply.setFilmName(filminfo.getFilmName());
@@ -778,9 +810,9 @@ public class AppUserController {
 			data.setCount(count);
 			data.setFilm(filmReplyList);
 		}
-		queryWantedFilmReply.setData(data);
-		queryWantedFilmReply.SetSuccessReply();
-		return queryWantedFilmReply;
+		queryUserFilmReply.setData(data);
+		queryUserFilmReply.SetSuccessReply();
+		return queryUserFilmReply;
 	}
 	
 	@GetMapping("/CheckUserFilmOrders/{UserName}/{Password}/{OpenID}/{FilmCode}")
@@ -815,5 +847,70 @@ public class AppUserController {
 		}
 		checkUserFilmOrdersReply.SetSuccessReply();
 		return checkUserFilmOrdersReply;
+	}
+	
+	@GetMapping("/QueryUserInfo/{UserName}/{Password}/{OpenID}")
+	@ApiOperation(value = "获取用户信息")
+	public QueryUserInfoReply QueryUserInfo(@PathVariable String UserName,@PathVariable String Password,@PathVariable String OpenID){
+		QueryUserInfoReply queryUserInfoReply = new QueryUserInfoReply();
+		//校验参数
+		if (!ReplyExtension.RequestInfoGuard(queryUserInfoReply, UserName, Password, OpenID)) {
+			return queryUserInfoReply;
+		}
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
+		if (UserInfo == null) {
+			queryUserInfoReply.SetUserCredentialInvalidReply();
+			return queryUserInfoReply;
+		}
+		//验证用户OpenId是否存在
+		Ticketusers ticketuser = _ticketusersService.getByopenids(OpenID);
+		if(ticketuser == null){
+			queryUserInfoReply.SetOpenIDNotExistReply();
+			return queryUserInfoReply;
+		}
+		QueryUserInfoReplyUserInfo data = new QueryUserInfoReplyUserInfo();
+		if(ticketuser.getBirthday()!=null){
+			data.setBirthday(new SimpleDateFormat("yyyy-MM-dd").format(ticketuser.getBirthday()));
+		}
+		data.setHeadUrl(ticketuser.getHeadImgUrl());
+		data.setNickName(ticketuser.getNickName());
+		data.setSex(ticketuser.getSex());
+		queryUserInfoReply.setData(data);
+		queryUserInfoReply.SetSuccessReply();
+		return queryUserInfoReply;
+	}
+	
+	@PostMapping("/UpdateUserInfo")
+	@ApiOperation(value = "修改用户信息")
+	public UpdateUserInfoReply UpdateUserInfo(@RequestBody UserInfo userinfo) throws ParseException{
+		UpdateUserInfoReply updateUserInfoReply = new UpdateUserInfoReply();
+		// 校验参数
+		if (!ReplyExtension.RequestInfoGuard(updateUserInfoReply, userinfo.getUserName(), userinfo.getPassword(), 
+				userinfo.getOpenID(),userinfo.getBirthday(),userinfo.getHeadUrl(),userinfo.getNickName(),userinfo.getSex())) {
+			return updateUserInfoReply;
+		}
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(userinfo.getUserName(), userinfo.getPassword());
+		if (UserInfo == null) {
+			updateUserInfoReply.SetUserCredentialInvalidReply();
+			return updateUserInfoReply;
+		}
+		//验证用户OpenId是否存在
+		Ticketusers ticketuser = _ticketusersService.getByopenids(userinfo.getOpenID());
+		if(ticketuser == null){
+			updateUserInfoReply.SetOpenIDNotExistReply();
+			return updateUserInfoReply;
+		}
+		//更新用户信息
+		ticketuser.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse(userinfo.getBirthday()));
+		ticketuser.setHeadImgUrl(userinfo.getHeadUrl());
+		ticketuser.setNickName(userinfo.getNickName());
+		ticketuser.setSex(Integer.valueOf(userinfo.getSex()));
+		int result = _ticketusersService.update(ticketuser);
+		if(result>0){
+			updateUserInfoReply.SetSuccessReply();
+		}
+		return updateUserInfoReply;
 	}
 }

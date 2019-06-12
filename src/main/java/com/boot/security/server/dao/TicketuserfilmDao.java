@@ -31,8 +31,8 @@ public interface TicketuserfilmDao {
 
     List<Ticketuserfilm> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
     
-    @Select("select * from ticketuserfilm t where t.openid = #{openid} and t.status = 1")
-    List<Ticketuserfilm> getByOpenId(String openid);
+    @Select("select * from ticketuserfilm t where t.openid = #{openid} and t.status = #{status}")
+    List<Ticketuserfilm> getByOpenId(@Param("openid")String openid,@Param("status")Integer status);
     
     @Delete("delete from ticketuserfilm where openid = #{openid} and filmcode = #{filmcode}")
     int deleteByFilmCode(@Param("openid")String openid,@Param("filmcode")String filmcode);

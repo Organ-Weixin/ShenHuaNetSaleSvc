@@ -50,8 +50,8 @@ public class CouponsServiceImpl implements CouponsService{
 	}
 
 	@Override
-	public Coupons getByGroupCode(String groupcode) {
-		return couponsdao.getByCouponsCode(groupcode);
+	public List<Coupons> getByGroupCode(String groupcode) {
+		return couponsdao.getByGroupCode(groupcode);
 	}
 
 	@Override
@@ -86,5 +86,11 @@ public class CouponsServiceImpl implements CouponsService{
 	public int changePast(Integer status) {
 		// TODO Auto-generated method stub
 		return couponsdao.changePast(status);
+	}
+
+	@Override
+	public List<Coupons> getUserCoupons(String openid, Integer status) {
+		// TODO Auto-generated method stub
+		return couponsdao.getUserCoupons(openid, status);
 	}
 }

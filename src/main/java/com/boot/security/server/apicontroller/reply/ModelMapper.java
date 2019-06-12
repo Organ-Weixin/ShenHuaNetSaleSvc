@@ -235,13 +235,10 @@ public class ModelMapper {
 		entity.setCity(model.getCity());
 		entity.setHeadImgUrl(model.getAvatarUrl());
 		entity.setLanguage(model.getLanguage());
-		if(model.getOpenId() == null ){
-			entity.setIsActive(0);
-		} else {
-			entity.setIsActive(1);
+		if(model.getOpenId() != null ){
 			entity.setCreated(new Date());
+			entity.setBirthday(new Date());
 		}
-		
 		return entity;
 	}
 	

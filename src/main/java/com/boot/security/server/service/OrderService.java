@@ -65,4 +65,6 @@ public interface OrderService {
 	List<Orders> checkUserOrders(String openid,Integer orderstatus,String filmcode,String sessiontime);
 	
 	List<Orders> getCinemaOrders(String cinemacode);
+	
+	List<Orders> getUserOrders(String cinemacode,String openid,Integer orderstatus,Integer printstatus);
 }	

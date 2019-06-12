@@ -2,19 +2,19 @@ package com.boot.security.server.apicontroller.reply;
 
 import java.util.List;
 
-public class QueryWantedFilmReply extends BaseReply{
-	private QueryWantedFilmReplyWantedFilm data;
+public class QueryUserFilmReply extends BaseReply{
+	private QueryUserFilmReplyUserFilm data;
 
-	public QueryWantedFilmReplyWantedFilm getData() {
+	public QueryUserFilmReplyUserFilm getData() {
 		return data;
 	}
 
-	public void setData(QueryWantedFilmReplyWantedFilm data) {
+	public void setData(QueryUserFilmReplyUserFilm data) {
 		this.data = data;
 	}
-	public static class QueryWantedFilmReplyWantedFilm{
+	public static class QueryUserFilmReplyUserFilm{
 		private Integer Count;
-		private List<QueryWantedFilmReplyFilm> Film;
+		private List<QueryUserFilmReplyFilm> Film;
 
 		public Integer getCount() {
 			return Count;
@@ -23,14 +23,14 @@ public class QueryWantedFilmReply extends BaseReply{
 			Count = count;
 		}
 		
-		public List<QueryWantedFilmReplyFilm> getFilm() {
+		public List<QueryUserFilmReplyFilm> getFilm() {
 			return Film;
 		}
 
-		public void setFilm(List<QueryWantedFilmReplyFilm> film) {
+		public void setFilm(List<QueryUserFilmReplyFilm> film) {
 			Film = film;
 		}
-		public static class QueryWantedFilmReplyFilm{
+		public static class QueryUserFilmReplyFilm{
 			private String FilmImage;
 			private String FilmName;
 			private String Cast;

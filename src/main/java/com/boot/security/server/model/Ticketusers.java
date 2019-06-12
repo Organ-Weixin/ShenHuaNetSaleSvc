@@ -13,6 +13,7 @@ public class Ticketusers {
 	private Date Created;
 	private String NickName;
 	private int Sex;
+	private Date Birthday;
 	private String Country;
 	private String Province;
 	private String City;
@@ -74,6 +75,12 @@ public class Ticketusers {
 	}
 	public void setSex(int Sex) {
 		this.Sex = Sex;
+	}
+	public Date getBirthday() {
+		return Birthday;
+	}
+	public void setBirthday(Date birthday) {
+		Birthday = birthday;
 	}
 	public String getCountry() {
 		return Country;

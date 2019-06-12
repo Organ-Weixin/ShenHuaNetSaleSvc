@@ -33,12 +33,13 @@ public class CinemaActivityController {
 	@Autowired
 	private ActivityServiceImpl _activityService;
 	
-	@GetMapping("/QueryActivitys/{UserName}/{Password}/{CinemaCode}")
+	@GetMapping("/QueryActivitys/{UserName}/{Password}/{CinemaCode}/{GradeCode}")
 	@ApiOperation(value = "获取图片")
-	public QueryActivitysReply QueryActivitys(@PathVariable String UserName, @PathVariable String Password,@PathVariable String CinemaCode) {
+	public QueryActivitysReply QueryActivitys(@PathVariable String UserName, @PathVariable String Password,@PathVariable String CinemaCode,
+			@PathVariable String GradeCode) {
 		QueryActivitysReply reply = new QueryActivitysReply();
 		//校验参数
-		if(!ReplyExtension.RequestInfoGuard(reply, UserName, Password, CinemaCode)){
+		if(!ReplyExtension.RequestInfoGuard(reply, UserName, Password, CinemaCode, GradeCode)){
 			return reply;
 		}
 		//获取用户渠道
@@ -53,7 +54,7 @@ public class CinemaActivityController {
 			reply.SetCinemaInvalidReply();
 			return reply;
 		}
-		List<Activity> activityList=_activityService.getByCinemaCode(CinemaCode);
+		List<Activity> activityList=_activityService.getByCinemaCode(CinemaCode, GradeCode);
 		QueryActivitysReplyActivity data=new QueryActivitysReplyActivity();
 		if(activityList == null || activityList.size() == 0){
 			data.setCount(0);

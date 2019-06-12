@@ -58,4 +58,7 @@ public interface CouponsgroupDao {
     
     @Update("update couponsgroup t set t.status = #{status}, t.updateDate = now() where t.expireDate < now()")
     int updatePastCoupons(Integer status);
+    
+    @Select("select * from couponsgroup t where t.groupcode = #{groupcode} and t.status = #{status} and (t.canusecinematype = 1 or find_in_set(#{cinemacode},cinemacodes))")
+    Couponsgroup getUserCouponsGroup(@Param("groupcode")String groupcode,@Param("status")Integer status,@Param("cinemacode")String cinemacode);
 }

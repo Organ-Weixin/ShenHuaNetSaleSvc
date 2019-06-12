@@ -76,4 +76,8 @@ public interface OrdersDao {
     //查询订单出票状态
     @Select("select * from orders where cinemacode = #{cinemacode} and (orderstatus = 6 or orderstatus = 8 or orderstatus = 10) and printno is not null and verifycode is not null and (printstatus !=1 or printstatus is null)")
     List<Orders> getCinemaOrders(String cinemacode);
+    
+    //查询用户订单已完成未出票
+    @Select("select * from orders t where t.cinemacode = #{cinemacode} and t.openid = #{openid} and t.orderstatus = #{orderstatus} and (t.printstatus != #{printstatus} or t.printstatus is null)")
+    List<Orders> getUserOrders(@Param("cinemacode")String cinemacode,@Param("openid")String openid,@Param("orderstatus")Integer orderstatus,@Param("printstatus")Integer printstatus);
 }

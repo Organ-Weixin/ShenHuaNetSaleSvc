@@ -215,7 +215,7 @@ public class ReplyExtension {
     }
 	//endregion
 	//region QueryActivitysReply 获取活动轮播图片
-	public static boolean RequestInfoGuard(QueryActivitysReply reply, String Username, String Password, String CinemaCode) {
+	public static boolean RequestInfoGuard(QueryActivitysReply reply, String Username, String Password, String CinemaCode, String GradeCode) {
         if (Username == null || "".equals(Username)) {
             reply.SetNecessaryParamMissReply("UserName");
             return false;
@@ -226,6 +226,10 @@ public class ReplyExtension {
         }
         if (CinemaCode == null || "".equals(CinemaCode)) {
             reply.SetNecessaryParamMissReply("CinemaCode");
+            return false;
+        }
+        if (GradeCode == null || "".equals(GradeCode)) {
+            reply.SetNecessaryParamMissReply("GradeCode");
             return false;
         }
         return true;
@@ -1293,7 +1297,7 @@ public class ReplyExtension {
 	//endregion
 	
 	//region QueryWantedFilmReply
-	public static boolean RequestInfoGuard(QueryWantedFilmReply reply, String Username, String Password,String OpenID) {
+	public static boolean RequestInfoGuard(QueryUserFilmReply reply, String Username, String Password,String OpenID,String Status) {
 		if (Username == null || "".equals(Username)) {
 			reply.SetNecessaryParamMissReply("Username");
 			return false;
@@ -1304,6 +1308,10 @@ public class ReplyExtension {
 		}
 		if (OpenID == null || "".equals(OpenID)) {
 			reply.SetNecessaryParamMissReply("OpenID");
+			return false;
+		}
+		if (Status == null || "".equals(Status)) {
+			reply.SetNecessaryParamMissReply("Status");
 			return false;
 		}
 		return true;
@@ -1332,4 +1340,78 @@ public class ReplyExtension {
 	}
 	//endregion
 	
+	//region CheckUserFilmOrdersReply
+	public static boolean RequestInfoGuard(QueryUserNumberReply reply, String Username, String Password, String OpenID, String FilmCode) {
+		if (Username == null || "".equals(Username)) {
+			reply.SetNecessaryParamMissReply("Username");
+			return false;
+		}
+		if (Password == null || "".equals(Password)) {
+			reply.SetNecessaryParamMissReply("Password");
+			return false;
+		}
+		if (OpenID == null || "".equals(OpenID)) {
+			reply.SetNecessaryParamMissReply("OpenID");
+			return false;
+		}
+		if (FilmCode == null || "".equals(FilmCode)) {
+			reply.SetNecessaryParamMissReply("FilmCode");
+			return false;
+		}
+		return true;
+	}
+	//endregion  QueryUserInfoReply
+	
+	//region 
+	public static boolean RequestInfoGuard(QueryUserInfoReply reply, String Username, String Password, String OpenID) {
+		if (Username == null || "".equals(Username)) {
+			reply.SetNecessaryParamMissReply("Username");
+			return false;
+		}
+		if (Password == null || "".equals(Password)) {
+			reply.SetNecessaryParamMissReply("Password");
+			return false;
+		}
+		if (OpenID == null || "".equals(OpenID)) {
+			reply.SetNecessaryParamMissReply("OpenID");
+			return false;
+		}
+		return true;
+	}
+	//endregion   UpdateUserInfoReply
+	
+	//region 
+	public static boolean RequestInfoGuard(UpdateUserInfoReply reply, String Username, String Password, String OpenID,
+			String HeadUrl, String NickName, String Sex, String Birthday) {
+		if (Username == null || "".equals(Username)) {
+			reply.SetNecessaryParamMissReply("Username");
+			return false;
+		}
+		if (Password == null || "".equals(Password)) {
+			reply.SetNecessaryParamMissReply("Password");
+			return false;
+		}
+		if (OpenID == null || "".equals(OpenID)) {
+			reply.SetNecessaryParamMissReply("OpenID");
+			return false;
+		}
+		if (HeadUrl == null || "".equals(HeadUrl)) {
+			reply.SetNecessaryParamMissReply("HeadUrl");
+			return false;
+		}
+		if (NickName == null || "".equals(NickName)) {
+			reply.SetNecessaryParamMissReply("NickName");
+			return false;
+		}
+		if (Sex == null || "".equals(Sex)) {
+			reply.SetNecessaryParamMissReply("Sex");
+			return false;
+		}
+		if (Birthday == null || "".equals(Birthday)) {
+			reply.SetNecessaryParamMissReply("Birthday");
+			return false;
+		}
+		return true;
+	}
+	//endregion
 }

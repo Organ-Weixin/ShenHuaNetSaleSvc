@@ -31,7 +31,7 @@ public interface ActivityDao {
 
     List<Activity> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
     
-    @Select("select * from activity t where t.cinemacode = #{cinemacode}")
-    List<Activity> getByCinemaCode(String  cinemacode);
+    @Select("select * from activity t where t.cinemacode = #{cinemacode} and t.gradecode = #{gradecode}")
+    List<Activity> getByCinemaCode(@Param("cinemacode")String  cinemacode,@Param("gradecode")String gradecode);
 
 }

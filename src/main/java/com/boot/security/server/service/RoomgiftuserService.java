@@ -11,8 +11,8 @@ public interface RoomgiftuserService {
 	
 	List<Roomgiftuser> getByOpenidAndRoom(String openid, String roomcode);
 	
-	
 	List<Roomgiftuser> getByRoomGift(String roomcode, String giftcode);
+	
     List<Roomgiftuser> getByOpenid(String openid,String cinemacode);
 
 }
