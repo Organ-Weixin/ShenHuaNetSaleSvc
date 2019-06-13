@@ -79,7 +79,7 @@ public class RoomController {
 	
 	
 	@GetMapping("/testindex")
-	@ApiOperation(value="获取放映厅信息")
+	@ApiOperation(value="获取放映厅信息")  
 	public ModelAndView QueryScreenRoom(){
 		ModelAndView modelAndView = new ModelAndView("/pages/test/index.html");
 		return modelAndView;
