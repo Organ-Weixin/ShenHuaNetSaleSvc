@@ -9,6 +9,7 @@ import java.util.Date;
 public class Roomgiftuser  {
 
 	private Long Id;
+	private String CinemaCode;
 	private String OpenID;
 	private String RoomCode;
 	private String GiftCode;
@@ -24,6 +25,12 @@ public class Roomgiftuser  {
 	}
 	public void setId(Long Id) {
 		this.Id = Id;
+	}
+	public String getCinemaCode() {
+		return CinemaCode;
+	}
+	public void setCinemaCode(String cinemaCode) {
+		CinemaCode = cinemaCode;
 	}
 	public String getOpenID() {
 		return OpenID;

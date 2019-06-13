@@ -99,7 +99,8 @@
 	                        location.href = "sessioninfoList.html";
 	                    });
 					} else {
-						alert(data.ErrorMessage);
+						completeLoading();
+						layer.msg(data.ErrorMessage);
 					}
 					
 				}
