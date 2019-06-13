@@ -43,6 +43,7 @@ public class QueryMemberCardByOpenIDReply extends BaseReply{
 			private Integer Score;
 			private String LevelCode;
 			private String LevelName;
+			private String CardPictureUrl;
 			private String UserName;
 			private String Sex;
 			private String CreditNum;
@@ -96,6 +97,12 @@ public class QueryMemberCardByOpenIDReply extends BaseReply{
 			}
 			public void setLevelName(String levelName) {
 				LevelName = levelName;
+			}
+			public String getCardPictureUrl() {
+				return CardPictureUrl;
+			}
+			public void setCardPictureUrl(String cardPictureUrl) {
+				CardPictureUrl = cardPictureUrl;
 			}
 			public String getUserName() {
 				return UserName;

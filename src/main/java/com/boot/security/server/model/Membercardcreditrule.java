@@ -17,6 +17,7 @@ public class Membercardcreditrule extends BaseEntity<Long> {
 	private String EffectiveDays;
 	private String RuleDescription;
 	private Date UpdateTime;
+	private Integer IsOnlineOpenCard;
 	private Integer Status;
 
 	public Long getId() {
@@ -96,6 +97,12 @@ public class Membercardcreditrule extends BaseEntity<Long> {
 	}
 	public void setRuleDescription(String RuleDescription) {
 		this.RuleDescription = RuleDescription;
+	}
+	public Integer getIsOnlineOpenCard() {
+		return IsOnlineOpenCard;
+	}
+	public void setIsOnlineOpenCard(Integer isOnlineOpenCard) {
+		IsOnlineOpenCard = isOnlineOpenCard;
 	}
 	public Integer getStatus() {
 		return Status;

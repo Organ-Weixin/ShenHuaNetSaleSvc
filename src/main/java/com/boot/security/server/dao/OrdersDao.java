@@ -80,4 +80,8 @@ public interface OrdersDao {
     //查询用户订单已完成未出票
     @Select("select * from orders t where t.cinemacode = #{cinemacode} and t.openid = #{openid} and t.orderstatus = #{orderstatus} and (t.printstatus != #{printstatus} or t.printstatus is null)")
     List<Orders> getUserOrders(@Param("cinemacode")String cinemacode,@Param("openid")String openid,@Param("orderstatus")Integer orderstatus,@Param("printstatus")Integer printstatus);
+    
+    //用户订单信息
+    @Select("select * from orders t where t.openid = #{openid} and t.orderstatus = #{orderstatus} and t.sessiontime < #{sessiontime} group by t.filmcode")
+    List<Orders> getByOpenIdAndStatus(@Param("openid")String openid,@Param("orderstatus")Integer orderstatus,@Param("sessiontime")String sessiontime);
 }

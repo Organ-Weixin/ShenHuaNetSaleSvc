@@ -26,6 +26,9 @@
 			<if test="params.PictureUrl != null and params.PictureUrl != ''">
 				and PictureUrl = #{params.PictureUrl} 
 			</if>
+			<if test="params.IsOnlineOpenCard != null and params.IsOnlineOpenCard != ''">
+				and IsOnlineOpenCard = #{params.IsOnlineOpenCard} 
+			</if>
 			<if test="params.Status != null and params.Status != ''">
 				and Status = #{params.Status} 
 			</if>
@@ -67,6 +70,9 @@
 			</if>
 			<if test="PictureUrl != null">
 				PictureUrl = #{PictureUrl}, 
+			</if>
+			<if test="IsOnlineOpenCard != null">
+				IsOnlineOpenCard = #{IsOnlineOpenCard}, 
 			</if>
 			<if test="LevelName != null">
 				Status = #{Status}, 

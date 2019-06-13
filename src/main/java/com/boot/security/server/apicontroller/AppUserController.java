@@ -41,13 +41,13 @@ import com.boot.security.server.apicontroller.reply.RoomGiftInput;
 import com.boot.security.server.apicontroller.reply.SendVerifyCodeReply;
 import com.boot.security.server.apicontroller.reply.SendVerifyCodeReply.SendVerifyCodeBean;
 import com.boot.security.server.apicontroller.reply.UpdateUserInfoReply;
+import com.boot.security.server.apicontroller.reply.UpdateUserWantedFilmReply;
 import com.boot.security.server.apicontroller.reply.UserInfo;
 import com.boot.security.server.apicontroller.reply.UserLoginInput;
 import com.boot.security.server.apicontroller.reply.UserLoginReply;
 import com.boot.security.server.apicontroller.reply.UserLoginReply.UserLoginResult;
 import com.boot.security.server.apicontroller.reply.UserPhoneInput;
 import com.boot.security.server.apicontroller.reply.UserWXResult;
-import com.boot.security.server.apicontroller.reply.UserWantedFilmReply;
 import com.boot.security.server.dao.GoodsorderdetailsDao;
 import com.boot.security.server.dao.MiniprogramordersviewDao;
 import com.boot.security.server.model.Cinema;
@@ -411,7 +411,6 @@ public class AppUserController {
 		_ticketusersService.update(ticketuser);
 		
 		//发送验证码到用户手机号
-        //String smsContent = "手机号"+input.getMobilePhone()+"用户,您的验证码为"+ ticketuser.getVerifyCode()+"。仅用于小程序手机号码验证，请尽快使用。";
 		String smsContent = ""+ ticketuser.getVerifyCode()+"（万画筒小程序购票平台验证码，一分钟内有效）";
         String sendResult = SendSmsHelper.SendSms(input.getMobilePhone(), smsContent);
         if(!"Success".equals(sendResult)){
@@ -485,6 +484,14 @@ public class AppUserController {
 		//礼品数量
 		List<Roomgiftuser> roomgiftuserList = roomgiftuserService.getByOpenid(OpenID, CinemaCode);
 		data.setGiftCount(roomgiftuserList.size());
+		//想看的电影数量
+		List<Ticketuserfilm> ticketuserfilmList = ticketuserfilmService.getByOpenId(OpenID, 1);
+		data.setWantedFilmCount(ticketuserfilmList.size());
+		//看过的电影数量
+		String time = String.valueOf(new Date().getTime()+2*60*60*1000);
+		String sessiontime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Long.parseLong(time)));
+		List<Orders> ordersFilmList = orderService.getByOpenIdAndStatus(OpenID, OrderStatusEnum.Complete.getStatusCode(), sessiontime);
+		data.setLookedFilmCount(ordersFilmList.size());
 		queryUserNumberReply.setData(data);
 		queryUserNumberReply.SetSuccessReply();
 		return queryUserNumberReply;
@@ -680,39 +687,39 @@ public class AppUserController {
 		return queryCinemaGoodsReply;
 		}
 	
-	@GetMapping("/UserWantedFilm/{UserName}/{Password}/{OpenID}/{FilmCode}/{Status}")
+	@GetMapping("/UpdateUserWantedFilm/{UserName}/{Password}/{OpenID}/{FilmCode}/{Status}")
 	@ApiOperation(value = "更新用户想看的电影")
-	public UserWantedFilmReply UserWantedFilm(@PathVariable String UserName,@PathVariable String Password,@PathVariable String OpenID,
+	public UpdateUserWantedFilmReply UpdateUserWantedFilm(@PathVariable String UserName,@PathVariable String Password,@PathVariable String OpenID,
 			@PathVariable String FilmCode,@PathVariable String Status){
-		UserWantedFilmReply userWantedFilmReply = new UserWantedFilmReply();
-		if (!ReplyExtension.RequestInfoGuard(userWantedFilmReply, UserName, Password, OpenID, FilmCode, Status)) {
-			return userWantedFilmReply;
+		UpdateUserWantedFilmReply updateUserWantedFilmReply = new UpdateUserWantedFilmReply();
+		if (!ReplyExtension.RequestInfoGuard(updateUserWantedFilmReply, UserName, Password, OpenID, FilmCode, Status)) {
+			return updateUserWantedFilmReply;
 		}
 		// 获取用户信息
 		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
 		if (UserInfo == null) {
-			userWantedFilmReply.SetUserCredentialInvalidReply();
-			return userWantedFilmReply;
+			updateUserWantedFilmReply.SetUserCredentialInvalidReply();
+			return updateUserWantedFilmReply;
 		}
 		//验证用户OpenId是否存在
 		Ticketusers ticketuser = _ticketusersService.getByopenids(OpenID);
 		if(ticketuser == null){
-			userWantedFilmReply.SetOpenIDNotExistReply();
-			return userWantedFilmReply;
+			updateUserWantedFilmReply.SetOpenIDNotExistReply();
+			return updateUserWantedFilmReply;
 		}
 		//添加想看的电影
 		if(Status.equals("1")){
 			//验证影片是否存在
 			Filminfo filminfo = _filminfoServiceImpl.getByFilmCode(FilmCode);
 			if(filminfo == null){
-				userWantedFilmReply.SetFilmCodeNotExistReply();
-				return userWantedFilmReply;
+				updateUserWantedFilmReply.SetFilmCodeNotExistReply();
+				return updateUserWantedFilmReply;
 			}
 			//验证是否存在记录
 			Ticketuserfilm ticketuserfilm = ticketuserfilmService.getByFilmCode(OpenID, FilmCode);
 			if(ticketuserfilm != null){
-				userWantedFilmReply.SetSuccessReply();
-				return userWantedFilmReply;
+				updateUserWantedFilmReply.SetSuccessReply();
+				return updateUserWantedFilmReply;
 			}else{
 				ticketuserfilm = new Ticketuserfilm();
 				ticketuserfilm.setOpenId(OpenID);
@@ -720,7 +727,7 @@ public class AppUserController {
 				ticketuserfilm.setStatus(Integer.valueOf(Status));
 				int result = ticketuserfilmService.save(ticketuserfilm);
 				if(result>0){
-					userWantedFilmReply.SetSuccessReply();
+					updateUserWantedFilmReply.SetSuccessReply();
 				}
 			}
 		}
@@ -728,42 +735,10 @@ public class AppUserController {
 		if(Status.equals("0")){
 			int result = ticketuserfilmService.deleteByFilmCode(OpenID, FilmCode);
 			if(result>0){
-				userWantedFilmReply.SetSuccessReply();
+				updateUserWantedFilmReply.SetSuccessReply();
 			}
 		}
-		//添加看过的电影
-		if(Status.equals("2")){
-			//验证影片是否存在
-			Filminfo filminfo = _filminfoServiceImpl.getByFilmCode(FilmCode);
-			if(filminfo == null){
-				userWantedFilmReply.SetFilmCodeNotExistReply();
-				return userWantedFilmReply;
-			}
-			//验证用户是否看过该影片
-			CheckUserFilmOrdersReply checkUserFilmOrdersReply = CheckUserFilmOrders(UserName, Password, OpenID, FilmCode);
-			if(!checkUserFilmOrdersReply.Status.equals("Success")||checkUserFilmOrdersReply.getResult()!=1){
-				return userWantedFilmReply;
-			}
-			//验证是否存在记录
-			Ticketuserfilm ticketuserfilm = ticketuserfilmService.getByFilmCode(OpenID, FilmCode);
-			if(ticketuserfilm!=null){
-				ticketuserfilm.setStatus(Integer.valueOf(Status));
-				int result = ticketuserfilmService.update(ticketuserfilm);
-				if(result>0){
-					userWantedFilmReply.SetSuccessReply();
-				}
-			}else{
-				ticketuserfilm = new Ticketuserfilm();
-				ticketuserfilm.setOpenId(OpenID);
-				ticketuserfilm.setFilmCode(FilmCode);
-				ticketuserfilm.setStatus(Integer.valueOf(Status));
-				int result = ticketuserfilmService.save(ticketuserfilm);
-				if(result>0){
-					userWantedFilmReply.SetSuccessReply();
-				}
-			}
-		}
-		return userWantedFilmReply;
+		return updateUserWantedFilmReply;
 	}
 	
 	@GetMapping("/QueryUserFilm/{UserName}/{Password}/{OpenID}/{Status}")
@@ -889,8 +864,7 @@ public class AppUserController {
 	public UpdateUserInfoReply UpdateUserInfo(@RequestBody UserInfo userinfo) throws ParseException{
 		UpdateUserInfoReply updateUserInfoReply = new UpdateUserInfoReply();
 		// 校验参数
-		if (!ReplyExtension.RequestInfoGuard(updateUserInfoReply, userinfo.getUserName(), userinfo.getPassword(), 
-				userinfo.getOpenID(),userinfo.getBirthday(),userinfo.getHeadUrl(),userinfo.getNickName(),userinfo.getSex())) {
+		if (!ReplyExtension.RequestInfoGuard(updateUserInfoReply, userinfo.getUserName(), userinfo.getPassword(), userinfo.getOpenID())) {
 			return updateUserInfoReply;
 		}
 		// 获取用户信息
@@ -906,10 +880,18 @@ public class AppUserController {
 			return updateUserInfoReply;
 		}
 		//更新用户信息
-		ticketuser.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse(userinfo.getBirthday()));
-		ticketuser.setHeadImgUrl(userinfo.getHeadUrl());
-		ticketuser.setNickName(userinfo.getNickName());
-		ticketuser.setSex(Integer.valueOf(userinfo.getSex()));
+		if(!userinfo.getBirthday().equals(null)&&!userinfo.getBirthday().equals("")){
+			ticketuser.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse(userinfo.getBirthday()));
+		}
+		if(!userinfo.getHeadUrl().equals(null)&&!userinfo.getHeadUrl().equals("")){
+			ticketuser.setHeadImgUrl(userinfo.getHeadUrl());
+		}
+		if(!userinfo.getNickName().equals(null)&&!userinfo.getNickName().equals("")){
+			ticketuser.setNickName(userinfo.getNickName());
+		}
+		if(!userinfo.getSex().equals(null)&&!userinfo.getSex().equals("")){
+			ticketuser.setSex(Integer.valueOf(userinfo.getSex()));
+		}
 		int result = _ticketusersService.update(ticketuser);
 		if(result>0){
 			updateUserInfoReply.SetSuccessReply();

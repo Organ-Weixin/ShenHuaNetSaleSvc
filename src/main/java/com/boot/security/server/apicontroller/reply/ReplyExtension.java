@@ -1271,7 +1271,7 @@ public class ReplyExtension {
 	//endregion
 	
 	//region UserWantedFilmReply
-	public static boolean RequestInfoGuard(UserWantedFilmReply reply, String Username, String Password, String OpenID, String FilmCode, String Status) {
+	public static boolean RequestInfoGuard(UpdateUserWantedFilmReply reply, String Username, String Password, String OpenID, String FilmCode, String Status) {
 		if (Username == null || "".equals(Username)) {
 			reply.SetNecessaryParamMissReply("Username");
 			return false;
@@ -1381,8 +1381,7 @@ public class ReplyExtension {
 	//endregion   UpdateUserInfoReply
 	
 	//region 
-	public static boolean RequestInfoGuard(UpdateUserInfoReply reply, String Username, String Password, String OpenID,
-			String HeadUrl, String NickName, String Sex, String Birthday) {
+	public static boolean RequestInfoGuard(UpdateUserInfoReply reply, String Username, String Password, String OpenID) {
 		if (Username == null || "".equals(Username)) {
 			reply.SetNecessaryParamMissReply("Username");
 			return false;
@@ -1393,22 +1392,6 @@ public class ReplyExtension {
 		}
 		if (OpenID == null || "".equals(OpenID)) {
 			reply.SetNecessaryParamMissReply("OpenID");
-			return false;
-		}
-		if (HeadUrl == null || "".equals(HeadUrl)) {
-			reply.SetNecessaryParamMissReply("HeadUrl");
-			return false;
-		}
-		if (NickName == null || "".equals(NickName)) {
-			reply.SetNecessaryParamMissReply("NickName");
-			return false;
-		}
-		if (Sex == null || "".equals(Sex)) {
-			reply.SetNecessaryParamMissReply("Sex");
-			return false;
-		}
-		if (Birthday == null || "".equals(Birthday)) {
-			reply.SetNecessaryParamMissReply("Birthday");
 			return false;
 		}
 		return true;

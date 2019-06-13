@@ -923,6 +923,7 @@ public class Dy1905Interface implements ICTMSInterface {
 			param.put("pCardPwd", CardPassword);
 			param.put("pVerifyInfo", pVerifyInfo);
 			String MemberPriceResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/MemberPrice",param,"UTF-8");
+			System.out.println(MemberPriceResult);
 			Gson gson = new Gson();
 			Dy1905MemberPriceResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(MemberPriceResult,"MemberPriceResult"), Dy1905MemberPriceResult.class);
 			if(Dy1905Reply.getMemberPriceResult().getResultCode().equals("0")){

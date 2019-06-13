@@ -1,5 +1,5 @@
 package com.boot.security.server.apicontroller.reply;
 
-public class UserWantedFilmReply extends BaseReply{
+public class UpdateUserWantedFilmReply extends BaseReply{
 	
 }

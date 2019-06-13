@@ -35,11 +35,11 @@
 			<div class='form-group'>
 				<label class='col-md-2 control-label'>会员卡</label>
 				<div class='col-md-10'>
+					<input type="hidden" id="level">
+					<input type="hidden" id="LevelCode" name="levelCode">
 					<input type="hidden" id="LevelName" name="levelName">
-					<input type="hidden" id="level" name="level">
-					<select id="LevelCode" class="form-control input-sm" name="levelCode" data-bv-notempty='true' data-bv-notempty-message='请选择会员卡'>
-						<option>选择会员卡...</option>
-					</select>
+					<div id="memberCardDiv">
+					</div>
 				</div>
 			</div>
 			<div class='form-group'>
@@ -90,20 +90,6 @@
 	<script type="text/javascript" src="../../js/common.js"></script>
 	<script type="text/javascript" src="../../layui/layui.js"></script>
 	<script type="text/javascript">
-	window.onload=function(){
-		$("#cinemaSelect").val($('#cinemaName').val());
-		$.ajax({
-			url:'/membercardlevels/getCanUseByCinemaCode?cinemacode='+$('#cinemaName').val(),
-			type:'post',
-			success:function(data){
-				for(var i=0; i<data.length; i++){
-					var option = "<option value='"+data[i].levelCode+"' title='"+data[i].levelName+"'>"+data[i].levelName+"</option>";
-					$("#LevelCode").append(option);
-					$("#LevelCode").val($("#level").val());
-				}
-			}
-		});
-	}
 	//获取登陆人信息
 	initUser();
 	function initUser(){
@@ -135,29 +121,16 @@
 	$("#cinemaSelect").blur(function(){
 		getMemberCardLevel($(this).val());
 	});
+	
 	$("#cinemaSelect").click(function(){
-		var first = $("#LevelCode option:first").text();
-		$("#LevelCode").html("<option>"+first+"</option>");
+		$("#memberCardDiv").html('');
 	});
-	$("#LevelCode").blur(function(){
+	/* $("#LevelCode").blur(function(){
 		$("#LevelName").val($("#LevelCode").find("option:selected").attr('title'));
-	});
+	}); */
 	$("input:radio[name='ruleTypeRadio']").click(function(){
 		$("#RuleType").val($("input:radio[name='ruleTypeRadio']:checked").val());
 	});
-	
-	function getMemberCardLevel(cienmaCode){
-		$.ajax({
-			url:'/membercardlevels/getCanUseByCinemaCode?cinemacode='+cienmaCode,
-			type:'post',
-			success:function(data){
-				for(var i=0; i<data.length; i++){
-					var option = "<option value='"+data[i].levelCode+"' title='"+data[i].levelName+"'>"+data[i].levelName+"</option>";
-					$("#LevelCode").append(option);
-				}
-			}
-		});
-	}
 	
 		layui.use(['layer','laydate'], function(){
 		    var layer = layui.layer;
@@ -185,12 +158,36 @@
 						$('#GivenAmount').val(data.givenAmount);
 						$('#RuleDescription').val(data.ruleDescription);
 						$('#StatusSelect').val(data.status);
+						getMemberCardLevel(data.cinemaCode);
+						
 					}
 				});
 			}
 		}
-
+		//获取影院卡类别
+		function getMemberCardLevel(cienmaCode){
+			$.ajax({
+				url:'/membercardlevels/getCanUseByCinemaCode?cinemacode='+cienmaCode,
+				type:'post',
+				success:function(data){
+					for(var i=0; i<data.length; i++){
+						var checkbox = "<input type='checkbox' name='cardLevel' style='margin-left:2%' value='"+data[i].levelCode+"' title='"+data[i].levelName+"'>&nbsp;"+data[i].levelName+"";
+						$("#memberCardDiv").append(checkbox);
+					}
+				}
+			});
+		}
+		
 		function update() {
+			var LevelCode = [];
+			var LevelName = [];
+			$("input:checkbox[name='cardLevel']:checked").each(function(){
+				LevelCode.push($(this).val());
+				LevelName.push($(this).attr('title'));
+			});
+			$("#LevelCode").val(LevelCode);
+			$("#LevelName").val(LevelName);
+			
 			$('#form').bootstrapValidator();
 			var bootstrapValidator = $("#form").data('bootstrapValidator');
 			bootstrapValidator.validate();
@@ -212,7 +209,28 @@
 				}
 			});
 		}
-		
+		window.onload=function(){
+			$("#cinemaSelect").val($('#cinemaName').val());
+			var levelCodeArr = new Array();
+			levelCodeArr = $("#level").val().split(",");
+			for(var i=0; i<levelCodeArr.length; i++){
+				$("input:checkbox[name='cardLevel'][value='" + levelCodeArr[i] + "']").prop("checked","checked");
+			}
+			/* for(int i=0; i<levelCodeArr.length; i++){
+				alert(levelCodeArr[i]);
+			} */
+			/* $.ajax({
+				url:'/membercardlevels/getCanUseByCinemaCode?cinemacode='+$('#cinemaName').val(),
+				type:'post',
+				success:function(data){
+					for(var i=0; i<data.length; i++){
+						var option = "<option value='"+data[i].levelCode+"' title='"+data[i].levelName+"'>"+data[i].levelName+"</option>";
+						$("#LevelCode").append(option);
+						$("#LevelCode").val($("#level").val());
+					}
+				}
+			});  */
+		}
 	</script>
 </body>
 </html>

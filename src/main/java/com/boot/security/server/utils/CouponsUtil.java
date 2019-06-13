@@ -236,12 +236,13 @@ public class CouponsUtil {
 			goodsOrderService.UpdateOrderBaseInfo(goodsOrder.getOrderBaseInfo());
 		}
 		//实际购票金额=原始金额-优惠券优惠金额
-		if(!LockOrderCode.equals(null)&&!LockOrderCode.equals("")){
+		if(!LockOrderCode.equals(null)&&!LockOrderCode.equals("")&&!LocalOrderCode.equals("null")){
 			realPayAmount=order.getOrderBaseInfo().getTotalSalePrice()-ticketCouponsPrice;
 		}else{
 			realPayAmount = 0.0;
 		}
-		if(!LocalOrderCode.equals(null)&&!LocalOrderCode.equals("")){
+		if(!LocalOrderCode.equals(null)&&!LocalOrderCode.equals("")&&!LocalOrderCode.equals("null")){
+			System.out.println("获取到"+LocalOrderCode);
 			realGoodsPayAmount=goodsOrder.getOrderBaseInfo().getTotalSettlePrice() - goodsCouponsPrice;
 		}else{
 			realGoodsPayAmount = 0.0;

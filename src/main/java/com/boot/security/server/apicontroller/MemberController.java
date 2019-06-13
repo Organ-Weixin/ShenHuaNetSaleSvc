@@ -175,9 +175,16 @@ public class MemberController {
 			  @PathVariable String ScreenType,@PathVariable String LockOrderCode){
 		OrderView order=orderService.getOrderWidthLockOrderCode(CinemaCode,LockOrderCode);
 		Sessioninfo session=_sessioninfoService.getSessionCode(CinemaCode,order.getOrderBaseInfo().getSessionCode());
-		DecimalFormat df= new DecimalFormat("0.00");
+		String listingPrice = "0.00";
+		String lowestPrice = "0.00";
+		if(session.getListingPrice()!=null){
+			listingPrice = new DecimalFormat("0.00").format(session.getListingPrice());
+		}
+		if(session.getLowestPrice()!=null){
+			lowestPrice = new DecimalFormat("0.00").format(session.getLowestPrice());
+		}
 		SimpleDateFormat sf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		QueryDiscountReply reply = new NetSaleSvcCore().QueryDiscount(Username, Password, CinemaCode, order.getOrderBaseInfo().getTicketCount().toString(), CardNo, CardPassword, LevelCode,session.getSCode(),sf.format(session.getStartTime()),session.getFilmCode(), ScreenType,df.format(session.getListingPrice()),df.format(session.getLowestPrice()));
+		QueryDiscountReply reply = new NetSaleSvcCore().QueryDiscount(Username, Password, CinemaCode, order.getOrderBaseInfo().getTicketCount().toString(), CardNo, CardPassword, LevelCode,session.getSCode(),sf.format(session.getStartTime()),session.getFilmCode(), ScreenType, listingPrice, lowestPrice);
 		if(reply.Status.equals("Success")){
 			//设置为初始的实际销售价，具体服务费与优惠在支付时计算
 			for(Orderseatdetails seat:order.getOrderSeatDetails()){
@@ -205,7 +212,7 @@ public class MemberController {
 		OrderView order = orderService.getOrderWidthLockOrderCode(CinemaCode, LockOrderCode);
 		GoodsOrderView goodsOrder = goodsOrderService.getWithLocalOrderCode(CinemaCode,LocalOrderCode);
 		//region 更新订单支付状态
-		if(order!=null){
+		if(order!=null&&order.getOrderBaseInfo()!=null){
 			if(reply.Status.equals("Success")){
 				//更新订单
 				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Payed.getStatusCode());
@@ -234,7 +241,7 @@ public class MemberController {
 			}
 			orderService.update(order.getOrderBaseInfo());
 		}
-		if(goodsOrder!=null){
+		if(goodsOrder!=null&&goodsOrder.getOrderBaseInfo()!=null){
 			if(reply.Status.equals("Success")){
 				//更新卖品订单
 				goodsOrder.getOrderBaseInfo().setCardNo(CardNo);
@@ -764,6 +771,11 @@ public class MemberController {
         		}
         		cardReply.setLevelCode(memberCard.getLevelCode());
         		cardReply.setLevelName(memberCard.getLevelName());
+        		//查询会员卡类别图片
+        		Membercardlevel membercardlevel = _memberCardLevelService.getByCinemaCodeAndLevelCode(CinemaCode, memberCard.getLevelCode());
+        		if(membercardlevel!=null){
+        			cardReply.setCardPictureUrl(membercardlevel.getPictureUrl());
+        		}
         		cardReply.setMobilePhone(memberCard.getMobilePhone());
         		cardReply.setOpenID(memberCard.getOpenId());
         		cardReply.setScore(memberCard.getScore());

@@ -23,7 +23,6 @@ import com.boot.security.server.api.core.QuerySessionReply;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CouponGroupStatusEnum;
 import com.boot.security.server.model.CouponsStatusEnum;
-import com.boot.security.server.model.Couponsgroup;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Screeninfo;
@@ -185,6 +184,16 @@ public class MultithreadScheduleTask {
 			}
 		}
 	}
+	//更新订单取票状态
+	@Async
+	@Scheduled(cron="0 0 3 * * ?")
+	public void updateOrderPrintStatus(){
+		List<Cinema> cinemaList = cinemaService.AllCinema();
+		for(int i=0; i<cinemaList.size(); i++){
+			//List<Orders> orderList = orderService.getByOrderCode(cinemacode, ordercode);
+		}
+	}
+	
 	public static void main(String[] args) {
 		System.out.println(new SimpleDateFormat("yyyy-MM-dd").format(new Date(Long.parseLong(String.valueOf(new Date().getTime()-3l*30l*24l*60l*60l*1000l)))));
 	}
