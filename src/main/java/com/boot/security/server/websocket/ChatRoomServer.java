@@ -146,7 +146,7 @@ public class ChatRoomServer {
 						reply.SetOverrunGiftReply();
 						return;
 					}
-					//更新优惠劵-已发放数量
+					//更新优惠劵-已发放数量   
 					int suedNumber = coupon.getIssuedNumber()+coupon.getSendNumber();
 					if(suedNumber > coupon.getCouponsNumber()){	//	优惠劵库存不足
 						reply.SetCouponsInadequateReply();
