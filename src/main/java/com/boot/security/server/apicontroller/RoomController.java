@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.boot.security.server.apicontroller.reply.GetRoomGiftReply;
 import com.boot.security.server.apicontroller.reply.GetRoomGiftReply.GetRoomGiftBean;
@@ -75,6 +76,15 @@ public class RoomController {
 	private CouponsgroupServiceImpl couponsgroupService;
 	@Autowired
 	private TicketusersServiceImpl ticketusersService;
+	
+	
+	@GetMapping("/testindex")
+	@ApiOperation(value="获取放映厅信息")
+	public ModelAndView QueryScreenRoom(){
+		ModelAndView modelAndView = new ModelAndView("/pages/test/index.html");
+		return modelAndView;
+	}
+	
 	
 	@GetMapping("/QueryScreenRoom/{UserName}/{Password}/{CinemaCode}")
 	@ApiOperation(value="获取放映厅信息")

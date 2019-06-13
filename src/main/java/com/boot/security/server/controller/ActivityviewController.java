@@ -33,7 +33,6 @@ public class ActivityviewController {
     @ApiOperation(value = "保存")
     public Activityview save(@RequestBody Activityview activityview) {
         activityviewDao.save(activityview);
-
         return activityview;
     }
 

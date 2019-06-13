@@ -52,7 +52,7 @@ html{
         .new-activity{
             position: absolute;
             height: 50px;
-            width: 280px;
+            width: 18.5%;
             background: rgb(231,81,76);
             color: white;
             font-size: 20px;
@@ -68,7 +68,7 @@ html{
             bottom: 10px;
         }
         .activity-name{
-            width: 220px;
+            width: 15%;
             height: 45px;
             margin-right: 10px;
             border-radius: 10px;
@@ -77,7 +77,7 @@ html{
             border: 1px solid #cccccc;
         }
         .activity-way{
-        	width: 220px;
+        	width: 15%;
             height: 45px;
             margin-right: 10px;
             border-radius: 10px;
@@ -87,7 +87,7 @@ html{
         }
         .activity-state{
             height: 45px;
-            width: 220px;
+            width: 15%;
             margin-right: 10px;
             padding: 10px;
             border-radius: 10px;

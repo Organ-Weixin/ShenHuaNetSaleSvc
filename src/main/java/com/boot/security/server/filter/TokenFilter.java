@@ -44,6 +44,22 @@ public class TokenFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		String token = getToken(request);
 		if (request.getServletPath().length()>4 && request.getServletPath().substring(0,4).equals("/Api")) {
+			System.out.println("11111111");	
+			LoginUser loginUser = new LoginUser();
+			loginUser.setToken("14ce830b-1a3e-403d-8872-c7825558b416");
+			loginUser.setLoginTime(1555925234175L);
+		    loginUser.setExpireTime(1855932434175L);
+		    loginUser.setUsername("admin");
+		    loginUser.setPassword("$2a$10$azKn2zt4uvOFuK.IDWzpoui6EIvkQ8MMz.sDpgDPNs3dKncylMxsu");
+		    loginUser.setStatus(1);
+		    loginUser.setId(1L);
+			if (loginUser != null) {
+				loginUser = checkLoginTime(loginUser);
+				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+						loginUser, null, null);
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+			}
+		}else if (request.getServletPath().length()>4 && request.getServletPath().startsWith("/webSocket")) {
 			LoginUser loginUser = new LoginUser();
 			loginUser.setToken("14ce830b-1a3e-403d-8872-c7825558b416");
 			loginUser.setLoginTime(1555925234175L);
@@ -61,6 +77,7 @@ public class TokenFilter extends OncePerRequestFilter {
 		}
 		else
 		{
+			System.out.println(request.getServletPath());	
 			if (StringUtils.isNotBlank(token)) {
 				LoginUser loginUser = tokenService.getLoginUser(token);
 				if (loginUser != null) {

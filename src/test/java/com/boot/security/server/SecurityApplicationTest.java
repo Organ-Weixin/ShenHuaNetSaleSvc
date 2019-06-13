@@ -300,14 +300,14 @@ public class SecurityApplicationTest {
 	}
 	@Test
 	public void CardPayTest() throws Exception{
-		Dy1905Interface di = new Dy1905Interface();
+		/*Dy1905Interface di = new Dy1905Interface();
 		Usercinemaview userCinema = new Usercinemaview();
 		userCinema.setDefaultUserName("1000000035");
 		userCinema.setDefaultPassword("66a16ca61f729e0c846983f8c0f4fd53");
 		userCinema.setUrl("http://netsale.1905.com/Api");
 		userCinema.setCinemaId("194");
 		userCinema.setCinemaCode("33097601");
-		di.CardPay(userCinema, "e042062039", "mima123", 50f, null, null, null);
+		di.CardPay(userCinema, "e042062039", "mima123", 50f, null, null, null);*/
 	}
 	@Test
 	public void CardChargeTest() throws Exception{
@@ -509,11 +509,11 @@ public class SecurityApplicationTest {
 		NetSaleSvcCore ns = new NetSaleSvcCore();
 		ns.QueryDiscount("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33097601", "1", "e042282308", "mima123", "4", "3093945", "2019-04-24 09:30:00", "2490", "3d", "45.00", "20.00");
 	}
-	@Test
+	/*@Test
 	public void CardPayTestMid(){
 		NetSaleSvcCore ns = new NetSaleSvcCore();
 		ns.CardPay("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33097601", "e042282308", "mima123", "30", "3093945", "2490", "1");
-	}
+	}*/
 	@Test
 	public void CardChargeTestMid(){
 		NetSaleSvcCore ns = new NetSaleSvcCore();

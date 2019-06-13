@@ -42,7 +42,7 @@ import com.boot.security.server.apicontroller.reply.RoomGiftReply;
 import com.boot.security.server.apicontroller.reply.RoomGiftReply.RoomGiftResult;
 
 @Component
-@ServerEndpoint(value="/webSocket/chat/{cinemaCode}/{roomCode}/{giftCode}/{giftType}/{actionType}/{openid}", configurator = WebSocketCfg.class)
+@ServerEndpoint(value="/webSocket/chat/{cinemaCode}/{roomCode}/{giftCode}/{giftType}/{actionType}/{openid}")
 public class ChatRoomServer {
 
 	private static final Map<String, Set<Session>> rooms = new ConcurrentHashMap<String, Set<Session>>();
@@ -66,11 +66,11 @@ public class ChatRoomServer {
 	private CouponsgroupServiceImpl couponsgroupService;
 	
 	@OnOpen
-    public BaseReply connect(@PathParam("roomCode") String roomCode,@PathParam("openid") String openid, Session session){
+    public void connect(@PathParam("roomCode") String roomCode,@PathParam("openid") String openid, Session session){
 		BaseReply reply = new BaseReply();
 		if (!rooms.containsKey(roomCode)) { //房间暂未开启
 			reply.ErrorMessage = "房间暂未开启";
-			return reply;
+			return;
 		} else {
 			synchronized (ADD_ROOM_LOCK){
                 //直接添加用户到相应的房间
@@ -85,7 +85,7 @@ public class ChatRoomServer {
 			System.out.println(openid+"加入了"+roomCode+"号房间"+";size:"+OpenidSession.size());
 			
 			reply.SetSuccessReply();
-			return reply;
+			return;
 		}
 	}
 	
@@ -98,20 +98,20 @@ public class ChatRoomServer {
     }
 	
 	@OnMessage
-    public RoomGiftReply receiveMsg(@PathParam("cinemaCode") String cinemaCode,@PathParam("roomCode") String roomCode,@PathParam("giftCode") String giftCode,
-    		@PathParam("giftType") String giftType,	@PathParam("actionType") String actionType,@PathParam("openid") String openid, Session session) throws Exception {
+    public void receiveMsg(@PathParam("cinemaCode") String cinemaCode,@PathParam("roomCode") String roomCode,@PathParam("giftCode") String giftCode,
+    		@PathParam("giftType") String giftType,	@PathParam("actionType") String actionType,@PathParam("openid") String openid,String msg, Session session) throws Exception {
 		RoomGiftReply reply = new RoomGiftReply();
 		//验证影院是否存在且可访问
 		Cinema cinema=_cinemaService.getByCinemaCode(cinemaCode);
 		if(cinema == null){
 			reply.SetCinemaInvalidReply();
-			return reply;
+			return;
 		}
 		//验证用户OpenId
 		Ticketusers ticketuser = ticketusersService.getByopenids(openid);
 		if(ticketuser == null){
 			reply.SetOpenIDNotExistReply();
-			return reply;
+			return;
 		}
 		
 		if("1".equals(actionType)){	//发放奖品
@@ -126,11 +126,11 @@ public class ChatRoomServer {
 					Roomgift roomgift = roomgiftService.getByGiftCode(giftCode);
 					if(roomgift == null){
 						reply.SetGiftInvalidReply();
-						return reply;
+						return;
 					}
 					if(sendNum > roomgift.getGroupNumber()){	//超出最大发放组数
 						reply.SetOverrunGiftReply();
-						return reply;
+						return;
 					}
 					giftName = roomgift.getGiftName();
 					sendNumber = roomgift.getSendNumber();
@@ -140,23 +140,23 @@ public class ChatRoomServer {
 					Couponsgroup coupon = couponsgroupService.getByGroupCode(giftCode);
 					if(coupon == null){
 						reply.SetCouponsNotExistOrUsedReply();
-						return reply;
+						return;
 					}
 					if(sendNum > coupon.getSendGroupNumber()){	//超出最大发放组数
 						reply.SetOverrunGiftReply();
-						return reply;
+						return;
 					}
 					//更新优惠劵-已发放数量
 					int suedNumber = coupon.getIssuedNumber()+coupon.getSendNumber();
 					if(suedNumber > coupon.getCouponsNumber()){	//	优惠劵库存不足
 						reply.SetCouponsInadequateReply();
-						return reply;
+						return;
 					}
 					coupon.setIssuedNumber(suedNumber);
 					int num = couponsgroupService.update(coupon);
 					if(num == 0){
 						reply.SetCouponsSendFailureReply();
-						return reply;
+						return;
 					}
 					giftName = coupon.getCouponsName();
 					sendNumber = coupon.getSendNumber();
@@ -182,10 +182,10 @@ public class ChatRoomServer {
 				gift.setImage(image);
 				reply.setData(gift);
 				reply.SetSuccessReply();
-				return reply;
+				return;
 			} else {
 				reply.ErrorMessage = "普通用户不能发送奖品";
-				return reply;
+				return;
 			}
 		} else if("2".equals(actionType)){	//领取奖品
 			synchronized (this){
@@ -199,7 +199,7 @@ public class ChatRoomServer {
 						Roomgift roomgift = roomgiftService.getByGiftCode(giftCode);
 						if(list != null && list.size() >= roomgift.getSendNumber()){
 							reply.ErrorMessage = "奖品被抢光了";
-							return reply;
+							return;
 						}
 						giftName = roomgift.getGiftName();
 						image = roomgift.getImage();
@@ -209,7 +209,7 @@ public class ChatRoomServer {
 						Couponsgroup coupon = couponsgroupService.getByGroupCode(giftCode);
 						if(list != null && list.size() >= coupon.getSendNumber()){
 							reply.ErrorMessage = "奖品被抢光了";
-							return reply;
+							return;
 						}
 						startDate = coupon.getEffectiveDate();
 						expireDate = coupon.getExpireDate();
@@ -262,20 +262,20 @@ public class ChatRoomServer {
 					}
 					reply.setData(data);
 					reply.SetSuccessReply();
-					return reply;
+					return;
 					
 				} else {
 					reply.ErrorMessage = "管理员不能领取奖品";
-					return reply;
+					return;
 				}
 			}
 		} else if("3".equals(actionType)){	//发消息时，giftcode传的是消息内容
 			sendMessagetoRoom(roomCode,giftCode);
 			reply.SetSuccessReply();
-			return reply;
+			return;
 		}else {
 			reply.ErrorMessage = "操作类型actionType 传值不对";
-			return reply;
+			return ;
 		}
 		
 		
