@@ -609,16 +609,6 @@ public class OrderController {
 			return prePayParametersReply;
 		}
 		// 验证优惠券是否使用
-		for (PrePayOrderQueryJsonSeat seat : QueryJson.getSeats()) {
-			if (!seat.getCouponsCode().isEmpty()&&!seat.getCouponsCode().equals("")) {
-				Coupons coupons = _couponsService.getByCouponsCode(seat.getCouponsCode());
-				if (coupons.getStatus() != 1)// 不是已领取状态
-				{
-					prePayParametersReply.SetCouponsNotExistOrUsedReply();
-					return prePayParametersReply;
-				}
-			}
-		}
 		//得到优惠券列表
 		StringBuilder CouponsCodes=new StringBuilder();
 		for (PrePayOrderQueryJsonSeat seat : QueryJson.getSeats()) {
@@ -626,7 +616,9 @@ public class OrderController {
 				CouponsCodes.append(seat.getCouponsCode()).append(",");
 			}
 		}
-		CouponsCodes.deleteCharAt(CouponsCodes.length()-1);//去掉最后一个“，”
+		if(CouponsCodes.length()>0){
+			CouponsCodes.deleteCharAt(CouponsCodes.length()-1);//去掉最后一个“，”
+		}
 		//计算更新优惠价格
 		Map<String,Double> map=new CouponsUtil().getCouponsPrice(QueryJson.getCinemaCode(),QueryJson.getOrderCode(),"", CouponsCodes.toString());
 		

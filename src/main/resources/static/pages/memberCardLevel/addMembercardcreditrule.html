@@ -34,10 +34,13 @@
 			<div class='form-group'>
 				<label class='col-md-2 control-label'>会员卡&nbsp;<font style="color:red;font-size:15px">*</font></label>
 				<div class='col-md-10'>
+					<input type="hidden" id="LevelCode" name="levelCode">
 					<input type="hidden" id="LevelName" name="levelName">
-					<select id="LevelCode" class="form-control input-sm" name="levelCode" data-bv-notempty='true' data-bv-notempty-message='请选择会员卡'>
+					<div id="memberCardDiv">
+					</div>
+					<!-- <select id="LevelCode" class="form-control input-sm" name="levelCode" data-bv-notempty='true' data-bv-notempty-message='请选择会员卡'>
 						<option>选择会员卡...</option>
-					</select>
+					</select> -->
 				</div>
 			</div>
 			<div class='form-group'>
@@ -135,7 +138,7 @@
 	});
 	$("#cinemaSelect").click(function(){
 		var first = $("#LevelCode option:first").text();
-		$("#LevelCode").html("<option>"+first+"</option>");
+		$("#memberCardDiv").html('');
 	});
 	$("#LevelCode").blur(function(){
 		$("#LevelName").val($("#LevelCode").find("option:selected").attr('title'));
@@ -161,8 +164,10 @@
 			type:'post',
 			success:function(data){
 				for(var i=0; i<data.length; i++){
-					var option = "<option value='"+data[i].levelCode+"' title='"+data[i].levelName+"'>"+data[i].levelName+"</option>";
-					$("#LevelCode").append(option);
+					/* var option = "<option value='"+data[i].levelCode+"' title='"+data[i].levelName+"'>"+data[i].levelName+"</option>";
+					$("#LevelCode").append(option); */
+					var checkbox = "<input type='checkbox' name='cardLevel' style='margin-left:2%' value='"+data[i].levelCode+"' title='"+data[i].levelName+"'>&nbsp;"+data[i].levelName+"";
+					$("#memberCardDiv").append(checkbox);
 				}
 			}
 		});
@@ -173,6 +178,15 @@
 		});
 		
 		function add() {
+			var LevelCode = [];
+			var LevelName = [];
+			$("input:checkbox[name='cardLevel']:checked").each(function(){
+				LevelCode.push($(this).val());
+				LevelName.push($(this).attr('title'));
+			});
+			$("#LevelCode").val(LevelCode);
+			$("#LevelName").val(LevelName);
+			
 			$('#form').bootstrapValidator();
 			var bootstrapValidator = $("#form").data('bootstrapValidator');
 			bootstrapValidator.validate();
@@ -181,18 +195,22 @@
 		    }
 		    
 		    var formdata = $("#form").serializeObject();
-
-			$.ajax({
-				type : 'post',
-				url : '/membercardcreditrules',
-				contentType: "application/json; charset=utf-8",  
-				data : JSON.stringify(formdata),
-				success : function(data) {
-					layer.msg("添加成功", {shift: -1, time: 1000}, function(){
-                        location.href = "membercardcreditruleList.html";
-                    });
-				}
-			});
+			
+			if($("input:checkbox[name='cardLevel']:checked").length>0){
+				$.ajax({
+					type : 'post',
+					url : '/membercardcreditrules',
+					contentType: "application/json; charset=utf-8",  
+					data : JSON.stringify(formdata),
+					success : function(data) {
+						layer.msg("添加成功", {shift: -1, time: 1000}, function(){
+	                        location.href = "membercardcreditruleList.html";
+	                    });
+					}
+				});
+			}else{
+				layer.msg("请选择会员卡");
+			} 
 		}
 		
 	</script>

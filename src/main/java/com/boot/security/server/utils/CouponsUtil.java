@@ -151,7 +151,7 @@ public class CouponsUtil {
 		}
 		//endregion
 
-		if(order!=null){
+		if(order.getOrderBaseInfo()!=null&&order.getOrderSeatDetails().size()>0){
 			//region 购票价格计算（得到最终上报价，最终销售价，最终服务费）
 			Double SubmitPrice;// 最终上报价格
 			Double SalePrice;// 最终销售价格
@@ -227,14 +227,25 @@ public class CouponsUtil {
 			//更新订单
 			orderService.Update(order);
 		}
-		if(goodsOrder!=null){
+		if(goodsOrder.getOrderGoodsDetails()!=null&&goodsOrder.getOrderBaseInfo()!=null){
+			if(goodsOrder.getOrderBaseInfo().getCouponsPrice()==null){
+				goodsOrder.getOrderBaseInfo().setCouponsPrice(0.00);
+			}
 			goodsCouponsPrice=goodsOrder.getOrderBaseInfo().getCouponsPrice();
 			//更新卖品订单主表
 			goodsOrderService.UpdateOrderBaseInfo(goodsOrder.getOrderBaseInfo());
 		}
 		//实际购票金额=原始金额-优惠券优惠金额
-		realPayAmount=order.getOrderBaseInfo().getTotalSalePrice()-ticketCouponsPrice;
-		realGoodsPayAmount=goodsOrder.getOrderBaseInfo().getTotalSettlePrice() - goodsCouponsPrice;
+		if(!LockOrderCode.equals(null)&&!LockOrderCode.equals("")){
+			realPayAmount=order.getOrderBaseInfo().getTotalSalePrice()-ticketCouponsPrice;
+		}else{
+			realPayAmount = 0.0;
+		}
+		if(!LocalOrderCode.equals(null)&&!LocalOrderCode.equals("")){
+			realGoodsPayAmount=goodsOrder.getOrderBaseInfo().getTotalSettlePrice() - goodsCouponsPrice;
+		}else{
+			realGoodsPayAmount = 0.0;
+		}
 		Map<String,Double> map=new HashMap<String,Double>();
 		map.put("realPayAmount", realPayAmount);
 		map.put("realGoodsPayAmount",realGoodsPayAmount);

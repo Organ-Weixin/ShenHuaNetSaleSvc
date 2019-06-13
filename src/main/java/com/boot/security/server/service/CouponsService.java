@@ -2,8 +2,6 @@ package com.boot.security.server.service;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
-
 import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.CouponsView;
 
@@ -32,4 +30,6 @@ public interface CouponsService {
 	int changePast(Integer status);
 	
 	List<Coupons> getUserCoupons(String openid,Integer status);
+	
+	List<Coupons> getByGroupCodeAndOpenId(String groupcode,String openid,Integer status);
 }

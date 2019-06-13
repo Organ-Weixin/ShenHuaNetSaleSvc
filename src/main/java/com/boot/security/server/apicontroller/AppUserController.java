@@ -411,7 +411,8 @@ public class AppUserController {
 		_ticketusersService.update(ticketuser);
 		
 		//发送验证码到用户手机号
-        String smsContent = "手机号"+input.getMobilePhone()+"用户,您的验证码为"+ ticketuser.getVerifyCode()+"。仅用于小程序手机号码验证，请尽快使用。";
+        //String smsContent = "手机号"+input.getMobilePhone()+"用户,您的验证码为"+ ticketuser.getVerifyCode()+"。仅用于小程序手机号码验证，请尽快使用。";
+		String smsContent = ""+ ticketuser.getVerifyCode()+"（万画筒小程序购票平台验证码，一分钟内有效）";
         String sendResult = SendSmsHelper.SendSms(input.getMobilePhone(), smsContent);
         if(!"Success".equals(sendResult)){
         	reply.SetSentMessageFailureReply();
@@ -470,14 +471,16 @@ public class AppUserController {
 		data.setGoodsCount(goodsCount);
 		//优惠券数量
 		List<Coupons> couponsList = couponsService.getUserCoupons(OpenID, CouponsStatusEnum.Fetched.getStatusCode());
+		int couponsCount = 0;
 		if(couponsList.size()>0){
 			for(Coupons coupons:couponsList){
 				Couponsgroup couponsgroup = couponsgroupService.getUserCouponsGroup(coupons.getGroupCode(), CouponGroupStatusEnum.Enabled.getStatusCode(), CinemaCode);
 				if(couponsgroup!=null){
-					List<Coupons> couponsReList = couponsService.getByGroupCode(couponsgroup.getGroupCode());
-					data.setCouponsCount(couponsReList.size());
+					List<Coupons> couponsReList = couponsService.getByGroupCodeAndOpenId(couponsgroup.getGroupCode(), OpenID, CouponsStatusEnum.Fetched.getStatusCode());
+					couponsCount +=couponsReList.size();
 				}
 			}
+			data.setCouponsCount(couponsCount);
 		}
 		//礼品数量
 		List<Roomgiftuser> roomgiftuserList = roomgiftuserService.getByOpenid(OpenID, CinemaCode);

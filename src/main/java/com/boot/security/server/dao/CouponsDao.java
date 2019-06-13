@@ -53,6 +53,9 @@ public interface CouponsDao {
     @Update("update coupons t set t.status = 3 where t.couponscode = #{couponscode}")
     int changeStatus(@Param("couponscode")String couponscode);
     
-    @Select("select * from coupons t where t.openid = #{openid} and t.status = #{status}")
+    @Select("select * from coupons t where t.openid = #{openid} and t.status = #{status} group by groupcode")
     List<Coupons> getUserCoupons(@Param("openid")String openid,@Param("status")Integer status);
+    
+    @Select("select * from coupons t where t.groupcode = #{groupcode} and t.openid = #{openid} and t.status = #{status}")
+    List<Coupons> getByGroupCodeAndOpenId(@Param("groupcode")String groupcode,@Param("openid")String openid,@Param("status")Integer status);
 }

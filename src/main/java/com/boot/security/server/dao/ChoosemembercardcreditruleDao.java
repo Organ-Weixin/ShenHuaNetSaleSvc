@@ -31,13 +31,13 @@ public interface ChoosemembercardcreditruleDao {
 
     List<Choosemembercardcreditrule> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
     
-    @Select("select * from choosemembercardcreditrule t where t.cinemacode = #{cinemacode} and t.levelcode = #{levelcode} and t.ruleType =1")
+    @Select("select * from choosemembercardcreditrule t where t.cinemacode = #{cinemacode} and (t.levelcode = #{levelcode} or find_in_set(#{levelcode},t.levelcode)) and t.ruleType =1")
     Choosemembercardcreditrule getOpenTypeByLevelCode(@Param("cinemacode") String cinemacode,@Param("levelcode") String levelcode);
     
-    @Select("select * from choosemembercardcreditrule t where t.cinemacode = #{cinemacode} and t.levelcode = #{levelcode} and t.ruleType =2")
+    @Select("select * from choosemembercardcreditrule t where t.cinemacode = #{cinemacode} and (t.levelcode = #{levelcode} or find_in_set(#{levelcode},t.levelcode)) and t.ruleType =2")
     List<Choosemembercardcreditrule> getRechargeTypeListByLevelCode(@Param("cinemacode") String cinemacode,@Param("levelcode") String levelcode);
     
-    @Select("select * from choosemembercardcreditrule t where t.cinemacode = #{cinemacode} and t.levelcode = #{levelcode}")
+    @Select("select * from choosemembercardcreditrule t where t.cinemacode = #{cinemacode} and (t.levelcode = #{levelcode} or find_in_set(#{levelcode},t.levelcode))")
     List<Choosemembercardcreditrule> getByLevelCode(@Param("cinemacode") String cinemacode,@Param("levelcode") String levelcode);
     
     @Delete("delete from choosemembercardcreditrule where cinemacode = #{cinemacode} and levelcode =#{levelcode}")

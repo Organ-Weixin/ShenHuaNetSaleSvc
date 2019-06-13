@@ -93,7 +93,9 @@ public class OrderServiceImpl implements OrderService{
 	public OrderView getOrderWidthLockOrderCode(String cinemacode, String lockordercode) {
 		OrderView orderview=new OrderView();
 		orderview.setOrderBaseInfo(ordersDao.getByLockOrderCode(cinemacode,lockordercode));
-		orderview.setOrderSeatDetails(orderseatdetailssDao.getByOrderId(orderview.getOrderBaseInfo().getId()));
+		if(ordersDao.getByLockOrderCode(cinemacode,lockordercode)!=null){
+			orderview.setOrderSeatDetails(orderseatdetailssDao.getByOrderId(orderview.getOrderBaseInfo().getId()));
+		}
 		return orderview;
 	}
 

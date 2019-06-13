@@ -49,7 +49,9 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
 		// TODO Auto-generated method stub
 		GoodsOrderView orderview=new GoodsOrderView();
 		orderview.setOrderBaseInfo(ordersDao.getByLocalOrderCode(localordercode));
-		orderview.setOrderGoodsDetails(orderdetailsDao.getByOrderId(orderview.getOrderBaseInfo().getId()));
+		if(ordersDao.getByLocalOrderCode(localordercode)!=null){
+			orderview.setOrderGoodsDetails(orderdetailsDao.getByOrderId(orderview.getOrderBaseInfo().getId()));
+		}
 		return orderview;
 	}
 	@Override

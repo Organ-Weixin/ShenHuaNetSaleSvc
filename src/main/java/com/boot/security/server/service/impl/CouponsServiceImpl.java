@@ -93,4 +93,10 @@ public class CouponsServiceImpl implements CouponsService{
 		// TODO Auto-generated method stub
 		return couponsdao.getUserCoupons(openid, status);
 	}
+
+	@Override
+	public List<Coupons> getByGroupCodeAndOpenId(String groupcode, String openid, Integer status) {
+		// TODO Auto-generated method stub
+		return couponsdao.getByGroupCodeAndOpenId(groupcode, openid, status);
+	}
 }
