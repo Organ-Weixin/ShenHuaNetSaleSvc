@@ -31,6 +31,7 @@ import com.boot.security.server.api.core.QueryCardTradeRecordReply;
 import com.boot.security.server.api.core.QueryDiscountReply;
 import com.boot.security.server.api.ctms.reply.Dy1905GetMemberCardByMobileReply;
 import com.boot.security.server.api.ctms.reply.Dy1905Interface;
+import com.boot.security.server.api.ctms.reply.YkInterface;
 import com.boot.security.server.apicontroller.reply.GoodsOrderMemberReply;
 import com.boot.security.server.apicontroller.reply.MemberCardPayReply;
 import com.boot.security.server.apicontroller.reply.MemberCardUnbindReply;
@@ -305,6 +306,53 @@ public class MemberController {
 		return new Dy1905Interface().MemberCardPay(Username, Password, CinemaCode, LockOrderCode, LocalOrderCode, CardNo, CardPassword);
 	}
 	//endregion
+	
+	@GetMapping("/YkTicketmMember/{Username}/{Password}/{CinemaCode}/{LockOrderCode}/{MobilePhone}/{CardNo}/{CardPassword}/{CouponsCodes}")
+	@ApiOperation(value = "会员卡购票（粤科）")
+	public SellTicketCustomMemberReply YkTicketmMember(@PathVariable String Username,@PathVariable String Password,	@PathVariable String CinemaCode,
+			@PathVariable String LockOrderCode,@PathVariable String MobilePhone,@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String CouponsCodes) throws Exception{
+		//更新一下座位价格
+		new CouponsUtil().getCouponsPrice(CinemaCode,LockOrderCode,"",CouponsCodes);
+		SellTicketCustomMemberReply reply = new SellTicketCustomMemberReply();
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+		if (UserInfo == null) {
+			reply.SetUserCredentialInvalidReply();
+			return reply;
+		}
+		// 验证影院是否存在且可访问
+		Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),CinemaCode);
+		if (userCinema == null) {
+			reply.SetCinemaInvalidReply();
+			return reply;
+		}
+		//验证订单是否存在
+		OrderView order = orderService.getOrderWidthLockOrderCode(CinemaCode, LockOrderCode);
+		if(order == null){
+			reply.SetOrderNotExistReply();
+			return reply;
+		}
+		//验证会员卡
+		Membercard membercard = _memberCardService.getByCardNo(CinemaCode, CardNo);
+		if(membercard == null){
+			reply.SetMemberCardInvalidReply();
+			return reply;
+		}
+		
+		order.getOrderBaseInfo().setMobilePhone(MobilePhone);
+		order.getOrderBaseInfo().setCardNo(CardNo);
+		new YkInterface().SubmitOrder(userCinema, order);
+		// 更新订单信息
+		order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
+		orderService.Update(order);
+		
+		//返回
+		reply.setOrderNo(order.getOrderBaseInfo().getSubmitOrderCode());
+		reply.setPrintNo(order.getOrderBaseInfo().getPrintNo());
+		reply.setVerifyCode(order.getOrderBaseInfo().getVerifyCode());
+		reply.SetSuccessReply();
+		return reply;
+	}
 	
 	//region 会员卡支付撤销
 	@GetMapping("/CardPayBack/{Username}/{Password}/{CinemaCode}/{CardNo}/{CardPassword}/{TradeNo}/{PayBackAmount}")

@@ -41,6 +41,8 @@ import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaMiniProgramAccounts;
+import com.boot.security.server.model.CouponsStatusEnum;
+import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
@@ -61,6 +63,7 @@ import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.service.impl.CinemaMiniProgramAccountsServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
+import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
@@ -85,6 +88,7 @@ public class YkInterface implements ICTMSInterface {
 	MemberCardLevelServiceImpl memberCardLevelService = SpringUtil.getBean(MemberCardLevelServiceImpl.class);
 	GoodsServiceImpl goodsService = SpringUtil.getBean(GoodsServiceImpl.class);
 	CinemaMiniProgramAccountsServiceImpl _cinemaMiniProgramAccountsService = SpringUtil.getBean(CinemaMiniProgramAccountsServiceImpl.class);
+	CouponsServiceImpl _couponsService = SpringUtil.getBean(CouponsServiceImpl.class);
 	/*
 	 * 查询影院信息
 	 */
@@ -288,7 +292,7 @@ public class YkInterface implements ICTMSInterface {
 		param.put("data",
 				"{\"cinemaLinkId\":\"" + userCinema.getCinemaId() + "\",\"endDate\":\""
 						+ (new java.text.SimpleDateFormat("yyyy-MM-dd")).format(end) + "\",\"startDate\":\""
-						+ (new java.text.SimpleDateFormat("yyyy-MM-dd")).format(start) + "\",\"priceQueryType\":\"\"}");
+						+ (new java.text.SimpleDateFormat("yyyy-MM-dd")).format(start) + "\",\"priceQueryType\":\"benefit\"}");
 		param.put("timestamp", String.valueOf(Calendar.getInstance().getTimeInMillis()));
 		param.put("v", "1.0");
 		String sign = createSign(userCinema.getDefaultPassword(), param);
@@ -533,14 +537,26 @@ public class YkInterface implements ICTMSInterface {
 	public CTMSSubmitOrderReply SubmitOrder(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSSubmitOrderReply reply = new CTMSSubmitOrderReply();
 		
+		boolean flag = order.getOrderBaseInfo().getCardNo() == null?false:true;	//是否使用会员卡折扣 
 		Sessioninfo sessioninfo = _sessioninfoService.getBySessionCode(userCinema.getUserId(), userCinema.getCinemaCode(), order.getOrderBaseInfo().getSessionCode());
-		List<Map<String,String>> ticketList = new ArrayList<Map<String,String>>();
+		List<Map<String,Object>> ticketList = new ArrayList<Map<String,Object>>();
 		List<Orderseatdetails> orderseatdetails = order.getOrderSeatDetails();	//订单详情列表
 		for(Orderseatdetails orderseat : orderseatdetails){
-			Map<String,String> orderMap = new LinkedHashMap<String,String>();
+			Map<String,Object> orderMap = new LinkedHashMap<String,Object>();
 			orderMap.put("seatId", orderseat.getSeatCode());
 			orderMap.put("ticketPrice", String.valueOf(orderseat.getPrice()));
 			orderMap.put("ticketFee", String.valueOf(orderseat.getFee()));
+			if(flag){
+				orderMap.put("isCardDiscount", true);
+			}
+			if(orderseat.getConponCode() != null){	//优惠列表
+				Map<String,String> promotion = new LinkedHashMap<String,String>();
+				promotion.put("promotionName", orderseat.getConponCode());
+				promotion.put("discountAmount", orderseat.getConponPrice().toString());
+				List<Map<String,String>> promotionList = new ArrayList<Map<String,String>>();
+				promotionList.add(promotion);
+				orderMap.put("promotionList", promotionList);
+			}
 			ticketList.add(orderMap);
 		}
 		
@@ -551,6 +567,21 @@ public class YkInterface implements ICTMSInterface {
 		input.put("scheduleKey", sessioninfo.getSessionKey());
 		input.put("ticketList", ticketList);
 		input.put("mobile", order.getOrderBaseInfo().getMobilePhone());
+		if(flag){
+			Map<String,String> payCardInfo = new LinkedHashMap<String,String>();
+			payCardInfo.put("cinemaLinkId", userCinema.getCinemaId());
+			payCardInfo.put("cardNumber", order.getOrderBaseInfo().getCardNo());
+			Membercard  card = memberCardService.getByCardNo(userCinema.getCinemaCode(), order.getOrderBaseInfo().getCardNo());
+			payCardInfo.put("cardPassword", MD5AESPassword(card.getCardPassword(),userCinema.getDefaultPassword()));
+			
+			Map<String,Object> payment = new LinkedHashMap<String,Object>();
+			payment.put("paymentMethod", "MemberCard");
+			payment.put("payCardInfo", payCardInfo);
+			
+			List<Map<String,Object>> paymentList = new ArrayList<>();
+			paymentList.add(payment);
+			input.put("paymentList", paymentList);
+		}
 		String data=input.toJSONString();
 		
 		Map<String,String> param = new LinkedHashMap<String,String>();
@@ -563,7 +594,7 @@ public class YkInterface implements ICTMSInterface {
 		String sign = createSign(userCinema.getDefaultPassword(), param);
 		String confirmOrderResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
 				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
-//		System.out.println("确认订单返回："+confirmOrderResult);
+		System.out.println("确认订单返回："+confirmOrderResult);
 		
 		Gson gson = new Gson();
 		YkConfirmOrderResult ykResult = gson.fromJson(confirmOrderResult, YkConfirmOrderResult.class);
@@ -588,6 +619,20 @@ public class YkInterface implements ICTMSInterface {
 				}
 				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Complete.getStatusCode());	//订单状态
 				order.getOrderBaseInfo().setSubmitTime(new Date());					//订单提交时间
+				// 更新优惠券已使用
+				for (Orderseatdetails seat : order.getOrderSeatDetails()) {
+					if (seat.getConponCode() != null && !seat.getConponCode().equals("")) {
+						CouponsView couponsview=_couponsService.getWithCouponsCode(seat.getConponCode());
+						if(couponsview!=null){
+							couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
+							couponsview.getCoupons().setUsedDate(new Date());
+							//使用数量+1
+							couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+							//更新优惠券及优惠券分组表
+							_couponsService.update(couponsview);
+						}
+					}
+				}
 				reply.Status = StatusEnum.Success;
 			} else {
 				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.SubmitFail.getStatusCode());
