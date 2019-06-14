@@ -19,6 +19,7 @@ public class Goodsorderdetails extends BaseEntity<Long> {
 	private Integer IsPackage;
 	private String GoodsDetail;
 	private Integer ShowSeqNo;
+	private Double CouponPrice;
 
 	public Long getId() {
 		return Id;
@@ -110,6 +111,12 @@ public class Goodsorderdetails extends BaseEntity<Long> {
 	}
 	public void setShowSeqNo(Integer showSeqNo) {
 		ShowSeqNo = showSeqNo;
+	}
+	public Double getCouponPrice() {
+		return CouponPrice;
+	}
+	public void setCouponPrice(Double couponPrice) {
+		CouponPrice = couponPrice;
 	}
 	
 

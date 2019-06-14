@@ -287,7 +287,10 @@ public class OrderController {
 		//订单信息
 		data.setPrintType(orders.getPrintStatus());
 		data.setVerifyCode(orders.getVerifyCode());
-		data.setRealAmount(orders.getTotalSalePrice());
+		if(orders.getTotalConponPrice()==null){
+			orders.setTotalConponPrice(0.00);
+		}
+		data.setRealAmount(orders.getTotalSalePrice()-orders.getTotalConponPrice());
 		data.setOrderCode(orders.getSubmitOrderCode());
 		data.setMobilePhone(orders.getMobilePhone());
 		ticketOrderReply.setData(data);
