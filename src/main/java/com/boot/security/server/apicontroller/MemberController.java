@@ -225,7 +225,7 @@ public class MemberController {
 				order.getOrderBaseInfo().setUpdated(new Date());
 				//更新优惠券已使用
 				for (Orderseatdetails seat : order.getOrderSeatDetails()) {
-					if (!seat.getConponCode().equals(null)&&!seat.getConponCode().equals("")) {
+					if (seat.getConponCode()!=null&&seat.getConponCode()!="") {
 						CouponsView couponsview=_couponsService.getWithCouponsCode(seat.getConponCode());
 						if(couponsview!=null){
 							couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
@@ -879,6 +879,7 @@ public class MemberController {
 	        	levelReply.setCardCostFee(membercardlevel.getCardCostFee());
 	        	levelReply.setMemberFee(membercardlevel.getMemberFee());
 	        	levelReply.setMemberCardImage(membercardlevel.getPictureUrl());
+	        	levelReply.setIsOnlineOpenCard(membercardlevel.getIsOnlineOpenCard());
 	        	levelReply.setStatus(membercardlevel.getStatus());
 	        	//会员卡类别规则
 	        	Choosemembercardcreditrule choosemembercardcreditrule =  _choosemembercardcreditruleService.getOpenTypeByLevelCode(CinemaCode, membercardlevel.getLevelCode());

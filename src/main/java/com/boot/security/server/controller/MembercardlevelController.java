@@ -90,4 +90,17 @@ public class MembercardlevelController {
     public List<Membercardlevel> getCanUseByCinemaCode(@RequestParam("cinemacode") String cinemacode){
     	return memberCardLevelService.getCanUseByCinemaCode(cinemacode);
     }
+    
+    @RequestMapping("/updateIsOnlineOpenCard")
+    @ApiOperation(value = "修改是否可线上开卡")
+    public int updateIsOnlineOpenCard(@RequestParam("isonlineopencard") String isonlineopencard,@RequestParam("cinemacode") String cinemacode,
+    		@RequestParam("levelcode") String levelcode){
+    	//初始化该影院所有会员卡的IsOnlineOpenCard
+    	int initResult = memberCardLevelService.initIsOnlineOpenCard(cinemacode);
+    	int result =0;
+    	if(initResult>0){
+    		result = memberCardLevelService.updateIsOnlineOpenCard(Integer.valueOf(isonlineopencard), cinemacode, levelcode);
+    	}
+    	return result;
+    }
 }

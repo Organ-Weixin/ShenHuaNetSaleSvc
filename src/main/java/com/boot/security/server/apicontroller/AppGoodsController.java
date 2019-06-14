@@ -155,6 +155,9 @@ public class AppGoodsController {
 	public CreateGoodsOrderReply CreateGoodsOrder(@RequestBody CreateGoodsOrderQueryJson QueryJson){
 		try {
 			CreateGoodsOrderReply reply = NetSaleSvcCore.getInstance().CreateGoodsOrder(QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getQueryXml());
+			if(QueryJson.getOpenID().equals(null)||QueryJson.getOpenID().equals("")){
+				return reply;
+			}
 			//创建卖品订单时需要保存送货信息
 			if(reply.Status.equals("Success")){
 				Goodsorders orderbase=_goodsOrderService.getByLocalOrderCode(reply.getOrder().getOrderCode());

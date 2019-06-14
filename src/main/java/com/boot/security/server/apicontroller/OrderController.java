@@ -1,10 +1,6 @@
 package com.boot.security.server.apicontroller;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -13,20 +9,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.TreeMap;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,14 +29,12 @@ import org.w3c.dom.Document;
 
 import com.boot.security.server.api.core.LockSeatReply;
 import com.boot.security.server.api.core.NetSaleSvcCore;
-import com.boot.security.server.api.core.QueryOrderReply;
 import com.boot.security.server.api.core.QueryPrintReply;
 import com.boot.security.server.api.core.QueryTicketReply;
 import com.boot.security.server.api.core.RefundTicketReply;
 import com.boot.security.server.api.core.ReleaseSeatReply;
 import com.boot.security.server.api.core.SubmitMixOrderReply;
 import com.boot.security.server.api.core.SubmitOrderReply;
-import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.NetSaleQueryJson;
 import com.boot.security.server.apicontroller.reply.PrePayMixOrderQueryJson;
 import com.boot.security.server.apicontroller.reply.PrePayMixOrderQueryJson.PrePayMixOrderQueryJsonGoods;
@@ -54,7 +42,6 @@ import com.boot.security.server.apicontroller.reply.PrePayMixOrderQueryJson.PreP
 import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson;
 import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson.PrePayOrderQueryJsonSeat;
 import com.boot.security.server.apicontroller.reply.PrePayParametersReply;
-import com.boot.security.server.apicontroller.reply.PrePayParametersReply.PrePayParametersReplyParameter;
 import com.boot.security.server.apicontroller.reply.QueryTicketOrderReply.QueryTicketOrderReplyOrder;
 import com.boot.security.server.apicontroller.reply.QueryLocalOrderReply;
 import com.boot.security.server.apicontroller.reply.QueryLocalOrderReply.QueryLocalOrder;
@@ -69,27 +56,21 @@ import com.boot.security.server.apicontroller.reply.QueryUserOrdersReply.UserOrd
 import com.boot.security.server.apicontroller.reply.QueryUserOrdersReply.UserOrders.OrderList;
 import com.boot.security.server.apicontroller.reply.RefundPaymentReply.RefundPaymentReplyOrder;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
-import com.boot.security.server.apicontroller.reply.PrePayGoodsOrderQueryJson.PrePayGoodsOrderQueryJsonGoods;
 import com.boot.security.server.model.Adminorderview;
 import com.boot.security.server.model.Cinema;
-import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Cinemapaymentsettings;
-import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
-import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Orderseatdetails;
-import com.boot.security.server.model.Priceplan;
 import com.boot.security.server.model.Screeninfo;
-import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
@@ -107,12 +88,8 @@ import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.CouponsUtil;
-import com.boot.security.server.utils.HttpHelper;
-import com.boot.security.server.utils.MD5Util;
-import com.boot.security.server.utils.StrUtil;
 import com.boot.security.server.utils.WxPayUtil;
 import com.boot.security.server.utils.XmlHelper;
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 
@@ -161,6 +138,9 @@ public class OrderController {
 	public LockSeatReply LockSeat(@RequestBody NetSaleQueryJson QueryJson){
 		try {
 			LockSeatReply lockSeatReply =NetSaleSvcCore.getInstance().LockSeat(QueryJson.getUserName(),QueryJson.getPassword(),QueryJson.getQueryXml());
+			if(QueryJson.getOpenID().equals(null)||QueryJson.getOpenID().equals("")){
+				return lockSeatReply;
+			}
 			//锁座时新增订单需要传入OpenID,之后修改订单就不需要再操作
 			if(lockSeatReply.Status.equals("Success")){
 				Orders orderbase=_orderService.getOrderBaseByLockOrderCode(lockSeatReply.getOrder().getOrderCode());

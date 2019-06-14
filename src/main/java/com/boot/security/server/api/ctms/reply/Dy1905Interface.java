@@ -1057,6 +1057,7 @@ public class Dy1905Interface implements ICTMSInterface {
 					+ sessioninfo.getLowestPrice() + CardNo + CardPassword + UseMonthCard + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
 			param.put("pVerifyInfo", pVerifyInfo);
 			String SellTicketCustomMemberResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/SellTicketCustom/member",param,"UTF-8");
+			System.out.println(SellTicketCustomMemberResult);
 			Gson gson = new Gson();
 			Dy1905SellTicketCustomMemberResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(SellTicketCustomMemberResult,"SellTicketResult"), Dy1905SellTicketCustomMemberResult.class);
 			if(Dy1905Reply.getSellTicketResult().getResultCode().equals("0")){
@@ -1735,7 +1736,7 @@ public class Dy1905Interface implements ICTMSInterface {
 			return reply;
 		}
 		public static void main(String[] args) {
-			String pVerifyInfo = MD5Util.MD5Encode("1000000035" + "1559986441248nkyngxk" + "66a16ca61f729e0c846983f8c0f4fd53","UTF-8").toLowerCase();
+			String pVerifyInfo = MD5Util.MD5Encode("1000000035" + "1560429019270yjixwcf" + "66a16ca61f729e0c846983f8c0f4fd53","UTF-8").toLowerCase();
 			System.out.println(pVerifyInfo);
 		}
 }

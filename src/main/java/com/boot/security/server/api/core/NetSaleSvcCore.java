@@ -1318,8 +1318,6 @@ public class NetSaleSvcCore {
 			String CardPassword, String LevelCode, String SessionCode, String SessionTime, String FilmCode,
 			String ScreenType, String ListingPrice, String LowestPrice)
     {
-		System.out.println("中间件接收信息"+"用户名"+Username+"密码"+Password+"影院编码"+CinemaCode+"卡号"+CardNo+"卡密码"+CardPassword+"等级编码"+
-				LevelCode+"影厅类别"+ScreenType+"锁座订单号");
         QueryDiscountReply queryDiscountReply = new QueryDiscountReply();
         if (!ReplyExtension.RequestInfoGuard(queryDiscountReply,Username,Password,CinemaCode,TicketCount,CardNo,CardPassword,LevelCode,SessionCode,SessionTime,FilmCode,
 ScreenType,ListingPrice,LowestPrice))
@@ -1348,7 +1346,6 @@ ScreenType,ListingPrice,LowestPrice))
             return queryDiscountReply;
         }
         //验证排期是否存在
-        System.out.println("验证排期");
         Sessioninfo sessionInfo = _sessionInfoService.getByCinemaCodeAndSessionCodeAndUserId(CinemaCode, SessionCode, UserInfo.getId());
         if (sessionInfo == null)
         {

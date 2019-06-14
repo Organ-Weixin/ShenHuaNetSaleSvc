@@ -57,4 +57,16 @@ public class MemberCardLevelServiceImpl implements MemberCardLevelService {
 		return membercardlevelDao.getCanUseByCinemaCode(cinemacode);
 	}
 
+	@Override
+	public int updateIsOnlineOpenCard(Integer isonlineopencard, String cinemacode, String levelcode) {
+		// TODO Auto-generated method stub
+		return membercardlevelDao.updateIsOnlineOpenCard(isonlineopencard, cinemacode, levelcode);
+	}
+
+	@Override
+	public int initIsOnlineOpenCard(String cinemacode) {
+		// TODO Auto-generated method stub
+		return membercardlevelDao.initIsOnlineOpenCard(cinemacode);
+	}
+
 }

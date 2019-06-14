@@ -19,5 +19,9 @@ public interface MemberCardLevelService {
 	int changeStatus(Integer status,Long id);
 	
 	List<Membercardlevel> getCanUseByCinemaCode(String cinemacode);
+	
+    int updateIsOnlineOpenCard(Integer isonlineopencard,String cinemacode,String levelcode);
+    
+    int initIsOnlineOpenCard(String cinemacode);
 
 }

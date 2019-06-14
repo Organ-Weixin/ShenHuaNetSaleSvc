@@ -54,6 +54,7 @@
 									<th>工本费</th>
 									<th>会费</th>
 									<th>状态</th>
+									<th>是否线上开卡</th>
 									<th>操作</th>
                                 </tr>
                             </thead>
@@ -120,6 +121,19 @@ function init(){
 					"render": function (data, type, row) {
                     	return enabled[data];
                   	}						
+				},
+				{"data" : "isOnlineOpenCard", "defaultContent" : "","orderable":false,
+					"render":function(data, type, row){
+						var cinemaCode = row['cinemaCode'];
+						var levelCode = row['levelCode'];
+						var isOnlineOpenCard = "";
+						if(data == 1){
+							isOnlineOpenCard = "<button value='0' code='"+levelCode+"' title='"+cinemaCode+"' class ='button'>已开启</button>";
+						}else{
+							isOnlineOpenCard = "<button value='1' code='"+levelCode+"' title='"+cinemaCode+"' class ='button'>未开启</button>";
+						}
+						return isOnlineOpenCard;
+					}					
 				},
 				{ 
 								"data": "", 
@@ -203,6 +217,20 @@ $("#searchBt").click(function(){
 });
 $("#StatusSelect").blur(function(){
 	example.ajax.reload();
+});
+$("#tbody").on('click','.button',function(){
+	 $.ajax({
+		url:'/membercardlevels/updateIsOnlineOpenCard',
+		data:{
+			"isonlineopencard":$(this).val(),
+			"cinemacode":$(this).attr('title'),
+			"levelcode":$(this).attr('code')
+		},
+		type:'post',
+		success:function(data){
+			window.location.href="membercardlevelList.html";
+		}
+	});
 });
 init();
 

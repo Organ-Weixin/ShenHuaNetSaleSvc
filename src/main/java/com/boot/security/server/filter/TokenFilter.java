@@ -44,7 +44,6 @@ public class TokenFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		String token = getToken(request);
 		if (request.getServletPath().length()>4 && request.getServletPath().substring(0,4).equals("/Api")) {
-			System.out.println("11111111");	
 			LoginUser loginUser = new LoginUser();
 			loginUser.setToken("14ce830b-1a3e-403d-8872-c7825558b416");
 			loginUser.setLoginTime(1555925234175L);

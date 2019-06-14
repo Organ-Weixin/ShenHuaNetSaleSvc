@@ -8,6 +8,7 @@ public class UserInfo {
 	private String NickName;
 	private String Sex;
 	private String Birthday;
+	private String MobilePhone;
 	public String getUserName() {
 		return UserName;
 	}
@@ -49,6 +50,12 @@ public class UserInfo {
 	}
 	public void setBirthday(String birthday) {
 		Birthday = birthday;
+	}
+	public String getMobilePhone() {
+		return MobilePhone;
+	}
+	public void setMobilePhone(String mobilePhone) {
+		MobilePhone = mobilePhone;
 	}
 	
 }

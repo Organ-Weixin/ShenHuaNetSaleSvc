@@ -40,6 +40,7 @@ public class QueryMemberCardLevelReply extends BaseReply{
 			private Double GivenAmount;
 			private String EffectiveDays;
 			private String RuleDescription;
+			private Integer IsOnlineOpenCard;
 			private Integer Status;
 			public String getLevelCode() {
 				return levelCode;
@@ -112,6 +113,12 @@ public class QueryMemberCardLevelReply extends BaseReply{
 			}
 			public void setRuleDescription(String ruleDescription) {
 				RuleDescription = ruleDescription;
+			}
+			public Integer getIsOnlineOpenCard() {
+				return IsOnlineOpenCard;
+			}
+			public void setIsOnlineOpenCard(Integer isOnlineOpenCard) {
+				IsOnlineOpenCard = isOnlineOpenCard;
 			}
 			public Integer getStatus() {
 				return Status;

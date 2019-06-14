@@ -851,6 +851,9 @@ public class AppUserController {
 		if(ticketuser.getBirthday()!=null){
 			data.setBirthday(new SimpleDateFormat("yyyy-MM-dd").format(ticketuser.getBirthday()));
 		}
+		if(ticketuser.getMobilePhone()!=null){
+			data.setMobilePhone(ticketuser.getMobilePhone());
+		}
 		data.setHeadUrl(ticketuser.getHeadImgUrl());
 		data.setNickName(ticketuser.getNickName());
 		data.setSex(ticketuser.getSex());
@@ -891,6 +894,9 @@ public class AppUserController {
 		}
 		if(!userinfo.getSex().equals(null)&&!userinfo.getSex().equals("")){
 			ticketuser.setSex(Integer.valueOf(userinfo.getSex()));
+		}
+		if(!userinfo.getMobilePhone().equals(null)&&!userinfo.getMobilePhone().equals("")){
+			ticketuser.setMobilePhone(userinfo.getMobilePhone());
 		}
 		int result = _ticketusersService.update(ticketuser);
 		if(result>0){

@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.mail.Folder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -684,7 +686,15 @@ public class CxInterface implements ICTMSInterface {
 				//处理rule
 				CxQueryDiscountActivityResultRule rule=new Gson().fromJson(cxReply.getQueryDiscountActivityResult().getRule(),CxQueryDiscountActivityResultRule.class);
 				if(rule!=null&&rule.getResults().size()>0){
-					reply.setPrice(rule.getResults().get(0).getPrice());
+					if(rule.getResults().get(0).getPrice()>0){
+						reply.setPrice(rule.getResults().get(0).getPrice());
+					}else{
+						Sessioninfo sessioninfo = _sessioninfoService.getBySessionCode(userCinema.getUserId(), userCinema.getCinemaCode(), SessionCode);
+						if(sessioninfo!=null){
+							System.out.println("排期价格"+sessioninfo.getStandardPrice());
+							reply.setPrice(sessioninfo.getStandardPrice().floatValue());
+						}
+					}
 					reply.setCinemaPayAmount(rule.getResults().get(0).getCinemaPayAmount());
 				}else
 				{

@@ -34,7 +34,7 @@ public interface MembercardlevelDao {
     int update(Membercardlevel membercardlevel);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into membercardlevel(CinemaCode, LevelCode, LevelName, CardCostFee, MemberFee, PictureUrl, Status) values(#{CinemaCode}, #{LevelCode}, #{LevelName}, #{CardCostFee}, #{MemberFee}, #{PictureUrl}, #{Status})")
+    @Insert("insert into membercardlevel(CinemaCode, LevelCode, LevelName, CardCostFee, MemberFee, PictureUrl, IsOnlineOpenCard, Status) values(#{CinemaCode}, #{LevelCode}, #{LevelName}, #{CardCostFee}, #{MemberFee}, #{PictureUrl}, #{IsOnlineOpenCard}, #{Status})")
     int save(Membercardlevel membercardlevel);
     
     int count(@Param("params") Map<String, Object> params);
@@ -46,4 +46,11 @@ public interface MembercardlevelDao {
     
     @Select("select * from membercardlevel t where t.cinemacode = #{cinemacode} and t.status =1")
     List<Membercardlevel> getCanUseByCinemaCode(String cinemacode);
+    
+    @Update("update membercardlevel set isonlineopencard = #{isonlineopencard} where cinemacode = #{cinemacode} and levelcode = #{levelcode}")
+    int updateIsOnlineOpenCard(@Param("isonlineopencard")Integer isonlineopencard,@Param("cinemacode")String cinemacode,@Param("levelcode")String levelcode);
+
+    @Update("update membercardlevel set isonlineopencard = 0 where cinemacode = #{cinemacode}")
+    int initIsOnlineOpenCard(String cinemacode);
+    
 }

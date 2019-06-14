@@ -37,8 +37,6 @@ public class MembercardcreditruleController {
     @PostMapping
     @ApiOperation(value = "保存")
     public Membercardcreditrule save(@RequestBody Membercardcreditrule membercardcreditrule) {
-    	String levelCodes[] = membercardcreditrule.getLevelCode().toString().split(",");
-    	String levelNames[] = membercardcreditrule.getLevelName().toString().split(",");
     	//充值规则编码--10位时间戳加5位随机字母
     	String ruleCode = String.valueOf(new Date().getTime()/1000);
     	for (int i = 0; i < 5; i++) {
@@ -58,8 +56,6 @@ public class MembercardcreditruleController {
     	}
     	membercardcreditrule.setRuleCode(ruleCode);
     	membercardcreditrule.setCreateTime(new Date());
-    	//membercardcreditrule.setLevelCode(levelCodes[i]);
-    	//membercardcreditrule.setLevelName(levelNames[i]);
     	membercardcreditruleDao.save(membercardcreditrule);
 
         return membercardcreditrule;

@@ -11,6 +11,7 @@ public class Membercardlevel extends BaseEntity<Long> {
 	private Double CardCostFee;
 	private Double MemberFee;
 	private String PictureUrl;
+	private Integer IsOnlineOpenCard;
 	private Integer Status;
 
 	public Long getId() {
@@ -54,6 +55,12 @@ public class Membercardlevel extends BaseEntity<Long> {
 	}
 	public void setPictureUrl(String pictureUrl) {
 		PictureUrl = pictureUrl;
+	}
+	public Integer getIsOnlineOpenCard() {
+		return IsOnlineOpenCard;
+	}
+	public void setIsOnlineOpenCard(Integer isOnlineOpenCard) {
+		IsOnlineOpenCard = isOnlineOpenCard;
 	}
 	public Integer getStatus() {
 		return Status;

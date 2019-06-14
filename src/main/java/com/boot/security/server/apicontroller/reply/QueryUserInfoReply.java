@@ -15,6 +15,7 @@ public class QueryUserInfoReply extends BaseReply{
 		private String NickName;
 		private Integer Sex;
 		private String Birthday;
+		private String MobilePhone;
 		public String getHeadUrl() {
 			return HeadUrl;
 		}
@@ -38,6 +39,12 @@ public class QueryUserInfoReply extends BaseReply{
 		}
 		public void setBirthday(String birthday) {
 			Birthday = birthday;
+		}
+		public String getMobilePhone() {
+			return MobilePhone;
+		}
+		public void setMobilePhone(String mobilePhone) {
+			MobilePhone = mobilePhone;
 		}
 		
 	}

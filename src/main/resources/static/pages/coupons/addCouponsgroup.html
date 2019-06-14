@@ -519,11 +519,13 @@
 			//领券限制
 			LimitNumCheck();
 			//减免金额
-			if($("input:radio[name='reductionTypeRadio']:checked").length<=0){
-				layer.msg("请选择减免金额类型！");
-			}else{
-				if($("input:radio[name='reductionTypeRadio']:checked").length>0&&($("#reductionPrice").val()==null||$("#reductionPrice").val()=="")){
-					layer.msg("请输入减免金额！");
+			if(getUrlParam("CouponsType")==1){
+				if($("input:radio[name='reductionTypeRadio']:checked").length<=0){
+					layer.msg("请选择减免金额类型！");
+				}else{
+					if($("input:radio[name='reductionTypeRadio']:checked").length>0&&($("#reductionPrice").val()==null||$("#reductionPrice").val()=="")){
+						layer.msg("请输入减免金额！");
+					}
 				}
 			}
 			//影片选择
