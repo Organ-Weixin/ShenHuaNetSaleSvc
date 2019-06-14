@@ -15,6 +15,7 @@ public class Roomgiftsend {
 	private Integer sendNumber;
 	private String openid;
 	private Date sendTime;
+	private String timestamp;
 
 	public Long getId() {
 		return id;
@@ -64,5 +65,13 @@ public class Roomgiftsend {
 	public void setSendTime(Date sendTime) {
 		this.sendTime = sendTime;
 	}
+	public String getTimestamp() {
+		return timestamp;
+	}
+	public void setTimestamp(String timestamp) {
+		this.timestamp = timestamp;
+	}
+	
+	
 
 }

@@ -1,6 +1,7 @@
 package com.boot.security.server.websocket;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -8,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -17,6 +20,7 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +31,14 @@ import com.boot.security.server.apicontroller.reply.QueryScreenRoomReply.ScreenR
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.Couponsgroup;
+import com.boot.security.server.model.DXChatMessage;
+import com.boot.security.server.model.LockerPool;
 import com.boot.security.server.model.Roomgift;
 import com.boot.security.server.model.Roomgiftsend;
 import com.boot.security.server.model.Roomgiftuser;
+import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Ticketusers;
+import com.boot.security.server.service.CinemaService;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
@@ -38,291 +46,460 @@ import com.boot.security.server.service.impl.RoomgiftServiceImpl;
 import com.boot.security.server.service.impl.RoomgiftsendServiceImpl;
 import com.boot.security.server.service.impl.RoomgiftuserServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
+
+import net.sf.json.JSONObject;
+
 import com.boot.security.server.apicontroller.reply.RoomGiftReply;
 import com.boot.security.server.apicontroller.reply.RoomGiftReply.RoomGiftResult;
 
 @Component
-@ServerEndpoint(value="/webSocket/chat/{cinemaCode}/{roomCode}/{giftCode}/{giftType}/{actionType}/{openid}")
+@ServerEndpoint(value="/webSocket/chat/{roll}/{roomName}/{phoneOrOpenid}")
 public class ChatRoomServer {
 
-	private static final Map<String, Set<Session>> rooms = new ConcurrentHashMap<String, Set<Session>>();
-	private static final Map<String, Session> OpenidSession = new ConcurrentHashMap<String, Session>();  //用于定点发送消息
-	private final Logger log = LoggerFactory.getLogger(getClass());
-	private static String ADD_ROOM_LOCK = "ADD_ROOM_LOCK";
-	
-	@Autowired
-	private CinemaServiceImpl _cinemaService;
-	@Autowired
-	private TicketusersServiceImpl ticketusersService;
-	@Autowired
-	private RoomgiftServiceImpl roomgiftService;
-	@Autowired
-	private RoomgiftsendServiceImpl roomgiftsendService;
-	@Autowired
-	private RoomgiftuserServiceImpl roomgiftuserService;
-	@Autowired
-    private CouponsServiceImpl couponsService;
-	@Autowired
-	private CouponsgroupServiceImpl couponsgroupService;
-	
-	@OnOpen
-    public void connect(@PathParam("roomCode") String roomCode,@PathParam("openid") String openid, Session session){
-		BaseReply reply = new BaseReply();
-		if (!rooms.containsKey(roomCode)) { //房间暂未开启
-			reply.ErrorMessage = "房间暂未开启";
-			return;
-		} else {
-			synchronized (ADD_ROOM_LOCK){
-                //直接添加用户到相应的房间
-                rooms.get(roomCode).add(session);
-                if(OpenidSession.containsKey(openid+roomCode)){
-                    
-                	OpenidSession.put(openid+roomCode,session);
-                }else{
-                	OpenidSession.put(openid+roomCode,session);
-                }
+	private static final Map<String, Set<Session>> rooms = new ConcurrentHashMap();
+    private static final Map<String, Session> phoneOrOpenidSession = new ConcurrentHashMap();  //用于定点发送消息
+    private final Logger log = LoggerFactory.getLogger(getClass());
+//    private Roomgift roomGift;
+//    private DXChatRoomGiftSendRecords giftSendRecords;
+    public static final Lock addRoomLock = new ReentrantLock();
+    @Autowired
+    private RoomgiftServiceImpl roomGiftService;
+    @Autowired
+    private RoomgiftsendServiceImpl roomgiftsendService;
+    @Autowired
+    private CinemaService cinemaService;
+    @Autowired
+    private CouponsgroupServiceImpl CouponsgroupService;
+    @Autowired
+    private CouponsServiceImpl CouponsService;
+    @Autowired
+    private RoomgiftuserServiceImpl roomgiftuserService;
+
+
+    @OnOpen
+    public void connect(@PathParam("roll") String roll, @PathParam("roomName") String roomName,
+                        @PathParam("phoneOrOpenid") String phoneOrOpenid, Session session) throws Exception {
+        // 将session按照房间名来存储，将各个房间的用户隔离
+    	DXChatMessage chatMessage = new DXChatMessage();
+        if (!rooms.containsKey(roomName)) { //房间暂未开启
+            chatMessage.setRole(roll);
+            chatMessage.setHeader("");
+            chatMessage.setNickname("");
+            chatMessage.setMessageType("-2");
+            chatMessage.setContent("");
+            chatMessage.setPrizeId("");
+            chatMessage.setPhoneOrOpenid("");
+            log.info("房间已结束");
+            session.getBasicRemote().sendText(chatMessage.toString());
+            return;
+        } else {
+            // 判断是否处于电影开始前20分钟和开始后40分钟之间
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+            String infoStr[] = roomName.split("_");
+            String startTimeStr = infoStr[3];
+            String endTimeStr = infoStr[4];
+            Date sTime = sdf.parse(startTimeStr);
+            Date eTime = sdf.parse(endTimeStr);
+            Date now = new Date();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(sTime);
+            calendar.add(Calendar.MINUTE,-20);
+            Date beginTime = calendar.getTime();
+            Calendar calendar2 = Calendar.getInstance();
+            calendar2.setTime(eTime);
+            calendar2.add(Calendar.MINUTE,20);
+            Date endTime = calendar2.getTime();//房间结束时间
+            if(now.getTime()<beginTime.getTime()){ //未开启
+                chatMessage.setRole(roll);
+                chatMessage.setHeader("");
+                chatMessage.setNickname("");
+                chatMessage.setMessageType("-1");
+                chatMessage.setContent("");
+                chatMessage.setPrizeId("");
+                log.info("房间未开启");
+                session.getBasicRemote().sendText(chatMessage.toString());
+            }else if(now.getTime()>endTime.getTime()){
+                chatMessage.setRole(roll);
+                chatMessage.setHeader("");
+                chatMessage.setNickname("");
+                chatMessage.setMessageType("-2");
+                chatMessage.setContent("");
+                chatMessage.setPrizeId("");
+                log.info("房间已结束");
+                session.getBasicRemote().sendText(chatMessage.toString());
+            }else{
+				  try {
+					  addRoomLock.lock();
+	                    //直接添加用户到相应的房间
+	                    rooms.get(roomName).add(session);
+	                    if(phoneOrOpenidSession.containsKey(phoneOrOpenid+roomName)){
+	                        chatMessage.setRole(roll);
+	                        chatMessage.setHeader("");
+	                        chatMessage.setNickname("");
+	                        chatMessage.setMessageType("0");
+	                        chatMessage.setContent("");
+	                        chatMessage.setPrizeId("");
+	                        sendMessage(phoneOrOpenid+roomName,chatMessage.toString());
+	                        phoneOrOpenidSession.put(phoneOrOpenid+roomName,session);
+	                    }else{
+	                        phoneOrOpenidSession.put(phoneOrOpenid+roomName,session);
+	                    }
+	                    log.info(phoneOrOpenid+"加入了"+roomName+"号房间"+";size:"+phoneOrOpenidSession.size());
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					addRoomLock.unlock();
+				}	
             }
-			System.out.println(openid+"加入了"+roomCode+"号房间"+";size:"+OpenidSession.size());
-			
-			reply.SetSuccessReply();
-			return;
-		}
-	}
-	
-	@OnClose
-    public void disConnect(@PathParam("roomCode") String roomCode,@PathParam("openid") String openid, Session session) {
-        if(rooms.containsKey(roomCode) && rooms.get(roomCode).contains(session)){
-            rooms.get(roomCode).remove(session);
-            System.out.println(openid+"退出了"+roomCode+"号房间");
         }
     }
-	
-	@OnMessage
-    public void receiveMsg(@PathParam("cinemaCode") String cinemaCode,@PathParam("roomCode") String roomCode,@PathParam("giftCode") String giftCode,
-    		@PathParam("giftType") String giftType,	@PathParam("actionType") String actionType,@PathParam("openid") String openid,String msg, Session session) throws Exception {
-		RoomGiftReply reply = new RoomGiftReply();
-		//验证影院是否存在且可访问
-		Cinema cinema=_cinemaService.getByCinemaCode(cinemaCode);
-		if(cinema == null){
-			reply.SetCinemaInvalidReply();
-			return;
-		}
-		//验证用户OpenId
-		Ticketusers ticketuser = ticketusersService.getByopenids(openid);
-		if(ticketuser == null){
-			reply.SetOpenIDNotExistReply();
-			return;
-		}
-		
-		if("1".equals(actionType)){	//发放奖品
-			if("2".equals(ticketuser.getRoll())){
-				//验证发放次数是否超出上限
-				List<Roomgiftsend> sendlist = roomgiftsendService.getByRoomCode(roomCode, giftCode);
-				int sendNum = sendlist.size()+1;	//发送次数
-				int sendNumber = 0;					//每次发放数量
-				String giftName=null;
-				String image=null;
-				if("1".equals(giftType)) {	//实物
-					Roomgift roomgift = roomgiftService.getByGiftCode(giftCode);
-					if(roomgift == null){
-						reply.SetGiftInvalidReply();
-						return;
-					}
-					if(sendNum > roomgift.getGroupNumber()){	//超出最大发放组数
-						reply.SetOverrunGiftReply();
-						return;
-					}
-					giftName = roomgift.getGiftName();
-					sendNumber = roomgift.getSendNumber();
-					image = roomgift.getImage();
-					
-				} else if("2".equals(giftType)) {	//优惠劵
-					Couponsgroup coupon = couponsgroupService.getByGroupCode(giftCode);
-					if(coupon == null){
-						reply.SetCouponsNotExistOrUsedReply();
-						return;
-					}
-					if(sendNum > coupon.getSendGroupNumber()){	//超出最大发放组数
-						reply.SetOverrunGiftReply();
-						return;
-					}
-					//更新优惠劵-已发放数量   
-					int suedNumber = coupon.getIssuedNumber()+coupon.getSendNumber();
-					if(suedNumber > coupon.getCouponsNumber()){	//	优惠劵库存不足
-						reply.SetCouponsInadequateReply();
-						return;
-					}
-					coupon.setIssuedNumber(suedNumber);
-					int num = couponsgroupService.update(coupon);
-					if(num == 0){
-						reply.SetCouponsSendFailureReply();
-						return;
-					}
-					giftName = coupon.getCouponsName();
-					sendNumber = coupon.getSendNumber();
-				}
-				
-				//存入到发放奖品记录表
-				Roomgiftsend newgift = new Roomgiftsend();
-				newgift.setRoomCode(roomCode);
-				newgift.setGiftCode(giftCode);
-				newgift.setGiftName(giftName);
-				newgift.setGiftType(giftType);
-				newgift.setSendNumber(sendNumber);
-				newgift.setOpenid(openid);
-				newgift.setSendTime(new Date());
-				roomgiftsendService.save(newgift);
-				
-				//返回
-				RoomGiftResult gift = new RoomGiftResult();
-				gift.setOpenID(openid);
-				gift.setGiftCode(giftCode);
-				gift.setGiftName(giftName);
-				gift.setGiftType(giftType);
-				gift.setImage(image);
-				reply.setData(gift);
-				reply.SetSuccessReply();
-				return;
-			} else {
-				reply.ErrorMessage = "普通用户不能发送奖品";
-				return;
-			}
-		} else if("2".equals(actionType)){	//领取奖品
-			synchronized (this){
-				if("1".equals(ticketuser.getRoll())){
-					List<Roomgiftuser> list = roomgiftuserService.getByRoomGift(roomCode, giftCode);//用户领取记录
-					String giftName=null;
-					String image=null;
-					Date startDate = new Date();
-					Date expireDate=new Date();
-					if("1".equals(giftType)) {	//实物
-						Roomgift roomgift = roomgiftService.getByGiftCode(giftCode);
-						if(list != null && list.size() >= roomgift.getSendNumber()){
-							reply.ErrorMessage = "奖品被抢光了";
-							return;
-						}
-						giftName = roomgift.getGiftName();
-						image = roomgift.getImage();
-						expireDate = new Date(expireDate.getTime() + 1000*60*60*2);
-						
-					} else if("2".equals(giftType)) {	//优惠劵
-						Couponsgroup coupon = couponsgroupService.getByGroupCode(giftCode);
-						if(list != null && list.size() >= coupon.getSendNumber()){
-							reply.ErrorMessage = "奖品被抢光了";
-							return;
-						}
-						startDate = coupon.getEffectiveDate();
-						expireDate = coupon.getExpireDate();
-						if(coupon.getValidityType()==2){
-							Calendar c = Calendar.getInstance();
-							c.setTime(startDate);
-							c.add(Calendar.DAY_OF_MONTH, coupon.getEffectiveDays());
-							startDate = c.getTime();
-							
-							c.setTime(expireDate);
-							c.add(Calendar.DAY_OF_MONTH, coupon.getValidityDays());
-							expireDate = c.getTime();
-			    		}
-						giftName = coupon.getCouponsName();
-						List<Coupons> couponslist = couponsService.getCanUseByGroupCode(giftCode);
-						Coupons cou = couponslist.get(0);
-						cou.setEffectiveDate(startDate);
-						cou.setExpireDate(expireDate);
-						cou.setStatus(1);
-						cou.setOpenID(openid);
-						cou.setReceiveDate(new Date());
-						couponsService.update(cou);	//更新到优惠劵记录表
-						
-					}
-					//存数据库-用户领取奖品表
-					Roomgiftuser roomgiftuser = new Roomgiftuser();
-					roomgiftuser.setOpenID(openid);
-					roomgiftuser.setRoomCode(roomCode);
-					roomgiftuser.setGiftCode(giftCode);
-					roomgiftuser.setGiftName(giftName);
-					roomgiftuser.setGiftType(giftType);
-					roomgiftuser.setImage(image);
-					roomgiftuser.setGetDate(new Date());
-					roomgiftuser.setStartDate(startDate);
-					roomgiftuser.setExpireDate(expireDate);
-					roomgiftuserService.save(roomgiftuser);
-					
-					//返回
-					RoomGiftResult data = new RoomGiftResult();
-					data.setOpenID(roomgiftuser.getOpenID());
-					data.setGiftCode(roomgiftuser.getGiftCode());
-					data.setGiftName(roomgiftuser.getGiftName());
-					data.setImage(roomgiftuser.getImage());
-					data.setGetDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(roomgiftuser.getGetDate()));
-					if(roomgiftuser.getStartDate() != null){
-						data.setStartDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(roomgiftuser.getStartDate()));
-					}
-					if(roomgiftuser.getExpireDate() != null){
-						data.setExpireDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(roomgiftuser.getExpireDate()));	
-					}
-					reply.setData(data);
-					reply.SetSuccessReply();
-					return;
-					
-				} else {
-					reply.ErrorMessage = "管理员不能领取奖品";
-					return;
-				}
-			}
-		} else if("3".equals(actionType)){	//发消息时，giftcode传的是消息内容
-			sendMessagetoRoom(roomCode,giftCode);
-			reply.SetSuccessReply();
-			return;
-		}else {
-			reply.ErrorMessage = "操作类型actionType 传值不对";
-			return ;
-		}
-		
-		
-	}
-	
-	@OnError
+
+    @OnClose
+    public void disConnect(@PathParam("roomName") String roomName,@PathParam("phoneOrOpenid") String phoneOrOpenid, Session session) {
+        if(rooms.containsKey(roomName)&&rooms.get(roomName).contains(session)){
+            rooms.get(roomName).remove(session);
+            log.info(phoneOrOpenid+"退出了"+roomName+"号房间");
+        }
+    }
+
+
+    @OnMessage
+    public void receiveMsg(@PathParam("roll") String roll,@PathParam("roomName") String roomName,@PathParam("phoneOrOpenid") String phoneOrOpenid, String msg, Session session) throws Exception {
+    	DXChatMessage chatMessage = new DXChatMessage();
+    	Map<String,String> map = JSONObject.fromObject(msg);
+        String header = map.get("header");
+        String nickName = map.get("nickName");
+        String messageType = map.get("messageType");
+        String messageContent = map.get("messageContent");
+//        messageContent= WordFilterUtil.filterText(messageContent, '*').getFilteredContent();	//过滤敏感词
+        String prizeId = map.get("prizeId");
+        String[] prizeInfo = prizeId.split("_");
+        if(messageType.equals("2")){ //发送奖品
+            if(roll.equals("2")){	//验证是否是管理员
+                //记录奖品发送数量
+                if(messageContent.equals("1")){	//发放实物
+                	Roomgift roomGift = roomGiftService.getById(Long.parseLong(prizeInfo[0]));
+                    List<Roomgiftsend> list = roomgiftsendService.getByRoomCode("1",prizeInfo[0],roomName);//查出聊天室发放的该礼物数量
+                    if(list!=null&&list.size()>= roomGift.getGroupNumber()){
+                        chatMessage.setRole(roll);
+                        chatMessage.setHeader(header);
+                        chatMessage.setNickname(nickName);
+                        chatMessage.setMessageType("-11");//表示当前聊天室已经超过规定组数
+                        chatMessage.setContent("");
+                        chatMessage.setPrizeId("");
+                        chatMessage.setPhoneOrOpenid("");
+                        session.getBasicRemote().sendText(chatMessage.toString());
+                        return;
+                    }
+                    Roomgiftsend giftSendRecords = new Roomgiftsend();
+                    giftSendRecords.setGiftName(roomGift.getGiftName()); //奖品名
+                    giftSendRecords.setSendNumber(roomGift.getSendNumber()); //发送数量
+                    giftSendRecords.setGiftCode(prizeInfo[0]);
+                    giftSendRecords.setRoomCode(roomName);
+                    giftSendRecords.setOpenid(phoneOrOpenid);
+                    giftSendRecords.setTimestamp(prizeInfo[1]);
+                    giftSendRecords.setGiftType("1");
+                    roomgiftsendService.save(giftSendRecords);
+                }else if(messageContent.equals("2")){
+                    Couponsgroup couponsgroup=CouponsgroupService.getByGroupCode(prizeInfo[0]);
+                	List<Coupons> list=CouponsService.getByGroupCode(prizeInfo[0]);
+                    if(list!=null&&list.size()>=(couponsgroup.getCouponsNumber()-couponsgroup.getIssuedNumber())){
+                        chatMessage.setHeader(header);
+                        chatMessage.setRole(roll);
+                        chatMessage.setNickname(nickName);
+                        chatMessage.setMessageType("-11");//表示当前聊天室已经超过可用优惠券数
+                        chatMessage.setContent("");
+                        chatMessage.setPrizeId("");
+                        chatMessage.setPhoneOrOpenid("");
+                        log.info("达到最大数量限制");
+                        session.getBasicRemote().sendText(chatMessage.toString());
+                        return;
+                    }
+                    couponsgroup.setSendNumber(couponsgroup.getSendNumber());
+                    couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()==null?1:couponsgroup.getIssuedNumber()+1);
+                    CouponsgroupService.update(couponsgroup);
+                    //生成优惠券
+                    /*Coupons coupons =new Coupons();
+                    coupons.setCouponsCode(CouponsCode);*/
+                    
+                    Roomgiftsend giftSendRecords = new Roomgiftsend();
+                    giftSendRecords.setGiftName(couponsgroup.getCouponsName()); //奖品名
+                    giftSendRecords.setSendNumber(couponsgroup.getSendNumber()); //发送数量       //少了一个券包，少了一层
+                    //giftSendRecords.setMemo(couponsgroup.getCouponsName());
+                    giftSendRecords.setGiftCode(prizeInfo[0]);
+                    giftSendRecords.setRoomCode(roomName);
+                    giftSendRecords.setOpenid(phoneOrOpenid);
+                    giftSendRecords.setTimestamp(prizeInfo[1]);
+                    giftSendRecords.setGiftType("2");
+                    roomgiftsendService.save(giftSendRecords);
+                }
+            }else{
+                log.info("普通用户不能发送奖品");
+                return;
+            }
+        }else if(messageType.equals("21")){ //领取奖品
+            Integer type = Integer.parseInt(messageContent);//领取奖品类型 ，1是实物，2是优惠券
+            String cinemaCode = roomName.substring(0,roomName.indexOf("_"));
+//            Cinema cinema = cinemaService.getByCinemaCode(cinemaCode);
+//            if(cinema!=null){
+//                if(dxCinema.getMaxGetNumber()!=null&&cinema.getMaxGetNumber()>0){
+//                    List<DXChatUserGift> getList = dxChatUserGiftService.getMonthNumber(phoneOrOpenid,Long.parseLong(prizeInfo[0]),type);
+//                    if(getList!=null&&getList.size()>=cinema.getMaxGetNumber()){
+//                        chatMessage.setRole(roll);
+//                        chatMessage.setHeader(header);
+//                        chatMessage.setNickname(nickName);
+//                        chatMessage.setContent("礼物被抢光了");
+//                        chatMessage.setMessageType("-3");
+//                        chatMessage.setPrizeId(prizeInfo[0]);
+//                        sendMessage(phoneOrOpenid+roomName,chatMessage.toString());
+//                        return;
+//                    }
+//                }
+//            }
+            synchronized (LockerPool.getSingleton().getLocker(prizeId)){
+            	List<Roomgiftuser> list=roomgiftuserService.getByOpenidAndRoom(type.toString(),phoneOrOpenid,roomName);
+                //List<DXChatUserGift> list = dxChatUserGiftService.getByPhoneAndRoom(type,Long.parseLong(prizeInfo[0]),roomName,prizeInfo[1]);
+                if(type==1){  //领取实物
+                	Roomgift roomGift = roomGiftService.getById(Long.parseLong(prizeInfo[0]));
+                    if(list!=null&&list.size()>=roomGift.getSendNumber()){ //已领取完
+                        chatMessage.setRole(roll);
+                        chatMessage.setHeader(header);
+                        chatMessage.setNickname(nickName);
+                        chatMessage.setMessageType("-3");
+                        chatMessage.setContent("礼物被抢光了");
+                        chatMessage.setPrizeId(prizeInfo[0]);
+                        sendMessage(phoneOrOpenid+roomName,chatMessage.toString());
+                    }else{ //发放奖品
+                        String[] roomStr = roomName.split("_");
+                        String endStr = roomStr[4]; //yyyy-MM-dd-HH-mm-ss
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+                        Date endTime = sdf.parse(endStr);
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(endTime);
+                        calendar.add(Calendar.MINUTE,30);
+                        Date overTime = calendar.getTime();
+                        Roomgiftuser roomgift = new Roomgiftuser();
+                        roomgift.setGiftCode(prizeInfo[0]);
+                        roomgift.setOpenID(phoneOrOpenid);
+                        //roomgift.setMemo(chatRoomGift.getMemo());
+                        roomgift.setRoomCode(roomName);
+                        roomgift.setTimestamp(prizeInfo[1]);
+                        roomgift.setOpenID(roomgift.getOpenID());
+                        roomgift.setExpireDate(overTime);
+                        roomgift.setGiftType("1");
+                        //roomgift.save(dxChatUserGift);
+                        roomgiftuserService.save(roomgift);
+
+                        chatMessage.setRole(roll);
+                        chatMessage.setHeader(header);
+                        chatMessage.setNickname(nickName);
+                        chatMessage.setMessageType("3");
+                        chatMessage.setContent("恭喜你获得了"+roomgift.getGiftName());
+                        chatMessage.setPrizeId(prizeId);
+                        sendMessage(phoneOrOpenid+roomName,chatMessage.toString());
+                        Roomgiftsend sendRecords = roomgiftsendService.getByGiftAndRoomAndTimestamp("1",prizeInfo[0],roomName,prizeInfo[1]);
+                        chatMessage.setMessageType("22");
+                        chatMessage.setContent(String.valueOf(roomGift.getSendNumber()-list.size()-1));
+                        sendMessage(sendRecords.getOpenid()+roomName,chatMessage.toString());
+                    }
+                }else if(type==2){
+                	Couponsgroup couponsgroup=CouponsgroupService.getById(Long.parseLong(prizeInfo[0]));
+                    if(list!=null&&list.size()>=(couponsgroup.getCouponsNumber()-couponsgroup.getIssuedNumber())){ //已领取完
+                        chatMessage.setHeader(header);
+                        chatMessage.setRole(roll);
+                        chatMessage.setNickname(nickName);
+                        chatMessage.setMessageType("-3");
+                        chatMessage.setContent("礼物被抢光了");
+                        chatMessage.setPrizeId(prizeInfo[0]);
+                        sendMessage(phoneOrOpenid+roomName,chatMessage.toString());
+                    }else{ //领券
+                        /*DXChatUserGift dxChatUserGift = new DXChatUserGift();
+                        dxChatUserGift.setGiftId(Long.parseLong(prizeInfo[0]));
+                        dxChatUserGift.setPhone(phoneOrOpenid);
+                        dxChatUserGift.setMemo(dxPlatTicket.getName());
+                        dxChatUserGift.setRoomName(roomName);
+                        dxChatUserGift.setTimestamp(prizeInfo[1]);
+//                        dxChatUserGift.setPhoto(dxPlatTicket.getPhoto());
+                        dxChatUserGift.setOverTime(dxPlatTicket.getEndTime());
+                        dxChatUserGift.setType(2);
+                        dxChatUserGiftService.save(dxChatUserGift);
+
+                        DXAppUser dxAppUser = dxAppUserService.findDXAppUserByMobile(phoneOrOpenid);
+                        DXUserAndTicket dxUserAndTicket = new DXUserAndTicket();
+                        dxUserAndTicket.setDxAppUser(dxAppUser);
+                        dxUserAndTicket.setDxPlatTicket(dxPlatTicket);
+                        dxUserAndTicket.setType(2);
+                        if(dxPlatTicket.getOverDateNumber()!=null){
+                            Date now = new Date();
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            String nowStr = sdf.format(now);
+                            nowStr = nowStr.substring(0,11)+"00:00:00";
+                            Date startDate = sdf.parse(nowStr);
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(startDate);
+                            calendar.add(Calendar.DATE,dxPlatTicket.getOverDateNumber());
+                            Date endDate = calendar.getTime();
+                            if(endDate.after(dxPlatTicket.getEndTime())){
+                                endDate=dxPlatTicket.getEndTime();
+                            }
+                            if(endDate.before(now)){ //如果超时设置为已过期
+                                dxUserAndTicket.setStatus(2);
+                            }
+                            dxUserAndTicket.setStartTime(startDate);
+                            dxUserAndTicket.setEndTime(endDate);
+                        }else{
+                            dxUserAndTicket.setStartTime(dxPlatTicket.getStartTime());
+                            dxUserAndTicket.setEndTime(dxPlatTicket.getEndTime());
+                            if(new Date().after(dxPlatTicket.getEndTime())){
+                                dxUserAndTicket.setStatus(2);
+                            }
+                        }
+                        if(dxPlatTicket.getEndTime().after(new Date())){
+                            dxUserAndTicket.setStatus(0);
+                        }else{
+                            dxUserAndTicket.setStatus(2);
+                        }
+                        dxUserAndTicketService.save(dxUserAndTicket);
+
+
+                        chatMessage.setRole(roll);
+                        chatMessage.setHeader(header);
+                        chatMessage.setNickname(nickName);
+                        chatMessage.setMessageType("3");
+                        chatMessage.setContent("恭喜你获得了"+dxPlatTicket.getName());
+                        chatMessage.setPrizeId(prizeId);
+                        sendMessage(phoneOrOpenid+roomName,chatMessage.toString());
+                        DXChatRoomGiftSendRecords sendRecords = dxChatRoomGiftSendRecordsService.getByGiftAndRoomAndTimestamp(2,prizeInfo[0],roomName,prizeInfo[1]);
+                        chatMessage.setMessageType("22");
+                        chatMessage.setContent(String.valueOf(dxPlatTicket.getNumber()-list.size()-1));
+                        sendMessage(sendRecords.getPhone()+roomName,chatMessage.toString());*/
+                    }
+                }
+                return;
+            }
+        }
+        chatMessage.setRole(roll);
+        chatMessage.setHeader(header);
+        chatMessage.setNickname(nickName);
+        chatMessage.setMessageType(messageType);
+        chatMessage.setContent(messageContent);
+        chatMessage.setPrizeId(prizeId);
+        chatMessage.setPhoneOrOpenid(phoneOrOpenid);
+        if(messageType.equals("5")){
+            sendMessage(phoneOrOpenid+roomName,chatMessage.toString());
+        }else{
+            sendMessagetoRoom(roomName, chatMessage.toString());
+        }
+
+    }
+
+
+    @OnError
     public void error(Session session, Throwable t) {
         log.error("websocket发生错误："+t.toString());
     }
-	
-	
-    public  void sendMessagetoRoom(String roomCode, String msg) throws Exception {
-        for (Session session : rooms.get(roomCode)) {
+
+    public  void sendMessagetoRoom(String roomName, String msg) throws Exception {
+        for (Session session : rooms.get(roomName)) {
             session.getBasicRemote().sendText(msg);
-            System.out.println("发送给"+session.getId()+msg);
+            log.info("发送给"+session.getId()+msg);
         }
     }
-    
-	//创建房间
-    public void OpenRoom(String roomCode,ScreenRoom screenRoom){
-    	if(!rooms.containsKey(roomCode)){ //房间不存在时
-            Set<Session> room = new HashSet<>();
-            // 开启房间
-            new Thread(){
-            	public void run() {
-            		try {
-						removeRoom(roomCode);	//关闭房间
-					} catch (Exception e) {
-						e.printStackTrace();
-					} 
-            	}
-            }.start();
-            rooms.put(roomCode, room);
-    	}
-    	
-    }
-    
+
     //关闭房间
-    public void removeRoom(String roomCode) throws Exception {
+    public void removeRoomName(String roomName) throws Exception {
         //移除房间号
-        if(rooms.containsKey(roomCode)){
-        	rooms.remove(roomCode);
-        	for(String str : OpenidSession.keySet()){
-                if(str.contains(roomCode)){
-                	OpenidSession.remove(str);
+        if(rooms.containsKey(roomName)){
+            DXChatMessage chatMessage = new DXChatMessage();
+            chatMessage.setRole("1");
+            chatMessage.setHeader("");
+            chatMessage.setNickname("");
+            chatMessage.setMessageType("-2");
+            chatMessage.setContent("");
+            chatMessage.setPrizeId("");
+            sendMessagetoRoom(roomName, chatMessage.toString());
+            rooms.remove(roomName);
+            for(String str:phoneOrOpenidSession.keySet()){
+                if(str.contains(roomName)){
+                    phoneOrOpenidSession.remove(str);
                 }
             }
+            log.info("关闭房间:"+roomName);
+        }
+    }
+
+    //创建房间
+    public void OpenRoomName(String roomName, Sessioninfo sessioninfo) {
+        if(!rooms.containsKey(roomName)){ //房间不存在时
+            Set<Session> room = new HashSet<>();
+            // 开启房间
+            log.info("开启房间:"+roomName);
+            Calendar calendar = Calendar.getInstance();
+            new Thread(){
+                public void run() {
+                    Date endTime = sessioninfo.getStartTime();
+                    Date now = new Date();
+                    Long endMillisecond = endTime.getTime()+40*60*1000; //场次结束后40分钟关闭
+                    Long nowMillisecond = now.getTime();
+                    Long remainMillisecond = (endMillisecond-nowMillisecond)/1000;
+                    log.info("距离聊天室关闭剩余"+remainMillisecond/60+"分钟");
+                    while(remainMillisecond>0) {
+                        remainMillisecond--;
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            try {
+                                new ChatRoomServer().removeRoomName(roomName);
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                            }
+                            e.printStackTrace();
+                            this.interrupt();
+                            log.info("聊天室倒计时出现异常,线程终止");
+                        }
+                    }
+                    try{
+                        new ChatRoomServer().removeRoomName(roomName);  //关闭房间
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }finally {
+                        this.interrupt();
+                        log.info("线程终止");
+                    }
+                }
+
+            }.start();
+            rooms.put(roomName, room);
+        }
+    }
+
+    //获取当前房间列表
+    public static List<String> getRoomByCinema(String cinemaCode){
+        if(StringUtils.isNotBlank(cinemaCode)){
+            List<String> list = new ArrayList<>(rooms.size());
+            for(String roomName:rooms.keySet()){
+                if(roomName.startsWith(cinemaCode+"_")){
+                    list.add(roomName);
+                }
+            }
+            return list;
+        }
+        return null;
+    }
+    //获取所有房间列表
+    public static List<String> getAllRoom(){
+        List<String> list = new ArrayList<>(rooms.size());
+        for(String roomName:rooms.keySet()){
+            list.add(roomName);
+        }
+        return list;
+    }
+
+    //发送消息给指定用户
+    public void sendMessage(String phoneOrOpenid,String msg) throws Exception{
+        Session session = phoneOrOpenidSession.get(phoneOrOpenid);
+        if(session.isOpen()){
+            session.getBasicRemote().sendText(msg);
         }
     }
 }

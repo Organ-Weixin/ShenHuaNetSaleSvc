@@ -6,8 +6,8 @@ public class Cinema extends BaseEntity<Long> {
 
 	private Long Id;
 	private Integer MId;
-	private String Code;
-	private String Name;
+	private String Code;	//影院编码
+	private String Name;	//影院名称
 	private String Province;
 	private String City;
 	private String Address;

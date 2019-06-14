@@ -6,9 +6,9 @@ import java.util.List;
 public class Sessioninfo {
 
 	private Long Id;
-	private String CCode;
-	private String SCode;
-	private String ScreenCode;
+	private String CCode;	//影院编码
+	private String SCode;	//场次编码
+	private String ScreenCode;	//影厅编码
 	private Date StartTime;
 	private String FilmCode;
 	private String FilmName;

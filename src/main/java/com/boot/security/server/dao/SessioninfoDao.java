@@ -91,4 +91,8 @@ public interface SessioninfoDao {
 	
 	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode = #{filmcode} and t.starttime >=now() and substr(t.starttime,1,10) = #{sessiondate} order by t.starttime asc")
 	List<Sessioninfo> getOneDaySession(@Param("cinemacode") String cinemacode,@Param("filmcode") String filmcode,@Param("sessiondate")String sessiondate);
+	
+	//获取开始时间处于指定时间段的场次
+	@Select("select * from sessioninfo t where starttime <= #{minTime} and starttime >= #{maxTime} and ccode = #{cinemacode}")
+	List<Sessioninfo> getSessioninfoByTime(@Param("minTime") Date minTime,@Param("maxTime") Date maxTime,@Param("cinemacode")String cinemacode);
 }

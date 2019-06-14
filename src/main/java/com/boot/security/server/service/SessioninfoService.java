@@ -43,5 +43,8 @@ public interface SessioninfoService {
 	List<Sessioninfo> getSessionDate(String cinemacode,String filmcode,String startdate);
 	
 	List<Sessioninfo> getOneDaySession(String cinemacode,String filmcode,String sessiondate);
+	
+	//获取开始时间处于指定时间段的场次
+	List<Sessioninfo> getSessioninfoByTime(Date minTime ,Date maxTime,String cinemaCode);
 
 }

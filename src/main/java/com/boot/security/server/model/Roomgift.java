@@ -14,7 +14,7 @@ public class Roomgift {
 	private String giftDesc;
 	private Integer groupNumber;
 	private Integer sendNumber;
-	private String giftType;
+	private String GiftType="1";
 
 	public Long getId() {
 		return id;
@@ -63,12 +63,6 @@ public class Roomgift {
 	}
 	public void setSendNumber(Integer sendNumber) {
 		this.sendNumber = sendNumber;
-	}
-	public String getGiftType() {
-		return giftType;
-	}
-	public void setGiftType(String giftType) {
-		this.giftType = giftType;
 	}
 
 }

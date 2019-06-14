@@ -3,8 +3,11 @@ package com.boot.security.server.utils;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -26,6 +29,7 @@ import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Screeninfo;
+import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
@@ -33,7 +37,9 @@ import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
+import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
+import com.boot.security.server.websocket.ChatRoomServer;
 
 @Component
 @EnableScheduling   // 1.开启定时任务
@@ -53,6 +59,8 @@ public class MultithreadScheduleTask {
 	private OrderServiceImpl orderService;
 	@Autowired
 	private GoodsOrderServiceImpl goodsOrderService;
+	@Autowired
+	private SessioninfoServiceImpl sessioninfoService;
 	
 	//更新影院、影厅信息
 	@Async
@@ -193,6 +201,76 @@ public class MultithreadScheduleTask {
 			//List<Orders> orderList = orderService.getByOrderCode(cinemacode, ordercode);
 		}
 	}
+	//启动时执行，开启符合条件的放映厅
+	@PostConstruct
+    public void init() throws ParseException, IOException {
+        System.out.println("启动时执行");
+        //获取所有电影院,把符合开启条件的房间开启
+        List<Cinema> cinemaList = cinemaService.AllCinema();
+        Date now = new Date(); //当前时间
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(now);
+        calendar.add(Calendar.MINUTE,25);  //提前25分钟开启
+        Date minTime = calendar.getTime();
+        calendar.add(Calendar.MINUTE,-65); //开场后40分钟之后
+        Date maxTime = calendar.getTime();
+        String roomName = ""; //房间号的命名格式为 影院唯一编码+影厅唯一编码+广电电影唯一编码+放映时间+结束时间
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String startTimeString = "";    //开始时间字符串
+        String endTimeString = "";      //结束时间字符串
+        for(Cinema cinema:cinemaList){
+            List<Sessioninfo> list = sessioninfoService.getSessioninfoByTime(minTime,maxTime,cinema.getCode());
+            for(Sessioninfo sessioninfo:list){
+                startTimeString = sdf.format(sessioninfo.getStartTime());
+                calendar.setTime(sessioninfo.getStartTime());
+                calendar.add(Calendar.MINUTE, sessioninfo.getDuration());
+                endTimeString = sdf.format(calendar.getTime());
+                roomName=cinema.getCode()+"_"+sessioninfo.getScreenCode()+"_"+sessioninfo.getFilmCode()+"_"+startTimeString+"_"+endTimeString;
+                new ChatRoomServer().OpenRoomName(roomName,sessioninfo);
+            }
+        }
+		
+//		new Thread(){
+//            public void run() {
+//                while(true){
+//                	System.out.println("启动时执行的");
+//                }
+//            }
+//
+//        }.start();
+    }
+	
+	
+	//定时开启聊天室房间，每五分钟执行一次(包含关闭房间的线程)
+	@Async
+	@Scheduled(cron="10 0/5 * * * ?")
+	public void openChatRoom(){
+        //获取所有电影院cinemaId,把符合开启条件的房间开启
+		List<Cinema> cinemaList = cinemaService.AllCinema();
+        Date now = new Date(); //当前时间
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(now);
+        calendar.add(Calendar.MINUTE,25);  //提前25分钟开启
+        Date minTime = calendar.getTime();
+        calendar.add(Calendar.MINUTE,-65); //开场后40分钟之后
+        Date maxTime = calendar.getTime();
+        String roomName = "";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String startTimeString = "";
+        String endTimeString = "";
+        for(Cinema cinema:cinemaList){
+            List<Sessioninfo> list = sessioninfoService.getSessioninfoByTime(minTime,maxTime,cinema.getCode());
+            for(Sessioninfo sessioninfo:list){
+                startTimeString = sdf.format(sessioninfo.getStartTime());
+                calendar.setTime(sessioninfo.getStartTime());
+                calendar.add(Calendar.MINUTE, sessioninfo.getDuration());
+                endTimeString = sdf.format(calendar.getTime());
+                roomName=cinema.getCode()+"_"+sessioninfo.getScreenCode()+"_"+sessioninfo.getFilmCode()+"_"+startTimeString+"_"+endTimeString;
+                new ChatRoomServer().OpenRoomName(roomName,sessioninfo);
+            }
+        }
+    }
+	
 	
 	public static void main(String[] args) {
 		System.out.println(new SimpleDateFormat("yyyy-MM-dd").format(new Date(Long.parseLong(String.valueOf(new Date().getTime()-3l*30l*24l*60l*60l*1000l)))));

@@ -38,6 +38,7 @@ public class Couponsgroup {
 	private String GiftType = "2";
 	private Date CreateDate;
 	private Date UpdateDate;
+	private Integer IsUseChatRoom;
 
 	public Long getId() {
 		return Id;
@@ -238,5 +239,12 @@ public class Couponsgroup {
 	public void setUpdateDate(Date UpdateDate) {
 		this.UpdateDate = UpdateDate;
 	}
+	public Integer getIsUseChatRoom() {
+		return IsUseChatRoom;
+	}
+	public void setIsUseChatRoom(Integer isUseChatRoom) {
+		IsUseChatRoom = isUseChatRoom;
+	}
+	
 
 }

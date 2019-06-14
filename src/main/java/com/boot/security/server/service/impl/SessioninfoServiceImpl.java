@@ -127,5 +127,10 @@ public class SessioninfoServiceImpl implements SessioninfoService{
 		return sessioninfoDao.getOneDaySession(cinemacode, filmcode, sessiondate);
 	}
 	
+	@Override
+	public List<Sessioninfo> getSessioninfoByTime(Date minTime ,Date maxTime,String cinemaCode) {
+		return sessioninfoDao.getSessioninfoByTime(minTime, maxTime, cinemaCode);
+	}
+	
 	
 }

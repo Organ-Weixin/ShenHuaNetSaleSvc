@@ -24,13 +24,16 @@ public interface RoomgiftsendDao {
     int update(Roomgiftsend roomgiftsend);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into roomgiftsend(roomCode, giftCode, giftName, giftType, sendNumber, openid, sendTime) values(#{roomCode}, #{giftCode}, #{giftName}, #{giftType}, #{sendNumber}, #{openid}, #{sendTime})")
+    @Insert("insert into roomgiftsend(roomCode, giftCode, giftName, giftType, sendNumber, openid, sendTime,timestamp) values(#{roomCode}, #{giftCode}, #{giftName}, #{giftType}, #{sendNumber}, #{openid}, #{sendTime},#{timestamp})")
     int save(Roomgiftsend roomgiftsend);
     
     int count(@Param("params") Map<String, Object> params);
 
     List<Roomgiftsend> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
     
-    @Select("select * from roomgiftsend t where t.roomCode = #{roomcode} and giftCode = #{giftcode}")
-    List<Roomgiftsend> getByRoomCode(@Param("roomcode") String roomcode,@Param("giftcode") String giftcode);
+    @Select("select * from roomgiftsend t where t.gifttype=#{gifttype} and t.roomCode = #{roomcode} and giftCode = #{giftcode}")
+    List<Roomgiftsend> getByRoomCode(@Param("roomcode") String gifttype,@Param("roomcode") String roomcode,@Param("giftcode") String giftcode);
+    
+    @Select("select * from roomgiftsend t where t.gifttype=#{gifttype} and t.roomCode = #{roomcode} and timestamp = #{timestamp}")
+    Roomgiftsend getByGiftAndRoomAndTimestamp(String gifttype,String giftcode,String roomcode,String timestamp);
 }

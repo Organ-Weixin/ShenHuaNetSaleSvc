@@ -21,8 +21,17 @@ public class RoomgiftsendServiceImpl implements RoomgiftsendService {
 	}
 	
 	@Override
-	public List<Roomgiftsend> getByRoomCode(String roomcode, String giftcode) {
-		return dao.getByRoomCode(roomcode, giftcode);
+	public List<Roomgiftsend> getByRoomCode(String gifttype,String roomcode, String giftcode) {
+		return dao.getByRoomCode(gifttype,roomcode, giftcode);
 	}
+
+	@Override
+	public Roomgiftsend getByGiftAndRoomAndTimestamp(String gifttype, String giftcode, String roomcode,
+			String timestamp) {
+		// TODO Auto-generated method stub
+		return dao.getByGiftAndRoomAndTimestamp(gifttype, giftcode, roomcode, timestamp);
+	}
+	
+	
 	
 }

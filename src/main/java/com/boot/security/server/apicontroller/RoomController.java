@@ -165,7 +165,7 @@ public class RoomController {
 			RoomGiftReply newgift = new RoomGiftReply();
 			newgift.setGiftCode(gift.getGiftCode());
 			newgift.setGiftName(gift.getGiftName());
-			newgift.setGiftType(gift.getGiftType());
+			newgift.setGiftType("1");
 			newgift.setSendNumber(String.valueOf(gift.getSendNumber()));
 			newgift.setImage(gift.getImage());
 			data.add(newgift);
@@ -215,7 +215,7 @@ public class RoomController {
 			return reply;
 		}
 		
-		List<Roomgiftuser>  roomgiftuserlist = roomgiftuserService.getByOpenidAndRoom(input.getOpenID(), input.getRoomCode());
+		List<Roomgiftuser>  roomgiftuserlist = roomgiftuserService.getByOpenidAndRoom("1",input.getOpenID(), input.getRoomCode());
 		List<QueryRoomGiftRecord> data = new ArrayList<QueryRoomGiftRecord>();
 		for(Roomgiftuser roomgiftuser : roomgiftuserlist){
 			QueryRoomGiftRecord record = new QueryRoomGiftRecord();

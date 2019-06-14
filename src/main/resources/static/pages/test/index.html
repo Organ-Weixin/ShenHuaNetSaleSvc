@@ -10,9 +10,17 @@ Welcome<br/>
 <div id="message">
 </div>
 </body>
-
+<script type="text/javascript" src="../../js/jquery.min.js"></script>
 <script type="text/javascript">
-    var websocket = null;
+	$.post(
+		"/Api/chatRoom/getRoomTimestamp",
+		{"roomName":""}
+		function (e){
+			alert(e.status)
+		}
+	)
+	
+    /*var websocket = null;
 
     //判断当前浏览器是否支持WebSocket
     if('WebSocket' in window){
@@ -63,6 +71,6 @@ Welcome<br/>
         var message = document.getElementById('text').value;
         message={"messageType":"1","content":"content"}
         websocket.send(message);
-    }
+    }*/
 </script>
 </html>

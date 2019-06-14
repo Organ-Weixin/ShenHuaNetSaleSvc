@@ -61,5 +61,9 @@ public class CouponsgroupServiceImpl implements CouponsgroupService{
 	public Couponsgroup getUserCouponsGroup(String groupcode, Integer status, String cinemacode) {
 		return couponsgroupDao.getUserCouponsGroup(groupcode, status, cinemacode);
 	}
-
+	@Override
+	public List<Couponsgroup> getChatRoomCouponsByCinemaCode(String cinemacode) {
+		// TODO Auto-generated method stub
+		return couponsgroupDao.getChatRoomCouponsByCinemaCode(cinemacode);
+	}
 }

@@ -18,7 +18,8 @@ public class Roomgiftuser  {
 	private Date GetDate;
 	private Date StartDate;
 	private Date ExpireDate;
-	private String giftType;
+	private String GiftType;
+	private String Timestamp;
 
 	public Long getId() {
 		return Id;
@@ -81,10 +82,17 @@ public class Roomgiftuser  {
 		this.ExpireDate = ExpireDate;
 	}
 	public String getGiftType() {
-		return giftType;
+		return GiftType;
 	}
-	public void setGiftType(String giftType) {
-		this.giftType = giftType;
+	public void setGiftType(String GiftType) {
+		this.GiftType = GiftType;
 	}
+	public String getTimestamp() {
+		return Timestamp;
+	}
+	public void setTimestamp(String timestamp) {
+		Timestamp = timestamp;
+	}
+	
 
 }

@@ -32,8 +32,8 @@ public interface RoomgiftuserDao {
     List<Roomgiftuser> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
     
     //根据用户与放映厅房间号查询
-    @Select("select * from roomgiftuser where OPenID = #{openid} and RoomCode = #{roomcode}")
-    List<Roomgiftuser> getByOpenidAndRoom(@Param("openid") String openid,@Param("roomcode") String roomcode);
+    @Select("select * from roomgiftuser where giftType=#{gifttype} and OPenID = #{openid} and RoomCode = #{roomcode}")
+    List<Roomgiftuser> getByOpenidAndRoom(@Param("gifttype") String gifttype,@Param("openid") String openid,@Param("roomcode") String roomcode);
     
     //根据用户查询查询奖品
     @Select("select * from roomgiftuser where OPenID = #{openid} and CinemaCode=#{cinemacode} and giftType = '1' ")

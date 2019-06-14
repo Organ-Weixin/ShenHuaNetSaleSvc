@@ -61,4 +61,7 @@ public interface CouponsgroupDao {
     
     @Select("select * from couponsgroup t where t.groupcode = #{groupcode} and t.status = #{status} and (t.canusecinematype = 1 or find_in_set(#{cinemacode},cinemacodes))")
     Couponsgroup getUserCouponsGroup(@Param("groupcode")String groupcode,@Param("status")Integer status,@Param("cinemacode")String cinemacode);
+    
+    @Select("select * from couponsgroup where IsUseChatRoom=1 and (CouponsNumber-IssuedNumber)>0 and cinemacode=#{cinemacode} and status=1")
+    List<Couponsgroup> getChatRoomCouponsByCinemaCode(String cinemacode);
 }

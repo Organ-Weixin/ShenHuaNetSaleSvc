@@ -29,4 +29,6 @@ public interface CouponsgroupService {
 	int changePast(Integer status);
 	
 	Couponsgroup getUserCouponsGroup(String groupcode,Integer status,String cinemacode);
+	
+	List<Couponsgroup> getChatRoomCouponsByCinemaCode(String cinemacode);
 }
