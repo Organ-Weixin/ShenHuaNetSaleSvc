@@ -416,7 +416,7 @@ public class HttpHelper {
 		try {
 			HttpResponse response = client.execute(httpGet);
 			// 读取服务器响应数据
-			br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+			br = new BufferedReader(new InputStreamReader(response.getEntity().getContent(),"UTF-8"));
 			String temp;
 			resultBuffer = new StringBuffer();
 			while ((temp = br.readLine()) != null) {

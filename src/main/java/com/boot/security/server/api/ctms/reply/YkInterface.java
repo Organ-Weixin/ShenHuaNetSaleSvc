@@ -1828,15 +1828,15 @@ public class YkInterface implements ICTMSInterface {
 			throws Exception {
 		CTMSSubmitGoodsOrderReply reply = new CTMSSubmitGoodsOrderReply();
 		
-		List<Map<String,String>> goodslist = new ArrayList<Map<String,String>>();
+		List<Map<String,Object>> goodslist = new ArrayList<Map<String,Object>>();
 		for(Goodsorderdetails goodsorderdetails : order.getOrderGoodsDetails()){
-			Map<String,String> goodsmap = new LinkedHashMap<String,String>();
+			Map<String,Object> goodsmap = new LinkedHashMap<String,Object>();
 			goodsmap.put("goodsId", goodsorderdetails.getGoodsCode());
 			goodsmap.put("salePrice", goodsorderdetails.getSettlePrice().toString());
 			goodsmap.put("count", goodsorderdetails.getGoodsCount().toString());
 			goodsmap.put("isPackage", "false");
 			if(order.getOrderBaseInfo().getCardNo() != null){	//是否使用会员卡折扣 
-				goodsmap.put("isCardDiscount", "true");
+				goodsmap.put("isCardDiscount", true);
 			}
 			goodslist.add(goodsmap);
 		}
@@ -1872,7 +1872,7 @@ public class YkInterface implements ICTMSInterface {
 		String sign = createSign(userCinema.getDefaultPassword(), param);
 		String confirmGoodsOrderResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
 				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
-//		System.out.println("确认卖品订单返回："+confirmGoodsOrderResult);
+		System.out.println("确认卖品订单返回："+confirmGoodsOrderResult);
 		
 		Gson gson = new Gson();
 		YkConfirmGoodsOrderResult ykResult = gson.fromJson(confirmGoodsOrderResult, YkConfirmGoodsOrderResult.class);
@@ -1887,6 +1887,18 @@ public class YkInterface implements ICTMSInterface {
 					order.getOrderBaseInfo().setSubmitTime(new Date());
 				} else {
 					order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.SubmitFail.getStatusCode());
+				}
+				// 更新优惠券已使用
+				if (order.getOrderBaseInfo().getCouponsCode() != null && !order.getOrderBaseInfo().getCouponsCode().equals("")) {
+					CouponsView couponsview=_couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
+					if(couponsview!=null){
+						couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
+						couponsview.getCoupons().setUsedDate(new Date());
+						//使用数量+1
+						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+						//更新优惠券及优惠券分组表
+						_couponsService.update(couponsview);
+					}
 				}
 				reply.Status = StatusEnum.Success;
 			} else {

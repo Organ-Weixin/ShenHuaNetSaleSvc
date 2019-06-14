@@ -7,10 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,6 +27,10 @@ import com.boot.security.server.api.core.NetSaleSvcCore;
 import com.boot.security.server.api.core.QueryCardReply;
 import com.boot.security.server.api.core.QueryCardTradeRecordReply;
 import com.boot.security.server.api.core.QueryDiscountReply;
+import com.boot.security.server.api.core.SubmitGoodsOrderReply;
+import com.boot.security.server.api.core.SubmitGoodsOrderReply.SubmitGoodsOrderReplyOrder;
+import com.boot.security.server.api.ctms.reply.CTMSSubmitGoodsOrderReply;
+import com.boot.security.server.api.ctms.reply.CTMSSubmitOrderReply;
 import com.boot.security.server.api.ctms.reply.Dy1905GetMemberCardByMobileReply;
 import com.boot.security.server.api.ctms.reply.Dy1905Interface;
 import com.boot.security.server.api.ctms.reply.YkInterface;
@@ -55,13 +57,11 @@ import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelRuleRepl
 import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelReply;
 import com.boot.security.server.model.Choosemembercardcreditrule;
 import com.boot.security.server.model.Cinema;
-import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Cinemapaymentsettings;
 import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
-import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardcreditrule;
@@ -69,9 +69,7 @@ import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
-import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Orderseatdetails;
-import com.boot.security.server.model.Priceplan;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.model.Usercinemaview;
@@ -93,6 +91,7 @@ import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.CouponsUtil;
 import com.boot.security.server.utils.WxPayUtil;
+import com.google.gson.Gson;
 
 import freemarker.template.utility.StringUtil;
 import io.swagger.annotations.ApiOperation;
@@ -341,16 +340,76 @@ public class MemberController {
 		
 		order.getOrderBaseInfo().setMobilePhone(MobilePhone);
 		order.getOrderBaseInfo().setCardNo(CardNo);
-		new YkInterface().SubmitOrder(userCinema, order);
-		// 更新订单信息
-		order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
-		orderService.Update(order);
+		CTMSSubmitOrderReply ykReply = new YkInterface().SubmitOrder(userCinema, order);
+		System.out.println("----"+new Gson().toJson(ykReply));
+		if("Success".equals(ykReply.Status.getStatusCode())){
+			// 更新订单信息
+			order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
+			orderService.Update(order);
+			
+			//返回
+			reply.setOrderNo(order.getOrderBaseInfo().getSubmitOrderCode());
+			reply.setPrintNo(order.getOrderBaseInfo().getPrintNo());
+			reply.setVerifyCode(order.getOrderBaseInfo().getVerifyCode());
+		}
+		reply.Status = ykReply.Status.getStatusCode();
+		reply.ErrorCode = ykReply.ErrorCode;
+		reply.ErrorMessage = ykReply.ErrorMessage;
 		
-		//返回
-		reply.setOrderNo(order.getOrderBaseInfo().getSubmitOrderCode());
-		reply.setPrintNo(order.getOrderBaseInfo().getPrintNo());
-		reply.setVerifyCode(order.getOrderBaseInfo().getVerifyCode());
-		reply.SetSuccessReply();
+		return reply;
+	}
+	
+	@GetMapping("/YkGoodsOrderMember/{Username}/{Password}/{CinemaCode}/{LocalOrderCode}/{MobilePhone}/{CardNo}/{CardPassword}/{CouponsCodes}")
+	@ApiOperation(value = "会员卡卖品（粤科）")
+	public SubmitGoodsOrderReply YkGoodsOrderMember(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
+			@PathVariable String LocalOrderCode,@PathVariable String MobilePhone,@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String CouponsCodes) throws Exception{
+		//更新卖品优惠
+		new CouponsUtil().getCouponsPrice(CinemaCode,"",LocalOrderCode,CouponsCodes);
+		SubmitGoodsOrderReply reply = new SubmitGoodsOrderReply();
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
+		if (UserInfo == null) {
+			reply.SetUserCredentialInvalidReply();
+			return reply;
+		}
+		// 验证影院是否存在且可访问
+		Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),CinemaCode);
+		if (userCinema == null) {
+			reply.SetCinemaInvalidReply();
+			return reply;
+		}
+		//验证订单是否存在
+		GoodsOrderView order = goodsOrderService.getWithLocalOrderCode(CinemaCode, LocalOrderCode);
+		if(order == null){
+			reply.SetOrderNotExistReply();
+			return reply;
+		}
+		//验证会员卡
+		Membercard membercard = _memberCardService.getByCardNo(CinemaCode, CardNo);
+		if(membercard == null){
+			reply.SetMemberCardInvalidReply();
+			return reply;
+		}
+		
+		order.getOrderBaseInfo().setMobilePhone(MobilePhone);
+		order.getOrderBaseInfo().setCardNo(CardNo);
+		order.getOrderBaseInfo().setCardPassword(CardPassword);
+		CTMSSubmitGoodsOrderReply ykReply = new YkInterface().SubmitGoodsOrder(userCinema, order);
+		System.out.println("----"+new Gson().toJson(ykReply));
+		if("Success".equals(ykReply.Status.getStatusCode())){
+			// 更新订单信息
+			order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
+			goodsOrderService.Update(order);
+			
+			//返回
+			reply.setOrder(new SubmitGoodsOrderReplyOrder());
+			reply.getOrder().setOrderCode(order.getOrderBaseInfo().getOrderCode());
+			reply.getOrder().setPickUpCode(order.getOrderBaseInfo().getPickUpCode());
+			reply.SetSuccessReply();
+		}else {
+			reply.GetErrorFromCTMSReply(ykReply);
+		}
+		
 		return reply;
 	}
 	

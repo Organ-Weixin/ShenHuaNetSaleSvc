@@ -42,7 +42,7 @@ public class AESHelper {
             cipher.init(Cipher.DECRYPT_MODE, key, algorithmParameters);
             byte[] bytes = cipher.doFinal(encryptDataByte);
             
-            return new String(bytes);
+            return new String(bytes,"utf-8");
         } catch (Exception e) {
             e.printStackTrace();
         }  
