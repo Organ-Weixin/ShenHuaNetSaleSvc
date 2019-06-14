@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * 神画 根据唯一标识创建对象池，给不同业务逻辑单独上锁(实现单例)
  */
-public class LockerPool {
+public class LockerPool { 
     Map<String,String> lockMap = new HashMap<>();
     private static volatile LockerPool lockerPool = null;
    
