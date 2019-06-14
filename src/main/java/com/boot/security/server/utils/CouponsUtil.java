@@ -103,20 +103,22 @@ public class CouponsUtil {
 					if(couponsview.getCoupons()!=null){
 	                    boolean ifCanUse=CouponsCanUse(couponsview,CinemaCode);
 						//如果减免类型是影片 并且购票订单存在
-						if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1&&!order.getOrderBaseInfo().getFilmCode().equals(null)&&!order.getOrderBaseInfo().getFilmCode().equals("null")){
-							if(!couponsview.getCouponsgroup().getFilmCodes().equals(null)&&!couponsview.getCouponsgroup().getFilmCodes().equals("")){
-								if(couponsview.getCouponsgroup().getFilmCodes().indexOf(order.getOrderBaseInfo().getFilmCode())>-1){
-									//当前优惠券可以使用，把券码和优惠价格更新到订单详细表
+	                    if(order.getOrderBaseInfo()!=null&&order.getOrderSeatDetails().size()>0){
+	                    	if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1&&order.getOrderBaseInfo().getFilmCode()!=null&&order.getOrderBaseInfo().getFilmCode()!="null"){
+								if(!couponsview.getCouponsgroup().getFilmCodes().equals(null)&&!couponsview.getCouponsgroup().getFilmCodes().equals("")){
+									if(couponsview.getCouponsgroup().getFilmCodes().indexOf(order.getOrderBaseInfo().getFilmCode())>-1){
+										//当前优惠券可以使用，把券码和优惠价格更新到订单详细表
+										order.getOrderSeatDetails().get(i).setConponCode(couponsview.getCoupons().getCouponsCode());
+										order.getOrderSeatDetails().get(i).setConponPrice(couponsview.getCouponsgroup().getReductionPrice());
+									}else{
+										order.getOrderSeatDetails().get(i).setConponPrice(0D);//当前影片不在可优惠的影片列表
+									}
+								}else{
+									//所有影片可用
 									order.getOrderSeatDetails().get(i).setConponCode(couponsview.getCoupons().getCouponsCode());
 									order.getOrderSeatDetails().get(i).setConponPrice(couponsview.getCouponsgroup().getReductionPrice());
-								}else{
-									order.getOrderSeatDetails().get(i).setConponPrice(0D);//当前影片不在可优惠的影片列表
 								}
-							}else{
-								//所有影片可用
-								order.getOrderSeatDetails().get(i).setConponCode(couponsview.getCoupons().getCouponsCode());
-								order.getOrderSeatDetails().get(i).setConponPrice(couponsview.getCouponsgroup().getReductionPrice());
-							}
+	                    }
 						}
 						//如果减免类型是卖品
 						if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==2&&goodsOrder.getOrderGoodsDetails()!=null&&goodsOrder.getOrderGoodsDetails().size()>0){
@@ -150,7 +152,6 @@ public class CouponsUtil {
 			}
 		}
 		//endregion
-		System.out.println("没有使用优惠券");
 		if(order.getOrderBaseInfo()!=null&&order.getOrderSeatDetails().size()>0){
 			//region 购票价格计算（得到最终上报价，最终销售价，最终服务费）
 			Double SubmitPrice;// 最终上报价格

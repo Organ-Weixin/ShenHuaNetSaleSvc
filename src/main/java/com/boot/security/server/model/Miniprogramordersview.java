@@ -16,6 +16,7 @@ public class Miniprogramordersview extends BaseEntity<Long> {
 	private String FilmName;
 	private Integer TicketCount;
 	private Double TotalSalePrice;
+	private Double TotalConponPrice;
 	private Integer OrderStatus;
 	private String MobilePhone;
 	private String OrderCode;
@@ -96,6 +97,12 @@ public class Miniprogramordersview extends BaseEntity<Long> {
 	}
 	public void setTotalSalePrice(Double TotalSalePrice) {
 		this.TotalSalePrice = TotalSalePrice;
+	}
+	public Double getTotalConponPrice() {
+		return TotalConponPrice;
+	}
+	public void setTotalConponPrice(Double totalConponPrice) {
+		TotalConponPrice = totalConponPrice;
 	}
 	public Integer getOrderStatus() {
 		return OrderStatus;

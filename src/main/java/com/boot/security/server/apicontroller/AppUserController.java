@@ -605,8 +605,11 @@ public class AppUserController {
 				}
 				cinemaTicket.setAddress(cinema.getAddress());
 				cinemaTicket.setCinemaPhone(cinema.getCinemaPhone());
+				if(miniprogramordersview.getTotalConponPrice()==null){
+					miniprogramordersview.setTotalConponPrice(0.00);
+				}
 				if(miniprogramordersview.getTotalSalePrice()!=null){
-				cinemaTicket.setPrice(String.valueOf(miniprogramordersview.getTotalSalePrice()));
+				cinemaTicket.setPrice(String.valueOf(miniprogramordersview.getTotalSalePrice()-miniprogramordersview.getTotalConponPrice()));
 				}
 				if(miniprogramordersview.getOrderStatus()!=null){
 				cinemaTicket.setStatus(String.valueOf(miniprogramordersview.getOrderStatus()));

@@ -7,12 +7,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,11 +60,13 @@ import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelRuleRepl
 import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelReply;
 import com.boot.security.server.model.Choosemembercardcreditrule;
 import com.boot.security.server.model.Cinema;
+import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Cinemapaymentsettings;
 import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
+import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardcreditrule;
@@ -69,7 +74,9 @@ import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
+import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Orderseatdetails;
+import com.boot.security.server.model.Priceplan;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.model.Usercinemaview;
@@ -90,6 +97,7 @@ import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.CouponsUtil;
+import com.boot.security.server.utils.GoodsCouponsPriceUtil;
 import com.boot.security.server.utils.WxPayUtil;
 import com.google.gson.Gson;
 
@@ -274,24 +282,43 @@ public class MemberController {
 	//endregion
 	
 	//region 1905会员卡支付+购票
-	@GetMapping("/SellTicketCustomMember/{Username}/{Password}/{CinemaCode}/{LockOrderCode}/{CardNo}/{CardPassword}/{CouponsCodes}")
+	@GetMapping("/SellTicketCustomMember/{Username}/{Password}/{CinemaCode}/{LockOrderCode}/{MobilePhone}/{CardNo}/{CardPassword}/{CouponsCodes}")
 	@ApiOperation(value = "会员卡购票（1905）")
 	public SellTicketCustomMemberReply SellTicketCustomMember(@PathVariable String Username,@PathVariable String Password,
-			@PathVariable String CinemaCode,@PathVariable String LockOrderCode,@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String CouponsCodes) throws Exception{
+			@PathVariable String CinemaCode,@PathVariable String LockOrderCode,@PathVariable String MobilePhone,
+			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String CouponsCodes) throws Exception{
 		//更新一下座位价格
 		Map<String,Double> map=new CouponsUtil().getCouponsPrice(CinemaCode,LockOrderCode,"",CouponsCodes);
-		return new Dy1905Interface().SellTicketCustomMember(Username, Password, CinemaCode, LockOrderCode, CardNo, CardPassword);
+		SellTicketCustomMemberReply reply = new Dy1905Interface().SellTicketCustomMember(Username, Password, CinemaCode, LockOrderCode, CardNo, CardPassword);
+		if(reply.Status.equals("Success")){
+			Orders orders = orderService.getByLockOrderCode(CinemaCode, LockOrderCode);
+			if(orders!=null){
+				orders.setMobilePhone(MobilePhone);
+				orderService.update(orders);
+			}
+		}
+		return reply;
 	}
 	//endregion
 	
 	//region 1905会员卡支付+卖品
-	@GetMapping("/GoodsOrderMember/{Username}/{Password}/{CinemaCode}/{LocalOrderCode}/{CardNo}/{CardPassword}/{CouponsCodes}")
+	@GetMapping("/GoodsOrderMember/{Username}/{Password}/{CinemaCode}/{LocalOrderCode}/{MobilePhone}/{CardNo}/{CardPassword}/{CouponsCodes}")
 	@ApiOperation(value = "会员卡卖品（1905）")
 	public GoodsOrderMemberReply GoodsOrderMember(@PathVariable String Username,@PathVariable String Password,
-			@PathVariable String CinemaCode,@PathVariable String LocalOrderCode,@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String CouponsCodes) throws Exception{
+			@PathVariable String CinemaCode,@PathVariable String LocalOrderCode,@PathVariable String MobilePhone,
+			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String CouponsCodes) throws Exception{
 		//更新卖品优惠
 		Map<String,Double> map=new CouponsUtil().getCouponsPrice(CinemaCode,"",LocalOrderCode,CouponsCodes);
-		return new Dy1905Interface().GoodsOrderMember(Username, Password, CinemaCode, LocalOrderCode, CardNo, CardPassword);
+		new GoodsCouponsPriceUtil().getGoodsCouponsPrice(LocalOrderCode);
+		GoodsOrderMemberReply reply =new Dy1905Interface().GoodsOrderMember(Username, Password, CinemaCode, LocalOrderCode, CardNo, CardPassword);
+		if(reply.Status.equals("Success")){
+			Goodsorders goodsorders = goodsOrderService.getByLocalOrderCode(LocalOrderCode);
+			if(goodsorders!=null){
+				goodsorders.setMobilePhone(MobilePhone);
+				goodsOrderService.update(goodsorders);
+			}
+		}
+		return reply;
 	}
 	//endregion
 	
@@ -478,17 +505,17 @@ public class MemberController {
 	//endregion
 	
 	//region 会员卡充值
-	@GetMapping("/CardCharge/{Username}/{Password}/{CinemaCode}/{CardNo}/{CardPassword}/{ChargeType}/{RuleCode}/{ChargeAmount}")
+	@GetMapping("/CardCharge/{Username}/{Password}/{CinemaCode}/{CardNo}/{CardPassword}/{ChargeType}/{LevelCode}/{RuleCode}/{ChargeAmount}")
 	@ApiOperation(value = "会员卡充值")
 	public CardChargeReply CardCharge(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
-			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String ChargeType,
+			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String ChargeType,@PathVariable String LevelCode,
 			@PathVariable String RuleCode,@PathVariable String ChargeAmount){
 		CardChargeReply cardChargeReply = new CardChargeReply();
 		if(RuleCode==null||RuleCode==""){
 			cardChargeReply.SetCardChargeTypeInvalidReply();
 			return cardChargeReply;
 		}
-		Choosemembercardcreditrule choosemembercardcreditrule = _choosemembercardcreditruleService.getByRuleCode(CinemaCode, RuleCode);
+		Choosemembercardcreditrule choosemembercardcreditrule = _choosemembercardcreditruleService.getByRuleCode(CinemaCode, LevelCode, RuleCode);
 		if(choosemembercardcreditrule==null){
 			cardChargeReply.SetCardChargeTypeInvalidReply();
 			return cardChargeReply;
@@ -575,7 +602,7 @@ public class MemberController {
 				cardRegisterReply.SetCardChargeTypeInvalidReply();
 				return cardRegisterReply;
 			}
-			Choosemembercardcreditrule choosemembercardcreditrule = _choosemembercardcreditruleService.getByRuleCode(CinemaCode, RuleCode);
+			Choosemembercardcreditrule choosemembercardcreditrule = _choosemembercardcreditruleService.getByRuleCode(CinemaCode, LevelCode, RuleCode);
 			if(choosemembercardcreditrule==null){
 				cardRegisterReply.SetCardChargeTypeInvalidReply();
 				return cardRegisterReply;
@@ -677,10 +704,10 @@ public class MemberController {
 	//endregion
 	
 	//region 预支付会员卡充值(准备支付参数)
-	@GetMapping("/PrePayCardCharge/{Username}/{Password}/{CinemaCode}/{OpenID}/{RuleCode}/{ChargeAmount}")
+	@GetMapping("/PrePayCardCharge/{Username}/{Password}/{CinemaCode}/{OpenID}/{LevelCode}/{RuleCode}/{ChargeAmount}")
 	@ApiOperation(value = "预支付会员卡充值(准备支付参数)")
 	public PrePayParametersReply PrePayCardCharge(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
-			@PathVariable String OpenID,@PathVariable String RuleCode,@PathVariable String ChargeAmount) throws IOException{
+			@PathVariable String OpenID,@PathVariable String LevelCode,@PathVariable String RuleCode,@PathVariable String ChargeAmount) throws IOException{
 		PrePayParametersReply prePayParametersReply = new PrePayParametersReply();
 		//校验参数
 		if (!ReplyExtension.RequestInfoPrePayCardCharge(prePayParametersReply, Username, Password, CinemaCode, OpenID, ChargeAmount))
@@ -717,7 +744,7 @@ public class MemberController {
         	prePayParametersReply.SetCardChargeTypeInvalidReply();
 			return prePayParametersReply;
 		}
-		Choosemembercardcreditrule choosemembercardcreditrule = _choosemembercardcreditruleService.getByRuleCode(CinemaCode, RuleCode);
+		Choosemembercardcreditrule choosemembercardcreditrule = _choosemembercardcreditruleService.getByRuleCode(CinemaCode, LevelCode, RuleCode);
 		if(choosemembercardcreditrule==null){
 			prePayParametersReply.SetCardChargeTypeInvalidReply();
 			return prePayParametersReply;
@@ -755,10 +782,10 @@ public class MemberController {
 	//endregion
 	
 	//region 预支付会员卡注册(准备支付参数)
-	@GetMapping("/PrePayCardRegister/{Username}/{Password}/{CinemaCode}/{OpenID}/{RuleCode}/{InitialAmount}")
+	@GetMapping("/PrePayCardRegister/{Username}/{Password}/{CinemaCode}/{OpenID}/{LevelCode}/{RuleCode}/{InitialAmount}")
 	@ApiOperation(value = "预支付会员卡注册(准备支付参数)")
 	public PrePayParametersReply PrePayCardRegister(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
-			@PathVariable String OpenID,@PathVariable String RuleCode,@PathVariable String InitialAmount) throws IOException{
+			@PathVariable String OpenID,@PathVariable String LevelCode,@PathVariable String RuleCode,@PathVariable String InitialAmount) throws IOException{
 		PrePayParametersReply prePayParametersReply = new PrePayParametersReply();
 		//校验参数
 		if (!ReplyExtension.RequestInfoPrePayCardRegister(prePayParametersReply, Username, Password, CinemaCode, OpenID, InitialAmount))
@@ -796,7 +823,7 @@ public class MemberController {
         	prePayParametersReply.SetCardChargeTypeInvalidReply();
 			return prePayParametersReply;
 		}
-		Choosemembercardcreditrule choosemembercardcreditrule = _choosemembercardcreditruleService.getByRuleCode(CinemaCode, RuleCode);
+		Choosemembercardcreditrule choosemembercardcreditrule = _choosemembercardcreditruleService.getByRuleCode(CinemaCode, LevelCode, RuleCode);
 		if(choosemembercardcreditrule==null){
 			prePayParametersReply.SetCardChargeTypeInvalidReply();
 			return prePayParametersReply;

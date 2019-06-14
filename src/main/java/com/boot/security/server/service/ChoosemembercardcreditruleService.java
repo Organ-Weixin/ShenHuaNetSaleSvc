@@ -14,5 +14,5 @@ public interface ChoosemembercardcreditruleService {
 	
 	List<Choosemembercardcreditrule> getRechargeTypeListByLevelCode(String cinemacode,String levelcode);
 	
-	Choosemembercardcreditrule getByRuleCode(String cinemacode,String rulecode);
+	Choosemembercardcreditrule getByRuleCode(String cinemacode, String levelcode ,String rulecode);
 }
