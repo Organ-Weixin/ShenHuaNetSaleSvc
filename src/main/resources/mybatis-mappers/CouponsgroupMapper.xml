@@ -218,6 +218,9 @@
 			<if test="UpdateDate != null">
 				UpdateDate = #{UpdateDate}, 
 			</if>
+			<if test="IsUseChatRoom != null">
+				IsUseChatRoom = #{IsUseChatRoom}, 
+			</if>
 
 		</set>
 

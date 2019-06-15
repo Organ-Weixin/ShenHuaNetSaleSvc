@@ -86,6 +86,17 @@ public class CinemaListController {
         		   cinemareply.setCinemaLabel(cinema.getCinemaLabel());
         		   cinemareply.setCinemaPhone(cinema.getCinemaPhone());
         		   cinemareply.setIsSnackDistribution(cinema.getIsSnackDistribution()==1?"是":"否");
+        		   if(cinema.getOverRefundTime()!=null&&cinema.getOverRefundTime()>0){
+        			   cinemareply.setOverRefundTime(cinema.getOverRefundTime());
+        		   }else
+        		   {
+        			   cinemareply.setOverRefundTime(0);
+        		   }
+        		   if(cinema.getRefundFee()!=null&&cinema.getRefundFee()>0){
+        			   cinemareply.setRefundFee(cinema.getRefundFee());
+        		   }else{
+        			   cinemareply.setRefundFee(0D);
+        		   }
         		   cinemas.add(cinemareply);
     		   }
     	   }

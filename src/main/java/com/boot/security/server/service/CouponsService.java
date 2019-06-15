@@ -32,4 +32,5 @@ public interface CouponsService {
 	List<Coupons> getUserCoupons(String openid,Integer status);
 	
 	List<Coupons> getByGroupCodeAndOpenId(String groupcode,String openid,Integer status);
+	int save(Coupons Coupons);
 }

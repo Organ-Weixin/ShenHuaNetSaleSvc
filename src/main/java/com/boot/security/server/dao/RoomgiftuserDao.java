@@ -24,7 +24,7 @@ public interface RoomgiftuserDao {
     int update(Roomgiftuser roomgiftuser);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into roomgiftuser(OpenID, CinemaCode,RoomCode, GiftCode, GiftName, Image, GetDate, StartDate, ExpireDate, giftType) values(#{OpenID},#{CinemaCode},#{RoomCode}, #{GiftCode}, #{GiftName}, #{Image}, #{GetDate}, #{StartDate}, #{ExpireDate}, #{giftType})")
+    @Insert("insert into roomgiftuser(OpenID, CinemaCode,RoomCode, GiftCode, GiftName, Image, GetDate, StartDate, ExpireDate, giftType,Timestamp) values(#{OpenID},#{CinemaCode},#{RoomCode}, #{GiftCode}, #{GiftName}, #{Image}, #{GetDate}, #{StartDate}, #{ExpireDate}, #{giftType},#{Timestamp})")
     int save(Roomgiftuser roomgiftuser);
     
     int count(@Param("params") Map<String, Object> params);

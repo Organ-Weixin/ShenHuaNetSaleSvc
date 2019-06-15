@@ -28,7 +28,7 @@ public interface CinemaDao {
     @Update("update  cinema set Name=#{Name},Address=#{Address},ScreenCount=#{ScreenCount},CinemaId=#{CinemaId} where Code=#{Code}")
     int updateByCode(Cinema cinema);
     
-    @Insert("insert into cinema(MId, Code, Name, Province, City, Address, ScreenCount, ManualAdd, IsOpen, ContactName, ContactMobile, TheaterChain, Latitude, Longitude, IsOpenSnacks, CinemaPhone, TicketHint, CinemaLabel, IsSnackDistribution, Created, Updated, CinemaId,IsUseLowestPriceReport) values(#{MId}, #{Code}, #{Name}, #{Province}, #{City}, #{Address}, #{ScreenCount}, #{ManualAdd}, #{IsOpen}, #{ContactName}, #{ContactMobile}, #{TheaterChain}, #{Latitude}, #{Longitude}, #{IsOpenSnacks}, #{CinemaPhone}, #{TicketHint}, #{CinemaLabel}, #{IsSnackDistribution}, #{Created}, #{Updated}, #{CinemaId},#{IsUseLowestPriceReport})")
+    @Insert("insert into cinema(MId, Code, Name, Province, City, Address, ScreenCount, ManualAdd, IsOpen, ContactName, ContactMobile, TheaterChain, Latitude, Longitude, IsOpenSnacks, CinemaPhone, TicketHint, CinemaLabel, IsSnackDistribution, Created, Updated, CinemaId,IsUseLowestPriceReport,OverRefundTime,RefundFee) values(#{MId}, #{Code}, #{Name}, #{Province}, #{City}, #{Address}, #{ScreenCount}, #{ManualAdd}, #{IsOpen}, #{ContactName}, #{ContactMobile}, #{TheaterChain}, #{Latitude}, #{Longitude}, #{IsOpenSnacks}, #{CinemaPhone}, #{TicketHint}, #{CinemaLabel}, #{IsSnackDistribution}, #{Created}, #{Updated}, #{CinemaId},#{IsUseLowestPriceReport},#{OverRefundTime},#{RefundFee})")
     int save(Cinema cinema);
   
     int update(Cinema cinema);

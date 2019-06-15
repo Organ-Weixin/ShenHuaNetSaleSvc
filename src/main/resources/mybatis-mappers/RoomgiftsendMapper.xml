@@ -69,6 +69,9 @@
 			<if test="sendTime != null">
 				sendTime = #{sendTime}, 
 			</if>
+			<if test="timestamp != null">
+				timestamp = #{timestamp}, 
+			</if>
 
 		</set>
 

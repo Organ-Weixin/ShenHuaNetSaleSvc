@@ -165,6 +165,12 @@
 			<if test="IsGeneralStore != null">
 				IsGeneralStore = #{IsGeneralStore}, 
 			</if>
+			<if test="OverRefundTime != null">
+				OverRefundTime = #{OverRefundTime}, 
+			</if>
+			<if test="RefundFee != null">
+				RefundFee = #{RefundFee},
+			</if>
 		</set>
 
 		where t.Id = #{Id}

@@ -81,7 +81,8 @@ public class MtxInterface implements ICTMSInterface {
 	 private Webservice mtxCardService;
 	 MemberCardServiceImpl _memberCardService=SpringUtil.getBean(MemberCardServiceImpl.class);
 	 MemberCardLevelServiceImpl _memberCardLevelService=SpringUtil.getBean(MemberCardLevelServiceImpl.class);
-	// 查询影厅基本信息 
+	
+	 //region 查询影厅基本信息 (完成)
 	public CTMSQueryCinemaReply QueryCinema(Usercinemaview userCinema) {
 		CTMSQueryCinemaReply reply = new CTMSQueryCinemaReply();
 		MtxGetHallResult mtxReply = mtxService.GetHall(userCinema);
@@ -108,7 +109,9 @@ public class MtxInterface implements ICTMSInterface {
 		reply.ErrorCode = mtxReply.getGetHallResult().getResultCode();
 		return reply;
 	}
-	//查询影厅座位信息
+	//endregion
+	
+	//region 查询影厅座位信息(完成)
 	public CTMSQuerySeatReply QuerySeat(Usercinemaview userCinema, Screeninfo screen) throws Exception {
 		CTMSQuerySeatReply reply = new CTMSQuerySeatReply();
 		MtxGetHallAllSeatResult mtxReply = mtxService.GetHallAllSeat(userCinema, screen);
@@ -141,8 +144,9 @@ public class MtxInterface implements ICTMSInterface {
 		reply.ErrorCode = mtxReply.getResultCode();
 		return reply;
 	}
+	//endregion
 
-	// 查询放映计划信息////排期
+	//region 查询放映计划信息(完成)
 	@Override
 	public CTMSQuerySessionReply QuerySession(Usercinemaview userCinema, Date StartDate, Date EndDate)
 			throws Exception {
@@ -193,8 +197,9 @@ public class MtxInterface implements ICTMSInterface {
 		}
 		return reply;
 	}
+	//endregion
 
-	// 查询影片信息
+	//region 查询影片信息(完成)
 	@Override
 	public CTMSQueryFilmReply QueryFilm(Usercinemaview userCinema, Date StartDate, Date EndDate) throws Exception {
 		CTMSQueryFilmReply reply = new CTMSQueryFilmReply();
@@ -234,8 +239,9 @@ public class MtxInterface implements ICTMSInterface {
 		reply.Status = StatusEnum.Success;
 		return reply;
 	}
+	//endregion
 
-	// 查询放映计划座位状态
+	//region 查询放映计划座位状态(完成)
 	@Override
 	public CTMSQuerySessionSeatReply QuerySessionSeat(Usercinemaview userCinema, String SessionCode,
 			SessionSeatStatusEnum Status) throws Exception {
@@ -277,8 +283,9 @@ public class MtxInterface implements ICTMSInterface {
 		reply.ErrorCode = mtxReply.getGetPlanSiteStateResult().getResultCode();
 		return reply;
 	}
+	//endregion
 
-	// 锁定座位
+	//region 锁定座位(完成)
 	@Override
 	public CTMSLockSeatReply LockSeat(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSLockSeatReply reply = new CTMSLockSeatReply();
@@ -298,8 +305,9 @@ public class MtxInterface implements ICTMSInterface {
 		reply.ErrorCode = mtxReply.getRealCheckSeatStateResult().getResultCode();
 		return reply;
 	}
+	//endregion
 
-	// 解锁座位
+	//region 解锁座位(完成)
 	@Override
 	public CTMSReleaseSeatReply ReleaseSeat(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSReleaseSeatReply reply = new CTMSReleaseSeatReply();
@@ -315,6 +323,7 @@ public class MtxInterface implements ICTMSInterface {
 		reply.ErrorCode = mtxUnLockReply.getUnLockOrderCenCinResult().getResultCode();
 		return reply;
 	}
+	//endregion
 
 	// 提交订单
 	@Override

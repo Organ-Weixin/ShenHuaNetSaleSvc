@@ -36,7 +36,9 @@ import com.boot.security.server.page.table.PageTableRequest;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
+import com.boot.security.server.utils.FileUploadUtils;
 import com.boot.security.server.utils.HttpHelper;
+import com.boot.security.server.utils.PropertyHolder;
 import com.google.gson.Gson;
 
 import freemarker.template.SimpleDate;
@@ -106,7 +108,9 @@ public class FilminfoController {
     @RequestMapping(value = "/upload/filmImage", method = {RequestMethod.POST})
     @ResponseBody
     public Object filmImage(@RequestParam(value="file",required=false) MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String suffix="";
+    	Map<String,Object> map2=new HashMap<>();
+        Map<String,Object> map=new HashMap<>();
+    	String suffix="";
         String saveroot="";
         String returnroot="";
         String path="";
@@ -122,7 +126,7 @@ public class FilminfoController {
                 //上线路径
                 //onlinePath=path.getParentFile().getParentFile().getParent()+File.separator+"uploads"+File.separator;
                 //saveroot=ResourceUtils.getURL("classpath:").getPath()+File.separator+"static/upload/filmImage";
-        		saveroot=new File(System.getProperty("catalina.home")).getAbsolutePath()+File.separator+"webapps/upload";
+        		saveroot=PropertyHolder.get().getServerPath()+"/upload";
                 path=new SimpleDateFormat("yyyyMM").format(new Date());
                 fileName=new Date().getTime()+new Random().nextInt(1000)+"." +suffix;//新的文件名
                 File files =new File(saveroot+ File.separator +path+ File.separator);
@@ -132,6 +136,22 @@ public class FilminfoController {
                 }
                 file.transferTo(targetFile);
                 System.out.println(targetFile);
+                
+                //上传到OSS服务器
+        		if(true){
+        			String BUCKET="whtxcx";
+        			String BUCKETPATH ="upload";
+        			String filePath="/" +path+ "/"+fileName;
+        			String mess = FileUploadUtils.uploadOss(saveroot,filePath,BUCKET,BUCKETPATH);
+        			System.out.println(mess);
+        			if(!"".equals(mess)){
+        				map.put("code",-1);
+        		        map.put("msg","图片上传出错："+mess);
+        			}
+        			map2.put("src","https://"+BUCKET+".oss-cn-hangzhou.aliyuncs.com/"+BUCKETPATH+"/"+path+"/"+fileName); 
+        		}else{
+        			map2.put("src",returnroot +"/" + path + "/" +fileName); 
+        		}
             }
         }catch (Exception e){
         }finally{
@@ -145,12 +165,9 @@ public class FilminfoController {
 	        } catch (IOException e) {
 	        }
         }
-        Map<String,Object> map2=new HashMap<>();
-        Map<String,Object> map=new HashMap<>();
         map.put("code",0);
         map.put("msg","上传成功！");
         map.put("data",map2);
-        map2.put("src",returnroot +"/" + path + "/" +fileName); 
         return map;
     }
     //endregion

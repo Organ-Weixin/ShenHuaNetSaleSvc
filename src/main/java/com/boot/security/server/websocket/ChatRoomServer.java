@@ -30,6 +30,7 @@ import com.boot.security.server.apicontroller.reply.BaseReply;
 import com.boot.security.server.apicontroller.reply.QueryScreenRoomReply.ScreenRoom;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Coupons;
+import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.Couponsgroup;
 import com.boot.security.server.model.DXChatMessage;
 import com.boot.security.server.model.LockerPool;
@@ -219,8 +220,19 @@ public class ChatRoomServer {
                     couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()==null?1:couponsgroup.getIssuedNumber()+1);
                     CouponsgroupService.update(couponsgroup);
                     //生成优惠券
-                    /*Coupons coupons =new Coupons();
-                    coupons.setCouponsCode(CouponsCode);*/
+                    for(int i=0;i<couponsgroup.getCouponsNumber();i++){
+                		Coupons coupons = new Coupons();
+                		//优惠券编码--13位时间戳加5位随机数
+                		String couponsCode = String.valueOf(new Date().getTime());
+                		couponsCode+=(int)((Math.random()*9+1)*10000);
+                		coupons.setCouponsCode(couponsCode);
+                    	coupons.setCouponsName(couponsgroup.getCouponsName());
+                    	coupons.setEffectiveDate(couponsgroup.getEffectiveDate());
+                    	coupons.setExpireDate(couponsgroup.getExpireDate());
+                    	coupons.setGroupCode(couponsgroup.getGroupCode());
+                    	coupons.setStatus(CouponsStatusEnum.Created.getStatusCode());
+                    	CouponsService.save(coupons);
+                	}
                     
                     Roomgiftsend giftSendRecords = new Roomgiftsend();
                     giftSendRecords.setGiftName(couponsgroup.getCouponsName()); //奖品名
@@ -300,7 +312,7 @@ public class ChatRoomServer {
                         Roomgiftsend sendRecords = roomgiftsendService.getByGiftAndRoomAndTimestamp("1",prizeInfo[0],roomName,prizeInfo[1]);
                         chatMessage.setMessageType("22");
                         chatMessage.setContent(String.valueOf(roomGift.getSendNumber()-list.size()-1));
-                        sendMessage(sendRecords.getOpenid()+roomName,chatMessage.toString());
+                        sendMessage(phoneOrOpenid+roomName,chatMessage.toString());
                     }
                 }else if(type==2){
                 	Couponsgroup couponsgroup=CouponsgroupService.getById(Long.parseLong(prizeInfo[0]));
@@ -312,67 +324,53 @@ public class ChatRoomServer {
                         chatMessage.setContent("礼物被抢光了");
                         chatMessage.setPrizeId(prizeInfo[0]);
                         sendMessage(phoneOrOpenid+roomName,chatMessage.toString());
-                    }else{ //领券
-                        /*DXChatUserGift dxChatUserGift = new DXChatUserGift();
-                        dxChatUserGift.setGiftId(Long.parseLong(prizeInfo[0]));
-                        dxChatUserGift.setPhone(phoneOrOpenid);
-                        dxChatUserGift.setMemo(dxPlatTicket.getName());
-                        dxChatUserGift.setRoomName(roomName);
-                        dxChatUserGift.setTimestamp(prizeInfo[1]);
-//                        dxChatUserGift.setPhoto(dxPlatTicket.getPhoto());
-                        dxChatUserGift.setOverTime(dxPlatTicket.getEndTime());
-                        dxChatUserGift.setType(2);
-                        dxChatUserGiftService.save(dxChatUserGift);
+                    }else{ //领优惠券
+                    	 Roomgiftuser roomgift = new Roomgiftuser();
+                         roomgift.setGiftCode(prizeInfo[0]);
+                         roomgift.setOpenID(phoneOrOpenid);
+                         //roomgift.setMemo(chatRoomGift.getMemo());
+                         roomgift.setRoomCode(roomName);
+                         roomgift.setTimestamp(prizeInfo[1]);
+                         roomgift.setOpenID(roomgift.getOpenID());
+                         //roomgift.setExpireDate(overTime);
+                         roomgift.setGiftType("2");
+                         //roomgift.save(dxChatUserGift);
+                         roomgiftuserService.save(roomgift);
 
-                        DXAppUser dxAppUser = dxAppUserService.findDXAppUserByMobile(phoneOrOpenid);
-                        DXUserAndTicket dxUserAndTicket = new DXUserAndTicket();
-                        dxUserAndTicket.setDxAppUser(dxAppUser);
-                        dxUserAndTicket.setDxPlatTicket(dxPlatTicket);
-                        dxUserAndTicket.setType(2);
-                        if(dxPlatTicket.getOverDateNumber()!=null){
-                            Date now = new Date();
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                            String nowStr = sdf.format(now);
-                            nowStr = nowStr.substring(0,11)+"00:00:00";
-                            Date startDate = sdf.parse(nowStr);
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.setTime(startDate);
-                            calendar.add(Calendar.DATE,dxPlatTicket.getOverDateNumber());
-                            Date endDate = calendar.getTime();
-                            if(endDate.after(dxPlatTicket.getEndTime())){
-                                endDate=dxPlatTicket.getEndTime();
-                            }
-                            if(endDate.before(now)){ //如果超时设置为已过期
-                                dxUserAndTicket.setStatus(2);
-                            }
-                            dxUserAndTicket.setStartTime(startDate);
-                            dxUserAndTicket.setEndTime(endDate);
-                        }else{
-                            dxUserAndTicket.setStartTime(dxPlatTicket.getStartTime());
-                            dxUserAndTicket.setEndTime(dxPlatTicket.getEndTime());
-                            if(new Date().after(dxPlatTicket.getEndTime())){
-                                dxUserAndTicket.setStatus(2);
-                            }
+                        List<Coupons> couponsList=CouponsService.getByGroupCode(couponsgroup.getGroupCode());
+                        for(Coupons coupons :couponsList){
+                        	if(couponsgroup.getValidityType()==2){
+                				Calendar c = Calendar.getInstance();
+                				c.add(Calendar.DAY_OF_MONTH, couponsgroup.getEffectiveDays());
+                				coupons.setEffectiveDate(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(c.getTime())));
+                				c.add(Calendar.DAY_OF_MONTH, couponsgroup.getValidityDays());
+                				coupons.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(c.getTime())));
+                    		}
+                			coupons.setReceiveDate(new Date());
+                			coupons.setOpenID(phoneOrOpenid);
+                			coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
+                			CouponsService.update(coupons);
                         }
-                        if(dxPlatTicket.getEndTime().after(new Date())){
-                            dxUserAndTicket.setStatus(0);
-                        }else{
-                            dxUserAndTicket.setStatus(2);
-                        }
-                        dxUserAndTicketService.save(dxUserAndTicket);
-
-
+                    	//已发放数量
+            			couponsgroup.setIssuedNumber(couponsgroup.getCouponsNumber());
+            			//已领取数量
+            			couponsgroup.setFetchNumber(couponsgroup.getCouponsNumber());
+            			//剩余数量
+            			couponsgroup.setRemainingNumber(0);
+            			couponsgroup.setUpdateDate(new Date());
+            			CouponsgroupService.update(couponsgroup);
+                        
                         chatMessage.setRole(roll);
                         chatMessage.setHeader(header);
                         chatMessage.setNickname(nickName);
                         chatMessage.setMessageType("3");
-                        chatMessage.setContent("恭喜你获得了"+dxPlatTicket.getName());
+                        chatMessage.setContent("恭喜你获得了"+couponsgroup.getCouponsName());
                         chatMessage.setPrizeId(prizeId);
                         sendMessage(phoneOrOpenid+roomName,chatMessage.toString());
-                        DXChatRoomGiftSendRecords sendRecords = dxChatRoomGiftSendRecordsService.getByGiftAndRoomAndTimestamp(2,prizeInfo[0],roomName,prizeInfo[1]);
+                        Roomgiftsend sendRecords = roomgiftsendService.getByGiftAndRoomAndTimestamp("2",prizeInfo[0],roomName,prizeInfo[1]);
                         chatMessage.setMessageType("22");
-                        chatMessage.setContent(String.valueOf(dxPlatTicket.getNumber()-list.size()-1));
-                        sendMessage(sendRecords.getPhone()+roomName,chatMessage.toString());*/
+                        chatMessage.setContent(String.valueOf(couponsgroup.getSendNumber()-list.size()-1));
+                        sendMessage(phoneOrOpenid+roomName,chatMessage.toString());
                     }
                 }
                 return;

@@ -1957,23 +1957,6 @@ ScreenType,ListingPrice,LowestPrice))
 		// 更新订单信息
 		Goodsorders orderBaseInfo=order.getOrderBaseInfo();
 		orderBaseInfo = ModelMapper.MapFrom(orderBaseInfo, QueryXmlObj);
-		for (Goodsorderdetails goodsdetail : order.getOrderGoodsDetails()) {
-			List<SubmitGoodsOrderQueryXmlGoods> xmlgoods = QueryXmlObj.getGoodsList().getGoods().stream()
-					.filter((SubmitGoodsOrderQueryXmlGoods s) -> goodsdetail.getGoodsCode().equals(s.getGoodsCode()))
-					.collect(Collectors.toList());
-			if(xmlgoods!=null){
-				goodsdetail.setStandardPrice(xmlgoods.get(0).getStandardPrice());
-				goodsdetail.setSettlePrice(xmlgoods.get(0).getSettlePrice());
-				goodsdetail.setChannelFee(xmlgoods.get(0).getGoodsChannelFee());
-				goodsdetail.setGoodsCount(xmlgoods.get(0).getGoodsCount());
-				goodsdetail.setSubTotalAmount(xmlgoods.get(0).getStandardPrice()*xmlgoods.get(0).getGoodsCount());
-				goodsdetail.setSubTotalSettleAmount(xmlgoods.get(0).getSettlePrice()*xmlgoods.get(0).getGoodsCount());
-			}
-		}
-		//把总金额更新到主表
-		orderBaseInfo.setTotalPrice(order.getOrderGoodsDetails().stream().mapToDouble(Goodsorderdetails::getSubTotalAmount).sum());
-		orderBaseInfo.setTotalSettlePrice(order.getOrderGoodsDetails().stream().mapToDouble(Goodsorderdetails::getSubTotalSettleAmount).sum());
-		orderBaseInfo.setTotalFee(order.getOrderGoodsDetails().stream().mapToDouble(Goodsorderdetails::getChannelFee).sum());
 		
 		// TODO:满天星的订单属于会员卡支付的话暂时要求传入会员卡交易流水号
 		if (userCinema.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode()
@@ -2218,23 +2201,7 @@ ScreenType,ListingPrice,LowestPrice))
 		}
 		// 更新卖品订单信息
 		ModelMapper.MapFrom(goodsorder.getOrderBaseInfo(), QueryXmlObj);
-		for (Goodsorderdetails goodsdetail : goodsorder.getOrderGoodsDetails()) {
-			List<SubmitMixOrderQueryXmlGoods> xmlgoods = QueryXmlObj.getGoods().stream()
-					.filter((SubmitMixOrderQueryXmlGoods s) -> goodsdetail.getGoodsCode().equals(s.getGoodsCode())).collect(Collectors.toList());
-			if(xmlgoods!=null){
-				goodsdetail.setStandardPrice(xmlgoods.get(0).getStandardPrice());
-				goodsdetail.setSettlePrice(xmlgoods.get(0).getSettlePrice());
-				goodsdetail.setChannelFee(xmlgoods.get(0).getGoodsChannelFee());
-				goodsdetail.setGoodsCount(xmlgoods.get(0).getGoodsCount());
-				goodsdetail.setSubTotalAmount(xmlgoods.get(0).getStandardPrice()*xmlgoods.get(0).getGoodsCount());
-				goodsdetail.setSubTotalSettleAmount(xmlgoods.get(0).getSettlePrice()*xmlgoods.get(0).getGoodsCount());
-			}
-		}
-		//把总金额更新到主表
-		goodsorder.getOrderBaseInfo().setTotalPrice(goodsorder.getOrderGoodsDetails().stream().mapToDouble(Goodsorderdetails::getSubTotalAmount).sum());
-		goodsorder.getOrderBaseInfo().setTotalSettlePrice(goodsorder.getOrderGoodsDetails().stream().mapToDouble(Goodsorderdetails::getSubTotalSettleAmount).sum());
-		goodsorder.getOrderBaseInfo().setTotalFee(goodsorder.getOrderGoodsDetails().stream().mapToDouble(Goodsorderdetails::getChannelFee).sum());
-
+		
 		// TODO:满天星的订单属于会员卡支付的话暂时要求传入会员卡交易流水号
 		if (userCinema.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode()
 				&& order.getOrderBaseInfo().getIsMemberPay() == 1 && order.getOrderBaseInfo().getPaySeqNo().isEmpty()) {

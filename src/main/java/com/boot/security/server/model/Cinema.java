@@ -29,6 +29,8 @@ public class Cinema extends BaseEntity<Long> {
 	private String CinemaId;
 	private Integer IsUseLowestPriceReport;
 	private Integer IsGeneralStore;
+	private Integer OverRefundTime;//开场前几分钟不可以退票
+	private Double RefundFee;//退票手续费
 	
 	private Date GoodsUpdated; //影院卖品更新时间
 
@@ -188,6 +190,18 @@ public class Cinema extends BaseEntity<Long> {
 	}
 	public void setIsGeneralStore(Integer isGeneralStore) {
 		IsGeneralStore = isGeneralStore;
+	}
+	public Integer getOverRefundTime() {
+		return OverRefundTime;
+	}
+	public void setOverRefundTime(Integer overRefundTime) {
+		OverRefundTime = overRefundTime;
+	}
+	public Double getRefundFee() {
+		return RefundFee;
+	}
+	public void setRefundFee(Double refundFee) {
+		RefundFee = refundFee;
 	}
 	
 }

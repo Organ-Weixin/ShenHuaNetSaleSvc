@@ -221,7 +221,7 @@ public class WxPayUtil {
         //本地或者服务器的证书位置（证书在微信支付申请成功发来的通知邮件中）
 		//String cert=ResourceUtils.getURL("classpath:").getPath()+File.separator+"static/cert/"+CinemaCode+"/"+WxpayRefundCert;
 		String cert=new File(System.getProperty("catalina.home")).getAbsolutePath()+File.separator+"webapps/cert/"+CinemaCode+"/"+WxpayRefundCert;
-		System.out.println("退款证书："+cert);
+		//System.out.println("退款证书："+cert);
 		//私钥（在安装证书时设置）
 		String password = WxpayMchId;
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
