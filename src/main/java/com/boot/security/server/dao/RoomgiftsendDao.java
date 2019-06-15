@@ -32,8 +32,8 @@ public interface RoomgiftsendDao {
     List<Roomgiftsend> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
     
     @Select("select * from roomgiftsend t where t.gifttype=#{gifttype} and t.roomCode = #{roomcode} and giftCode = #{giftcode}")
-    List<Roomgiftsend> getByRoomCode(@Param("roomcode") String gifttype,@Param("roomcode") String roomcode,@Param("giftcode") String giftcode);
+    List<Roomgiftsend> getByRoomCode(@Param("gifttype") String gifttype,@Param("roomcode") String roomcode,@Param("giftcode") String giftcode);
     
     @Select("select * from roomgiftsend t where t.gifttype=#{gifttype} and t.roomCode = #{roomcode} and timestamp = #{timestamp}")
-    Roomgiftsend getByGiftAndRoomAndTimestamp(String gifttype,String giftcode,String roomcode,String timestamp);
+    Roomgiftsend getByGiftAndRoomAndTimestamp(@Param("gifttype")String gifttype,@Param("giftcode")String giftcode,@Param("roomcode")String roomcode,@Param("timestamp")String timestamp);
 }

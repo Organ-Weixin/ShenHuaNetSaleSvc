@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.boot.security.server.apicontroller.reply.BaseReply;
@@ -63,18 +64,24 @@ public class ChatRoomServer {
 //    private Roomgift roomGift;
 //    private DXChatRoomGiftSendRecords giftSendRecords;
     public static final Lock addRoomLock = new ReentrantLock();
-    @Autowired
-    private RoomgiftServiceImpl roomGiftService;
-    @Autowired
-    private RoomgiftsendServiceImpl roomgiftsendService;
-    @Autowired
-    private CinemaService cinemaService;
-    @Autowired
-    private CouponsgroupServiceImpl CouponsgroupService;
-    @Autowired
-    private CouponsServiceImpl CouponsService;
-    @Autowired
-    private RoomgiftuserServiceImpl roomgiftuserService;
+    
+
+    private static ApplicationContext applicationContext;
+ 
+	public static void setApplicationContext(ApplicationContext context) {
+	    applicationContext = context;
+	}
+    
+//    @Autowired
+//    private RoomgiftServiceImpl roomGiftService;
+//    @Autowired
+//    private RoomgiftsendServiceImpl roomgiftsendService;
+//    @Autowired
+//    private CouponsgroupServiceImpl CouponsgroupService;
+//    @Autowired
+//    private CouponsServiceImpl CouponsService;
+//    @Autowired
+//    private RoomgiftuserServiceImpl roomgiftuserService;
 
 
     @OnOpen
@@ -179,8 +186,9 @@ public class ChatRoomServer {
             if(roll.equals("2")){	//验证是否是管理员
                 //记录奖品发送数量
                 if(messageContent.equals("1")){	//发放实物
-                	Roomgift roomGift = roomGiftService.getById(Long.parseLong(prizeInfo[0]));
-                    List<Roomgiftsend> list = roomgiftsendService.getByRoomCode("1",prizeInfo[0],roomName);//查出聊天室发放的该礼物数量
+                	RoomgiftServiceImpl rImpl = applicationContext.getBean(RoomgiftServiceImpl.class);
+                	Roomgift roomGift = rImpl.getById(Long.parseLong(prizeInfo[0]));
+                    List<Roomgiftsend> list = applicationContext.getBean(RoomgiftsendServiceImpl.class).getByRoomCode("1",prizeInfo[0],roomName);//查出聊天室发放的该礼物数量
                     if(list!=null&&list.size()>= roomGift.getGroupNumber()){
                         chatMessage.setRole(roll);
                         chatMessage.setHeader(header);
@@ -195,30 +203,33 @@ public class ChatRoomServer {
                     Roomgiftsend giftSendRecords = new Roomgiftsend();
                     giftSendRecords.setGiftName(roomGift.getGiftName()); //奖品名
                     giftSendRecords.setSendNumber(roomGift.getSendNumber()); //发送数量
+                    giftSendRecords.setGiftCode("");
                     giftSendRecords.setGiftCode(prizeInfo[0]);
                     giftSendRecords.setRoomCode(roomName);
                     giftSendRecords.setOpenid(phoneOrOpenid);
                     giftSendRecords.setTimestamp(prizeInfo[1]);
                     giftSendRecords.setGiftType("1");
-                    roomgiftsendService.save(giftSendRecords);
+                    applicationContext.getBean(RoomgiftsendServiceImpl.class).save(giftSendRecords);
                 }else if(messageContent.equals("2")){
-                    Couponsgroup couponsgroup=CouponsgroupService.getByGroupCode(prizeInfo[0]);
-                	List<Coupons> list=CouponsService.getByGroupCode(prizeInfo[0]);
-                    if(list!=null&&list.size()>=(couponsgroup.getCouponsNumber()-couponsgroup.getIssuedNumber())){
-                        chatMessage.setHeader(header);
-                        chatMessage.setRole(roll);
-                        chatMessage.setNickname(nickName);
-                        chatMessage.setMessageType("-11");//表示当前聊天室已经超过可用优惠券数
-                        chatMessage.setContent("");
-                        chatMessage.setPrizeId("");
-                        chatMessage.setPhoneOrOpenid("");
-                        log.info("达到最大数量限制");
-                        session.getBasicRemote().sendText(chatMessage.toString());
-                        return;
-                    }
+                    Couponsgroup couponsgroup=applicationContext.getBean(CouponsgroupServiceImpl.class).getById(Long.parseLong(prizeInfo[0]));
+                	List<Coupons> list=applicationContext.getBean(CouponsServiceImpl.class).getByGroupCode(couponsgroup.getGroupCode());
+                	log.info(list.size()+"========");
+                	//这里的限制 走不通 原逻辑是每个房间可设置最多发放几组（可自己按照此思路解决）
+//                	if(list!=null&&list.size()>=(couponsgroup.getCouponsNumber()-couponsgroup.getIssuedNumber())){
+//                        chatMessage.setHeader(header);
+//                        chatMessage.setRole(roll);
+//                        chatMessage.setNickname(nickName);
+//                        chatMessage.setMessageType("-11");//表示当前聊天室已经超过可用优惠券数
+//                        chatMessage.setContent("");
+//                        chatMessage.setPrizeId("");
+//                        chatMessage.setPhoneOrOpenid("");
+//                        log.info("达到最大数量限制");
+//                        session.getBasicRemote().sendText(chatMessage.toString());
+//                        return;
+//                    }
                     couponsgroup.setSendNumber(couponsgroup.getSendNumber());
-                    couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()==null?1:couponsgroup.getIssuedNumber()+1);
-                    CouponsgroupService.update(couponsgroup);
+                    couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()==null?1:couponsgroup.getIssuedNumber()+couponsgroup.getSendNumber());
+                    applicationContext.getBean(CouponsgroupServiceImpl.class).update(couponsgroup);
                     //生成优惠券
                     for(int i=0;i<couponsgroup.getCouponsNumber();i++){
                 		Coupons coupons = new Coupons();
@@ -231,7 +242,7 @@ public class ChatRoomServer {
                     	coupons.setExpireDate(couponsgroup.getExpireDate());
                     	coupons.setGroupCode(couponsgroup.getGroupCode());
                     	coupons.setStatus(CouponsStatusEnum.Created.getStatusCode());
-                    	CouponsService.save(coupons);
+                    	applicationContext.getBean(CouponsServiceImpl.class).save(coupons);
                 	}
                     
                     Roomgiftsend giftSendRecords = new Roomgiftsend();
@@ -243,7 +254,8 @@ public class ChatRoomServer {
                     giftSendRecords.setOpenid(phoneOrOpenid);
                     giftSendRecords.setTimestamp(prizeInfo[1]);
                     giftSendRecords.setGiftType("2");
-                    roomgiftsendService.save(giftSendRecords);
+                    applicationContext.getBean(RoomgiftsendServiceImpl.class).save(giftSendRecords);
+                    log.info("555555");
                 }
             }else{
                 log.info("普通用户不能发送奖品");
@@ -269,10 +281,10 @@ public class ChatRoomServer {
 //                }
 //            }
             synchronized (LockerPool.getSingleton().getLocker(prizeId)){
-            	List<Roomgiftuser> list=roomgiftuserService.getByOpenidAndRoom(type.toString(),phoneOrOpenid,roomName);
+            	List<Roomgiftuser> list=applicationContext.getBean(RoomgiftuserServiceImpl.class).getByOpenidAndRoomAndtime(type.toString(),phoneOrOpenid,roomName,prizeInfo[1]);
                 //List<DXChatUserGift> list = dxChatUserGiftService.getByPhoneAndRoom(type,Long.parseLong(prizeInfo[0]),roomName,prizeInfo[1]);
                 if(type==1){  //领取实物
-                	Roomgift roomGift = roomGiftService.getById(Long.parseLong(prizeInfo[0]));
+                	Roomgift roomGift = applicationContext.getBean(RoomgiftServiceImpl.class).getById(Long.parseLong(prizeInfo[0]));
                     if(list!=null&&list.size()>=roomGift.getSendNumber()){ //已领取完
                         chatMessage.setRole(roll);
                         chatMessage.setHeader(header);
@@ -300,7 +312,7 @@ public class ChatRoomServer {
                         roomgift.setExpireDate(overTime);
                         roomgift.setGiftType("1");
                         //roomgift.save(dxChatUserGift);
-                        roomgiftuserService.save(roomgift);
+                        applicationContext.getBean(RoomgiftuserServiceImpl.class).save(roomgift);
 
                         chatMessage.setRole(roll);
                         chatMessage.setHeader(header);
@@ -309,13 +321,14 @@ public class ChatRoomServer {
                         chatMessage.setContent("恭喜你获得了"+roomgift.getGiftName());
                         chatMessage.setPrizeId(prizeId);
                         sendMessage(phoneOrOpenid+roomName,chatMessage.toString());
-                        Roomgiftsend sendRecords = roomgiftsendService.getByGiftAndRoomAndTimestamp("1",prizeInfo[0],roomName,prizeInfo[1]);
+                        Roomgiftsend sendRecords = applicationContext.getBean(RoomgiftsendServiceImpl.class).getByGiftAndRoomAndTimestamp("1",prizeInfo[0],roomName,prizeInfo[1]);
                         chatMessage.setMessageType("22");
                         chatMessage.setContent(String.valueOf(roomGift.getSendNumber()-list.size()-1));
+                        log.info(chatMessage.getContent()+"======"+list.size());
                         sendMessage(phoneOrOpenid+roomName,chatMessage.toString());
                     }
                 }else if(type==2){
-                	Couponsgroup couponsgroup=CouponsgroupService.getById(Long.parseLong(prizeInfo[0]));
+                	Couponsgroup couponsgroup=applicationContext.getBean(CouponsgroupServiceImpl.class).getById(Long.parseLong(prizeInfo[0]));
                     if(list!=null&&list.size()>=(couponsgroup.getCouponsNumber()-couponsgroup.getIssuedNumber())){ //已领取完
                         chatMessage.setHeader(header);
                         chatMessage.setRole(roll);
@@ -335,9 +348,9 @@ public class ChatRoomServer {
                          //roomgift.setExpireDate(overTime);
                          roomgift.setGiftType("2");
                          //roomgift.save(dxChatUserGift);
-                         roomgiftuserService.save(roomgift);
+                         applicationContext.getBean(RoomgiftuserServiceImpl.class).save(roomgift);
 
-                        List<Coupons> couponsList=CouponsService.getByGroupCode(couponsgroup.getGroupCode());
+                        List<Coupons> couponsList=applicationContext.getBean(CouponsServiceImpl.class).getByGroupCode(couponsgroup.getGroupCode());
                         for(Coupons coupons :couponsList){
                         	if(couponsgroup.getValidityType()==2){
                 				Calendar c = Calendar.getInstance();
@@ -349,7 +362,7 @@ public class ChatRoomServer {
                 			coupons.setReceiveDate(new Date());
                 			coupons.setOpenID(phoneOrOpenid);
                 			coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
-                			CouponsService.update(coupons);
+                			applicationContext.getBean(CouponsServiceImpl.class).update(coupons);
                         }
                     	//已发放数量
             			couponsgroup.setIssuedNumber(couponsgroup.getCouponsNumber());
@@ -358,7 +371,7 @@ public class ChatRoomServer {
             			//剩余数量
             			couponsgroup.setRemainingNumber(0);
             			couponsgroup.setUpdateDate(new Date());
-            			CouponsgroupService.update(couponsgroup);
+            			applicationContext.getBean(CouponsgroupServiceImpl.class).update(couponsgroup);
                         
                         chatMessage.setRole(roll);
                         chatMessage.setHeader(header);
@@ -367,7 +380,7 @@ public class ChatRoomServer {
                         chatMessage.setContent("恭喜你获得了"+couponsgroup.getCouponsName());
                         chatMessage.setPrizeId(prizeId);
                         sendMessage(phoneOrOpenid+roomName,chatMessage.toString());
-                        Roomgiftsend sendRecords = roomgiftsendService.getByGiftAndRoomAndTimestamp("2",prizeInfo[0],roomName,prizeInfo[1]);
+                        Roomgiftsend sendRecords = applicationContext.getBean(RoomgiftsendServiceImpl.class).getByGiftAndRoomAndTimestamp("2",prizeInfo[0],roomName,prizeInfo[1]);
                         chatMessage.setMessageType("22");
                         chatMessage.setContent(String.valueOf(couponsgroup.getSendNumber()-list.size()-1));
                         sendMessage(phoneOrOpenid+roomName,chatMessage.toString());

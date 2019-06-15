@@ -24,7 +24,7 @@ public interface RoomgiftuserDao {
     int update(Roomgiftuser roomgiftuser);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into roomgiftuser(OpenID, CinemaCode,RoomCode, GiftCode, GiftName, Image, GetDate, StartDate, ExpireDate, giftType,Timestamp) values(#{OpenID},#{CinemaCode},#{RoomCode}, #{GiftCode}, #{GiftName}, #{Image}, #{GetDate}, #{StartDate}, #{ExpireDate}, #{giftType},#{Timestamp})")
+    @Insert("insert into roomgiftuser(OpenID, CinemaCode,RoomCode, GiftCode, GiftName, Image, GetDate, StartDate, ExpireDate, giftType,Timestamp) values(#{OpenID},#{CinemaCode},#{RoomCode}, #{GiftCode}, #{GiftName}, #{Image}, #{GetDate}, #{StartDate}, #{ExpireDate}, #{GiftType},#{Timestamp})")
     int save(Roomgiftuser roomgiftuser);
     
     int count(@Param("params") Map<String, Object> params);
@@ -41,4 +41,8 @@ public interface RoomgiftuserDao {
     
     @Select("select * from roomgiftuser where RoomCode = #{roomcode} and GiftCode = #{giftcode}")
     List<Roomgiftuser> getByRoomGift(@Param("roomcode") String roomcode,@Param("giftcode") String giftcode);
+    
+    //根据用户与放映厅房间号查询
+    @Select("select * from roomgiftuser where giftType=#{gifttype} and OPenID = #{openid} and RoomCode = #{roomcode} and Timestamp = #{timestamp}")
+    List<Roomgiftuser> getByOpenidAndRoomAndtime(@Param("gifttype") String gifttype,@Param("openid") String openid,@Param("roomcode") String roomcode,@Param("timestamp") String timestamp);
 }

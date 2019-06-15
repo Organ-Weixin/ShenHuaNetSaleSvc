@@ -127,7 +127,7 @@ public class ChatRoomController {
 		 Map<String,Object> map = new HashMap<>();
          map.put("gift",giftList);
          map.put("coupons",couponslist);
-
+         
        
         return map;
     }

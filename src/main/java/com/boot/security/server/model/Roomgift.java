@@ -64,5 +64,8 @@ public class Roomgift {
 	public void setSendNumber(Integer sendNumber) {
 		this.sendNumber = sendNumber;
 	}
+	public String getGiftType() {
+		return GiftType;
+	} 
 
 }

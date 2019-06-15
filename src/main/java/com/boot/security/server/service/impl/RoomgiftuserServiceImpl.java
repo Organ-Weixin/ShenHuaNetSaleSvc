@@ -35,4 +35,9 @@ public class RoomgiftuserServiceImpl implements RoomgiftuserService {
 		return roomgiftuserDao.getByOpenid(openid, cinemacode);
 	}
 
+	@Override
+	public List<Roomgiftuser> getByOpenidAndRoomAndtime(String gifttype,String openid,String roomcode,String timestamp){
+		return roomgiftuserDao.getByOpenidAndRoomAndtime(gifttype, openid,roomcode,timestamp);
+	}
+	
 }
