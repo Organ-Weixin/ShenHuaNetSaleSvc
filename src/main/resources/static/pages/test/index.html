@@ -12,19 +12,11 @@ Welcome<br/>
 </body>
 <script type="text/javascript" src="../../js/jquery.min.js"></script>
 <script type="text/javascript">
-	$.post(
-		"/Api/chatRoom/getRoomTimestamp",
-		{"roomName":""}
-		function (e){
-			alert(e.status)
-		}
-	)
-	
-    /*var websocket = null;
+    var websocket = null;
 
     //判断当前浏览器是否支持WebSocket
     if('WebSocket' in window){
-        websocket = new WebSocket("ws://172.17.1.189:8080/webSocket/chat/1/2/3/4/5/6");
+        websocket = new WebSocket("ws://localhost:8443/webSocket/chat/1/2/3");
     }
     else{
         alert('Not support websocket')
@@ -71,6 +63,6 @@ Welcome<br/>
         var message = document.getElementById('text').value;
         message={"messageType":"1","content":"content"}
         websocket.send(message);
-    }*/
+    }
 </script>
 </html>
