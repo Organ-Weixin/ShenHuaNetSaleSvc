@@ -10,12 +10,15 @@ import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+import com.boot.security.server.websocket.ChatRoomServer;
 
 /**
  * 启动类
@@ -28,6 +31,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 public class SecurityApplication{
 
 	public static void main(String[] args) {
-		SpringApplication.run(SecurityApplication.class, args);
+		 ConfigurableApplicationContext applicationContext = SpringApplication.run(SecurityApplication.class, args);
+		 ChatRoomServer.setApplicationContext(applicationContext);	
 	}
 }
