@@ -3,6 +3,7 @@ package com.boot.security.server.utils;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Hashtable;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -10,6 +11,10 @@ import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.CannedAccessControlList;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.common.BitMatrix;
 
 public class FileUploadUtils {
 	/**
@@ -72,12 +77,66 @@ public class FileUploadUtils {
 	
 	
 	/**
+	 * 生成二维码，返回图片路径
+	 */
+	public static String generateEwm(String ewmUrl){
+		String root = PropertyHolder.getServerPath();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		String rpath = "/ewm/" + sdf.format(new Date()).substring(0,6);
+		File dir = new File(root+rpath);
+		if(!dir.exists()){
+			dir.mkdirs();
+		}
+		String fileName = FileUploadUtils.getImageByType("jpg");
+		String allpath = dir + "/" + fileName;
+		try{
+			genetateMatrix(ewmUrl,allpath,"jpg");
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		//上传到oss上
+		String mess = uploadOss(root,rpath+"/"+fileName,"whtxcx","upload");
+		if(!"".equals(mess)){
+			System.out.println("二维码上传到oss失败："+rpath+"/"+fileName);
+			return rpath+"/"+fileName;
+		}else{
+			//删除本地图片
+			System.out.println("删除本地二维码："+root+rpath+"/"+fileName);
+			File localfile = new File(root+rpath+"/"+fileName);
+			if(localfile.exists()&&localfile.isFile()){
+				localfile.delete();
+			}
+			rpath = "https://whtxcx.oss-cn-hangzhou.aliyuncs.com/upload"+rpath+"/"+fileName;
+			System.out.println("oss二维码路径："+rpath);
+			return rpath;
+		}
+	}
+	
+	/**
 	 * 根据类型生成名称
 	 * @param filetype
 	 * @return
 	 */
 	public static String getImageByType(String filetype) {
 		return RandomStringUtils.randomAlphabetic(8)+ "."+filetype;
+	}
+	
+	/**
+	 * 生成二维码
+	 */
+	public static void genetateMatrix(String text,String pathname,String format) throws Exception{
+		int width = 300;
+		int height = 300;
+		Hashtable hints = new Hashtable();
+		hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
+		BitMatrix bitMatrix = new MultiFormatWriter().encode(text, BarcodeFormat.QR_CODE, width, height,hints);
+		//生成二维码
+		File outputfile = new File(pathname);
+		MatrixToImageWriter.writeToFile(bitMatrix, format, outputfile);
+	}
+	
+	public static void main(String[] args) {
+		generateEwm("11111");
 	}
 }
 
