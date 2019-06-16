@@ -1397,4 +1397,26 @@ public class ReplyExtension {
 		return true;
 	}
 	//endregion
+	
+	//region 
+	public static boolean RequestInfoGuard(QueryUserTicketReply reply, String Username, String Password, String CinemaCode, String OpenID) {
+		if (Username == null || "".equals(Username)) {
+			reply.SetNecessaryParamMissReply("Username");
+			return false;
+		}
+		if (Password == null || "".equals(Password)) {
+			reply.SetNecessaryParamMissReply("Password");
+			return false;
+		}
+		if (CinemaCode == null || "".equals(CinemaCode)) {
+			reply.SetNecessaryParamMissReply("CinemaCode");
+			return false;
+		}
+		if (OpenID == null || "".equals(OpenID)) {
+			reply.SetNecessaryParamMissReply("OpenID");
+			return false;
+		}
+		return true;
+	}
+	//endregion
 }

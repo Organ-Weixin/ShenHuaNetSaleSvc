@@ -2,17 +2,26 @@ package com.boot.security.server.api.core;
 
 import java.util.List;
 
+import com.boot.security.server.model.Coupons;
+
 public class LockSeatReply extends BaseReply {
 	public LockSeatReply()
     {
         Id = ID_LockSeatReply;
     }
 	private LockSeatReplyOrder Order;
+	private List<Coupons> UserCoupons;
 	public LockSeatReplyOrder getOrder() {
 		return Order;
 	}
 	public void setOrder(LockSeatReplyOrder order) {
 		Order = order;
+	}
+	public List<Coupons> getUserCoupons() {
+		return UserCoupons;
+	}
+	public void setUserCoupons(List<Coupons> userCoupons) {
+		UserCoupons = userCoupons;
 	}
 	public class LockSeatReplyOrder{
 		private String OrderCode;

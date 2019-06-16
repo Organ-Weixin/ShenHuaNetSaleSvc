@@ -55,6 +55,12 @@
 				</div>
 			</div>
 			<div class='form-group'>
+				<label class='col-md-2 control-label'>优惠描述</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='offerDescription' id='OfferDescription'>
+				</div>
+			</div>
+			<div class='form-group'>
 				<label class='col-md-2 control-label'>规则描述</label>
 				<div class='col-md-10'>
 					<input class='form-control' type='text' name='ruleDescription' id='RuleDescription'>
@@ -156,6 +162,7 @@
 						$('#LevelCode').val(data.levelCode);
 						$('#Credit').val(data.credit);
 						$('#GivenAmount').val(data.givenAmount);
+						$("#OfferDescription").val(data.offerDescription);
 						$('#RuleDescription').val(data.ruleDescription);
 						$('#StatusSelect').val(data.status);
 						getMemberCardLevel(data.cinemaCode);

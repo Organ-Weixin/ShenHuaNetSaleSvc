@@ -35,8 +35,8 @@
 			<if test="params.GivenAmount != null and params.GivenAmount != ''">
 				and GivenAmount = #{params.GivenAmount} 
 			</if>
-			<if test="params.EffectiveDays != null and params.EffectiveDays != ''">
-				and EffectiveDays = #{params.EffectiveDays} 
+			<if test="params.OfferDescription != null and params.OfferDescription != ''">
+				and OfferDescription = #{params.OfferDescription} 
 			</if>
 			<if test="params.RuleDescription != null and params.RuleDescription != ''">
 				and RuleDescription = #{params.RuleDescription} 
@@ -96,8 +96,8 @@
 			<if test="GivenAmount != null">
 				GivenAmount = #{GivenAmount}, 
 			</if>
-			<if test="EffectiveDays != null">
-				EffectiveDays = #{EffectiveDays}, 
+			<if test="OfferDescription != null">
+				OfferDescription = #{OfferDescription}, 
 			</if>
 			<if test="RuleDescription != null">
 				RuleDescription = #{RuleDescription}, 

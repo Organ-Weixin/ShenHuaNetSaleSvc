@@ -262,6 +262,9 @@
 			<if test="CardNo != null">
 				CardNo = #{CardNo}, 
 			</if>
+			<if test="CardPassword != null">
+				CardPassword = #{CardPassword}, 
+			</if>
 			<if test="MarketingCode != null">
 				MarketingCode = #{MarketingCode}, 
 			</if>

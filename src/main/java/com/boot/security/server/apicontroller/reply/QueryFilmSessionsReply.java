@@ -14,6 +14,7 @@ public class QueryFilmSessionsReply extends BaseReply{
 	}
 	public static class QueryFilmSessionsReplyFilmSessions{
 		private String CinemaCode;
+		private String OfferDescription;
 		private List<QueryFilmSessionsReplyFilm> film;
 		
 		public String getCinemaCode() {
@@ -24,6 +25,14 @@ public class QueryFilmSessionsReply extends BaseReply{
 			CinemaCode = cinemaCode;
 		}
 		
+		public String getOfferDescription() {
+			return OfferDescription;
+		}
+
+		public void setOfferDescription(String offerDescription) {
+			OfferDescription = offerDescription;
+		}
+
 		public List<QueryFilmSessionsReplyFilm> getFilm() {
 			return film;
 		}

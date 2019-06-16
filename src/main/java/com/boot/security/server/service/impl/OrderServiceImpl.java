@@ -195,4 +195,9 @@ public class OrderServiceImpl implements OrderService{
 		return ordersDao.getByOpenIdAndStatus(openid, orderstatus, sessiontime);
 	}
 
+	@Override
+	public List<Orders> getUserAllOrders(String cinemacode, String openid, String orderstatus) {
+		return ordersDao.getUserAllOrders(cinemacode, openid, orderstatus);
+	}
+
 }

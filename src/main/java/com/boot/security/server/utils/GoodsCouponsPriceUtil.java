@@ -20,7 +20,6 @@ public class GoodsCouponsPriceUtil {
 		List<Goodsorderdetails> goodsorderdetailsList = new ArrayList<Goodsorderdetails>();
 		Goodsorders goodsorders = goodsOrderService.getByLocalOrderCode(LocalOrderCode);
 		if(goodsorders!=null){
-			goodsorders.setCouponsPrice(0.00);
 			//判断是否存在优惠价格
 			if(goodsorders.getCouponsPrice()!=null){
 				//获取卖品详细
@@ -35,7 +34,6 @@ public class GoodsCouponsPriceUtil {
 					for(int i=0; i<goodsorderdetailsList.size(); i++){
 						if(i<goodsorderdetailsList.size()-1){
 							//先初始化要拆分的价格
-							//goodsorderdetailsList.get(i).setCouponPrice(0.00);
 							dealPrice= new DecimalFormat("0.00").format(goodsorderdetailsList.get(i).getSubTotalSettleAmount()/TotalSalePrice*goodsorders.getCouponsPrice());
 							goodsorderdetailsList.get(i).setCouponPrice(Double.parseDouble(dealPrice));
 							//得到拆分完的总价格
@@ -52,9 +50,9 @@ public class GoodsCouponsPriceUtil {
 				if(goodsorderdetailsList.size()==1){
 					goodsorderdetailsList.get(0).setCouponPrice(goodsorders.getCouponsPrice());
 				}
+				goodsOrderView.setOrderBaseInfo(goodsorders);
+				goodsOrderView.setOrderGoodsDetails(goodsorderdetailsList);
 			}
-			goodsOrderView.setOrderBaseInfo(goodsorders);
-			goodsOrderView.setOrderGoodsDetails(goodsorderdetailsList);
 		}
 		return goodsOrderView;
 	}

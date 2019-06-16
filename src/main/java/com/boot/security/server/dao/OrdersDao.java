@@ -84,4 +84,8 @@ public interface OrdersDao {
     //用户订单信息
     @Select("select * from orders t where t.openid = #{openid} and t.orderstatus = #{orderstatus} and t.sessiontime < #{sessiontime} group by t.filmcode")
     List<Orders> getByOpenIdAndStatus(@Param("openid")String openid,@Param("orderstatus")Integer orderstatus,@Param("sessiontime")String sessiontime);
+    
+    //用户影票信息
+    @Select("select * from orders t where t.cinemacode = #{cinemacode} and openid = #{openid} and find_in_set (t.orderstatus,#{orderstatus})")
+    List<Orders> getUserAllOrders(@Param("cinemacode")String cinemacode,@Param("openid")String openid,@Param("orderstatus")String orderstatus);
 }

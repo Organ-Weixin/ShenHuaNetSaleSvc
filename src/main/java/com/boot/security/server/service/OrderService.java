@@ -71,4 +71,6 @@ public interface OrderService {
 	List<Orders> getUserOrders(String cinemacode,String openid,Integer orderstatus,Integer printstatus);
 	
 	List<Orders> getByOpenIdAndStatus(String openid,Integer orderstatus,String sessiontime);
+	
+	List<Orders> getUserAllOrders(String cinemacode,String openid,String orderstatus);
 }	

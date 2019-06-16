@@ -41,4 +41,8 @@ public class CinemaviewServiceImpl implements CinemaviewService{
 	public List<Cinemaview> list(Map<String, Object> params, Integer offset, Integer limit) {
 		return cinemaviewDao.list(params, offset, limit);
 	}
+	@Override
+	public Cinemaview getByCinemaCode(String cinemacode) {
+		return cinemaviewDao.getByCinemaCode(cinemacode);
+	}
 }

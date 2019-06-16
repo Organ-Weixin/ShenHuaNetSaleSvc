@@ -50,6 +50,7 @@ public class Orders  extends BaseEntity<Long>{
 	private Date PayTime;
 	private String OrderTradeNo;
 	private String CardNo;
+	private String CardPassword;
 	private String IDCardNumber;
 	private String MarketingCode;
 	private String OpenID;
@@ -331,6 +332,12 @@ public class Orders  extends BaseEntity<Long>{
 	}
 	public void setCardNo(String cardNo) {
 		CardNo = cardNo;
+	}
+	public String getCardPassword() {
+		return CardPassword;
+	}
+	public void setCardPassword(String cardPassword) {
+		CardPassword = cardPassword;
 	}
 	public String getIDCardNumber() {
 		return IDCardNumber;

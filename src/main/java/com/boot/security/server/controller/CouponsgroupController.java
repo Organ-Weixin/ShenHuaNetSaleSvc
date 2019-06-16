@@ -68,7 +68,7 @@ public class CouponsgroupController {
     	if(couponsgroup.getReductionPrice()==null){
     		couponsgroup.setReductionPrice(0.00);
     	}
-    	for(int i=0;i<couponsgroup.getCouponsNumber();i++){
+    	/*for(int i=0;i<couponsgroup.getCouponsNumber();i++){
     		Coupons coupons = new Coupons();
     		//优惠券编码--13位时间戳加5位随机数
     		String couponsCode = String.valueOf(new Date().getTime());
@@ -80,7 +80,7 @@ public class CouponsgroupController {
         	coupons.setGroupCode(couponsgroup.getGroupCode());
         	coupons.setStatus(CouponsStatusEnum.Created.getStatusCode());
     		couponsDao.save(coupons);
-    	}
+    	}*/
         couponsgroupDao.save(couponsgroup);
         return couponsgroup;
     }

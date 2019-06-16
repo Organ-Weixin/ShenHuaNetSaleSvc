@@ -58,9 +58,13 @@ import com.boot.security.server.apicontroller.reply.RefundPaymentReply.RefundPay
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.model.Adminorderview;
 import com.boot.security.server.model.Cinema;
+import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Cinemapaymentsettings;
+import com.boot.security.server.model.Cinemaview;
+import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.CouponsView;
+import com.boot.security.server.model.Couponsgroup;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
@@ -77,10 +81,13 @@ import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.AdminorderviewServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.CinemapaymentsettingsServiceImpl;
+import com.boot.security.server.service.impl.CinemaviewServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
+import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
+import com.boot.security.server.service.impl.OrderseatdetailsServiceImpl;
 import com.boot.security.server.service.impl.PriceplanServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
@@ -112,6 +119,8 @@ public class OrderController {
 	@Autowired
 	CouponsServiceImpl _couponsService;
 	@Autowired
+	CouponsgroupServiceImpl couponsgroupService;
+	@Autowired
 	SessioninfoServiceImpl _sessioninfoService;
 	@Autowired
 	PriceplanServiceImpl _priceplanService;
@@ -127,6 +136,12 @@ public class OrderController {
 	ScreeninfoServiceImpl screeninfoService;
 	@Autowired
 	private GoodsOrderServiceImpl _goodsOrderService;
+	@Autowired
+	private CinemaviewServiceImpl cinemaviewService;
+	@Autowired
+	private OrderServiceImpl orderService;
+	@Autowired
+	private OrderseatdetailsServiceImpl orderseatdetailsService;
 	@Autowired
 	private HttpServletRequest request;
 	protected static Logger log = LoggerFactory.getLogger(OrderController.class);
@@ -293,6 +308,7 @@ public class OrderController {
 		data.setRealAmount(orders.getTotalSalePrice()-orders.getTotalConponPrice());
 		data.setOrderCode(orders.getSubmitOrderCode());
 		data.setMobilePhone(orders.getMobilePhone());
+		data.setOrderPayType(orders.getOrderPayType());
 		ticketOrderReply.setData(data);
 		ticketOrderReply.SetSuccessReply();
 		return ticketOrderReply;
@@ -463,9 +479,54 @@ public class OrderController {
 	@GetMapping("/RefundTicket/{UserName}/{Password}/{CinemaCode}/{PrintNo}/{VerifyCode}")
 	@ApiOperation(value = "退票")
 	public RefundTicketReply RefundTicket(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
-			@PathVariable String PrintNo,@PathVariable String VerifyCode){
+			@PathVariable String PrintNo,@PathVariable String VerifyCode) throws Exception{
 		RefundTicketReply reply = NetSaleSvcCore.getInstance().RefundTicket(UserName, Password, CinemaCode, PrintNo, VerifyCode);
-//		System.out.println("退票----"+new Gson().toJson(reply));
+		//退票成功进行处理
+		if(reply.Status.equals("Success")){
+			//先判断支付类型
+			Orders orders = orderService.getByPrintNo(CinemaCode, reply.getOrder().getPrintNo(), reply.getOrder().getVerifyCode());
+			//微信支付
+			if(orders.getOrderPayType()==OrderPayTypeEnum.WxPay.getTypeCode()){
+				//调用微信退款接口
+				RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode());
+			}
+			//会员卡支付
+			if(orders.getOrderPayType()==OrderPayTypeEnum.MemberCardPay.getTypeCode()){
+				//退优惠券
+				List<Orderseatdetails> orderseatdetailsList = orderseatdetailsService.getByOrderId(orders.getId());
+				for(Orderseatdetails orderseatdetails : orderseatdetailsList){
+					//获取使用的每张优惠券
+					if(orderseatdetails.getConponCode()!=null&&orderseatdetails.getConponCode()!=""){
+						Coupons coupons = _couponsService.getByCouponsCode(orderseatdetails.getConponCode());
+						if(coupons!=null){
+							//更新每张券的状态
+							coupons.setUsedDate(null);
+							coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
+							coupons.setUpdateTime(new Date());
+							_couponsService.update(coupons);
+							//更新优惠券组的库存、使用数量
+							Couponsgroup couponsgroup = couponsgroupService.getByGroupCode(coupons.getCouponsCode());
+							//库存+1
+							couponsgroup.setRemainingNumber(couponsgroup.getRemainingNumber()+1);
+							//已使用数量-1
+							couponsgroup.setUsedNumber(couponsgroup.getUsedNumber()-1);
+							couponsgroup.setUpdateDate(new Date());
+							couponsgroupService.update(couponsgroup);
+						}
+					}
+				}
+				//判断票务系统
+				Cinemaview cinemaview = cinemaviewService.getByCinemaCode(CinemaCode);
+				//辰星系统调用会员卡支付撤销
+				if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
+					Double backPayAmount = orders.getTotalSalePrice();
+					if(orders.getTotalConponPrice()!=null){
+						backPayAmount = backPayAmount-orders.getTotalConponPrice();
+					}
+					new NetSaleSvcCore().CardPayBack(UserName, Password, CinemaCode, orders.getCardNo(), orders.getCardPassword(), orders.getOrderTradeNo(), String.valueOf(backPayAmount));
+				}
+			}
+		}
 		return reply;
 	}
 	//endregion
@@ -743,11 +804,13 @@ public class OrderController {
 				_orderService.update(order.getOrderBaseInfo());
 				//退优惠券
 				for(Orderseatdetails seat:order.getOrderSeatDetails()){
-					if(!seat.getConponCode().equals(null)&&!seat.getConponCode().equals("")){
+					if(seat.getConponCode()!=null&&seat.getConponCode()!=""){
 						CouponsView couponsview = _couponsService.getWithCouponsCode(seat.getConponCode());
 						if(couponsview!=null){
 							couponsview.getCoupons().setStatus(CouponsStatusEnum.Fetched.getStatusCode());
 							couponsview.getCoupons().setUsedDate(null);
+							//库存+1
+							couponsview.getCouponsgroup().setRemainingNumber(couponsview.getCouponsgroup().getRemainingNumber()+1);
 							//使用数量-1
 							couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()-1);
 							//更新优惠券及优惠券分组表

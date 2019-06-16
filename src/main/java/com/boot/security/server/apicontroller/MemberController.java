@@ -456,7 +456,7 @@ public class MemberController {
 				orderService.update(order.getOrderBaseInfo());
 				//退优惠券
 				for(Orderseatdetails seat:order.getOrderSeatDetails()){
-					if(!seat.getConponCode().equals(null)&&!seat.getConponCode().equals("")){
+					if(seat.getConponCode()!=null&&seat.getConponCode()!=""){
 						CouponsView couponsview = _couponsService.getWithCouponsCode(seat.getConponCode());
 						if(couponsview!=null){
 							couponsview.getCoupons().setStatus(CouponsStatusEnum.Fetched.getStatusCode());
@@ -744,7 +744,7 @@ public class MemberController {
         	prePayParametersReply.SetCardChargeTypeInvalidReply();
 			return prePayParametersReply;
 		}
-		Choosemembercardcreditrule choosemembercardcreditrule = _choosemembercardcreditruleService.getByRuleCode(CinemaCode, LevelCode, RuleCode);
+		Choosemembercardcreditrule choosemembercardcreditrule = _choosemembercardcreditruleService.getByRuleCode(CinemaCode, LevelCode ,RuleCode);
 		if(choosemembercardcreditrule==null){
 			prePayParametersReply.SetCardChargeTypeInvalidReply();
 			return prePayParametersReply;
@@ -973,9 +973,9 @@ public class MemberController {
 	        		Membercardcreditrule membercardcreditrule = _membercardcreditruleService.getByRuleCode(choosemembercardcreditrule.getRuleCode());
 	        		if(membercardcreditrule!=null){
 	        			levelReply.setCredit(membercardcreditrule.getCredit());
-	        			levelReply.setEffectiveDays(membercardcreditrule.getEffectiveDays());
 	        			levelReply.setRuleCode(membercardcreditrule.getRuleCode());
 	        			levelReply.setRuleName(membercardcreditrule.getRuleName());
+	        			levelReply.setOfferDescription(membercardcreditrule.getOfferDescription());
 	        			levelReply.setRuleDescription(membercardcreditrule.getRuleDescription());
 	        			levelReply.setRuleType(membercardcreditrule.getRuleType());
 	        		}

@@ -38,7 +38,7 @@ public class QueryMemberCardLevelReply extends BaseReply{
 			private Integer RuleType;
 			private Double Credit;
 			private Double GivenAmount;
-			private String EffectiveDays;
+			private String OfferDescription;
 			private String RuleDescription;
 			private Integer IsOnlineOpenCard;
 			private Integer Status;
@@ -102,11 +102,11 @@ public class QueryMemberCardLevelReply extends BaseReply{
 			public void setGivenAmount(Double givenAmount) {
 				GivenAmount = givenAmount;
 			}
-			public String getEffectiveDays() {
-				return EffectiveDays;
+			public String getOfferDescription() {
+				return OfferDescription;
 			}
-			public void setEffectiveDays(String effectiveDays) {
-				EffectiveDays = effectiveDays;
+			public void setOfferDescription(String offerDescription) {
+				OfferDescription = offerDescription;
 			}
 			public String getRuleDescription() {
 				return RuleDescription;

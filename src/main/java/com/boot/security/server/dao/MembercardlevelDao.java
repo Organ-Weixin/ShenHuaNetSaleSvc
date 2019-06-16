@@ -53,4 +53,7 @@ public interface MembercardlevelDao {
     @Update("update membercardlevel set isonlineopencard = 0 where cinemacode = #{cinemacode}")
     int initIsOnlineOpenCard(String cinemacode);
     
+    @Select("select * from membercardlevel t where t.cinemacode = #{cinemacode} and isonlineopencard = 1")
+    Membercardlevel getCanOnlineOpenCard(String cinemacode);
+    
 }

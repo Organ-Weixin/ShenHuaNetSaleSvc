@@ -45,9 +45,6 @@ public class MembercardcreditruleController {
             // 拼接成字符串
             ruleCode += (c + "");
         }
-    	if(membercardcreditrule.getEffectiveDays()==null||membercardcreditrule.getEffectiveDays()==""){
-    		membercardcreditrule.setEffectiveDays("长期有效");
-    	}
     	if(membercardcreditrule.getRuleName()==null||membercardcreditrule.getRuleName()==""){
     		membercardcreditrule.setRuleName("充值"+membercardcreditrule.getCredit());
     	}

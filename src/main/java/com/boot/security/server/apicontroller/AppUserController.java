@@ -25,8 +25,11 @@ import com.boot.security.server.apicontroller.reply.MobilePhoneRegisterReply.Mob
 import com.boot.security.server.apicontroller.reply.QueryRoomGiftRecordReply.QueryRoomGiftRecord;
 import com.boot.security.server.apicontroller.reply.QueryUserFilmReply;
 import com.boot.security.server.apicontroller.reply.QueryUserNumberReply.QueryUserNumberReplyUserNumber;
+import com.boot.security.server.apicontroller.reply.QueryUserTicketReply;
 import com.boot.security.server.apicontroller.reply.QueryUserNumberReply;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
+import com.boot.security.server.apicontroller.reply.QueryUserTicketReply.QueryUserTicketReplyUser;
+import com.boot.security.server.apicontroller.reply.QueryUserTicketReply.QueryUserTicketReplyUser.QueryUserTicketReplyUserTicket;
 import com.boot.security.server.apicontroller.reply.QueryCinemaGoodsReply;
 import com.boot.security.server.apicontroller.reply.QueryCinemaTicketReply;
 import com.boot.security.server.apicontroller.reply.QueryCinemaTicketReply.QueryCinemaTicket.CinemaTicket;
@@ -66,6 +69,7 @@ import com.boot.security.server.model.Registeractive;
 import com.boot.security.server.model.Registeractivecoupons;
 import com.boot.security.server.model.Registercollectionrecord;
 import com.boot.security.server.model.Roomgiftuser;
+import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Ticketuserfilm;
 import com.boot.security.server.model.Ticketusers;
@@ -83,6 +87,7 @@ import com.boot.security.server.service.impl.RegisteractiveServiceImpl;
 import com.boot.security.server.service.impl.RegisteractivecouponsServiceImpl;
 import com.boot.security.server.service.impl.RegistercollectionrecordServiceImpl;
 import com.boot.security.server.service.impl.RoomgiftuserServiceImpl;
+import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.TicketuserfilmServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
@@ -132,6 +137,8 @@ public class AppUserController {
 	private TicketuserfilmServiceImpl ticketuserfilmService;
 	@Autowired
 	private OrderServiceImpl orderService;
+	@Autowired
+	private SessioninfoServiceImpl sessioninfoService;
 	
 	@PostMapping("/UserLogin")
 	@ApiOperation(value = "用户登陆")
@@ -189,10 +196,10 @@ public class AppUserController {
         	ticketuser.setOpenID(jscode2sessionReply.getOpenid());
         	ModelMapper.MapToEntity(wxuser, ticketuser);
         	_ticketusersService.save(ticketuser);
-        } else {
+        } /*else {
         	ModelMapper.MapToEntity(wxuser, ticketuser);
         	_ticketusersService.update(ticketuser);
-        }
+        }*/
         //返回
         UserLoginResult data = new UserLoginResult();
         data.setTicketUserId(ticketuser.getId());
@@ -226,29 +233,36 @@ public class AppUserController {
             				for(Registeractivecoupons registeractivecoupons:registeractivecouponsList){
             					//根据优惠券组编码获取所有未使用的优惠券
             					Couponsgroup couponsgroup = couponsgroupService.getByGroupCode(registeractivecoupons.getGroupCode());
-            					if(couponsgroup!=null){
-            						//判断优惠券可发放数量是否大于赠送数量
-            						if((couponsgroup.getCouponsNumber()-couponsgroup.getIssuedNumber())>registeractivecoupons.getGiveNumber()){
-            							//是：获取所有未使用的优惠券
-                						List<Coupons> couponsList = couponsService.getCanUseByGroupCode(couponsgroup.getGroupCode());
-                						if(couponsList.size()>0){
-                							for(int i=0; i<registeractivecoupons.getGiveNumber(); i++){
-                								Coupons coupons = couponsService.getById(couponsList.get(i).getId());
-                								if(couponsgroup.getValidityType()==2){
-                			        				Calendar c = Calendar.getInstance();
-                			        				c.add(Calendar.DAY_OF_MONTH, couponsgroup.getEffectiveDays());
-                			        				coupons.setEffectiveDate(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(c.getTime())));
-                			        				c.add(Calendar.DAY_OF_MONTH, couponsgroup.getValidityDays());
-                			        				coupons.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(c.getTime())));
-                			            		}
-                								coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
-                								coupons.setOpenID(ticketuser.getOpenID());
-                								coupons.setReceiveDate(new Date());
-                								result = couponsService.update(coupons);
-                							}
-                						}
+            					//判断优惠券可发放数量是否大于赠送数量
+            					if((couponsgroup.getCouponsNumber()-couponsgroup.getIssuedNumber())>registeractivecoupons.getGiveNumber()){
+            						//是：生成优惠券记录
+            						for(int i=0; i<registeractivecoupons.getGiveNumber(); i++){
+            							Coupons coupons = new Coupons();
+            							//优惠券编码--13位时间戳加5位随机数
+            							String couponsCode = String.valueOf(new Date().getTime());
+            				    		couponsCode+=(int)((Math.random()*9+1)*10000);
+            							coupons.setCouponsCode(couponsCode);
+            							coupons.setCouponsName(couponsgroup.getCouponsName());
+            							//如果有效期类型为2（领取后N天生效，有效时长M天）
+            							if(couponsgroup.getValidityType()==2){
+        			        				Calendar c = Calendar.getInstance();
+        			        				c.add(Calendar.DAY_OF_MONTH, couponsgroup.getEffectiveDays());
+        			        				coupons.setEffectiveDate(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(c.getTime())));
+        			        				c.add(Calendar.DAY_OF_MONTH, couponsgroup.getValidityDays());
+        			        				coupons.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(c.getTime())));
+        			            		}else{
+        			            			coupons.setEffectiveDate(couponsgroup.getEffectiveDate());
+        			            			coupons.setExpireDate(couponsgroup.getExpireDate());
+        			            		}
+            							coupons.setGroupCode(couponsgroup.getGroupCode());
+            							coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
+            							coupons.setOpenID(ticketuser.getOpenID());
+            							coupons.setCreateDate(new Date());
+        								coupons.setReceiveDate(new Date());
+        								result = couponsService.save(coupons);
             						}
             					}
+            					//优惠券生成成功更新优惠券组信息
             					if(result>0){
             						//已发放数量
     				    			couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()+registeractivecoupons.getGiveNumber());
@@ -622,6 +636,69 @@ public class AppUserController {
 		}
 		queryCinemaTicketReply.SetSuccessReply();
 		return queryCinemaTicketReply;
+	}
+	
+	@GetMapping("/QueryUserTicket/{UserName}/{Password}/{CinemaCode}/{OpenID}")
+	@ApiOperation(value = "查询用户购买的电影票")
+	public QueryUserTicketReply QueryUserTicket(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
+			@PathVariable String OpenID){
+		QueryUserTicketReply queryUserTicketReply = new QueryUserTicketReply();
+		// 校验参数
+		if (!ReplyExtension.RequestInfoGuard(queryUserTicketReply, UserName, Password, CinemaCode, OpenID)) {
+			return queryUserTicketReply;
+		}
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
+		if (UserInfo == null) {
+			queryUserTicketReply.SetUserCredentialInvalidReply();
+			return queryUserTicketReply;
+		}
+		//验证影院是否存在且可访问
+		Cinema cinema=_cinemaService.getByCinemaCode(CinemaCode);
+		if(cinema == null){
+			queryUserTicketReply.SetCinemaInvalidReply();
+			return queryUserTicketReply;
+		}
+		//验证用户OpenId是否存在
+		Ticketusers ticketuser = _ticketusersService.getByopenids(OpenID);
+		if(ticketuser == null){
+			queryUserTicketReply.SetOpenIDNotExistReply();
+			return queryUserTicketReply;
+		}   
+		//拼接符合条件的状态
+		StringBuffer orderstatus = new StringBuffer();
+		orderstatus.append(OrderStatusEnum.Complete.getStatusCode()+",");
+		orderstatus.append(OrderStatusEnum.Refund.getStatusCode()+",");
+		orderstatus.append(OrderStatusEnum.PayBack.getStatusCode());
+		List<Orders> ordersList = orderService.getUserAllOrders(CinemaCode, OpenID, orderstatus.toString());
+		QueryUserTicketReplyUser data = new QueryUserTicketReplyUser();
+		data.setTicketCount(ordersList.size());
+		if(ordersList.size()>0){
+			List<QueryUserTicketReplyUserTicket> ticketList = new ArrayList<QueryUserTicketReplyUserTicket>();
+			for(Orders orders : ordersList){
+				//添加到实体类返回
+				QueryUserTicketReplyUserTicket ticket = new QueryUserTicketReplyUserTicket();
+				String lookedTime = null;
+				ticket.setCinemaName(cinema.getName());
+				ticket.setFilmCode(orders.getFilmCode());
+				ticket.setFilmName(orders.getFilmName());
+				Sessioninfo sessioninfo = sessioninfoService.getBySessionCode(UserInfo.getId(), CinemaCode, orders.getSessionCode());
+				if(sessioninfo!=null){
+					String time = String.valueOf(sessioninfo.getStartTime().getTime()+Integer.valueOf(sessioninfo.getDuration())*60*1000);
+					SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+					lookedTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(sessioninfo.getStartTime())+"-"+sdf.format(new Date(Long.parseLong(time)));
+				}
+				ticket.setLookedTime(lookedTime);
+				ticket.setOrderCode(orders.getSubmitOrderCode());
+				ticket.setOrderStatus(orders.getOrderStatus());
+				ticket.setPrintStatus(orders.getPrintStatus());
+				ticketList.add(ticket);
+			}
+			data.setTicket(ticketList);
+		}
+		queryUserTicketReply.setData(data);
+		queryUserTicketReply.SetSuccessReply();
+		return queryUserTicketReply;
 	}
 	
 	@GetMapping("/QueryCinemaGoods/{UserName}/{Password}/{CinemaCode}/{OpenID}")

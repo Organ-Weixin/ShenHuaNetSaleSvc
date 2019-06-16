@@ -19,5 +19,6 @@ public interface CinemaviewService {
     int count( Map<String, Object> params);
 
     List<Cinemaview> list(Map<String, Object> params,Integer offset,Integer limit);
-
+    
+    Cinemaview getByCinemaCode(String cinemacode);
 }

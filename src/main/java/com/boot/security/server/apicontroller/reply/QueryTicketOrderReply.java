@@ -31,6 +31,7 @@ public class QueryTicketOrderReply extends BaseReply{
 		private Double RealAmount;
 		private String OrderCode;
 		private String PayTime;
+		private Integer OrderPayType;
 		private String MobilePhone;
 		private List<String> Seat;
 		public String getCinemaCode() {
@@ -143,6 +144,12 @@ public class QueryTicketOrderReply extends BaseReply{
 		}
 		public String getMobilePhone() {
 			return MobilePhone;
+		}
+		public Integer getOrderPayType() {
+			return OrderPayType;
+		}
+		public void setOrderPayType(Integer orderPayType) {
+			OrderPayType = orderPayType;
 		}
 		public void setMobilePhone(String mobilePhone) {
 			MobilePhone = mobilePhone;

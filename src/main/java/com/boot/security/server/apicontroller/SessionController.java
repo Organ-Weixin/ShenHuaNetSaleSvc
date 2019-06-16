@@ -26,6 +26,8 @@ import com.boot.security.server.apicontroller.reply.QueryFimlSessionPriceReply;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
+import com.boot.security.server.model.Membercardcreditrule;
+import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.Qmmprice;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Sessioninfo;
@@ -33,6 +35,8 @@ import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.modelView.Sessioninfoview;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
+import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
+import com.boot.security.server.service.impl.MembercardcreditruleServiceImpl;
 import com.boot.security.server.service.impl.QmmpriceServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
@@ -56,6 +60,10 @@ public class SessionController {
 	private ScreeninfoServiceImpl _screeninfoService;
 	@Autowired
 	private QmmpriceServiceImpl _qmmpriceService;
+	@Autowired
+	private MemberCardLevelServiceImpl _memberCardLevelService;
+	@Autowired
+	private MembercardcreditruleServiceImpl _membercardcreditruleService;
 	@Autowired
 	private SessioninfoviewServiceImpl _sessioninfoviewService;
 	@GetMapping("/QueryFilmSessions/{UserName}/{Password}/{CinemaCode}")
@@ -82,6 +90,15 @@ public class SessionController {
 		String StartDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 		List<Sessioninfo> films = _sessionInfoService.getByFilmName(CinemaCode, StartDate);
 		QueryFilmSessionsReplyFilmSessions data = new QueryFilmSessionsReplyFilmSessions();
+		//获取影院可线上开卡的卡号
+		Membercardlevel membercardlevel = _memberCardLevelService.getCanOnlineOpenCard(CinemaCode);
+		if(membercardlevel!=null){
+			//获取优惠描述
+			List<Membercardcreditrule> membercardcreditruleList = _membercardcreditruleService.getRechargeTypeByLevelCode(CinemaCode, membercardlevel.getLevelCode());
+			data.setOfferDescription(membercardcreditruleList.get(0).getOfferDescription());
+		}else{
+			data.setOfferDescription(null);
+		}
 		if(films.size()>0){
 			data.setCinemaCode(films.get(0).getCCode());
 			List<QueryFilmSessionsReplyFilm> filmReplyList = new ArrayList<QueryFilmSessionsReplyFilm>();
