@@ -88,7 +88,7 @@ public class QueryFimlSessionPriceReply extends BaseReply{
 				private String ScreenName;
 				private String ScreenType;
 				private String Language;
-				private Double SettlePrice;
+				private Double SalePrice;
 				private Double StandardPrice;
 				private Double ListingPrice;
 				private Double LowestPrice;
@@ -96,9 +96,9 @@ public class QueryFimlSessionPriceReply extends BaseReply{
 				private Double AddFee;
 				private Double CinemaAllowance;
 				private Double Price;
-				private Double MemberPrice;
 				private String BeginTime;
 				private String EndTime;
+				private List<QueryFimlSessionPriceReplyMemberPrice> MemberPirce;
 				private List<QueryFimlSessionPriceReplySessionPrice> SessionPrice;
 				public String getSessionCode() {
 					return SessionCode;
@@ -136,11 +136,11 @@ public class QueryFimlSessionPriceReply extends BaseReply{
 				public void setLanguage(String language) {
 					Language = language;
 				}
-				public Double getSettlePrice() {
-					return SettlePrice;
+				public Double getSalePrice() {
+					return SalePrice;
 				}
-				public void setSettlePrice(Double settlePrice) {
-					SettlePrice = settlePrice;
+				public void setSalePrice(Double salePrice) {
+					SalePrice = salePrice;
 				}
 				public Double getStandardPrice() {
 					return StandardPrice;
@@ -184,12 +184,6 @@ public class QueryFimlSessionPriceReply extends BaseReply{
 				public void setPrice(Double price) {
 					Price = price;
 				}
-				public Double getMemberPrice() {
-					return MemberPrice;
-				}
-				public void setMemberPrice(Double memberPrice) {
-					MemberPrice = memberPrice;
-				}
 				public String getBeginTime() {
 					return BeginTime;
 				}
@@ -202,11 +196,29 @@ public class QueryFimlSessionPriceReply extends BaseReply{
 				public void setEndTime(String endTime) {
 					EndTime = endTime;
 				}
+				public List<QueryFimlSessionPriceReplyMemberPrice> getMemberPirce() {
+					return MemberPirce;
+				}
+				public void setMemberPirce(List<QueryFimlSessionPriceReplyMemberPrice> memberPirce) {
+					MemberPirce = memberPirce;
+				}
 				public List<QueryFimlSessionPriceReplySessionPrice> getSessionPrice() {
 					return SessionPrice;
 				}
 				public void setSessionPrice(List<QueryFimlSessionPriceReplySessionPrice> sessionPrice) {
 					SessionPrice = sessionPrice;
+				}
+				public static class QueryFimlSessionPriceReplyMemberPrice{
+					private Double MemberPrice;
+
+					public Double getMemberPrice() {
+						return MemberPrice;
+					}
+
+					public void setMemberPrice(Double memberPrice) {
+						MemberPrice = memberPrice;
+					}
+					
 				}
 				public static class QueryFimlSessionPriceReplySessionPrice{
 					private String TypeCode;

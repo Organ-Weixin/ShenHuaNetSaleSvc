@@ -21,6 +21,7 @@ public class Sessioninfoview {
 	private Double StandardPrice;
 	private Double ListingPrice;
 	private Double LowestPrice;
+	private Double SettlePrice;
 	private Double TicketFee;
 	private Double AddFee;
 	private Double CinemaAllowance;
@@ -130,6 +131,12 @@ public class Sessioninfoview {
 	}
 	public void setLowestPrice(Double lowestPrice) {
 		LowestPrice = lowestPrice;
+	}
+	public Double getSettlePrice() {
+		return SettlePrice;
+	}
+	public void setSettlePrice(Double settlePrice) {
+		SettlePrice = settlePrice;
 	}
 	public Double getTicketFee() {
 		return TicketFee;

@@ -55,6 +55,7 @@ public class QueryCinemasReply extends BaseReply {
 			private String IsSnackDistribution;
 			private Integer OverRefundTime;//开场前几分钟不可以退票
 			private Double RefundFee;//退票手续费
+			private String OfferDescription;
 			
 			public Long getCinemaId() {
 				return CinemaId;
@@ -175,6 +176,12 @@ public class QueryCinemasReply extends BaseReply {
 			}
 			public void setRefundFee(Double refundFee) {
 				RefundFee = refundFee;
+			}
+			public String getOfferDescription() {
+				return OfferDescription;
+			}
+			public void setOfferDescription(String offerDescription) {
+				OfferDescription = offerDescription;
 			}
 			
 			

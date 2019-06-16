@@ -94,7 +94,7 @@ public class CouponsUtil {
 		OrderView order = orderService.getOrderWidthLockOrderCode(CinemaCode, LockOrderCode);
 		GoodsOrderView goodsOrder = goodsOrderService.getWithLocalOrderCode(CinemaCode,LocalOrderCode);
 		//region 优惠券价格计算
-		if(!CouponsCodes.equals(null)&&!CouponsCodes.equals("null")&&!CouponsCodes.equals("")){
+		if(null!=CouponsCodes&&""!=CouponsCodes){
 			String[] CouponsCodesArr=CouponsCodes.split(",");
 			for(int i=0;i<CouponsCodesArr.length;i++){//为了设置到对应的座位上，这里用i循环
 				String CouponsCode=CouponsCodesArr[i];

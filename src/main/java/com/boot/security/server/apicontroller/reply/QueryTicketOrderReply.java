@@ -26,6 +26,7 @@ public class QueryTicketOrderReply extends BaseReply{
 		private String ScreenName;
 		private Integer Count;
 		private String PrintNo;
+		private Integer OrderStatus;
 		private Integer PrintType;
 		private String VerifyCode;
 		private Double RealAmount;
@@ -33,6 +34,7 @@ public class QueryTicketOrderReply extends BaseReply{
 		private String PayTime;
 		private Integer OrderPayType;
 		private String MobilePhone;
+		private String EwmPicture;
 		private List<String> Seat;
 		public String getCinemaCode() {
 			return CinemaCode;
@@ -159,6 +161,18 @@ public class QueryTicketOrderReply extends BaseReply{
 		}
 		public void setSeat(List<String> seat) {
 			Seat = seat;
+		}
+		public Integer getOrderStatus() {
+			return OrderStatus;
+		}
+		public void setOrderStatus(Integer orderStatus) {
+			OrderStatus = orderStatus;
+		}
+		public String getEwmPicture() {
+			return EwmPicture;
+		}
+		public void setEwmPicture(String ewmPicture) {
+			EwmPicture = ewmPicture;
 		}
 		
 	}

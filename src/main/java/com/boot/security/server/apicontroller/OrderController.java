@@ -95,6 +95,7 @@ import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.CouponsUtil;
+import com.boot.security.server.utils.FileUploadUtils;
 import com.boot.security.server.utils.WxPayUtil;
 import com.boot.security.server.utils.XmlHelper;
 import com.google.gson.JsonSyntaxException;
@@ -305,10 +306,20 @@ public class OrderController {
 		if(orders.getTotalConponPrice()==null){
 			orders.setTotalConponPrice(0.00);
 		}
+		data.setOrderStatus(orders.getOrderStatus());
 		data.setRealAmount(orders.getTotalSalePrice()-orders.getTotalConponPrice());
 		data.setOrderCode(orders.getSubmitOrderCode());
 		data.setMobilePhone(orders.getMobilePhone());
 		data.setOrderPayType(orders.getOrderPayType());
+		//二维码
+		Cinemaview cinemaview = cinemaviewService.getByCinemaCode(CinemaCode);
+		//辰星系统(取票码截取影院编码)
+		if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
+			data.setEwmPicture(new FileUploadUtils().generateEwm(orders.getPrintNo().substring(8,orders.getPrintNo().length())));
+		}
+		if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
+			data.setEwmPicture(new FileUploadUtils().generateEwm(orders.getSubmitOrderCode()));
+		}
 		ticketOrderReply.setData(data);
 		ticketOrderReply.SetSuccessReply();
 		return ticketOrderReply;

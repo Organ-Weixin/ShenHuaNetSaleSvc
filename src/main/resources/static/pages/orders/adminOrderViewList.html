@@ -177,7 +177,11 @@ function init(){
 				{"data" : "screencode", "defaultContent" : "","orderable":false},
 				{"data" : "seat", "defaultContent" : "","orderable":false},
 				{"data" : "price", "defaultContent" : "","orderable":false},
-				{"data" : "saleprice", "defaultContent" : "","orderable":false},
+				{"data" : "saleprice", "defaultContent" : "","orderable":false,
+					"render":function(data, type, row){
+						return data.toFixed(2);
+					}
+				},
 				{"data" : "addfee", "defaultContent" : "","orderable":false},
 				{"data" : "fee", "defaultContent" : "","orderable":false},
 				{"data" : "cinemaallowance", "defaultContent" : "","orderable":false},

@@ -45,4 +45,7 @@ public interface ChoosemembercardcreditruleDao {
     
     @Select("select * from choosemembercardcreditrule t where t.cinemacode =#{cinemacode} and t.levelcode =#{levelcode} and rulecode = #{rulecode}")
     Choosemembercardcreditrule getByRuleCode(@Param("cinemacode") String cinemacode,@Param("levelcode")String levelcode,@Param("rulecode") String rulecode);
+    
+    @Select("select * from choosemembercardcreditrule t where t.cinemacode =#{cinemacode} and t.levelcode =#{levelcode} and ruletype = #{ruletype}")
+    Choosemembercardcreditrule getByLevelCodeAndRuleType(@Param("cinemacode")String cinemacode,@Param("levelcode")String levelcode,@Param("ruletype")String ruletype);
 }

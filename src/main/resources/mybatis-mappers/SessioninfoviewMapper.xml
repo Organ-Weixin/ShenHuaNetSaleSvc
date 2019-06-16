@@ -5,6 +5,7 @@
 
 	<sql id="where">
 		<where>
+		    StartTime >= now()
 			<if test="params.Id != null and params.Id != ''">
 				and Id = #{params.Id} 
 			</if>

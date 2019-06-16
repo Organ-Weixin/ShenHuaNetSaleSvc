@@ -75,7 +75,6 @@
 		where ss.createUserId = s.id or ss.id = s.id
 		<include refid="where"/>
 		</if>
-		<include refid="sqlwhere"/>
 	</select>
 
 	<select id="list" resultType="SysUser">
@@ -85,7 +84,6 @@
 		where ss.createUserId = s.id or ss.id = s.id
 		<include refid="where"/>
 		</if>
-		<include refid="sqlwhere"/>
 		order by ss.roleId asc
         limit #{offset}, #{limit}
 	</select>

@@ -39,6 +39,7 @@ import com.boot.security.server.apicontroller.reply.QueryUserFilmReply.QueryUser
 import com.boot.security.server.apicontroller.reply.QueryUserFilmReply.QueryUserFilmReplyUserFilm.QueryUserFilmReplyFilm;
 import com.boot.security.server.apicontroller.reply.QueryUserInfoReply;
 import com.boot.security.server.apicontroller.reply.QueryUserInfoReply.QueryUserInfoReplyUserInfo;
+import com.boot.security.server.apicontroller.reply.QueryUserLookedFilmsReply;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.apicontroller.reply.RoomGiftInput;
 import com.boot.security.server.apicontroller.reply.SendVerifyCodeReply;
@@ -667,6 +668,7 @@ public class AppUserController {
 		}   
 		//拼接符合条件的状态
 		StringBuffer orderstatus = new StringBuffer();
+		orderstatus.append(OrderStatusEnum.Submited.getStatusCode()+",");
 		orderstatus.append(OrderStatusEnum.Complete.getStatusCode()+",");
 		orderstatus.append(OrderStatusEnum.Refund.getStatusCode()+",");
 		orderstatus.append(OrderStatusEnum.PayBack.getStatusCode());
@@ -907,6 +909,29 @@ public class AppUserController {
 		return checkUserFilmOrdersReply;
 	}
 	
+	/*@GetMapping("/QueryUserLookedFilms{UserName}/{Password}/{OpenID}")
+	@ApiOperation(value = "用户看过的电影")
+	public QueryUserLookedFilmsReply QueryUserLookedFilms(){
+		QueryUserLookedFilmsReply queryUserLookedFilmsReply = new QueryUserLookedFilmsReply();
+		//校验参数
+		if (!ReplyExtension.RequestInfoGuard(queryUserLookedFilmsReply, UserName, Password, OpenID)) {
+			return queryUserLookedFilmsReply;
+		}
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
+		if (UserInfo == null) {
+			queryUserLookedFilmsReply.SetUserCredentialInvalidReply();
+			return queryUserLookedFilmsReply;
+		}
+		//验证用户OpenId是否存在
+		Ticketusers ticketuser = _ticketusersService.getByopenids(OpenID);
+		if(ticketuser == null){
+			queryUserLookedFilmsReply.SetOpenIDNotExistReply();
+			return queryUserLookedFilmsReply;
+		}
+		return queryUserLookedFilmsReply;
+	}*/
+	
 	@GetMapping("/QueryUserInfo/{UserName}/{Password}/{OpenID}")
 	@ApiOperation(value = "获取用户信息")
 	public QueryUserInfoReply QueryUserInfo(@PathVariable String UserName,@PathVariable String Password,@PathVariable String OpenID){
@@ -983,5 +1008,10 @@ public class AppUserController {
 			updateUserInfoReply.SetSuccessReply();
 		}
 		return updateUserInfoReply;
+	}
+	public static void main(String[] args) {
+		String sub = "123456";
+		System.out.println(sub.length());
+		
 	}
 }

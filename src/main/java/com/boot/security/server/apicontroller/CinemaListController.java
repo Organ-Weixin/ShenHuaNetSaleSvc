@@ -13,13 +13,19 @@ import com.boot.security.server.apicontroller.reply.QueryCinemasReply;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.apicontroller.reply.QueryCinemasReply.QueryCinemasBean;
 import com.boot.security.server.apicontroller.reply.QueryCinemasReply.QueryCinemasBean.CinemasReply;
+import com.boot.security.server.model.Choosemembercardcreditrule;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaMiniProgramAccounts;
 import com.boot.security.server.model.CinemaTypeEnum;
+import com.boot.security.server.model.Membercardcreditrule;
+import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
+import com.boot.security.server.service.impl.ChoosemembercardcreditruleServiceImpl;
 import com.boot.security.server.service.impl.CinemaMiniProgramAccountsServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
+import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
+import com.boot.security.server.service.impl.MembercardcreditruleServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 
@@ -38,6 +44,12 @@ public class CinemaListController {
 	private UserCinemaViewServiceImpl userCinemaViewService;
 	@Autowired
 	private CinemaMiniProgramAccountsServiceImpl cinemaMiniProgramAccountsService;
+	@Autowired
+	private MemberCardLevelServiceImpl memberCardLevelService;
+	@Autowired
+	private MembercardcreditruleServiceImpl membercardcreditruleService;
+	@Autowired
+	private ChoosemembercardcreditruleServiceImpl choosemembercardcreditruleService;
 
 	@GetMapping("/QueryCinemas/{UserName}/{Password}/{AppId}")
 	@ApiOperation(value = "获取影院")
@@ -64,12 +76,23 @@ public class CinemaListController {
     	   List<CinemasReply> cinemas = new ArrayList<CinemasReply>();
     	   for(CinemaMiniProgramAccounts cinemaMini : cinemaMiniProgramlist){
     		   Cinema cinema = _cinemaService.getByCinemaCode(cinemaMini.getCinemaCode());
+    		   
     		   if(cinema != null){
     			   CinemasReply cinemareply = new CinemasReply();
         		   cinemareply.setCinemaId(cinema.getId());
         		   cinemareply.setCinemaCode(cinema.getCode());
         		   cinemareply.setCinemaName(cinema.getName());
-        		   
+        		   //获取影院可线上开卡的会员卡
+        		   Membercardlevel membercardlevel = memberCardLevelService.getCanOnlineOpenCard(cinemaMini.getCinemaCode());
+        		   //获取选择会员卡规则选择
+        		   if(membercardlevel!=null){
+        			   Choosemembercardcreditrule choosemembercardcreditrule = choosemembercardcreditruleService.getByLevelCodeAndRuleType(cinemaMini.getCinemaCode(), membercardlevel.getLevelCode(), "1");
+        			   if(choosemembercardcreditrule!=null){
+            			   //获取会员卡优惠描述
+            			   Membercardcreditrule membercardcreditrule = membercardcreditruleService.getByRuleCode(choosemembercardcreditrule.getRuleCode());
+            			   cinemareply.setOfferDescription(membercardcreditrule.getOfferDescription());
+            		   }
+        		   }
         		   Usercinemaview usercinema = userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(), cinema.getCode());
         		   cinemareply.setCinemaType(usercinema==null?"":CinemaTypeEnum.CastToEnum(usercinema.getCinemaType()).getTypeName());
         		   cinemareply.setContactName(cinema.getContactName());

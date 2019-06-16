@@ -422,7 +422,7 @@ public class AppGoodsController {
 			return prePayParametersReply;
 		}
 		// 验证优惠券是否使用
-		if (!QueryJson.getCouponsCode().isEmpty()&&!QueryJson.getCouponsCode().equals("")) {
+		if (null!=QueryJson.getCouponsCode()&&""!=QueryJson.getCouponsCode()) {
 			Coupons coupons = _couponsService.getByCouponsCode(QueryJson.getCouponsCode());
 			if (coupons.getStatus() != CouponsStatusEnum.Fetched.getStatusCode())// 不是已领取状态
 			{

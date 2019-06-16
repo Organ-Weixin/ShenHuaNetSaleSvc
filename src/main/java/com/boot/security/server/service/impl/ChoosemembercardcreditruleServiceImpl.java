@@ -43,4 +43,10 @@ public class ChoosemembercardcreditruleServiceImpl implements Choosemembercardcr
 		return choosemembercardcreditruleDao.getByRuleCode(cinemacode, levelcode, rulecode);
 	}
 
+	@Override
+	public Choosemembercardcreditrule getByLevelCodeAndRuleType(String cinemacode, String levelcode, String ruletype) {
+		// TODO Auto-generated method stub
+		return choosemembercardcreditruleDao.getByLevelCodeAndRuleType(cinemacode, levelcode, ruletype);
+	}
+
 }

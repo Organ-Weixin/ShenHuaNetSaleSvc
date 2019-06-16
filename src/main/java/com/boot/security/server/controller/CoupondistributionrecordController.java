@@ -65,7 +65,6 @@ public class CoupondistributionrecordController {
     @PostMapping
     @ApiOperation(value = "保存")
     public Coupondistributionrecord save(@RequestBody Coupondistributionrecord coupondistributionrecord,HttpServletRequest request) throws ParseException {
-    	List<Coupons> couponsList = couponsService.getCanUseByGroupCode(coupondistributionrecord.getGroupCode());
     	Couponsgroup couponsgroup = couponsgroupService.getByGroupCode(coupondistributionrecord.getGroupCode());
     	List<Ticketusers> customerList = new ArrayList<Ticketusers>();
     	//根据顾客类型获取顾客列表
@@ -122,7 +121,7 @@ public class CoupondistributionrecordController {
     	if(openIDs.size()>0){
     		try {
     			for(int i=0; i<coupondistributionrecord.getIssuedNumber(); i++){
-        			Coupons coupons = couponsService.getById(couponsList.get(i).getId());
+/*        			Coupons coupons = couponsService.getById(couponsList.get(i).getId());
         			if(couponsgroup.getValidityType()==2){
         				Calendar c = Calendar.getInstance();
         				c.add(Calendar.DAY_OF_MONTH, couponsgroup.getEffectiveDays());
@@ -133,7 +132,30 @@ public class CoupondistributionrecordController {
         			coupons.setReceiveDate(new Date());
         			coupons.setOpenID(openIDs.get(i%openIDs.size()));
         			coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
-        			couponsService.update(coupons);
+        			couponsService.update(coupons);*/
+    				Coupons coupons = new Coupons();
+					//优惠券编码--13位时间戳加5位随机数
+					String couponsCode = String.valueOf(new Date().getTime());
+		    		couponsCode+=(int)((Math.random()*9+1)*10000);
+					coupons.setCouponsCode(couponsCode);
+					coupons.setCouponsName(couponsgroup.getCouponsName());
+					//如果有效期类型为2（领取后N天生效，有效时长M天）
+					if(couponsgroup.getValidityType()==2){
+        				Calendar c = Calendar.getInstance();
+        				c.add(Calendar.DAY_OF_MONTH, couponsgroup.getEffectiveDays());
+        				coupons.setEffectiveDate(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(c.getTime())));
+        				c.add(Calendar.DAY_OF_MONTH, couponsgroup.getValidityDays());
+        				coupons.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(c.getTime())));
+            		}else{
+            			coupons.setEffectiveDate(couponsgroup.getEffectiveDate());
+            			coupons.setExpireDate(couponsgroup.getExpireDate());
+            		}
+					coupons.setGroupCode(couponsgroup.getGroupCode());
+					coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
+					coupons.setOpenID(openIDs.get(i%openIDs.size()));
+					coupons.setCreateDate(new Date());
+					coupons.setReceiveDate(new Date());
+					couponsService.save(coupons);
         		}
     			//已发放数量
     			couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()+coupondistributionrecord.getIssuedNumber());

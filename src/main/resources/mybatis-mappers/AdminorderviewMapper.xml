@@ -82,6 +82,7 @@
 	<select id="list" resultType="Adminorderview">
 		select * from adminorderview t
 		<include refid="where" />
+		order by created desc
 		${params.orderBy}
 		limit #{offset}, #{limit}
 	</select>

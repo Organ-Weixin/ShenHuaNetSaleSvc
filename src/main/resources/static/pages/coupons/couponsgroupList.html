@@ -133,251 +133,251 @@ var pers = checkPermission();
 var couponsType = showDictSelect("couponsType", "couponsType", true);
 var enabled = showDictSelect("status", "enabled", true);
 var reductionTypes = showDictSelect("reductionType", "reductionTypes", true);
-//获取登陆人信息
-initUser();
-function initUser(){
-	$.ajax({
-		type : 'get',
-		url : '/users/current',
-		async : false,
-		success : function(data) {
-			$("#userId").val(data.id);
-			$("#roleId").val(data.roleId);
-			getCinemaCodes(data.id,data.roleId);
-		}
-	});
-}
-//获取登陆人的所有影院的影院编码
-function getCinemaCodes(id,roleId){
-	$.ajax({
-		url:'/users/getCinemaName',
-		data:{"id":id,"roleId":roleId},
-		type:'post',
-		success:function(data){
-			var cinemacodes = "";
-			for(var i=0; i<data.length; i++){
-				cinemacodes += data[i].cinemaCode+",";
-				var option = "<option value="+data[i].cinemaCode+">"+data[i].cinemaName+"</option>";
-				$("#cinemaName").append(option);
+	//获取登陆人信息
+	initUser();
+	function initUser(){
+		$.ajax({
+			type : 'get',
+			url : '/users/current',
+			async : false,
+			success : function(data) {
+				$("#userId").val(data.id);
+				$("#roleId").val(data.roleId);
+				getCinemaCodes(data.id,data.roleId);
 			}
-			$("#cinemacodes").val(cinemacodes.substring(0,cinemacodes.length-1));
+		});
+	}
+	//获取登陆人的所有影院的影院编码
+	function getCinemaCodes(id,roleId){
+		$.ajax({
+			url:'/users/getCinemaName',
+			data:{"id":id,"roleId":roleId},
+			type:'post',
+			success:function(data){
+				var cinemacodes = "";
+				for(var i=0; i<data.length; i++){
+					cinemacodes += data[i].cinemaCode+",";
+					var option = "<option value="+data[i].cinemaCode+">"+data[i].cinemaName+"</option>";
+					$("#cinemaName").append(option);
+				}
+				$("#cinemacodes").val(cinemacodes.substring(0,cinemacodes.length-1));
+				example.ajax.reload();
+			}
+		})
+	}
+	
+	var example;
+	function init(){
+		example = 
+	    	$('#dt-table').DataTable({
+	        	"searching": false,
+	        	"processing": false,
+	        	"serverSide" : true,
+	        	"language": {
+	                "url": "/js/plugin/datatables/Chinese.lang"
+	            },
+	        	"ajax": {
+	        		"url" : "/couponsgroups",
+	        		"type":"get",
+	        		"data":function(d){
+	    				d.Id = $("#id").val();
+	    				d.CinemaCodes = $("#cinemaName").val();
+	    				d.CinemaCodesList = $("#cinemacodes").val();
+	    				d.ReductionType = $("#reductionTypeSelect").val();
+	    				d.CouponsType = $("#couponsTypeSelect").val();
+	    				d.Status = $("#statusSelect").val();
+	    			}
+	        	},
+	        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
+	            "columns": [
+	            	{"data" : null, "defaultContent" : "","orderable":false,
+						"render" : function(data, type, full, meta){
+							return meta.row + 1 + meta.settings._iDisplayStart;
+							}
+					},
+					{"data" : "couponsType", "defaultContent" : "","orderable":false,
+						"render": function (data, type, row) {
+	                    	return couponsType[data];
+	                  	}						
+					},
+					{"data" : "couponsName", "defaultContent" : "","orderable":false},
+					{"data" : "reductionType", "defaultContent" : "","orderable":false,
+						"render": function (data, type, row) {
+	                    	return reductionTypes[data];
+	                  	}
+					},
+					{"data" : "", "defaultContent" : "","orderable":false,
+						"render":function(data,type,row){
+							var effectiveDate = row['effectiveDate'];
+							var expireDate = row['expireDate'];
+							var effectiveDays = row['effectiveDays'];
+							var validityDays = row['validityDays'];
+							if(effectiveDate!=null&&expireDate!=null){
+								return effectiveDate.substr(0,10) + "至" + expireDate.substr(0,10);
+							}else{
+								return "领取后"+(effectiveDays+validityDays)+"天有效";
+							}
+							
+						}
+					},
+					{"data" : "status", "defaultContent" : "","orderable":false,
+						"render": function (data, type, row) {
+	                    	return enabled[data];
+	                  	}
+					},
+					{"data" : "reductionPrice", "defaultContent" : "","orderable":false,
+						"render":function(data,type,row){
+							var reductionPrice = row['reductionPrice'];
+							if(reductionPrice!=null){
+								return reductionPrice;
+							}else{
+								return 0;
+							}
+						}						
+					},
+					{"data" : "couponsNumber", "defaultContent" : "","orderable":false},
+					{"data" : "fetchNumber", "defaultContent" : "","orderable":false,
+						"render" : function(data, type, row){
+							var fetchNumber = row['fetchNumber'];
+							if(fetchNumber!=null){
+								return fetchNumber;
+							}else{
+								return 0;
+							}
+						}					
+					},
+					{"data" : "remainingNumber", "defaultContent" : "","orderable":false,
+						"render" : function(data, type, row){
+							var remainingNumber = row['remainingNumber'];
+							if(remainingNumber!=null){
+								return remainingNumber;
+							}else{
+								return 0;
+							}
+						}						
+					},
+					{"data" : "usedNumber", "defaultContent" : "","orderable":false,
+						"render" : function(data, type, row){
+							var usedNumber = row['usedNumber'];
+							if(usedNumber!=null){
+								return usedNumber;
+							}else{
+								return 0;
+							}
+						}					
+					},
+					{ 
+									"data": "", 
+									"defaultContent": "",
+									"orderable":false,
+							        "render": function (data, type, row) {
+	                		           var id = row['id'];
+	                		           var status = row['status'];
+	                		           var groupCode = row['groupCode'];
+	                		           var price = row['reductionPrice'];
+	                		           var fetchNumber = row['fetchNumber'];
+	                		           var change = "";
+	                		           if(status==1){
+	                		        	   change = "停用";
+	                		           }
+	                		           else{
+	                		        	   status == 0;
+	                		        	   change = "启用";
+	                		           }
+	                		           var href = "updateCouponsgroup.html?id=" + id;
+	                		           var upda = "<button class='change' title='"+status+"' value='"+id+"' style='margin-right:5%'>"+change+"</button>";
+	                		           var coupons = "<button class='coupons' value='"+price+"' title='"+groupCode+"' style='margin-right:5%'>券码</button>";
+	                                   var edit = buttonEdit(href, "", pers);
+	                		           //var del = buttonDel(id, "", pers);
+	                		           var del = "<button value='"+id+"' onclick='del("+id+")'>删除</button>"
+	                		           /* if(status == 2){
+	                                  	 return coupons + edit + del;
+	                		           } */
+	                		           if(fetchNumber == 0){
+	                		        	   //return upda + coupons + edit + del;
+	                		        	   return upda + coupons + del;
+	                		           }
+	                		           else{
+	                		        	 return upda + coupons;
+	                		           }
+	                  	            }		
+								},
+	                
+			            ],
+			           "order": [[ 0, "asc" ]]
+			        } );
+			}
+
+		$("#choose").click(function(){
+			$("#chooseDiv").show();
+		});
+		$("#close").click(function(){
+			$("#chooseDiv").hide();
+		});
+		$("#submit").click(function(){
+			if($("input:radio[name='chooseRadio']:checked").length>0){
+				window.location.href="addCouponsgroup.html?CouponsType="+$("input:radio[name='chooseRadio']:checked").val();
+			}
+		});
+		
+		layui.use('layer', function(){
+		    var layer = layui.layer;
+		});
+
+		function del(id){
+			layer.confirm('确定要删除吗？', {
+		        btn : [ '确定', '取消' ]
+		    }, function() {
+		    	$.ajax({
+		            type : 'delete',
+		            url : '/couponsgroups/'+id,
+		            success : function(data) {
+		                example.ajax.reload();
+		                layer.msg("删除成功");
+		            }
+		        });
+		        
+		        layer.close(1);
+		    });
+		}
+
+		$("#tbody").on('click','.change',function(){
+			var status = "";
+			if($(this).attr('title')==1){
+				status = 0;
+			}else{
+				status = 1;
+			}
+			$.ajax({
+				url:'/couponsgroups/changeStatus',
+				data:{"status":status,"id":$(this).val()},
+				type:'post',
+				success:function(data){
+					window.location.href="couponsgroupList.html";
+				}
+			}); 
+		});
+
+		$("#tbody").on('click','.coupons',function(){
+			window.location.href="couponsList.html?groupCode="+$(this).attr('title')+"&reductionPrice="+$(this).val();
+		});
+		
+		
+		$("#cinemaName").blur(function(){
 			example.ajax.reload();
-		}
-	})
-}
-
-var example;
-function init(){
-	example = 
-    	$('#dt-table').DataTable({
-        	"searching": false,
-        	"processing": false,
-        	"serverSide" : true,
-        	"language": {
-                "url": "/js/plugin/datatables/Chinese.lang"
-            },
-        	"ajax": {
-        		"url" : "/couponsgroups",
-        		"type":"get",
-        		"data":function(d){
-    				d.Id = $("#id").val();
-    				d.CinemaCodes = $("#cinemaName").val();
-    				d.CinemaCodesList = $("#cinemacodes").val();
-    				d.ReductionType = $("#reductionTypeSelect").val();
-    				d.CouponsType = $("#couponsTypeSelect").val();
-    				d.Status = $("#statusSelect").val();
-    			}
-        	},
-        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
-            "columns": [
-            	{"data" : null, "defaultContent" : "","orderable":false,
-					"render" : function(data, type, full, meta){
-						return meta.row + 1 + meta.settings._iDisplayStart;
-						}
-				},
-				{"data" : "couponsType", "defaultContent" : "","orderable":false,
-					"render": function (data, type, row) {
-                    	return couponsType[data];
-                  	}						
-				},
-				{"data" : "couponsName", "defaultContent" : "","orderable":false},
-				{"data" : "reductionType", "defaultContent" : "","orderable":false,
-					"render": function (data, type, row) {
-                    	return reductionTypes[data];
-                  	}
-				},
-				{"data" : "", "defaultContent" : "","orderable":false,
-					"render":function(data,type,row){
-						var effectiveDate = row['effectiveDate'];
-						var expireDate = row['expireDate'];
-						var effectiveDays = row['effectiveDays'];
-						var validityDays = row['validityDays'];
-						if(effectiveDate!=null&&expireDate!=null){
-							return effectiveDate.substr(0,10) + "至" + expireDate.substr(0,10);
-						}else{
-							return "领取后"+(effectiveDays+validityDays)+"天有效";
-						}
-						
-					}
-				},
-				{"data" : "status", "defaultContent" : "","orderable":false,
-					"render": function (data, type, row) {
-                    	return enabled[data];
-                  	}
-				},
-				{"data" : "reductionPrice", "defaultContent" : "","orderable":false,
-					"render":function(data,type,row){
-						var reductionPrice = row['reductionPrice'];
-						if(reductionPrice!=null){
-							return reductionPrice;
-						}else{
-							return 0;
-						}
-					}						
-				},
-				{"data" : "couponsNumber", "defaultContent" : "","orderable":false},
-				{"data" : "fetchNumber", "defaultContent" : "","orderable":false,
-					"render" : function(data, type, row){
-						var fetchNumber = row['fetchNumber'];
-						if(fetchNumber!=null){
-							return fetchNumber;
-						}else{
-							return 0;
-						}
-					}					
-				},
-				{"data" : "remainingNumber", "defaultContent" : "","orderable":false,
-					"render" : function(data, type, row){
-						var remainingNumber = row['remainingNumber'];
-						if(remainingNumber!=null){
-							return remainingNumber;
-						}else{
-							return 0;
-						}
-					}						
-				},
-				{"data" : "usedNumber", "defaultContent" : "","orderable":false,
-					"render" : function(data, type, row){
-						var usedNumber = row['usedNumber'];
-						if(usedNumber!=null){
-							return usedNumber;
-						}else{
-							return 0;
-						}
-					}					
-				},
-				{ 
-								"data": "", 
-								"defaultContent": "",
-								"orderable":false,
-						        "render": function (data, type, row) {
-                		           var id = row['id'];
-                		           var status = row['status'];
-                		           var groupCode = row['groupCode'];
-                		           var price = row['reductionPrice'];
-                		           var fetchNumber = row['fetchNumber'];
-                		           var change = "";
-                		           if(status==1){
-                		        	   change = "停用";
-                		           }
-                		           else{
-                		        	   status == 0;
-                		        	   change = "启用";
-                		           }
-                		           var href = "updateCouponsgroup.html?id=" + id;
-                		           var upda = "<button class='change' title='"+status+"' value='"+id+"' style='margin-right:5%'>"+change+"</button>";
-                		           var coupons = "<button class='coupons' value='"+price+"' title='"+groupCode+"' style='margin-right:5%'>券码</button>";
-                                   var edit = buttonEdit(href, "", pers);
-                		           //var del = buttonDel(id, "", pers);
-                		           var del = "<button value='"+id+"' onclick='del("+id+")'>删除</button>"
-                		           /* if(status == 2){
-                                  	 return coupons + edit + del;
-                		           } */
-                		           if(fetchNumber == 0){
-                		        	   //return upda + coupons + edit + del;
-                		        	   return upda + coupons + del;
-                		           }
-                		           else{
-                		        	 return upda + coupons;
-                		           }
-                  	            }		
-							},
-                
-            ],
-           "order": [[ 0, "asc" ]]
-        } );
-}
-
-$("#choose").click(function(){
-	$("#chooseDiv").show();
-});
-$("#close").click(function(){
-	$("#chooseDiv").hide();
-});
-$("#submit").click(function(){
-	if($("input:radio[name='chooseRadio']:checked").length>0){
-		window.location.href="addCouponsgroup.html?CouponsType="+$("input:radio[name='chooseRadio']:checked").val();
-	}
-});
-
-layui.use('layer', function(){
-    var layer = layui.layer;
-});
-
-function del(id){
-	layer.confirm('确定要删除吗？', {
-        btn : [ '确定', '取消' ]
-    }, function() {
-    	$.ajax({
-            type : 'delete',
-            url : '/couponsgroups/'+id,
-            success : function(data) {
-                example.ajax.reload();
-                layer.msg("删除成功");
-            }
-        });
-        
-        layer.close(1);
-    });
-}
-
-$("#tbody").on('click','.change',function(){
-	var status = "";
-	if($(this).attr('title')==1){
-		status = 0;
-	}else{
-		status = 1;
-	}
-	$.ajax({
-		url:'/couponsgroups/changeStatus',
-		data:{"status":status,"id":$(this).val()},
-		type:'post',
-		success:function(data){
-			window.location.href="couponsgroupList.html";
-		}
-	}); 
-});
-
-$("#tbody").on('click','.coupons',function(){
-	window.location.href="couponsList.html?groupCode="+$(this).attr('title')+"&reductionPrice="+$(this).val();
-});
-
-
-$("#cinemaName").blur(function(){
-	example.ajax.reload();
-});
-$("#reductionTypeSelect").blur(function(){
-	example.ajax.reload();
-});
-$("#couponsTypeSelect").blur(function(){
-	example.ajax.reload();
-});
-$("#statusSelect").blur(function(){
-	example.ajax.reload();
-});
-$("#clear").click(function(){
-	$("select").val("");
-	example.ajax.reload();
-});
-init();
+		});
+		$("#reductionTypeSelect").blur(function(){
+			example.ajax.reload();
+		});
+		$("#couponsTypeSelect").blur(function(){
+			example.ajax.reload();
+		});
+		$("#statusSelect").blur(function(){
+			example.ajax.reload();
+		});
+		$("#clear").click(function(){
+			$("select").val("");
+			example.ajax.reload();
+		});
+		init();
 </script>

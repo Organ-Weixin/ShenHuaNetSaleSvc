@@ -2,6 +2,8 @@ package com.boot.security.server.service;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.boot.security.server.model.Choosemembercardcreditrule;
 
 public interface ChoosemembercardcreditruleService {
@@ -15,4 +17,6 @@ public interface ChoosemembercardcreditruleService {
 	List<Choosemembercardcreditrule> getRechargeTypeListByLevelCode(String cinemacode,String levelcode);
 	
 	Choosemembercardcreditrule getByRuleCode(String cinemacode, String levelcode ,String rulecode);
+	
+	Choosemembercardcreditrule getByLevelCodeAndRuleType(String cinemacode,String levelcode,String ruletype);
 }
