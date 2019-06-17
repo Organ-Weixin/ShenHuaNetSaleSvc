@@ -427,7 +427,7 @@ public class AppUserController {
 		
 		//发送验证码到用户手机号
 		String smsContent = ""+ ticketuser.getVerifyCode()+"（万画筒小程序购票平台验证码，一分钟内有效）";
-        String sendResult = SendSmsHelper.SendSms(input.getMobilePhone(), smsContent);
+        String sendResult = new SendSmsHelper().SendSms(input.getCinemaCode(), input.getMobilePhone(), smsContent);
         if(!"Success".equals(sendResult)){
         	reply.SetSentMessageFailureReply();
         	return reply;

@@ -31,6 +31,9 @@ public class Cinema extends BaseEntity<Long> {
 	private Integer IsGeneralStore;
 	private Integer OverRefundTime;//开场前几分钟不可以退票
 	private Double RefundFee;//退票手续费
+	private String SmsAccount;
+	private String SmsPwd;
+	private String SmsSignId;
 	
 	private Date GoodsUpdated; //影院卖品更新时间
 
@@ -202,6 +205,24 @@ public class Cinema extends BaseEntity<Long> {
 	}
 	public void setRefundFee(Double refundFee) {
 		RefundFee = refundFee;
+	}
+	public String getSmsAccount() {
+		return SmsAccount;
+	}
+	public void setSmsAccount(String smsAccount) {
+		SmsAccount = smsAccount;
+	}
+	public String getSmsPwd() {
+		return SmsPwd;
+	}
+	public void setSmsPwd(String smsPwd) {
+		SmsPwd = smsPwd;
+	}
+	public String getSmsSignId() {
+		return SmsSignId;
+	}
+	public void setSmsSignId(String smsSignId) {
+		SmsSignId = smsSignId;
 	}
 	
 }
