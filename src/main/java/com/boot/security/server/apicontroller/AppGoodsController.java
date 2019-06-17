@@ -599,7 +599,8 @@ public class AppGoodsController {
 			return smsNoticeReply;
 		}
 		String MsgConetnt="您的卖品已送到影厅门口，请及时领取。";
-		String SendResult = new SendSmsHelper().SendSms(order.getMobilePhone(), MsgConetnt);
+		String SendResult = new SendSmsHelper().SendSms(order.getCinemaCode()
+				,order.getMobilePhone(), MsgConetnt);
 		if(SendResult.equals("Success")){
 			smsNoticeReply.SetSuccessReply();
 		}
