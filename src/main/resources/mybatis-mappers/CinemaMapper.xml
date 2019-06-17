@@ -180,6 +180,15 @@
 			<if test="SmsSignId != null">
 				SmsSignId = #{SmsSignId},
 			</if>
+			<if test="BusinessPic != null">
+				BusinessPic = #{BusinessPic}, 
+			</if>
+			<if test="BusinessName != null">
+				BusinessName = #{BusinessName}, 
+			</if>
+			<if test="BusinessDesc != null">
+				BusinessDesc = #{BusinessDesc}, 
+			</if>
 		</set>
 
 		where t.Id = #{Id}
