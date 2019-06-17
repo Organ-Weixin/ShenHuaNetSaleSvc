@@ -16,6 +16,8 @@ public interface GoodsOrderService {
 	@Transactional(propagation = Propagation.REQUIRED)
 	int Update(GoodsOrderView orderview);
 	Goodsorders getByLocalOrderCode(String localordercode);
+	Goodsorders getByOrderCode(String ordercode);
+	GoodsOrderView getWithLocalOrderCode(String localordercode);
 	GoodsOrderView getWithLocalOrderCode(String cinemacode,String localordercode);
 	GoodsOrderView getWithOrderCode(String cinemacode,String ordercode);
 	int UpdateOrderBaseInfo(Goodsorders orderbase);

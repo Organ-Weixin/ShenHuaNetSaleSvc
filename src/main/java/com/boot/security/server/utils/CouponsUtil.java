@@ -25,6 +25,7 @@ import com.boot.security.server.service.impl.PriceplanServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
+import com.google.gson.Gson;
 
 public class CouponsUtil {
 	OrderServiceImpl orderService = SpringUtil.getBean(OrderServiceImpl.class);
@@ -36,6 +37,8 @@ public class CouponsUtil {
 	
 	//region 判断优惠券是否可使用
 	public boolean CouponsCanUse(CouponsView couponsview,String CinemaCode){
+		System.out.println(new Gson().toJson(couponsview));
+		System.out.println("getCanUsePeriodType"+couponsview.getCouponsgroup().getCanUsePeriodType());
 		boolean ifCanUse = true;
 		//优惠券状态不对
 		if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
@@ -250,6 +253,10 @@ public class CouponsUtil {
 		Map<String,Double> map=new HashMap<String,Double>();
 		map.put("realPayAmount", realPayAmount);
 		map.put("realGoodsPayAmount",realGoodsPayAmount);
+		if(order.getOrderBaseInfo()!=null){
+		System.out.println("getTotalSalePrice"+order.getOrderBaseInfo().getTotalSalePrice());
+		}
+		System.out.println(new Gson().toJson(map));
 		return map;
 	}
 	//endregion

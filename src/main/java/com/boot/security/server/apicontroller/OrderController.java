@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Document;
 
-import com.boot.security.server.api.core.LockSeatReply;
+//import com.boot.security.server.api.core.LockSeatReply;
 import com.boot.security.server.api.core.NetSaleSvcCore;
 import com.boot.security.server.api.core.QueryPrintReply;
 import com.boot.security.server.api.core.QueryTicketReply;
@@ -35,6 +35,12 @@ import com.boot.security.server.api.core.RefundTicketReply;
 import com.boot.security.server.api.core.ReleaseSeatReply;
 import com.boot.security.server.api.core.SubmitMixOrderReply;
 import com.boot.security.server.api.core.SubmitOrderReply;
+import com.boot.security.server.apicontroller.reply.LockSeatReply;
+import com.boot.security.server.apicontroller.reply.LockSeatReply.LockSeatReplydata;
+import com.boot.security.server.apicontroller.reply.LockSeatReply.LockSeatReplydata.LockSeatReplyCoupon;
+import com.boot.security.server.apicontroller.reply.LockSeatReply.LockSeatReplydata.LockSeatReplyCoupon.LockSeatReplyCoupons;
+import com.boot.security.server.apicontroller.reply.LockSeatReply.LockSeatReplydata.LockSeatReplyOrder;
+import com.boot.security.server.apicontroller.reply.LockSeatReply.LockSeatReplydata.LockSeatReplyOrder.LockSeatReplySeat;
 import com.boot.security.server.apicontroller.reply.NetSaleQueryJson;
 import com.boot.security.server.apicontroller.reply.PrePayMixOrderQueryJson;
 import com.boot.security.server.apicontroller.reply.PrePayMixOrderQueryJson.PrePayMixOrderQueryJsonGoods;
@@ -98,10 +104,12 @@ import com.boot.security.server.utils.CouponsUtil;
 import com.boot.security.server.utils.FileUploadUtils;
 import com.boot.security.server.utils.WxPayUtil;
 import com.boot.security.server.utils.XmlHelper;
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 
 import freemarker.template.utility.StringUtil;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
@@ -152,18 +160,72 @@ public class OrderController {
 	@RequestMapping(value = "/LockSeat", method = RequestMethod.POST)
 	@ApiOperation(value = "锁座")
 	public LockSeatReply LockSeat(@RequestBody NetSaleQueryJson QueryJson){
+		LockSeatReply lockSeatReply=new LockSeatReply();
 		try {
-			LockSeatReply lockSeatReply =NetSaleSvcCore.getInstance().LockSeat(QueryJson.getUserName(),QueryJson.getPassword(),QueryJson.getQueryXml());
+			com.boot.security.server.api.core.LockSeatReply corelockSeatReply =NetSaleSvcCore.getInstance().LockSeat(QueryJson.getUserName(),QueryJson.getPassword(),QueryJson.getQueryXml());
 			if(QueryJson.getOpenID().equals(null)||QueryJson.getOpenID().equals("")){
 				return lockSeatReply;
 			}
 			//锁座时新增订单需要传入OpenID,之后修改订单就不需要再操作
-			if(lockSeatReply.Status.equals("Success")){
-				Orders orderbase=_orderService.getOrderBaseByLockOrderCode(lockSeatReply.getOrder().getOrderCode());
+			if(corelockSeatReply.Status.equals("Success")){
+				Orders orderbase=_orderService.getOrderBaseByLockOrderCode(corelockSeatReply.getOrder().getOrderCode());
 				orderbase.setOpenID(QueryJson.getOpenID());
 				_orderService.UpdateOrderBaseInfo(orderbase);
+				lockSeatReply.setData(new LockSeatReplydata());
+				//填充返回order
+				LockSeatReplyOrder lockSeatReplyOrder=new LockSeatReplyOrder();
+				lockSeatReplyOrder.setOrderCode(corelockSeatReply.getOrder().getOrderCode());
+				lockSeatReplyOrder.setAutoUnlockDatetime(corelockSeatReply.getOrder().getAutoUnlockDatetime());
+				lockSeatReplyOrder.setSessionCode(corelockSeatReply.getOrder().getSessionCode());
+				lockSeatReplyOrder.setCount(corelockSeatReply.getOrder().getCount());
+				List<LockSeatReplySeat> lockSeatReplySeats=new ArrayList<LockSeatReplySeat>();
+				for(com.boot.security.server.api.core.LockSeatReply.LockSeatReplyOrder.LockSeatReplySeat coreseat:corelockSeatReply.getOrder().getSeat()){
+					LockSeatReplySeat seat=new LockSeatReplySeat();
+					seat.setSeatCode(coreseat.getSeatCode());
+					lockSeatReplySeats.add(seat);
+				}
+				lockSeatReplyOrder.setSeat(lockSeatReplySeats);
+				lockSeatReply.getData().setOrder(lockSeatReplyOrder);
+				//填充返回coupons
+				LockSeatReplyCoupon lockSeatReplyCoupon=new LockSeatReplyCoupon();
+				List<LockSeatReplyCoupons> coupons=new ArrayList<LockSeatReplyCoupons>();
+				//读出用户的所有优惠券
+				List<Coupons> UserCouponsList=_couponsService.getUserCoupons(QueryJson.getOpenID(),CouponsStatusEnum.Fetched.getStatusCode());
+				if(UserCouponsList!=null&&UserCouponsList.size()>0){
+					for(Coupons usecoupons:UserCouponsList){
+						if(!usecoupons.getCouponsCode().equals("")&&!usecoupons.getCouponsCode().equals(null)){
+							CouponsView couponsview = _couponsService.getWithCouponsCode(usecoupons.getCouponsCode());
+							if(couponsview.getCoupons()!=null){
+								boolean ifCanUse=new CouponsUtil().CouponsCanUse(couponsview,orderbase.getCinemaCode());
+								if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1){
+									if(!couponsview.getCouponsgroup().getFilmCodes().equals(null)&&!couponsview.getCouponsgroup().getFilmCodes().equals("")){
+										//如果筛选的影片编码不为空，并且当前订单的影片编码在可用影片范围内
+										if(couponsview.getCouponsgroup().getFilmCodes().indexOf(orderbase.getFilmCode())>-1){
+											LockSeatReplyCoupons replyCoupons=new LockSeatReplyCoupons();
+											replyCoupons.setCouponsCode(couponsview.getCoupons().getCouponsCode());
+											replyCoupons.setCouponsName(couponsview.getCoupons().getCouponsName());
+											replyCoupons.setCouponsType(couponsview.getCouponsgroup().getCouponsType());
+											replyCoupons.setReductionPrice(couponsview.getCouponsgroup().getReductionPrice());
+											coupons.add(replyCoupons);
+										}
+									}else{
+										//所以影片可用
+										LockSeatReplyCoupons replyCoupons=new LockSeatReplyCoupons();
+										replyCoupons.setCouponsCode(couponsview.getCoupons().getCouponsCode());
+										replyCoupons.setCouponsName(couponsview.getCoupons().getCouponsName());
+										replyCoupons.setCouponsType(couponsview.getCouponsgroup().getCouponsType());
+										replyCoupons.setReductionPrice(couponsview.getCouponsgroup().getReductionPrice());
+										coupons.add(replyCoupons);
+									}
+								}
+							}
+						}
+					}
+				}
+				lockSeatReplyCoupon.setCoupons(coupons);
+				lockSeatReply.getData().setCoupon(lockSeatReplyCoupon);
+				lockSeatReply.SetSuccessReply();
 			}
-			
 			return lockSeatReply;
 		} catch (JsonSyntaxException e) {
 			
@@ -516,7 +578,7 @@ public class OrderController {
 							coupons.setUpdateTime(new Date());
 							_couponsService.update(coupons);
 							//更新优惠券组的库存、使用数量
-							Couponsgroup couponsgroup = couponsgroupService.getByGroupCode(coupons.getCouponsCode());
+							Couponsgroup couponsgroup = couponsgroupService.getByGroupCode(coupons.getGroupCode());
 							//库存+1
 							couponsgroup.setRemainingNumber(couponsgroup.getRemainingNumber()+1);
 							//已使用数量-1

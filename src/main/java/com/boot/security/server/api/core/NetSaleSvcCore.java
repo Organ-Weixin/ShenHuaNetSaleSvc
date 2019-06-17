@@ -1455,6 +1455,7 @@ ScreenType,ListingPrice,LowestPrice))
 	public CardPayBackReply CardPayBack(String Username, String Password, String CinemaCode, String CardNo, String CardPassword, String TradeNo, String PayBackAmount)
     {
         CardPayBackReply cardPayBackReply = new CardPayBackReply();
+        
         if (!ReplyExtension.RequestInfoGuard(cardPayBackReply,Username, Password, CinemaCode, CardNo, CardPassword, TradeNo, PayBackAmount))
         {
             return cardPayBackReply;

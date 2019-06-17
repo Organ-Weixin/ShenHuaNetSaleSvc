@@ -171,6 +171,15 @@
 			<if test="RefundFee != null">
 				RefundFee = #{RefundFee},
 			</if>
+			<if test="SmsAccount != null">
+				SmsAccount = #{SmsAccount},
+			</if>
+			<if test="SmsPwd != null">
+				SmsPwd = #{SmsPwd},
+			</if>
+			<if test="SmsSignId != null">
+				SmsSignId = #{SmsSignId},
+			</if>
 		</set>
 
 		where t.Id = #{Id}

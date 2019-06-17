@@ -45,6 +45,21 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
 		return ordersDao.getByLocalOrderCode(localordercode);
 	}
 	@Override
+	public Goodsorders getByOrderCode(String ordercode) {
+		// TODO Auto-generated method stub
+		return ordersDao.getByOrderCode(ordercode);
+	}
+	@Override
+	public GoodsOrderView getWithLocalOrderCode(String localordercode) {
+		// TODO Auto-generated method stub
+		GoodsOrderView orderview=new GoodsOrderView();
+		orderview.setOrderBaseInfo(ordersDao.getByLocalOrderCode(localordercode));
+		if(ordersDao.getByLocalOrderCode(localordercode)!=null){
+			orderview.setOrderGoodsDetails(orderdetailsDao.getByOrderId(orderview.getOrderBaseInfo().getId()));
+		}
+		return orderview;
+	}
+	@Override
 	public GoodsOrderView getWithLocalOrderCode(String cinemacode, String localordercode) {
 		// TODO Auto-generated method stub
 		GoodsOrderView orderview=new GoodsOrderView();

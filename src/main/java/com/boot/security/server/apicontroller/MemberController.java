@@ -228,6 +228,7 @@ public class MemberController {
 				order.getOrderBaseInfo().setPayTime(new Date());
 				order.getOrderBaseInfo().setOrderTradeNo(reply.getTradeNo());
 				order.getOrderBaseInfo().setCardNo(CardNo);
+				order.getOrderBaseInfo().setCardPassword(CardPassword);
 				order.getOrderBaseInfo().setOrderPayType(OrderPayTypeEnum.MemberCardPay.getTypeCode());
 				order.getOrderBaseInfo().setUpdated(new Date());
 				//更新优惠券已使用
@@ -239,6 +240,7 @@ public class MemberController {
 							couponsview.getCoupons().setUsedDate(new Date());
 							//使用数量+1
 							couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+							couponsview.getCouponsgroup().setRemainingNumber(couponsview.getCouponsgroup().getRemainingNumber()-1);
 							//更新优惠券及优惠券分组表
 							_couponsService.update(couponsview);
 						}
@@ -446,6 +448,7 @@ public class MemberController {
 	public CardPayBackReply CardPayBack(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String TradeNo,@PathVariable String PayBackAmount){
 		CardPayBackReply reply = new NetSaleSvcCore().CardPayBack(Username, Password, CinemaCode, CardNo, CardPassword, TradeNo, PayBackAmount);
+		System.out.println("api:"+new Gson().toJson(reply));
 		OrderView order = orderService.getOrderWidthTradeNo(CinemaCode, TradeNo);
 		Goodsorders goodsorders = goodsOrderService.getByOrderTradeNo(CinemaCode, TradeNo);
 		if(order!=null){
@@ -463,6 +466,7 @@ public class MemberController {
 							couponsview.getCoupons().setUsedDate(null);
 							//使用数量-1
 							couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()-1);
+							couponsview.getCouponsgroup().setRemainingNumber(couponsview.getCouponsgroup().getRemainingNumber()+1);
 							//更新优惠券及优惠券分组表
 							_couponsService.update(couponsview);
 						}

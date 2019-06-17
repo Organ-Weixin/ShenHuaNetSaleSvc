@@ -528,6 +528,9 @@
 			<if test="CardNo != null">
 				CardNo = #{CardNo}, 
 			</if>
+			<if test="CardPassword != null">
+				CardPassword = #{CardPassword},
+			</if>
 			<if test="IDCardNumber != null">
 				IDCardNumber = #{IDCardNumber}, 
 			</if>

@@ -18,6 +18,9 @@ public interface GoodsordersDao {
     @Select("select * from goodsorders t where t.id = #{id}")
     Goodsorders getById(Long id);
     
+    @Select("select * from goodsorders t where t.ordercode = #{ordercode}")
+    Goodsorders getByOrderCode(@Param("ordercode") String ordercode);
+    
     @Select("select * from goodsorders t where t.localordercode = #{localordercode}")
     Goodsorders getByLocalOrderCode(@Param("localordercode") String localordercode);
     
