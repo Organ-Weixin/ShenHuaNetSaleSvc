@@ -297,6 +297,19 @@ public class AppGoodsController {
         {
         	QueryGoodsOrderReplyOrder order=new QueryGoodsOrderReplyOrder();
         	ModelMapper.MapFrom(order,orders);
+        	//二维码
+    		Cinemaview cinemaview = cinemaviewService.getByCinemaCode(CinemaCode);
+    		//辰星系统(取票码截取影院编码)
+    		if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
+    			if(orders.getOrderBaseInfo().getPickUpCode()!=null){
+    				order.setEwmPicture(new FileUploadUtils().generateEwm(orders.getOrderBaseInfo().getPickUpCode().substring(8,orders.getOrderBaseInfo().getPickUpCode().length())));
+    			}
+    		}
+    		if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
+    			if(orders.getOrderBaseInfo().getOrderCode()!=null){
+    				order.setEwmPicture(new FileUploadUtils().generateEwm(orders.getOrderBaseInfo().getOrderCode()));
+    			}
+    		}
         	queryGoodsOrderReply.setData(order);
         	queryGoodsOrderReply.SetSuccessReply();
         }
