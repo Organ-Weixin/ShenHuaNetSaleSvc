@@ -50,6 +50,7 @@ import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
+import com.boot.security.server.model.Membercardrecharge;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orders;
@@ -68,6 +69,7 @@ import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
+import com.boot.security.server.service.impl.MembercardrechargeServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
@@ -86,6 +88,7 @@ public class YkInterface implements ICTMSInterface {
 	FilminfoServiceImpl _filminfoService = SpringUtil.getBean(FilminfoServiceImpl.class);
 	MemberCardServiceImpl memberCardService = SpringUtil.getBean(MemberCardServiceImpl.class);
 	MemberCardLevelServiceImpl memberCardLevelService = SpringUtil.getBean(MemberCardLevelServiceImpl.class);
+	MembercardrechargeServiceImpl membercardrechargeService = SpringUtil.getBean(MembercardrechargeServiceImpl.class);
 	GoodsServiceImpl goodsService = SpringUtil.getBean(GoodsServiceImpl.class);
 	CinemaMiniProgramAccountsServiceImpl _cinemaMiniProgramAccountsService = SpringUtil.getBean(CinemaMiniProgramAccountsServiceImpl.class);
 	CouponsServiceImpl _couponsService = SpringUtil.getBean(CouponsServiceImpl.class);
@@ -1565,6 +1568,15 @@ public class YkInterface implements ICTMSInterface {
 					memercard.setUpdated(new Date());
 					memberCardService.Update(memercard);
 					
+					Membercardrecharge membercardrecharge = new Membercardrecharge();
+					membercardrecharge.setCinemaCode(memercard.getCinemaCode());
+					membercardrecharge.setCardNo(memercard.getCardNo());
+					membercardrecharge.setUserName(memercard.getUserName());
+					membercardrecharge.setMobilePhone(memercard.getMobilePhone());
+					membercardrecharge.setRechargeAmount(Double.valueOf(ChargeAmount));
+					membercardrecharge.setBalance(memercard.getBalance());
+					membercardrecharge.setUpdated(new Date());
+					membercardrechargeService.save(membercardrecharge);		//更新会员卡充值记录表
 					reply.Status = StatusEnum.Success;
 				} else {
 					reply.Status = StatusEnum.Failure;

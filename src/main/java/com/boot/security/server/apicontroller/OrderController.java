@@ -109,7 +109,6 @@ import com.google.gson.JsonSyntaxException;
 
 
 import freemarker.template.utility.StringUtil;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
@@ -225,6 +224,8 @@ public class OrderController {
 				lockSeatReplyCoupon.setCoupons(coupons);
 				lockSeatReply.getData().setCoupon(lockSeatReplyCoupon);
 				lockSeatReply.SetSuccessReply();
+			} else {
+				lockSeatReply.GetErrorFromNetSaleReply(corelockSeatReply);
 			}
 			return lockSeatReply;
 		} catch (JsonSyntaxException e) {
