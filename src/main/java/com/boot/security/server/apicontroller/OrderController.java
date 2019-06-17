@@ -559,6 +559,10 @@ public class OrderController {
 		//验证影院退票规则
 		//先获取影片开始时间
 		Orders orders = orderService.getByPrintNo(CinemaCode, PrintNo, VerifyCode);
+		if(orders == null){
+			reply.SetOrderNotExistReply();
+			return reply;
+		}
 		//验证影院信息
 		Cinema cinema = cinemaService.getByCinemaCode(CinemaCode);
 		if(cinema!=null){
@@ -584,6 +588,7 @@ public class OrderController {
 						orders.setTotalSalePrice(orders.getTotalSalePrice()-cinema.getRefundFee());
 						//调用微信退款接口
 						RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode());
+						log.info("微信退款结果"+new Gson().toJson(RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode())));
 					}
 					//会员卡支付
 					if(orders.getOrderPayType()==OrderPayTypeEnum.MemberCardPay.getTypeCode()){
@@ -610,6 +615,7 @@ public class OrderController {
 								coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
 								coupons.setUpdateTime(new Date());
 								_couponsService.update(coupons);
+								System.out.println("退还优惠券结果"+_couponsService.update(coupons));
 								//更新优惠券组的库存、使用数量
 								Couponsgroup couponsgroup = couponsgroupService.getByGroupCode(coupons.getCouponsCode());
 								if(couponsgroup!=null){
@@ -619,6 +625,7 @@ public class OrderController {
 									couponsgroup.setUsedNumber(couponsgroup.getUsedNumber()-1);
 									couponsgroup.setUpdateDate(new Date());
 									couponsgroupService.update(couponsgroup);
+									System.out.println("优惠券组库存"+couponsgroupService.update(couponsgroup));
 								}
 							}
 						}
@@ -895,7 +902,6 @@ public class OrderController {
 			String RefundFee = String.valueOf(Double.valueOf(RefundPrice*100).intValue());// 退款金额，以分为单位
 			String OrderTradeNo=order.getOrderBaseInfo().getOrderTradeNo();//微信支付订单号
 			String WxpayRefundCert=cinemapaymentsettings.getWxpayRefundCert();
-			
 			String strRefundPaymentXml = WxPayUtil.WxPayRefund(WxpayAppId,WxpayMchId,WxpayKey,TradeNo,RefundFee,OrderTradeNo,CinemaCode,WxpayRefundCert);
 			//获取返回值 
 			String strRefundPaymentXml2 = strRefundPaymentXml.replace("<![CDATA[", "").replace("]]>", "");
@@ -939,7 +945,7 @@ public class OrderController {
 		return refundpaymentReply;
 	}
 	//endregion
-	
+		
 	//region 联合预支付（购票+卖品）
 	@RequestMapping(value="/PrePayMixOrder",method = RequestMethod.POST)
 	@ApiOperation(value = "预支付联合订单")
