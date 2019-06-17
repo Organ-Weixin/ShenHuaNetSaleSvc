@@ -12,18 +12,18 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boot.security.server.api.core.NetSaleSvcCore;
 import com.boot.security.server.api.core.QuerySessionSeatReply;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
+import com.boot.security.server.apicontroller.reply.QueryFilmSessionPriceReply;
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply;
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions;
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions.QueryFilmSessionsReplyFilm;
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions.QueryFilmSessionsReplyFilm.QueryFilmSessionsReplySession;
 import com.boot.security.server.apicontroller.reply.QueryOrderSessionReply;
 import com.boot.security.server.apicontroller.reply.QueryOrderSessionReply.QueryOrderSessionReplyOrderSession;
-import com.boot.security.server.apicontroller.reply.QueryFimlSessionPriceReply.QueryFimlSessionPriceReplyFilm;
-import com.boot.security.server.apicontroller.reply.QueryFimlSessionPriceReply.QueryFimlSessionPriceReplyFilm.QueryFimlSessionPriceReplySessionDate;
-import com.boot.security.server.apicontroller.reply.QueryFimlSessionPriceReply.QueryFimlSessionPriceReplyFilm.QueryFimlSessionPriceReplySessionDate.QueryFimlSessionPriceReplySession;
-import com.boot.security.server.apicontroller.reply.QueryFimlSessionPriceReply.QueryFimlSessionPriceReplyFilm.QueryFimlSessionPriceReplySessionDate.QueryFimlSessionPriceReplySession.QueryFimlSessionPriceReplyMemberPrice;
-import com.boot.security.server.apicontroller.reply.QueryFimlSessionPriceReply.QueryFimlSessionPriceReplyFilm.QueryFimlSessionPriceReplySessionDate.QueryFimlSessionPriceReplySession.QueryFimlSessionPriceReplySessionPrice;
-import com.boot.security.server.apicontroller.reply.QueryFimlSessionPriceReply;
+import com.boot.security.server.apicontroller.reply.QueryFilmSessionPriceReply.QueryFimlSessionPriceReplyFilm;
+import com.boot.security.server.apicontroller.reply.QueryFilmSessionPriceReply.QueryFimlSessionPriceReplyFilm.QueryFimlSessionPriceReplySessionDate;
+import com.boot.security.server.apicontroller.reply.QueryFilmSessionPriceReply.QueryFimlSessionPriceReplyFilm.QueryFimlSessionPriceReplySessionDate.QueryFimlSessionPriceReplySession;
+import com.boot.security.server.apicontroller.reply.QueryFilmSessionPriceReply.QueryFimlSessionPriceReplyFilm.QueryFimlSessionPriceReplySessionDate.QueryFimlSessionPriceReplySession.QueryFimlSessionPriceReplyMemberPrice;
+import com.boot.security.server.apicontroller.reply.QueryFilmSessionPriceReply.QueryFimlSessionPriceReplyFilm.QueryFimlSessionPriceReplySessionDate.QueryFimlSessionPriceReplySession.QueryFimlSessionPriceReplySessionPrice;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Filminfo;
@@ -214,24 +214,24 @@ public class SessionController {
 	
 	@GetMapping("/QueryFilmSessionPrice/{UserName}/{Password}/{CinemaCode}/{FilmCode}")
 	@ApiOperation(value = "获取影片排期价格")
-	public QueryFimlSessionPriceReply QueryFimlSessionPrice(@PathVariable String UserName, @PathVariable String Password,@PathVariable String CinemaCode,
+	public QueryFilmSessionPriceReply QueryFilmSessionPrice(@PathVariable String UserName, @PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String FilmCode){
-		QueryFimlSessionPriceReply queryFimlSessionPriceReply = new QueryFimlSessionPriceReply();
+		QueryFilmSessionPriceReply queryFilmSessionPriceReply = new QueryFilmSessionPriceReply();
 		// 校验参数
-		if (!ReplyExtension.RequestInfoGuard(queryFimlSessionPriceReply, UserName, Password, CinemaCode, FilmCode)) {
-			return queryFimlSessionPriceReply;
+		if (!ReplyExtension.RequestInfoGuard(queryFilmSessionPriceReply, UserName, Password, CinemaCode, FilmCode)) {
+			return queryFilmSessionPriceReply;
 		}
 		// 获取用户信息(渠道)
 		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
 		if (UserInfo == null) {
-			queryFimlSessionPriceReply.SetUserCredentialInvalidReply();
-			return queryFimlSessionPriceReply;
+			queryFilmSessionPriceReply.SetUserCredentialInvalidReply();
+			return queryFilmSessionPriceReply;
 		}
 		// 验证影院是否存在且可访问
 		Cinema cinema = _cinemaService.getByCinemaCode(CinemaCode);
 		if (cinema == null) {
-			queryFimlSessionPriceReply.SetCinemaInvalidReply();
-			return queryFimlSessionPriceReply;
+			queryFilmSessionPriceReply.SetCinemaInvalidReply();
+			return queryFilmSessionPriceReply;
 		}
 		QueryFimlSessionPriceReplyFilm data = new QueryFimlSessionPriceReplyFilm();
 		Filminfo filminfo = _filminfoService.getByFilmCode(FilmCode);
@@ -342,10 +342,10 @@ public class SessionController {
 					}
 				}
 			}
-			queryFimlSessionPriceReply.setData(data);
-			queryFimlSessionPriceReply.SetSuccessReply();
+			queryFilmSessionPriceReply.setData(data);
+			queryFilmSessionPriceReply.SetSuccessReply();
 		}
-		return queryFimlSessionPriceReply;
+		return queryFilmSessionPriceReply;
 	}
 	public static void main(String[] args) {
 		String beginDate = String.valueOf(new Date().getTime()+420*60*1000);

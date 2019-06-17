@@ -561,7 +561,7 @@ public class AppUserController {
 		reply.SetSuccessReply();
 		return reply;
 	}
-	@GetMapping("/QueryCinemaTicket/{UserName}/{Password}/{CinemaCode}/{OpenID}")
+	/*@GetMapping("/QueryCinemaTicket/{UserName}/{Password}/{CinemaCode}/{OpenID}")
 	@ApiOperation(value = "查询用户购买的电影票记录")
 	public QueryCinemaTicketReply QueryCinemaTicket(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String OpenID){
@@ -637,7 +637,7 @@ public class AppUserController {
 		}
 		queryCinemaTicketReply.SetSuccessReply();
 		return queryCinemaTicketReply;
-	}
+	}*/
 	
 	@GetMapping("/QueryUserTicket/{UserName}/{Password}/{CinemaCode}/{OpenID}")
 	@ApiOperation(value = "查询用户购买的电影票")
@@ -909,9 +909,9 @@ public class AppUserController {
 		return checkUserFilmOrdersReply;
 	}
 	
-	/*@GetMapping("/QueryUserLookedFilms{UserName}/{Password}/{OpenID}")
+	@GetMapping("/QueryUserLookedFilms{UserName}/{Password}/{OpenID}")
 	@ApiOperation(value = "用户看过的电影")
-	public QueryUserLookedFilmsReply QueryUserLookedFilms(){
+	public QueryUserLookedFilmsReply QueryUserLookedFilms(@PathVariable String UserName,@PathVariable String Password,@PathVariable String OpenID){
 		QueryUserLookedFilmsReply queryUserLookedFilmsReply = new QueryUserLookedFilmsReply();
 		//校验参数
 		if (!ReplyExtension.RequestInfoGuard(queryUserLookedFilmsReply, UserName, Password, OpenID)) {
@@ -929,8 +929,16 @@ public class AppUserController {
 			queryUserLookedFilmsReply.SetOpenIDNotExistReply();
 			return queryUserLookedFilmsReply;
 		}
+		//先获取用户已完成并且已出票的订单
+		List<Orders> ordersList = orderService.getUserCompleteOrders(OpenID, OrderStatusEnum.Complete.getStatusCode(), 1);
+		if(ordersList.size()>0){
+			for(Orders orders : ordersList){
+				//获取所有影片信息
+				
+			}
+		}
 		return queryUserLookedFilmsReply;
-	}*/
+	}
 	
 	@GetMapping("/QueryUserInfo/{UserName}/{Password}/{OpenID}")
 	@ApiOperation(value = "获取用户信息")

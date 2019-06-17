@@ -2,7 +2,7 @@ package com.boot.security.server.apicontroller.reply;
 
 import java.util.List;
 
-public class QueryFimlSessionPriceReply extends BaseReply{
+public class QueryFilmSessionPriceReply extends BaseReply{
 	private QueryFimlSessionPriceReplyFilm data;
 
 	public QueryFimlSessionPriceReplyFilm getData() {

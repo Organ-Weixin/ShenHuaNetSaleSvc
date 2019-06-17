@@ -200,4 +200,9 @@ public class OrderServiceImpl implements OrderService{
 		return ordersDao.getUserAllOrders(cinemacode, openid, orderstatus);
 	}
 
+	@Override
+	public List<Orders> getUserCompleteOrders(String openid, Integer orderstatus, Integer printstatus) {
+		return ordersDao.getUserCompleteOrders(openid, orderstatus, printstatus);
+	}
+
 }

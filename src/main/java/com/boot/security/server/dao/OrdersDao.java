@@ -86,6 +86,10 @@ public interface OrdersDao {
     List<Orders> getByOpenIdAndStatus(@Param("openid")String openid,@Param("orderstatus")Integer orderstatus,@Param("sessiontime")String sessiontime);
     
     //用户影票信息
-    @Select("select * from orders t where t.cinemacode = #{cinemacode} and openid = #{openid} and find_in_set (t.orderstatus,#{orderstatus}) order by orderstatus asc, sessiontime desc")
+    @Select("select * from orders t where t.cinemacode = #{cinemacode} and openid = #{openid} and find_in_set (t.orderstatus,#{orderstatus}) order by sessiontime desc")
     List<Orders> getUserAllOrders(@Param("cinemacode")String cinemacode,@Param("openid")String openid,@Param("orderstatus")String orderstatus);
-}
+    
+    //获取用户已完成并且已出票的订单
+    @Select("select * from orders t where t.openid = #{openid} and t.orderstatus = #{orderstatus} and t.printstatus #{printstatus} group by filmcode order by sessiontime desc")
+    List<Orders> getUserCompleteOrders(@Param("openid")String openid,@Param("orderstatus")Integer orderstatus,@Param("printstatus")Integer printstatus);
+} 

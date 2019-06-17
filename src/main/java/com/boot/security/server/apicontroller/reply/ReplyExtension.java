@@ -1062,7 +1062,7 @@ public class ReplyExtension {
 		//endregion
 		
 		//region QueryFimlSessionPriceReply
-		public static boolean RequestInfoGuard(QueryFimlSessionPriceReply reply, String Username, String Password, String CinemaCode, String FilmCode)
+		public static boolean RequestInfoGuard(QueryFilmSessionPriceReply reply, String Username, String Password, String CinemaCode, String FilmCode)
 	    {
 	        if (Username == null || "".equals(Username))
 	        {
@@ -1410,6 +1410,24 @@ public class ReplyExtension {
 		}
 		if (CinemaCode == null || "".equals(CinemaCode)) {
 			reply.SetNecessaryParamMissReply("CinemaCode");
+			return false;
+		}
+		if (OpenID == null || "".equals(OpenID)) {
+			reply.SetNecessaryParamMissReply("OpenID");
+			return false;
+		}
+		return true;
+	}
+	//endregion
+	
+	//region QueryUserLookedFilmsReply
+	public static boolean RequestInfoGuard(QueryUserLookedFilmsReply reply, String Username, String Password,String OpenID) {
+		if (Username == null || "".equals(Username)) {
+			reply.SetNecessaryParamMissReply("Username");
+			return false;
+		}
+		if (Password == null || "".equals(Password)) {
+			reply.SetNecessaryParamMissReply("Password");
 			return false;
 		}
 		if (OpenID == null || "".equals(OpenID)) {
