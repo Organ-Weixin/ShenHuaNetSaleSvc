@@ -120,6 +120,9 @@ public class CinemaListController {
         		   }else{
         			   cinemareply.setRefundFee(0D);
         		   }
+        		   cinemareply.setBusinessPic(cinema.getBusinessPic());
+        		   cinemareply.setBusinessName(cinema.getBusinessName());
+        		   cinemareply.setBusinessDesc(cinema.getBusinessDesc());
         		   cinemas.add(cinemareply);
     		   }
     	   }

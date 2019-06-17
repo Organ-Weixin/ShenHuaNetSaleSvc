@@ -55,6 +55,9 @@ public class QueryCinemasReply extends BaseReply {
 			private String IsSnackDistribution;
 			private Integer OverRefundTime;//开场前几分钟不可以退票
 			private Double RefundFee;//退票手续费
+			private String BusinessPic;//logo图片
+			private String BusinessName;//商户名称
+			private String BusinessDesc;//描述
 			private String OfferDescription;
 			
 			public Long getCinemaId() {
@@ -176,6 +179,25 @@ public class QueryCinemasReply extends BaseReply {
 			}
 			public void setRefundFee(Double refundFee) {
 				RefundFee = refundFee;
+			}
+			
+			public String getBusinessPic() {
+				return BusinessPic;
+			}
+			public void setBusinessPic(String businessPic) {
+				BusinessPic = businessPic;
+			}
+			public String getBusinessName() {
+				return BusinessName;
+			}
+			public void setBusinessName(String businessName) {
+				BusinessName = businessName;
+			}
+			public String getBusinessDesc() {
+				return BusinessDesc;
+			}
+			public void setBusinessDesc(String businessDesc) {
+				BusinessDesc = businessDesc;
 			}
 			public String getOfferDescription() {
 				return OfferDescription;
