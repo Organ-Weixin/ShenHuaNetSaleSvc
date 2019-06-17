@@ -33,7 +33,6 @@ import com.boot.security.server.apicontroller.reply.CreateGoodsOrderReply;
 import com.boot.security.server.apicontroller.reply.CreateGoodsOrderReply.CreateGoodsOrderReplydata;
 import com.boot.security.server.apicontroller.reply.CreateGoodsOrderReply.CreateGoodsOrderReplydata.CreateGoodsOrderReplyCoupon;
 import com.boot.security.server.apicontroller.reply.CreateGoodsOrderReply.CreateGoodsOrderReplydata.CreateGoodsOrderReplyCoupon.CreateGoodsOrderReplyCoupons;
-import com.boot.security.server.apicontroller.reply.LockSeatReply.LockSeatReplydata.LockSeatReplyCoupon.LockSeatReplyCoupons;
 import com.boot.security.server.apicontroller.reply.CreateGoodsOrderReply.CreateGoodsOrderReplydata.CreateGoodsOrderReplyOrder;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.NetSaleQueryJson;
@@ -57,7 +56,9 @@ import com.boot.security.server.apicontroller.reply.RefundPaymentReply;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.apicontroller.reply.SmsNoticeReply;
 import com.boot.security.server.model.Cinema;
+import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Cinemapaymentsettings;
+import com.boot.security.server.model.Cinemaview;
 import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.CouponsView;
@@ -74,6 +75,7 @@ import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.CinemapaymentsettingsServiceImpl;
+import com.boot.security.server.service.impl.CinemaviewServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
@@ -82,12 +84,12 @@ import com.boot.security.server.service.impl.GoodscomponentsServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.CouponsUtil;
+import com.boot.security.server.utils.FileUploadUtils;
 import com.boot.security.server.utils.SendSmsHelper;
 import com.boot.security.server.utils.WxPayUtil;
 import com.boot.security.server.utils.XmlHelper;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import freemarker.template.utility.StringUtil;
 import io.swagger.annotations.ApiOperation;
@@ -113,6 +115,8 @@ public class AppGoodsController {
 	private GoodscomponentsServiceImpl goodscomponentsService;
 	@Autowired
 	private CouponsServiceImpl _couponsService;
+	@Autowired
+	private CinemaviewServiceImpl cinemaviewService;
 	@Autowired
     private HttpServletRequest request;
 	
@@ -305,7 +309,7 @@ public class AppGoodsController {
 	@ApiOperation(value = "查询本地卖品订单")
 	public QueryLocalGoodsOrderReply QueryLocalGoodsOrder(@PathVariable String UserName, @PathVariable String Password, 
 			@PathVariable String CinemaCode, @PathVariable String LocalOrderCode){
-		QueryLocalGoodsOrderReply queryLocalGoodsOrderReply=new QueryLocalGoodsOrderReply();
+		QueryLocalGoodsOrderReply queryLocalGoodsOrderReply = new QueryLocalGoodsOrderReply();
 		//校验参数
         if (!ReplyExtension.RequestInfoGuard(queryLocalGoodsOrderReply,UserName, Password, CinemaCode,LocalOrderCode))
         {
@@ -334,6 +338,19 @@ public class AppGoodsController {
         {
         	QueryLocalGoodsOrderReplyOrder order=new QueryLocalGoodsOrderReplyOrder();
         	ModelMapper.MapFrom(order,orders);
+        	//二维码
+    		Cinemaview cinemaview = cinemaviewService.getByCinemaCode(CinemaCode);
+    		//辰星系统(取票码截取影院编码)
+    		if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
+    			if(orders.getOrderBaseInfo().getPickUpCode()!=null){
+    				order.setEwmPicture(new FileUploadUtils().generateEwm(orders.getOrderBaseInfo().getPickUpCode().substring(8,orders.getOrderBaseInfo().getPickUpCode().length())));
+    			}
+    		}
+    		if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
+    			if(orders.getOrderBaseInfo().getOrderCode()!=null){
+    				order.setEwmPicture(new FileUploadUtils().generateEwm(orders.getOrderBaseInfo().getOrderCode()));
+    			}
+    		}
         	queryLocalGoodsOrderReply.setData(order);
         	queryLocalGoodsOrderReply.SetSuccessReply();
         }

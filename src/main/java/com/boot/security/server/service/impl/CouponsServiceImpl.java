@@ -64,7 +64,9 @@ public class CouponsServiceImpl implements CouponsService{
 		// TODO Auto-generated method stub
 		CouponsView couponsview=new CouponsView();
 		couponsview.setCoupons(couponsdao.getByCouponsCode(couponscode));
-		couponsview.setCouponsgroup(couponsgroupdao.getByGroupCode(couponsview.getCoupons().getGroupCode()));
+		if(couponsview.getCoupons()!=null){
+			couponsview.setCouponsgroup(couponsgroupdao.getByGroupCode(couponsview.getCoupons().getGroupCode()));
+		}
 		return couponsview;
 	}
 

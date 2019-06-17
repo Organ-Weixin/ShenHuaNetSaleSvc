@@ -28,11 +28,10 @@ import com.boot.security.server.apicontroller.reply.QueryUserNumberReply.QueryUs
 import com.boot.security.server.apicontroller.reply.QueryUserTicketReply;
 import com.boot.security.server.apicontroller.reply.QueryUserNumberReply;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
+import com.boot.security.server.apicontroller.reply.QueryUserLookedFilmsReply.QueryUserLookedFilmsReplyUser;
 import com.boot.security.server.apicontroller.reply.QueryUserTicketReply.QueryUserTicketReplyUser;
 import com.boot.security.server.apicontroller.reply.QueryUserTicketReply.QueryUserTicketReplyUser.QueryUserTicketReplyUserTicket;
 import com.boot.security.server.apicontroller.reply.QueryCinemaGoodsReply;
-import com.boot.security.server.apicontroller.reply.QueryCinemaTicketReply;
-import com.boot.security.server.apicontroller.reply.QueryCinemaTicketReply.QueryCinemaTicket.CinemaTicket;
 import com.boot.security.server.apicontroller.reply.QueryCinemaGoodsReply.QueryCinemaGoodsReplyGoods.QueryCinemaGoods;
 import com.boot.security.server.apicontroller.reply.QueryRoomGiftRecordReply;
 import com.boot.security.server.apicontroller.reply.QueryUserFilmReply.QueryUserFilmReplyUserFilm;
@@ -931,10 +930,14 @@ public class AppUserController {
 		}
 		//先获取用户已完成并且已出票的订单
 		List<Orders> ordersList = orderService.getUserCompleteOrders(OpenID, OrderStatusEnum.Complete.getStatusCode(), 1);
+		QueryUserLookedFilmsReplyUser data = new QueryUserLookedFilmsReplyUser();
 		if(ordersList.size()>0){
 			for(Orders orders : ordersList){
-				//获取所有影片信息
 				
+				//获取所有影片信息
+				if(orders!=null){
+					
+				}
 			}
 		}
 		return queryUserLookedFilmsReply;

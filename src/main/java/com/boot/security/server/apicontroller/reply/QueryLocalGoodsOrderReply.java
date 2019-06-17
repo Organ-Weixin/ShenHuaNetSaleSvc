@@ -25,6 +25,7 @@ public class QueryLocalGoodsOrderReply extends BaseReply {
 		private String DeliveryAddress;
 		private String DeliveryTime;
 		private String OpenID;
+		private String EwmPicture;
 		private QueryLocalGoodsOrderReplyGoodsList GoodsList;
 		public String getCinemaCode() {
 			return CinemaCode;
@@ -97,6 +98,12 @@ public class QueryLocalGoodsOrderReply extends BaseReply {
 		}
 		public void setOpenID(String openID) {
 			OpenID = openID;
+		}
+		public String getEwmPicture() {
+			return EwmPicture;
+		}
+		public void setEwmPicture(String ewmPicture) {
+			EwmPicture = ewmPicture;
 		}
 		public QueryLocalGoodsOrderReplyGoodsList getGoodsList() {
 			return GoodsList;

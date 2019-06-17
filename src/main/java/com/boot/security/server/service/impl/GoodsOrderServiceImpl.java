@@ -80,7 +80,7 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
 	@Override
 	public GoodsOrderView getWithOrderCode(String cinemacode, String ordercode) {
 		GoodsOrderView orderview=new GoodsOrderView();
-		orderview.setOrderBaseInfo(ordersDao.getByOrderCode(cinemacode, ordercode));
+		orderview.setOrderBaseInfo(ordersDao.getByCinemaCodeAndOrderCode(cinemacode, ordercode));
 		if(orderview.getOrderBaseInfo() != null){
 			orderview.setOrderGoodsDetails(orderdetailsDao.getByOrderId(orderview.getOrderBaseInfo().getId()));
 		}

@@ -69,7 +69,7 @@
 				and CanUseCinemaType = #{params.CanUseCinemaType} 
 			</if>
 			<if test="params.CinemaCodes != null and params.CinemaCodes != ''">
-				and (CinemaCodes = #{params.CinemaCodes} or find_in_set(#{params.CinemaCodes},CinemaCodes) or CinemaCodes = '')
+				and (CinemaCodes = #{params.CinemaCodes} or find_in_set(#{params.CinemaCodes},CinemaCodes) or CanUseCinemaType = 1)
 			</if>
 			<if test="params.Status != null and params.Status != ''">
 				and Status = #{params.Status} 

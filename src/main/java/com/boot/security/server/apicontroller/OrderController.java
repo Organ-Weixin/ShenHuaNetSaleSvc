@@ -377,7 +377,9 @@ public class OrderController {
 		Cinemaview cinemaview = cinemaviewService.getByCinemaCode(CinemaCode);
 		//辰星系统(取票码截取影院编码)
 		if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
-			data.setEwmPicture(new FileUploadUtils().generateEwm(orders.getPrintNo().substring(8,orders.getPrintNo().length())));
+			if(orders.getPrintNo()!=null&&orders.getPrintNo().length()>8){
+				data.setEwmPicture(new FileUploadUtils().generateEwm(orders.getPrintNo().substring(8,orders.getPrintNo().length())));
+			}
 		}
 		if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
 			data.setEwmPicture(new FileUploadUtils().generateEwm(orders.getSubmitOrderCode()));
@@ -553,51 +555,79 @@ public class OrderController {
 	@ApiOperation(value = "退票")
 	public RefundTicketReply RefundTicket(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String PrintNo,@PathVariable String VerifyCode) throws Exception{
-		RefundTicketReply reply = NetSaleSvcCore.getInstance().RefundTicket(UserName, Password, CinemaCode, PrintNo, VerifyCode);
-		//退票成功进行处理
-		if(reply.Status.equals("Success")){
-			//先判断支付类型
-			Orders orders = orderService.getByPrintNo(CinemaCode, reply.getOrder().getPrintNo(), reply.getOrder().getVerifyCode());
-			//微信支付
-			if(orders.getOrderPayType()==OrderPayTypeEnum.WxPay.getTypeCode()){
-				//调用微信退款接口
-				RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode());
+		RefundTicketReply reply = new RefundTicketReply();
+		//验证影院退票规则
+		//先获取影片开始时间
+		Orders orders = orderService.getByPrintNo(CinemaCode, PrintNo, VerifyCode);
+		//验证影院信息
+		Cinema cinema = cinemaService.getByCinemaCode(CinemaCode);
+		if(cinema!=null){
+			//无退票时间
+			if(cinema.getOverRefundTime()==null){
+				cinema.setOverRefundTime(0);
 			}
-			//会员卡支付
-			if(orders.getOrderPayType()==OrderPayTypeEnum.MemberCardPay.getTypeCode()){
-				//退优惠券
-				List<Orderseatdetails> orderseatdetailsList = orderseatdetailsService.getByOrderId(orders.getId());
-				for(Orderseatdetails orderseatdetails : orderseatdetailsList){
-					//获取使用的每张优惠券
-					if(orderseatdetails.getConponCode()!=null&&orderseatdetails.getConponCode()!=""){
-						Coupons coupons = _couponsService.getByCouponsCode(orderseatdetails.getConponCode());
-						if(coupons!=null){
-							//更新每张券的状态
-							coupons.setUsedDate(null);
-							coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
-							coupons.setUpdateTime(new Date());
-							_couponsService.update(coupons);
-							//更新优惠券组的库存、使用数量
-							Couponsgroup couponsgroup = couponsgroupService.getByGroupCode(coupons.getGroupCode());
-							//库存+1
-							couponsgroup.setRemainingNumber(couponsgroup.getRemainingNumber()+1);
-							//已使用数量-1
-							couponsgroup.setUsedNumber(couponsgroup.getUsedNumber()-1);
-							couponsgroup.setUpdateDate(new Date());
-							couponsgroupService.update(couponsgroup);
+			//在退票时间内
+			if(orders.getSessionTime().getTime()-new Date().getTime()>cinema.getOverRefundTime()*60*1000){
+				//退票接口
+				reply = NetSaleSvcCore.getInstance().RefundTicket(UserName, Password, CinemaCode, PrintNo, VerifyCode);
+				//退票成功进行处理
+				if(reply.Status.equals("Success")){
+					//获取影院的退票手续费
+					//无退票手续费
+					if(cinema.getRefundFee()==null){
+						cinema.setRefundFee(0.00);
+					}
+					//先判断支付类型
+					//微信支付
+					if(orders.getOrderPayType()==OrderPayTypeEnum.WxPay.getTypeCode()){
+						//计算退票手续费
+						orders.setTotalSalePrice(orders.getTotalSalePrice()-cinema.getRefundFee());
+						//调用微信退款接口
+						RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode());
+					}
+					//会员卡支付
+					if(orders.getOrderPayType()==OrderPayTypeEnum.MemberCardPay.getTypeCode()){
+						//判断票务系统
+						Cinemaview cinemaview = cinemaviewService.getByCinemaCode(CinemaCode);
+						//辰星系统调用会员卡支付撤销
+						if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
+							Double backPayAmount = orders.getTotalSalePrice();
+							if(orders.getTotalConponPrice()!=null){
+								backPayAmount = backPayAmount-orders.getTotalConponPrice();
+							}
+							new NetSaleSvcCore().CardPayBack(UserName, Password, CinemaCode, orders.getCardNo(), orders.getCardPassword(), orders.getOrderTradeNo(), String.valueOf(backPayAmount));
+						}
+					}
+					//退优惠券
+					List<Orderseatdetails> orderseatdetailsList = orderseatdetailsService.getByOrderId(orders.getId());
+					for(Orderseatdetails orderseatdetails : orderseatdetailsList){
+						//获取使用的每张优惠券
+						if(orderseatdetails.getConponCode()!=null&&orderseatdetails.getConponCode()!=""){
+							Coupons coupons = _couponsService.getByCouponsCode(orderseatdetails.getConponCode());
+							if(coupons!=null){
+								//更新每张券的状态
+								coupons.setUsedDate(null);
+								coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
+								coupons.setUpdateTime(new Date());
+								_couponsService.update(coupons);
+								//更新优惠券组的库存、使用数量
+								Couponsgroup couponsgroup = couponsgroupService.getByGroupCode(coupons.getCouponsCode());
+								if(couponsgroup!=null){
+									//库存+1
+									couponsgroup.setRemainingNumber(couponsgroup.getRemainingNumber()+1);
+									//已使用数量-1
+									couponsgroup.setUsedNumber(couponsgroup.getUsedNumber()-1);
+									couponsgroup.setUpdateDate(new Date());
+									couponsgroupService.update(couponsgroup);
+								}
+							}
 						}
 					}
 				}
-				//判断票务系统
-				Cinemaview cinemaview = cinemaviewService.getByCinemaCode(CinemaCode);
-				//辰星系统调用会员卡支付撤销
-				if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
-					Double backPayAmount = orders.getTotalSalePrice();
-					if(orders.getTotalConponPrice()!=null){
-						backPayAmount = backPayAmount-orders.getTotalConponPrice();
-					}
-					new NetSaleSvcCore().CardPayBack(UserName, Password, CinemaCode, orders.getCardNo(), orders.getCardPassword(), orders.getOrderTradeNo(), String.valueOf(backPayAmount));
-				}
+			}else{
+				reply.Status = "Failure";
+				reply.ErrorCode = "";
+				reply.ErrorMessage = "开场前"+cinema.getOverRefundTime()+"分钟不可退票";
 			}
 		}
 		return reply;
@@ -858,7 +888,10 @@ public class OrderController {
 			String WxpayKey=cinemapaymentsettings.getWxpayKey();
 			String TradeNo=new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + CinemaCode
 			+ order.getOrderBaseInfo().getId();
-			Double RefundPrice = order.getOrderBaseInfo().getTotalSalePrice();// 暂时的
+			if(order.getOrderBaseInfo().getTotalConponPrice()==null){
+				order.getOrderBaseInfo().setTotalConponPrice(0.00);
+			}
+			Double RefundPrice = order.getOrderBaseInfo().getTotalSalePrice() - order.getOrderBaseInfo().getTotalConponPrice();// 暂时的
 			String RefundFee = String.valueOf(Double.valueOf(RefundPrice*100).intValue());// 退款金额，以分为单位
 			String OrderTradeNo=order.getOrderBaseInfo().getOrderTradeNo();//微信支付订单号
 			String WxpayRefundCert=cinemapaymentsettings.getWxpayRefundCert();

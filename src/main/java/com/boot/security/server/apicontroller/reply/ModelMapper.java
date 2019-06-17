@@ -275,18 +275,20 @@ public class ModelMapper {
 	}
 	
 	public static QueryLocalGoodsOrderReplyOrder MapFrom(QueryLocalGoodsOrderReplyOrder order,GoodsOrderView ov){
-		order.setCinemaCode(ov.getOrderBaseInfo().getCinemaCode());
-		order.setLocalOrderCode(ov.getOrderBaseInfo().getLocalOrderCode());
-		order.setOrderStatus(GoodsOrderStatusEnum.CastToEnum(ov.getOrderBaseInfo().getOrderStatus()).getStatusName());
-		order.setTotalPrice(ov.getOrderBaseInfo().getTotalPrice());
-		order.setTotalSettlePrice(ov.getOrderBaseInfo().getTotalSettlePrice());
-		order.setTotalFee(ov.getOrderBaseInfo().getTotalFee());
-		order.setCreated(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ov.getOrderBaseInfo().getCreated()));
-		order.setGoodsCount(ov.getOrderBaseInfo().getGoodsCount());
-		order.setDeliveryType(ov.getOrderBaseInfo().getDeliveryType());
-		order.setDeliveryAddress(ov.getOrderBaseInfo().getDeliveryAddress());
-		order.setDeliveryTime(ov.getOrderBaseInfo().getDeliveryTime());
-		order.setOpenID(ov.getOrderBaseInfo().getOpenID());
+		if(ov.getOrderBaseInfo()!=null){
+			order.setCinemaCode(ov.getOrderBaseInfo().getCinemaCode());
+			order.setLocalOrderCode(ov.getOrderBaseInfo().getLocalOrderCode());
+			order.setOrderStatus(GoodsOrderStatusEnum.CastToEnum(ov.getOrderBaseInfo().getOrderStatus()).getStatusName());
+			order.setTotalPrice(ov.getOrderBaseInfo().getTotalPrice());
+			order.setTotalSettlePrice(ov.getOrderBaseInfo().getTotalSettlePrice());
+			order.setTotalFee(ov.getOrderBaseInfo().getTotalFee());
+			order.setCreated(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ov.getOrderBaseInfo().getCreated()));
+			order.setGoodsCount(ov.getOrderBaseInfo().getGoodsCount());
+			order.setDeliveryType(ov.getOrderBaseInfo().getDeliveryType());
+			order.setDeliveryAddress(ov.getOrderBaseInfo().getDeliveryAddress());
+			order.setDeliveryTime(ov.getOrderBaseInfo().getDeliveryTime());
+			order.setOpenID(ov.getOrderBaseInfo().getOpenID());
+		}
 		order.setGoodsList(new QueryLocalGoodsOrderReplyGoodsList());
 		order.getGoodsList().setGoods(new ArrayList<QueryLocalGoodsOrderReplyGoods>());
 		for(Goodsorderdetails orderdetail:ov.getOrderGoodsDetails()){

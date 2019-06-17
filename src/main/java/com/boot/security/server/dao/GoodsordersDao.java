@@ -25,7 +25,7 @@ public interface GoodsordersDao {
     Goodsorders getByLocalOrderCode(@Param("localordercode") String localordercode);
     
     @Select("select * from goodsorders t where t.cinemacode=#{cinemacode} and t.ordercode = #{ordercode}")
-    Goodsorders getByOrderCode(@Param("cinemacode") String cinemacode, @Param("ordercode") String ordercode);
+    Goodsorders getByCinemaCodeAndOrderCode(@Param("cinemacode") String cinemacode, @Param("ordercode") String ordercode);
 
     @Delete("delete from goodsorders where id = #{id}")
     int delete(Long id);

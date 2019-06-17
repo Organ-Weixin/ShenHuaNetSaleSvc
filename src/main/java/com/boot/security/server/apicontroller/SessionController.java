@@ -314,6 +314,8 @@ public class SessionController {
 							sessionReply.setSalePrice(sessioninfoview.getStandardPrice()+sessioninfoview.getTicketFee()
 							+sessioninfoview.getAddFee()-sessioninfoview.getCinemaAllowance());
 						}
+						sessionReply.setStandardPrice(sessioninfoview.getStandardPrice()+sessioninfoview.getTicketFee()
+						+sessioninfoview.getAddFee()-sessioninfoview.getCinemaAllowance());
 						sessionReplyList.add(sessionReply);
 						List<Qmmprice> qmmpriceList = _qmmpriceService.getByCinemaCodeAndScreenName(oneDateSession.getCCode(), sessionReply.getScreenName(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(oneDateSession.getStartTime()));
 						List<QueryFimlSessionPriceReplyMemberPrice> memberPriceList = new ArrayList<QueryFimlSessionPriceReplyMemberPrice>();
