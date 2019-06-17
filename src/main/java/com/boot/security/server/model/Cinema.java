@@ -34,6 +34,9 @@ public class Cinema extends BaseEntity<Long> {
 	private String SmsAccount;
 	private String SmsPwd;
 	private String SmsSignId;
+	private String BusinessPic;
+	private String BusinessName;
+	private String BusinessDesc;
 	
 	private Date GoodsUpdated; //影院卖品更新时间
 
@@ -223,6 +226,24 @@ public class Cinema extends BaseEntity<Long> {
 	}
 	public void setSmsSignId(String smsSignId) {
 		SmsSignId = smsSignId;
+	}
+	public String getBusinessPic() {
+		return BusinessPic;
+	}
+	public void setBusinessPic(String businessPic) {
+		BusinessPic = businessPic;
+	}
+	public String getBusinessName() {
+		return BusinessName;
+	}
+	public void setBusinessName(String businessName) {
+		BusinessName = businessName;
+	}
+	public String getBusinessDesc() {
+		return BusinessDesc;
+	}
+	public void setBusinessDesc(String businessDesc) {
+		BusinessDesc = businessDesc;
 	}
 	
 }
