@@ -336,7 +336,9 @@ public class ModelMapper {
 		if(ov.getOrderBaseInfo().getPickUpTime()!=null){
 			order.setPickUpTime(dateformat.format(ov.getOrderBaseInfo().getPickUpTime()));
 		}
-		order.setDeliveryType(ov.getOrderBaseInfo().getDeliveryType().toString());
+		if(ov.getOrderBaseInfo().getDeliveryType()!=null){
+			order.setDeliveryType(ov.getOrderBaseInfo().getDeliveryType().toString());
+		}
 		order.setDeliveryAddress(ov.getOrderBaseInfo().getDeliveryAddress());
 		order.setDeliveryTime(ov.getOrderBaseInfo().getDeliveryTime());
 		if(ov.getOrderBaseInfo().getOrderPayFlag()!=null){

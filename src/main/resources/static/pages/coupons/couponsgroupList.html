@@ -17,7 +17,7 @@
 	                   		<tr>
 	                   			<td>
 		                   			<form class="form-inline" onsubmit="return false">
-		                   			<input type="text" id="cinemacodes">
+		                   			<input type="hidden" id="cinemacodes">
 		                   			<input type="hidden" id="userId">
 		                   			<input type="hidden" id="roleId">
 										<div class="form-group">
@@ -181,11 +181,10 @@ var reductionTypes = showDictSelect("reductionType", "reductionTypes", true);
 	        		"type":"get",
 	        		"data":function(d){
 	    				d.Id = $("#id").val();
-	    				if($("#cinemaName").val()=null){
-		    				d.CinemaCodes = $("#cinemaName").val();
-	    				}else{
+	    				if($("#roleId")!=1){
 	    					d.CinemaCodes = $("#cinemacodes").val();
 	    				}
+	    				d.CinemaCodes = $("#cinemaName").val();
 	    				d.CinemaCodesList = $("#cinemacodes").val();
 	    				d.ReductionType = $("#reductionTypeSelect").val();
 	    				d.CouponsType = $("#couponsTypeSelect").val();

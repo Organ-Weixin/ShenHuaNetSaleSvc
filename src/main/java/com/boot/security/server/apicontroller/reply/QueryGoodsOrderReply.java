@@ -38,6 +38,7 @@ public class QueryGoodsOrderReply extends BaseReply {
 		private String CardNo;
 		private String CardPassword;
 		private String OpenID;
+		private String EwmPicture;
 		private QueryGoodsOrderReplyGoodsList GoodsList;
 		public String getCinemaCode() {
 			return CinemaCode;
@@ -188,6 +189,12 @@ public class QueryGoodsOrderReply extends BaseReply {
 		}
 		public void setOpenID(String openID) {
 			OpenID = openID;
+		}
+		public String getEwmPicture() {
+			return EwmPicture;
+		}
+		public void setEwmPicture(String ewmPicture) {
+			EwmPicture = ewmPicture;
 		}
 		public QueryGoodsOrderReplyGoodsList getGoodsList() {
 			return GoodsList;
