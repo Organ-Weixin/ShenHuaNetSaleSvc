@@ -53,7 +53,7 @@ public class SessionController {
 	private UserInfoServiceImpl _userInfoService;
 	@Autowired
 	private CinemaServiceImpl _cinemaService;
-	@Autowired
+	@Autowired 
 	private SessioninfoServiceImpl _sessionInfoService;
 	@Autowired
 	private FilminfoServiceImpl _filminfoService;

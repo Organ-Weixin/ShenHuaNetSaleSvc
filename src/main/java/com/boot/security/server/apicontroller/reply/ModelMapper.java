@@ -49,7 +49,7 @@ public class ModelMapper {
         }
         screen.setType(entity.getType());
         return screen;
-    }
+    } 
 	
 	public static QueryFilmReplyFilm MapFrom(QueryFilmReplyFilm data, Filminfo entity)
     {

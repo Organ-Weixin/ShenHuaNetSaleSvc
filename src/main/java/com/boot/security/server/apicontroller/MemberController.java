@@ -107,7 +107,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/Api/Member")
-public class MemberController {
+public class MemberController { 
 	
 	@Autowired
 	private UserInfoServiceImpl _userInfoService;

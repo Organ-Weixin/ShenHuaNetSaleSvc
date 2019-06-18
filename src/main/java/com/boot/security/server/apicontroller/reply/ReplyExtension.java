@@ -24,7 +24,7 @@ public class ReplyExtension {
             return false;
         }
         if (CinemaCode == null || "".equals(CinemaCode))
-        {
+        { 
             reply.SetNecessaryParamMissReply("CinemaCode");
             return false;
         }

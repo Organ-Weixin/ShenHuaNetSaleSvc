@@ -3,7 +3,7 @@ package com.boot.security.server.apicontroller.reply;
 import java.util.Date;
 import java.util.List;
 
-public class QueryCinemaTicketReply extends BaseReply{
+public class QueryCinemaTicketReply extends BaseReply{ 
 	//我的电影票
 	private QueryCinemaTicket data;
 	public QueryCinemaTicket getData() {
