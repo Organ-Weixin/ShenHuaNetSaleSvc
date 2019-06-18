@@ -30,10 +30,9 @@
 			   <input type="hidden" name="image"  id="Image"/>
 					<label class="col-md-2 control-label">图片</label>
 					<div class="col-md-10">
-						<div class="layui-upload-drag" id="filmImage">
-						</div>
-						<img class="layui-upload-img headImage" src="http://t.cn/RCzsdCq"
-								id="preview" width="118" height="118">
+						<div class="layui-upload-drag" id="filmImage"></div>
+						<span class="help-block" id="plogoblock">不能超过500KB，建议大小720*300</span>
+						<img class="layui-upload-img headImage" src=""	id="preview" width="240" height="100">
 					    <p id="resultMsg"></p>
 					</div></div>
 			<div class='form-group'>
@@ -216,6 +215,7 @@
 						$('#CinemaCode').val(data.cinemaCode);
 						$('#Title').val(data.title);
 						$('#Image').val(data.image);
+						$('#preview').attr("src", data.image);
 						$('#StartDate').val(data.startDate);
 						$('#EndDate').val(data.endDate);
 						$('#LinkUrl').val(data.linkUrl);

@@ -8,37 +8,40 @@
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 	<form class="form-horizontal" onsubmit="return false" id="form">
 		<fieldset>
-			<h1>分类信息</h1>
-			<input type="hidden" id="Id" name="id">
-			<input type="hidden" id="CinemaCode" name="cinemaCode">
 			<div class='form-group'>
-				<label class='col-md-2 control-label'>分类名称：</label>
+				<label class='col-md-2 control-label'>导演名称：</label>
 				<div class='col-md-10'>
-					<input class='form-control' type='text' name='typeName' id='TypeName' data-bv-notempty='true' data-bv-notempty-message='分类名称 不能为空'>
+					<input class='form-control' type='text' name='name' id='Name' data-bv-notempty='true' data-bv-notempty-message='Name 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>国家：</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='country' id='Country' >
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>介绍：</label>
+				<div class='col-md-10'>
+					<textarea class="form-control" name="introduction" id='Introduction' rows="8" placeholder="限制500字"></textarea>
 				</div>
 			</div>
 			<div class="form-group">
-			    <input type="hidden" name="typePic"  id="TypePic"/>
-				<label class="col-md-2 control-label">分类图标：</label>
+			    <input type="hidden" name="picture"  id="Picture"/>
+				<label class="col-md-2 control-label">导演图片：</label>
 				<div class="col-md-10">
-					<div class="layui-upload-drag" id="pic"></div>
-					<span class="help-block" id="plogoblock">不能超过500KB，建议大小240*240</span>
-					<img class="" src="" id="preview" width="118" height="118">
+					<div class="layui-upload-drag" id="filmImage"></div>
+					<span class="help-block" id="plogoblock">不能超过500KB，建议大小316*440</span>
+					<img class="layui-upload-img headImage" src="http://t.cn/RCzsdCq" id="preview" width="120" height="160">
 				    <p id="resultMsg"></p>
-				</div>
-			</div>
-			<div class='form-group'>
-				<label class='col-md-2 control-label'>排序：</label>
-				<div class='col-md-10'>
-					<input class='form-control' type='text' name='sort' id='Sort' >
 				</div>
 			</div>
 
 			<div class="form-actions">
 				<div class="row" align="center">
 					<div class="col-md-12">
-					    <button class="btn btn-primary" onclick="goback()">返回</button>
-						<button class="btn btn-primary" type="submit" onclick="update()">
+					    <button class="btn btn-primary" onclick="location.href='directorList.html'">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="add()">
 							<i class="fa fa-save"></i> 保存
 						</button>
 					</div>
@@ -48,21 +51,20 @@
 		</fieldset>
 	</form>
 </div>
-
 <script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
 <script type="text/javascript" src="../../js/jq.js"></script>
 <script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
 <script type="text/javascript" src="../../js/common.js"></script>
 <script type="text/javascript" src="../../layui/layui.js"></script>
 <script type="text/javascript">
-
 		layui.use([ "jquery", "upload", "form", "layer", "element" ],function() {
 			var $ = layui.$, element = layui.element, layer = layui.layer, upload = layui.upload, form = layui.form;
 			//拖拽上传
 			var uploadInst = upload.render({
-					elem : '#pic',
+					elem : '#filmImage',
 					url : '/filminfos/upload/filmImage',
 					size : 500,
+					exts: 'jpg|png|gif|bmp|jpeg',
 					before : function(obj) {
 						//预读本地文件示例，不支持ie8
 						obj.preview(function(index,file, result) {
@@ -76,8 +78,8 @@
 						}
 						//上传成功
 						//打印后台传回的地址: 把地址放入一个隐藏的input中, 和表单一起提交到后台, 此处略..
-						console.log(res.data.src);
-						$("#TypePic").val(res.data.src);//将地址存储好
+//						console.log(res.data.src);
+						$("#Picture").val(res.data.src);//将地址存储好
 						window.parent.uploadHeadImage(res.data.src);
 						var resultMsg = $('#resultMsg');
 						resultMsg.html('<span style="color: #8f8f8f;">上传成功!!!</span>');
@@ -100,33 +102,7 @@
 		    var layer = layui.layer;
 		});
 		
-		initData();
-		
-		function initData(){
-			var id = getUrlParam("id");
-			if(id != ""){
-				$.ajax({
-					type : 'get',
-					url : '/goodstypes/'+id,
-					async : false,
-					success : function(data) {
-						$('#Id').val(data.id);
-						$('#CinemaCode').val(data.cinemaCode);
-						$('#TypeName').val(data.typeName);
-						$('#TypePic').val(data.typePic);
-						$('#Sort').val(data.sort);
-						$('#preview').attr('src',data.typePic);
-					}
-				});
-			}
-		}
-
-		//返回上一页面
-		function goback(){
-			window.location.href = 'goodstypeList.html?cinemaCode='+$('#CinemaCode').val();
-		}
-		
-		function update() {
+		function add() {
 			$('#form').bootstrapValidator();
 			var bootstrapValidator = $("#form").data('bootstrapValidator');
 			bootstrapValidator.validate();
@@ -137,13 +113,13 @@
 		    var formdata = $("#form").serializeObject();
 
 			$.ajax({
-				type : 'put',
-				url : '/goodstypes',
+				type : 'post',
+				url : '/directors',
 				contentType: "application/json; charset=utf-8",  
 				data : JSON.stringify(formdata),
 				success : function(data) {
-					layer.msg("修改成功", {shift: -1, time: 1000}, function(){
-                        location.href = 'goodstypeList.html?cinemaCode='+$('#CinemaCode').val();
+					layer.msg("添加成功", {shift: -1, time: 1000}, function(){
+                        location.href = "directorList.html";
                     });
 				}
 			});

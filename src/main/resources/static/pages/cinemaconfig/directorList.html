@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="../../layui/css/layui.css" media="all" />
+</head>
+<body>
+    <div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div>
+                <header style="height: 100%">
+                    <div align="left">
+	                    <table style="width: 100%">
+	                   		<tr>
+	                   			<td>
+		                   			<form class="form-inline" onsubmit="return false">
+										<div class="form-group">
+											<input id="Name" type="text" class="form-control" placeholder="导演名称">
+											<input id="Country" type="text" class="form-control" placeholder="国家">
+											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
+										</div>
+									</form>
+	                   			</td>
+	                   			<td align="right">
+	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addDirector.html'">
+                                      <i class="layui-icon">&#xe608;</i> 添加
+                                    </button>
+	                   			</td>
+	                   		</tr> 
+	                    </table>
+					</div>
+                </header>
+                
+                <div>
+                    <div class="widget-body no-padding">
+                        <table id="dt-table" class="table table-striped table-bordered table-hover" style="width:100%">
+                            <thead>
+                                <tr>
+                                </tr>                       
+                                <tr>
+									<th>#</th>
+									<th>图片</th>
+									<th width="10%">名称</th>
+									<th width="10%">国家</th>
+									<th>介绍</th>
+									<th width="10%">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/jq.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript" src="../../js/my/permission.js"></script>
+<script type="text/javascript">
+var pers = checkPermission();
+
+init();
+var example;
+function init(){
+	example = 
+    	$('#dt-table').DataTable({
+        	"searching": false,
+        	"processing": false,
+        	"serverSide" : true,
+        	"language": {
+                "url": "/js/plugin/datatables/Chinese.lang"
+            },
+        	"ajax": {
+        		"url" : "/directors",
+        		"type":"get",
+        		"data":function(d){
+        			d.Name = $("#Name").val();
+    				d.Country = $("#Country").val();
+    			}
+        	},
+        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
+            "columns": [
+            	{"data" : null, "defaultContent" : "","orderable":false,
+					"render" : function(data, type, full, meta){
+						return meta.row + 1 + meta.settings._iDisplayStart;
+						}
+				},
+				{
+						"data" : "picture", 
+						"defaultContent" : "",
+						"render": function (data, type, row) {
+	                		var picture = row['picture'];
+	                      	var img = "<img class='pic' style='width:80px;height: 100px;' src='"+picture+"' title='"+picture+"' >";
+	                      	
+	                        return img;
+	                  	}
+				},
+				{"data" : "name", "defaultContent" : ""},
+				{"data" : "country", "defaultContent" : ""},
+				{"data" : "introduction", "defaultContent" : ""},
+				{ 
+								"data": "", 
+								"defaultContent": "",
+								"orderable":false,
+						        "render": function (data, type, row) {
+                		           var id = row['id'];
+                		           var href = "updateDirector.html?id=" + id;
+                                   var edit = buttonEdit(href, "", pers);
+                		           var del = buttonDel(id, "", pers);
+                                   return edit + del;
+                  	            }		
+							},
+                
+            ],
+           "order": [[ 0, "asc" ]]
+        } );
+}
+
+layui.use('layer', function(){
+    var layer = layui.layer;
+});
+
+function del(id){
+	layer.confirm('确定要删除吗？', {
+        btn : [ '确定', '取消' ]
+    }, function() {
+    	$.ajax({
+            type : 'delete',
+            url : '/directors/'+id,
+            success : function(data) {
+                example.ajax.reload();
+                layer.msg("删除成功");
+            }
+        });
+        
+        layer.close(1);
+    });
+}
+
+$("#searchBt").click(function(){
+	example.ajax.reload();
+});
+
+
+</script>
+</body>
+</html>

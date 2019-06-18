@@ -24,6 +24,7 @@
 				<label class="col-md-2 control-label">商品图片：</label>
 				<div class="col-md-10">
 					<div class="layui-upload-drag" id="pic"></div>
+					<span class="help-block" id="plogoblock">不能超过500KB，建议大小300*240</span>
 					<img class="" src="" id="preview" width="118" height="118">
 				    <p id="resultMsg"></p>
 				</div>
@@ -62,7 +63,7 @@
 			<div class='form-group'>
 				<label class='col-md-2 control-label'>推荐类型：</label>
 				<div class='col-md-10'>
-					<select id="recommendSelect" name="recommendCode">
+					<select id="recommendSelect" name="recommendCode" class="form-control input-sm" style="width:150px;">
 						<option value="">选择推荐类型</option>
 						<option value="1">单人套餐</option>
 						<option value="2">双人套餐</option>
