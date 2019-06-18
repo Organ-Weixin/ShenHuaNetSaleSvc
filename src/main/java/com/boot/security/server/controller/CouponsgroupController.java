@@ -42,6 +42,8 @@ public class CouponsgroupController {
     @Autowired
     private CouponsgroupDao couponsgroupDao;
     @Autowired
+    private CouponsDao couponsDao;
+    @Autowired
     private CouponsServiceImpl couponsService;
     @Autowired
     private CouponsgroupServiceImpl couponsgroupService;

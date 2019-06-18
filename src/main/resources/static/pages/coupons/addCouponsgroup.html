@@ -488,8 +488,9 @@
 		 	//有效期
 			if($("input:radio[name='ValidityTypeRadio']:checked").length<=0){
 				layer.msg("请选择有效期类型！");
-			}else if($("input:radio[name='ValidityTypeRadio']:checked").val()==1
-					&&($("#effectiveDate").val()==null||$("#effectiveDate").val()==""
+			}else{
+				if($("input:radio[name='ValidityTypeRadio']:checked").val()==1
+						&&($("#effectiveDate").val()==null||$("#effectiveDate").val()==""
 						||$("#expireDate").val()==null||$("#expireDate").val()=="")){
 					 layer.msg("请选择有效期！");
 				}
@@ -497,20 +498,23 @@
 						&&($("#effectiveDays").val()==null||$("#effectiveDays").val()==""
 						||$("#validityDays").val()==null||$("#validityDays").val()=="")){
 					layer.msg("请选择有效时间！");
+				}
 			}
-			//可用时段	
-			else if($("input:radio[name='CanUsePeriodTypeRadio']:checked").length<=0){
+			//可用时段
+			if($("input:radio[name='CanUsePeriodTypeRadio']:checked").length<=0){
 				layer.msg("请选择可用时段类型！");
-			}
-			else if($("input:radio[name='canUsePeriodType']:checked").val()==2&&$("input[class='checkWeek']:checked").length<=0){
-				layer.msg("请选择可用时间！");
+			}else{
+				if($("input:radio[name='canUsePeriodType']:checked").val()==2&&$("input[class='checkWeek']:checked").length<=0){
+					layer.msg("请选择可用时间！");
+				}
 			}
 			//适用门店
-			else if($("input:radio[name='CanUseCinemaTypeRadio']:checked").length<=0){
+			if($("input:radio[name='CanUseCinemaTypeRadio']:checked").length<=0){
 				layer.msg("请选择使用门店类型！");
-			}
-			else if($("input:radio[name='CanUseCinemaTypeRadio']:checked").val()==2&&($("#cinemaCodes").val()==null||$("#cinemaCodes").val()=="")){
-				layer.msg("请选择适用门店！");
+			}else{
+				if($("input:radio[name='CanUseCinemaTypeRadio']:checked").val()==2&&($("#cinemaCodes").val()==null||$("#cinemaCodes").val()=="")){
+					layer.msg("请选择适用门店！");
+				}
 			}
 			//领券限制
 			LimitNumCheck();
