@@ -198,7 +198,7 @@ public class AppGoodsController {
 				List<Coupons> UserCouponsList=_couponsService.getUserCoupons(QueryJson.getOpenID(),CouponsStatusEnum.Fetched.getStatusCode());
 				if(UserCouponsList!=null&&UserCouponsList.size()>0){
 					for(Coupons usecoupons:UserCouponsList){
-						if(""!=usecoupons.getCouponsCode()){
+						if(!usecoupons.getCouponsCode().equals("")&&!usecoupons.getCouponsCode().equals(null)){
 							CouponsView couponsview = _couponsService.getWithCouponsCode(usecoupons.getCouponsCode());
 							if(couponsview.getCoupons()!=null){
 								boolean ifCanUse=new CouponsUtil().CouponsCanUse(couponsview,order.getOrderBaseInfo().getCinemaCode());
@@ -351,6 +351,19 @@ public class AppGoodsController {
         {
         	QueryLocalGoodsOrderReplyOrder order=new QueryLocalGoodsOrderReplyOrder();
         	ModelMapper.MapFrom(order,orders);
+        	//二维码
+    		Cinemaview cinemaview = cinemaviewService.getByCinemaCode(CinemaCode);
+    		//辰星系统(取票码截取影院编码)
+    		if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
+    			if(orders.getOrderBaseInfo().getPickUpCode()!=null){
+    				order.setEwmPicture(new FileUploadUtils().generateEwm(orders.getOrderBaseInfo().getPickUpCode().substring(8,orders.getOrderBaseInfo().getPickUpCode().length())));
+    			}
+    		}
+    		if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
+    			if(orders.getOrderBaseInfo().getOrderCode()!=null){
+    				order.setEwmPicture(new FileUploadUtils().generateEwm(orders.getOrderBaseInfo().getOrderCode()));
+    			}
+    		}
         	queryLocalGoodsOrderReply.setData(order);
         	queryLocalGoodsOrderReply.SetSuccessReply();
         }

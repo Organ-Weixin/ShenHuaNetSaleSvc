@@ -39,7 +39,7 @@ import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
-import com.boot.security.server.websocket.ChatRoomServer;
+//import com.boot.security.server.websocket.ChatRoomServer;
 
 @Component
 @EnableScheduling   // 1.开启定时任务
@@ -202,7 +202,7 @@ public class MultithreadScheduleTask {
 		}
 	}
 	//启动时执行，开启符合条件的放映厅
-	@PostConstruct
+/*	@PostConstruct
     public void init() throws ParseException, IOException {
         System.out.println("启动时执行");
         //获取所有电影院,把符合开启条件的房间开启
@@ -230,19 +230,19 @@ public class MultithreadScheduleTask {
             }
         }
 		
-//		new Thread(){
-//            public void run() {
-//                while(true){
-//                	System.out.println("启动时执行的");
-//                }
-//            }
-//
-//        }.start();
-    }
+		new Thread(){
+            public void run() {
+                while(true){
+                	System.out.println("启动时执行的");
+                }
+            }
+
+        }.start();
+    }*/
 	
 	
 	//定时开启聊天室房间，每五分钟执行一次(包含关闭房间的线程)
-	@Async
+	/*@Async
 	@Scheduled(cron="10 0/5 * * * ?")
 	public void openChatRoom(){
         //获取所有电影院cinemaId,把符合开启条件的房间开启
@@ -269,7 +269,7 @@ public class MultithreadScheduleTask {
                 new ChatRoomServer().OpenRoomName(roomName,sessioninfo);
             }
         }
-    }
+    }*/
 	
 	
 	public static void main(String[] args) {

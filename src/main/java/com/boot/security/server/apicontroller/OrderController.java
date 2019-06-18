@@ -577,33 +577,6 @@ public class OrderController {
 				reply = NetSaleSvcCore.getInstance().RefundTicket(UserName, Password, CinemaCode, PrintNo, VerifyCode);
 				//退票成功进行处理
 				if(reply.Status.equals("Success")){
-					//获取影院的退票手续费
-					//无退票手续费
-					if(cinema.getRefundFee()==null){
-						cinema.setRefundFee(0.00);
-					}
-					//先判断支付类型
-					//微信支付
-					if(orders.getOrderPayType()==OrderPayTypeEnum.WxPay.getTypeCode()){
-						//计算退票手续费
-						orders.setTotalSalePrice(orders.getTotalSalePrice()-cinema.getRefundFee());
-						//调用微信退款接口
-						RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode());
-						log.info("微信退款结果"+new Gson().toJson(RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode())));
-					}
-					//会员卡支付
-					if(orders.getOrderPayType()==OrderPayTypeEnum.MemberCardPay.getTypeCode()){
-						//判断票务系统
-						Cinemaview cinemaview = cinemaviewService.getByCinemaCode(CinemaCode);
-						//辰星系统调用会员卡支付撤销
-						if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
-							Double backPayAmount = orders.getTotalSalePrice();
-							if(orders.getTotalConponPrice()!=null){
-								backPayAmount = backPayAmount-orders.getTotalConponPrice();
-							}
-							new NetSaleSvcCore().CardPayBack(UserName, Password, CinemaCode, orders.getCardNo(), orders.getCardPassword(), orders.getOrderTradeNo(), String.valueOf(backPayAmount));
-						}
-					}
 					//退优惠券
 					List<Orderseatdetails> orderseatdetailsList = orderseatdetailsService.getByOrderId(orders.getId());
 					for(Orderseatdetails orderseatdetails : orderseatdetailsList){
@@ -629,6 +602,33 @@ public class OrderController {
 									System.out.println("优惠券组库存"+couponsgroupService.update(couponsgroup));
 								}
 							}
+						}
+					}
+					//获取影院的退票手续费
+					//无退票手续费
+					if(cinema.getRefundFee()==null){
+						cinema.setRefundFee(0.00);
+					}
+					//先判断支付类型
+					//微信支付
+					if(orders.getOrderPayType()==OrderPayTypeEnum.WxPay.getTypeCode()){
+						//计算退票手续费
+						orders.setTotalSalePrice(orders.getTotalSalePrice()-cinema.getRefundFee());
+						//调用微信退款接口
+						RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode());
+						log.info("微信退款结果"+new Gson().toJson(RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode())));
+					}
+					//会员卡支付
+					if(orders.getOrderPayType()==OrderPayTypeEnum.MemberCardPay.getTypeCode()){
+						//判断票务系统
+						Cinemaview cinemaview = cinemaviewService.getByCinemaCode(CinemaCode);
+						//辰星系统调用会员卡支付撤销
+						if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
+							Double backPayAmount = orders.getTotalSalePrice();
+							if(orders.getTotalConponPrice()!=null){
+								backPayAmount = backPayAmount-orders.getTotalConponPrice();
+							}
+							new NetSaleSvcCore().CardPayBack(UserName, Password, CinemaCode, orders.getCardNo(), orders.getCardPassword(), orders.getOrderTradeNo(), String.valueOf(backPayAmount));
 						}
 					}
 				}

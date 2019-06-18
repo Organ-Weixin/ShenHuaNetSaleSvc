@@ -96,7 +96,9 @@ public class SessionController {
 		if(membercardlevel!=null){
 			//获取优惠描述
 			List<Membercardcreditrule> membercardcreditruleList = _membercardcreditruleService.getRechargeTypeByLevelCode(CinemaCode, membercardlevel.getLevelCode());
-			data.setOfferDescription(membercardcreditruleList.get(0).getOfferDescription());
+			if(membercardcreditruleList.size()>0){
+				data.setOfferDescription(membercardcreditruleList.get(0).getOfferDescription());
+			}
 		}else{
 			data.setOfferDescription(null);
 		}

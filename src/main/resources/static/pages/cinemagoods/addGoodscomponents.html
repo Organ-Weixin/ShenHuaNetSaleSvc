@@ -287,6 +287,7 @@
 	    $('input[name="checkbox"]:checked').each(function(){
 	    	var div = "<div class='form-inline' name='goodsdiv' id="+$(this).attr('title')+">"+
 	    				"<input class='form-control' name='goodCode' code="+$(this).attr('code')+" value="+$(this).val()+"  style='width:200px;'>&nbsp;&nbsp;"+
+	    				"<input class='form-control' type='number' name='goodsSettlePrice' min='1' placeholder='价格' style='width:80px;margin-right:10px'>"+
 	    				"<input class='form-control' type='number' name='count' value='1' min='1' max='99' style='width:80px;'>"+
 	    				"<button style='width:150px;color:blue; background-color:transparent; border:0' onclick='delgoods(this)'>删除</button>"+
 	    				"</div><br/>";

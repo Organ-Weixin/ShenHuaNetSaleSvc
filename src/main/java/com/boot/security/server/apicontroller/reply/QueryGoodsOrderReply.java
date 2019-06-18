@@ -190,6 +190,7 @@ public class QueryGoodsOrderReply extends BaseReply {
 		public void setOpenID(String openID) {
 			OpenID = openID;
 		}
+		
 		public String getEwmPicture() {
 			return EwmPicture;
 		}

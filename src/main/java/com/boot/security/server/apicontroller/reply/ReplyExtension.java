@@ -828,7 +828,7 @@ public class ReplyExtension {
 	}
 	//endregion
 	
-	//region QueryGoodsOrderReply
+	//region QueryTicketOrderReply
 	public static boolean RequestInfoGuard(QueryTicketOrderReply reply,String Username,String Password,String CinemaCode,String OrderCode){
 		if (Username==null || "".equals(Username)) {
 			reply.SetNecessaryParamMissReply("UserName");
