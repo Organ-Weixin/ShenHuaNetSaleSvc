@@ -252,6 +252,11 @@ public class AppGoodsController {
 	public SubmitGoodsOrderReply SubmitGoodsOrder(@RequestBody NetSaleQueryJson QueryJson){
 		try {
 			SubmitGoodsOrderReply reply = NetSaleSvcCore.getInstance().SubmitGoodsOrder(QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getQueryXml());
+			if(reply.Status.equals("Success")){
+				Goodsorders goodsorders=_goodsOrderService.getByOrderCode(reply.getOrder().getOrderCode());
+				String MsgConetnt="您的订单已成功，取货码为"+reply.getOrder().getPickUpCode()+"，请到前台领取";
+				new SendSmsHelper().SendSms(goodsorders.getCinemaCode(),goodsorders.getMobilePhone(),MsgConetnt);
+			}
 			return reply;
 		} catch (JsonSyntaxException e) {
 			e.printStackTrace();

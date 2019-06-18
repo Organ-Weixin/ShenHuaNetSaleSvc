@@ -26,8 +26,11 @@ public interface OrdersDao {
 	@Select("select * from orders t where t.cinemacode=#{cinemacode} and t.lockordercode = #{lockordercode}")
 	Orders getByLockOrderCode(@Param("cinemacode") String cinemacode, @Param("lockordercode") String lockordercode);
 
+	@Select("select * from orders t where t.submitordercode = #{ordercode}")
+	Orders getByOrderCode(@Param("ordercode") String ordercode);
+	
 	@Select("select * from orders t where t.cinemacode=#{cinemacode} and t.submitordercode = #{ordercode}")
-	Orders getByOrderCode(@Param("cinemacode") String cinemacode, @Param("ordercode") String ordercode);
+	Orders getByCinemaCodeAndOrderCode(@Param("cinemacode") String cinemacode, @Param("ordercode") String ordercode);
 
 	@Select("select * from orders t where t.cinemacode=#{cinemacode} and t.printno = #{printno} and t.verifycode=#{verifycode}")
 	Orders getByPrintNo(@Param("cinemacode")String cinemacode, @Param("printno")String printno, @Param("verifycode")String verifycode);
