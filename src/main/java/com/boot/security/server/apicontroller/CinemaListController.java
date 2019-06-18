@@ -90,7 +90,9 @@ public class CinemaListController {
         			   if(choosemembercardcreditrule!=null){
             			   //获取会员卡优惠描述
             			   Membercardcreditrule membercardcreditrule = membercardcreditruleService.getByRuleCode(choosemembercardcreditrule.getRuleCode());
-            			   cinemareply.setOfferDescription(membercardcreditrule.getOfferDescription());
+            			   if(membercardcreditrule!=null){
+            				   cinemareply.setOfferDescription(membercardcreditrule.getOfferDescription());
+            			   }
             		   }
         		   }
         		   Usercinemaview usercinema = userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(), cinema.getCode());

@@ -857,16 +857,19 @@ public class Dy1905Interface implements ICTMSInterface {
 				Membercard membercard = memberCardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
 				Cinema cinema = cinemaService.getByCinemaCode(userCinema.getCinemaCode());
 				String cinemacodes = "";
-				if(cinema!=null&&cinema.getIsGeneralStore()==1){
-					CinemaMiniProgramAccounts cinemaMiniProgramAccounts = cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
-			    	if(cinemaMiniProgramAccounts!=null){
-			    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
-			    		if(cinemaMiniProgramAccountsList.size()>0){
-			    			for(int i=0; i<cinemaMiniProgramAccountsList.size(); i++){
-			    				cinemacodes +=cinemaMiniProgramAccountsList.get(i).getCinemaCode()+",";
-			    			}
-			    		}
-			    	}
+				//门店通用
+				if(cinema!=null&&cinema.getIsGeneralStore()!=null){
+					if(cinema.getIsGeneralStore().equals("1")){
+						CinemaMiniProgramAccounts cinemaMiniProgramAccounts = cinemaMiniProgramAccountsService.getByCinemaCode(userCinema.getCinemaCode());
+				    	if(cinemaMiniProgramAccounts!=null){
+				    		List<CinemaMiniProgramAccounts> cinemaMiniProgramAccountsList = cinemaMiniProgramAccountsService.getByAppId(cinemaMiniProgramAccounts.getAppId());
+				    		if(cinemaMiniProgramAccountsList.size()>0){
+				    			for(int i=0; i<cinemaMiniProgramAccountsList.size(); i++){
+				    				cinemacodes +=cinemaMiniProgramAccountsList.get(i).getCinemaCode()+",";
+				    			}
+				    		}
+				    	}
+					}
 				}
 				if(membercard==null){
 					membercard = new Membercard();
@@ -1585,10 +1588,11 @@ public class Dy1905Interface implements ICTMSInterface {
 			if(Dy1905Reply.getGoodsOrderResult().getResultCode().equals("0")){
 				//更新订单状态
 				order.getOrderBaseInfo().setOrderCode(order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
-				order.getOrderBaseInfo().setPickUpCode(Dy1905Reply.getGoodsOrderResult().getOrderNo());
+				reply.setOrderCode(order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
+				reply.setPickUpCode(order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
+				order.getOrderBaseInfo().setOrderTradeNo(Dy1905Reply.getGoodsOrderResult().getOrderNo());
 				order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
 				reply.setOrderNo(Dy1905Reply.getGoodsOrderResult().getOrderNo());
-				System.out.println("优惠券编码"+order.getOrderBaseInfo().getCouponsCode());
 				// 更新优惠券已使用
 				if (null!=order.getOrderBaseInfo().getCouponsCode()&&""!=order.getOrderBaseInfo().getCouponsCode()) {
 					CouponsView couponsview=_couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
