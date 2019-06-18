@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Document;
 
+import com.boot.security.server.api.core.CardPayBackReply;
 //import com.boot.security.server.api.core.LockSeatReply;
 import com.boot.security.server.api.core.NetSaleSvcCore;
 import com.boot.security.server.api.core.QueryPrintReply;
@@ -102,6 +103,7 @@ import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.CouponsUtil;
 import com.boot.security.server.utils.FileUploadUtils;
+import com.boot.security.server.utils.SendSmsHelper;
 import com.boot.security.server.utils.WxPayUtil;
 import com.boot.security.server.utils.XmlHelper;
 import com.google.gson.Gson;
@@ -260,6 +262,11 @@ public class OrderController {
 		try {
 			SubmitOrderReply submitOrderReply = NetSaleSvcCore.getInstance().SubmitOrder(QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getQueryXml());
 //			System.out.println("提交成功+++++"+new Gson().toJson(submitOrderReply));
+			if(submitOrderReply.Status.equals("Success")){
+				Orders orders=_orderService.getByOrderCode(submitOrderReply.getOrder().getOrderCode());
+				String MsgConetnt="您已成功支付，订单金额"+(orders.getTotalSalePrice()-orders.getTotalConponPrice())+"元，影片场次："+orders.getSessionTime()+" 《"+orders.getFilmName()+"》"+orders.getTicketCount()+"张。请至影城取票机领取，取票码："+orders.getPrintNo()+".热线：4008257789";
+				new SendSmsHelper().SendSms(orders.getCinemaCode(),orders.getMobilePhone(),MsgConetnt);
+			}
 			return submitOrderReply;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -317,7 +324,7 @@ public class OrderController {
 			return ticketOrderReply;
 		}
 		// 验证订单是否存在
-		Orders orders = _orderService.getByOrderCode(CinemaCode, OrderCode);
+		Orders orders = _orderService.getByCinemaCodeAndOrderCode(CinemaCode, OrderCode);
 		if(orders == null){
 			ticketOrderReply.SetOrderNotExistReply();
 			return ticketOrderReply;
@@ -582,14 +589,21 @@ public class OrderController {
 					if(cinema.getRefundFee()==null){
 						cinema.setRefundFee(0.00);
 					}
+					String MsgConetnt="";
 					//先判断支付类型
 					//微信支付
 					if(orders.getOrderPayType()==OrderPayTypeEnum.WxPay.getTypeCode()){
 						//计算退票手续费
 						orders.setTotalSalePrice(orders.getTotalSalePrice()-cinema.getRefundFee());
 						//调用微信退款接口
-						RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode());
-						log.info("微信退款结果"+new Gson().toJson(RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode())));
+						RefundPaymentReply paymentReply = RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode());
+						if(paymentReply.Status.equals("Success")){
+							//发短信
+							MsgConetnt="您的退票已成功，退票金额"+orders.getTotalSalePrice()+"元将在3个工作日内返回支付账号，咨询：4008257789";
+							new SendSmsHelper().SendSms(CinemaCode,orders.getMobilePhone(),MsgConetnt);
+						}
+						//log.info("微信退款结果"+new Gson().toJson(RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode())));
+						
 					}
 					//会员卡支付
 					if(orders.getOrderPayType()==OrderPayTypeEnum.MemberCardPay.getTypeCode()){
@@ -601,7 +615,12 @@ public class OrderController {
 							if(orders.getTotalConponPrice()!=null){
 								backPayAmount = backPayAmount-orders.getTotalConponPrice();
 							}
-							new NetSaleSvcCore().CardPayBack(UserName, Password, CinemaCode, orders.getCardNo(), orders.getCardPassword(), orders.getOrderTradeNo(), String.valueOf(backPayAmount));
+							CardPayBackReply paybackReply=new NetSaleSvcCore().CardPayBack(UserName, Password, CinemaCode, orders.getCardNo(), orders.getCardPassword(), orders.getOrderTradeNo(), String.valueOf(backPayAmount));
+							if(paybackReply.Status.equals("Success")){
+								//发短信
+								MsgConetnt="您的退票已成功，退票金额"+backPayAmount+"元将在3个工作日内返回支付账号，咨询：4008257789";
+								new SendSmsHelper().SendSms(CinemaCode,orders.getMobilePhone(),MsgConetnt);
+							}
 						}
 					}
 					//退优惠券

@@ -98,6 +98,7 @@ import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.CouponsUtil;
 import com.boot.security.server.utils.GoodsCouponsPriceUtil;
+import com.boot.security.server.utils.SendSmsHelper;
 import com.boot.security.server.utils.WxPayUtil;
 import com.google.gson.Gson;
 
@@ -335,6 +336,7 @@ public class MemberController {
 	}
 	//endregion
 	
+	//region 会员卡购票（粤科）
 	@GetMapping("/YkTicketmMember/{Username}/{Password}/{CinemaCode}/{LockOrderCode}/{MobilePhone}/{CardNo}/{CardPassword}/{CouponsCodes}")
 	@ApiOperation(value = "会员卡购票（粤科）")
 	public SellTicketCustomMemberReply YkTicketmMember(@PathVariable String Username,@PathVariable String Password,	@PathVariable String CinemaCode,
@@ -387,7 +389,9 @@ public class MemberController {
 		
 		return reply;
 	}
+	//endregion
 	
+	//region 会员卡卖品（粤科）
 	@GetMapping("/YkGoodsOrderMember/{Username}/{Password}/{CinemaCode}/{LocalOrderCode}/{MobilePhone}/{CardNo}/{CardPassword}/{CouponsCodes}")
 	@ApiOperation(value = "会员卡卖品（粤科）")
 	public SubmitGoodsOrderReply YkGoodsOrderMember(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
@@ -441,6 +445,7 @@ public class MemberController {
 		
 		return reply;
 	}
+	//endregion
 	
 	//region 会员卡支付撤销
 	@GetMapping("/CardPayBack/{Username}/{Password}/{CinemaCode}/{CardNo}/{CardPassword}/{TradeNo}/{PayBackAmount}")
@@ -538,7 +543,19 @@ public class MemberController {
 			return cardChargeReply;
 		}
 		ChargeAmount = String.valueOf(membercardcreditrule.getCredit()+membercardcreditrule.getGivenAmount());
-		return new NetSaleSvcCore().CardCharge(Username, Password, CinemaCode, CardNo, CardPassword, ChargeType, ChargeAmount);
+		CardChargeReply reply = new NetSaleSvcCore().CardCharge(Username, Password, CinemaCode, CardNo, CardPassword, ChargeType, ChargeAmount);
+		if(reply.Status.equals("Success")){
+			Membercard membercard=_memberCardService.getByCardNo(CinemaCode, CardNo);
+			QueryCardReply queryCardReply=QueryCard(Username, Password, CinemaCode, CardNo, CardPassword);
+			if(queryCardReply.Status.equals("Success")){
+				membercard.setBalance(Double.valueOf(queryCardReply.getCard().getBalance()));
+				membercard.setScore(Integer.valueOf(queryCardReply.getCard().getScore()));
+			}
+			_memberCardService.Update(membercard);
+			String MsgConetnt="您的充值已成功，充值金额为"+ChargeAmount+"元，余额为"+membercard.getBalance()+"元，剩余积分"+membercard.getScore()+"。";
+			new SendSmsHelper().SendSms(CinemaCode, membercard.getMobilePhone(),MsgConetnt);
+		}
+		return reply;
 	}
 	//endregion
 	

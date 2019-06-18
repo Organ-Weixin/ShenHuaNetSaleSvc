@@ -65,9 +65,15 @@ public class OrderServiceImpl implements OrderService{
 	}
 	
 	@Override
-	public Orders getByOrderCode(String cinemacode, String ordercode) {
+	public Orders getByOrderCode(String ordercode) {
 		// TODO Auto-generated method stub
-		return ordersDao.getByOrderCode(cinemacode, ordercode);
+		return ordersDao.getByOrderCode(ordercode);
+	}
+	
+	@Override
+	public Orders getByCinemaCodeAndOrderCode(String cinemacode, String ordercode) {
+		// TODO Auto-generated method stub
+		return ordersDao.getByCinemaCodeAndOrderCode(cinemacode, ordercode);
 	}
 	
 	@Override
@@ -132,7 +138,7 @@ public class OrderServiceImpl implements OrderService{
 	@Override
 	public OrderView getOrderWidthOrderCode(String cinemacode, String ordercode) {
 		OrderView orderview=new OrderView();
-		orderview.setOrderBaseInfo(ordersDao.getByOrderCode(cinemacode,ordercode));
+		orderview.setOrderBaseInfo(ordersDao.getByCinemaCodeAndOrderCode(cinemacode,ordercode));
 		orderview.setOrderSeatDetails(orderseatdetailssDao.getByOrderId(orderview.getOrderBaseInfo().getId()));
 		return orderview;
 	}

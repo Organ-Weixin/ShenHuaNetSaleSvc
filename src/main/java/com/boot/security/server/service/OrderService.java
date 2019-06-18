@@ -18,7 +18,9 @@ public interface OrderService {
 
     Orders getByPrintNo(String cinemacode,String printno,String verifycode);
     
-    Orders getByOrderCode(String cinemacode,String ordercode);
+    Orders getByOrderCode(String ordercode);
+    
+    Orders getByCinemaCodeAndOrderCode(String cinemacode,String ordercode);
     
     Orders getByOrderTradeNo(String cinemacode,String ordertradeno);
     
