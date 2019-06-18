@@ -486,33 +486,41 @@
 			checkParams();
 		 	//提交之前非空判断
 		 	//有效期
+		 	var result = true;
 			if($("input:radio[name='ValidityTypeRadio']:checked").length<=0){
+				result = false;
 				layer.msg("请选择有效期类型！");
 			}else{
 				if($("input:radio[name='ValidityTypeRadio']:checked").val()==1
 						&&($("#effectiveDate").val()==null||$("#effectiveDate").val()==""
 						||$("#expireDate").val()==null||$("#expireDate").val()=="")){
+					 result = false;
 					 layer.msg("请选择有效期！");
 				}
 				if($("input:radio[name='ValidityTypeRadio']:checked").val()==2
 						&&($("#effectiveDays").val()==null||$("#effectiveDays").val()==""
 						||$("#validityDays").val()==null||$("#validityDays").val()=="")){
+					result = false;
 					layer.msg("请选择有效时间！");
 				}
 			}
 			//可用时段
 			if($("input:radio[name='CanUsePeriodTypeRadio']:checked").length<=0){
+				result = false;
 				layer.msg("请选择可用时段类型！");
 			}else{
 				if($("input:radio[name='canUsePeriodType']:checked").val()==2&&$("input[class='checkWeek']:checked").length<=0){
+					result = false;
 					layer.msg("请选择可用时间！");
 				}
 			}
 			//适用门店
 			if($("input:radio[name='CanUseCinemaTypeRadio']:checked").length<=0){
+				result = false;
 				layer.msg("请选择使用门店类型！");
 			}else{
 				if($("input:radio[name='CanUseCinemaTypeRadio']:checked").val()==2&&($("#cinemaCodes").val()==null||$("#cinemaCodes").val()=="")){
+					result = false;
 					layer.msg("请选择适用门店！");
 				}
 			}
@@ -521,9 +529,11 @@
 			//减免金额
 			if(getUrlParam("CouponsType")==1){
 				if($("input:radio[name='reductionTypeRadio']:checked").length<=0){
+					result = false;
 					layer.msg("请选择减免金额类型！");
 				}else{
 					if($("input:radio[name='reductionTypeRadio']:checked").length>0&&($("#reductionPrice").val()==null||$("#reductionPrice").val()=="")){
+						result = false;
 						layer.msg("请输入减免金额！");
 					}
 				}
@@ -534,17 +544,16 @@
 				$("#canUseCinemaType").val("2");
 			}
 			
-
-			$('#form').bootstrapValidator();
-			var bootstrapValidator = $("#form").data('bootstrapValidator');
-			bootstrapValidator.validate();
-		    if(!bootstrapValidator.isValid()){
-			   return;
-		    }
-		    
-		    var formdata = $("#form").serializeObject();
-		    
-				 $.ajax({
+			if(result == true){
+				$('#form').bootstrapValidator();
+				var bootstrapValidator = $("#form").data('bootstrapValidator');
+				bootstrapValidator.validate();
+			    if(!bootstrapValidator.isValid()){
+				   return;
+			    }
+			    
+			    var formdata = $("#form").serializeObject();
+			    $.ajax({
 					type : 'post',
 					url : '/couponsgroups',
 					contentType: "application/json; charset=utf-8",  
@@ -555,6 +564,7 @@
 	                    });
 					}
 				});
+			}
 			
 		}
 		
