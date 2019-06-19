@@ -17,6 +17,9 @@ public interface DirectorDao {
 
     @Select("select * from director t where t.id = #{id}")
     Director getById(Long id);
+    
+    @Select("select * from director t where t.Name = #{name}")
+    Director getByName(String name);
 
     @Delete("delete from director where id = #{id}")
     int delete(Long id);

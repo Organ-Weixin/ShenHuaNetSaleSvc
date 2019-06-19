@@ -75,29 +75,39 @@
 				</div>
 				
 				<div class='form-group'>
-					<label class='col-md-2 control-label'>导演</label>
+					<label class='col-md-2 control-label'>可选导演列表：</label>
 					<div class='col-md-10'>
-						<input class='form-control' placeholder='导演' type='text'
-							name='director' id='Director' data-bv-notempty='false'
-							data-bv-notempty-message='导演 可以为空'>
+						<button class="btn btn-primary" id="getDirector">选择导演</button>
+					</div>
+				</div>
+				<div class='form-group'>
+					<input type="hidden" name="director"  id="Director"/>
+					<input type="hidden" name="directorId"  id="DirectorId"/>
+					<label class='col-md-2 control-label'>已选导演：</label>
+					<div class='col-md-10' id='selectedDirector'>
+						
 					</div>
 				</div>
 				
 				<div class='form-group'>
-					<label class='col-md-2 control-label'>演员</label>
+					<label class='col-md-2 control-label'>可选演员列表：</label>
 					<div class='col-md-10'>
-						<input class='form-control' placeholder='演员' type='text'
-							name='cast' id='Cast' data-bv-notempty='false'
-							data-bv-notempty-message='演员 可以为空'>
+						<button class="btn btn-primary" id="getActor">选择演员</button>
+					</div>
+				</div>
+				<div class='form-group'>
+					<input type="hidden" name="cast"  id="Cast" />
+					<input type="hidden" name="castId"  id="CastId" />
+					<label class='col-md-2 control-label'>已选演员：</label>
+					<div class='col-md-10' id='selectedActor'>
+						
 					</div>
 				</div>
 				
 				<div class='form-group'>
 					<label class='col-md-2 control-label'>影片介绍</label>
 					<div class='col-md-10'>
-						<input class='form-control' placeholder='影片介绍' type='text'
-							name='introduction' id='Introduction' data-bv-notempty='false'
-							data-bv-notempty-message='影片介绍 可以为空'>
+						<textarea class="form-control" name="introduction" id='Introduction' rows="4" placeholder="限制500字"></textarea>
 					</div>
 				</div>
 				
@@ -193,12 +203,129 @@
 			</fieldset>
 		</form>
 	</div>
+	
+<!--选择导演页面  -->
+<div id="chooseDirector" style="background-color:lightgray;width:100%;height:800px;z-index:99;position: relative; background: rgba(0, 0, 0, 0.5);display:none">
+          <div style="margin-left:10%;margin-top:10%;background-color:white;width:70%;height:300px; opacity:1;z-index: 999;position:absolute;">
+               	
+	        	<div>
+	                <header style="height: 100%">
+	                    <div align="left">
+		                    <table style="width: 100%">
+		                   		<tr>
+		                   			<td>
+			                   			<form class="form-inline" onsubmit="return false">
+											<div class="form-group">
+												<input id="DirectorName" type="text" class="form-control" placeholder="导演名称">
+												<button id="searchBtdi" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>查询</button>
+											</div>
+										</form>
+		                   			</td>
+		                   		</tr> 
+		                    </table>
+						</div>
+	                </header>
+	                
+	                <div>
+	                    <div class="widget-body no-padding">
+	                        <table id="dt-table" class="table table-striped table-bordered table-hover" style="width:100%">
+	                            <thead>
+	                                <tr>
+	                                </tr>                       
+	                                <tr>
+										<th>#</th>
+										<th width="10%">选择</th>
+										<th >图片</th>
+										<th width="10%">导演名称</th>
+										<th width="10%">国家</th>
+										<th>介绍</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                    <div class="form-actions">
+							<div class="row" align="center">
+								<div class="col-md-12">
+								    <button class="btn btn-primary" id="closeDirector" style="position: absolute;left:40%">关闭</button>
+									<button class="btn btn-primary" id="saveDirector"  style="position: absolute;left:50%">
+										<i class="fa fa-save"></i> 保存
+									</button>
+								</div>
+							</div>
+						</div>
+	                </div>
+	                
+	            </div>
+       		</div>     	
+</div>
+
+<!--选择演员页面  -->
+<div id="chooseActor" style="background-color:lightgray;width:100%;height:800px;z-index:99;position: relative; background: rgba(0, 0, 0, 0.5);display:none">
+          <div style="margin-left:10%;margin-top:10%;background-color:white;width:70%;height:300px; opacity:1;z-index: 999;position:absolute;">
+               	
+	        	<div>
+	                <header style="height: 100%">
+	                    <div align="left">
+		                    <table style="width: 100%">
+		                   		<tr>
+		                   			<td>
+			                   			<form class="form-inline" onsubmit="return false">
+											<div class="form-group">
+												<input id="ActorName" type="text" class="form-control" placeholder="演员名称">
+												<button id="searchBtac" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>查询</button>
+											</div>
+										</form>
+		                   			</td>
+		                   		</tr> 
+		                    </table>
+						</div>
+	                </header>
+	                
+	                <div>
+	                    <div class="widget-body no-padding">
+	                        <table id="ac-table" class="table table-striped table-bordered table-hover" style="width:100%">
+	                            <thead>
+	                                <tr>
+	                                </tr>                       
+	                                <tr>
+										<th>#</th>
+										<th width="10%">选择</th>
+										<th>图片</th>
+										<th width="10%">演员名称</th>
+										<th width="10%">国家</th>
+										<th>介绍</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                    <div class="form-actions">
+							<div class="row" align="center">
+								<div class="col-md-12">
+								    <button class="btn btn-primary" id="closeActor" style="position: absolute;left:40%">关闭</button>
+									<button class="btn btn-primary" id="saveActor"  style="position: absolute;left:50%">
+										<i class="fa fa-save"></i> 保存
+									</button>
+								</div>
+							</div>
+						</div>
+	                </div>
+	                
+	            </div>
+       		</div>     	
+</div>
+
 	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
 	<script type="text/javascript" src="../../js/jq.js"></script>
-	<script type="text/javascript"
-		src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
 	<script type="text/javascript" src="../../js/common.js"></script>
 	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript" src="../../js/my/permission.js"></script>
 	<script type="text/javascript">
 	layui.use([ "jquery", "upload", "form", "layer", "element" ],function() {
 		var $ = layui.$, element = layui.element, layer = layui.layer, upload = layui.upload, form = layui.form;
@@ -250,7 +377,6 @@
 	});
 
 		initData();
-
 		function initData() {
 			var id = getUrlParam("id");
 			if (id != "") {
@@ -267,7 +393,9 @@
 						$('#PublishDate').val(data.publishDate);
 						$('#Publisher').val(data.publisher);
 						$('#Producer').val(data.producer);
+						$('#DirectorId').val(data.directorId);
 						$('#Director').val(data.director);
+						$('#CastId').val(data.castId);
 						$('#Cast').val(data.cast);
 						$('#Introduction').val(data.introduction);
 						$('#Score').val(data.score);
@@ -278,6 +406,33 @@
 						$('#Image').val(data.image);
 						$('#preview').attr("src", data.image);
 						$('#Trailer').val(data.trailer);
+						
+						if(data.directorId != null){
+							var direidlist = data.directorId.split(",");
+							var direnamelist = data.director.split(",");
+							for(var i=0;i<direidlist.length;i++){
+								var divd = "<div class='form-inline' title="+direidlist[i]+" value="+direnamelist[i]+" >"+
+			    				"<input class='form-control' name='dire' value='"+direnamelist[i]+"'  style='width:200px;'>"+
+			    				"<button style='width:150px;color:blue; background-color:transparent; border:0' onclick='delDirector(this)'>删除</button>"+
+			    				"</div><br/>";
+
+								$("#selectedDirector").append(divd);
+							}
+						}
+						
+						if(data.castId != null){
+							var castidlist = data.castId.split(",");
+							var castNamelist = data.cast.split(",");
+							for(var i=0;i<castidlist.length;i++){
+								var diva = "<div class='form-inline' title="+castidlist[i]+" value="+castNamelist[i]+" >"+
+			    				"<input class='form-control' name='act' value='"+castNamelist[i]+"'  style='width:200px;'>"+
+			    				"<button style='width:150px;color:blue; background-color:transparent; border:0' onclick='delActor(this)'>删除</button>"+
+			    				"</div><br/>";
+
+								$("#selectedActor").append(diva);
+							}
+						}
+						
 					}
 				});
 			}
@@ -291,8 +446,22 @@
 				return;
 			}
 
+			//获取选中的导演
+		    var dire=[]; 
+		    $("#selectedDirector>div").each(function(){
+		    	dire.push($(this).attr('title'));
+	        })
+		    $("#DirectorId").val(dire);
+		    
+		  	//获取选中的演员
+		    var act=[]; 
+		    $("#selectedActor>div").each(function(){
+		    	act.push($(this).attr('title'));
+	        })
+		    $("#CastId").val(act);
+		    
 			var formdata = $("#form").serializeObject();
-
+	console.log(JSON.stringify(formdata));
 			$.ajax({
 				type : 'put',
 				url : '/filminfos',
@@ -308,6 +477,223 @@
 				}
 			});
 		}
+		
+		
+		//选择导演-弹窗
+		$("#getDirector").click(function(){
+			$("#chooseDirector").show();
+			
+		});
+		
+		$("#closeDirector").click(function(){
+			$("[name='dicheckbox']").prop("checked",false);//取消全选
+			$("#DirectorName").val("");
+			$("#chooseDirector").hide();
+		});
+		
+		//选好导演保存
+		$("#saveDirector").click(function(){	
+		    $('input[name="dicheckbox"]:checked').each(function(){
+		    	var divd = "<div class='form-inline' title="+$(this).attr('title')+" value="+$(this).val()+" >"+
+		    				"<input class='form-control' name='dire' value="+$(this).val()+"  style='width:200px;'>"+
+		    				"<button style='width:150px;color:blue; background-color:transparent; border:0' onclick='delDirector(this)'>删除</button>"+
+		    				"</div><br/>";
+
+				$("#selectedDirector").append(divd);
+				
+	        })
+	        
+		    $("[name='dicheckbox']").prop("checked",false);//取消全选
+		    $("#DirectorName").val("");
+		    $("#chooseDirector").hide();
+		});
+		
+		//删除选好的导演
+		function delDirector(Obj){
+			Obj.parentNode.parentNode.removeChild(Obj.parentNode);
+		}
+		
+		var	exampled;
+		showDirector();
+		function showDirector(){
+			exampled = 
+		    	$('#dt-table').DataTable({
+		        	"searching": false,
+		        	"processing": false,
+		        	"serverSide" : true,
+		        	"language": {
+		                "url": "/js/plugin/datatables/Chinese.lang"
+		            },
+		        	"ajax": {
+		        		"url" : "/directors",
+		        		"type":"get",
+		        		"data":function(d){
+		    				d.Name = $("#DirectorName").val();
+		    			}
+		        	},
+		        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
+		            "columns": [
+			        	{			"data" : null, 
+			            			"defaultContent" : "",
+									"render" : function(data, type, full, meta){
+										return meta.row + 1 + meta.settings._iDisplayStart;
+									}
+						},
+						{
+									"data" : "", 
+									"defaultContent" : "",
+									"render": function (data, type, row) {
+										var id = row['id'];
+										var diName = row['name'];
+				                		var checkbox = "<input type='checkbox' name='dicheckbox' title="+id+" value="+diName+"  >";
+				                		
+				                        return checkbox;
+				                  	}
+						},
+						{
+									"data" : "picture", 
+									"defaultContent" : "",
+									"render": function (data, type, row) {
+				                		var picture = row['picture'];
+				                      	var img = "<img class='dpicture' style='width:40px;height: 40px;' src='"+picture+"' title='"+picture+"' >";
+				                      	
+				                        return img;
+				                  	}
+						},
+						{"data" : "name", "defaultContent" : ""},
+						{"data" : "country", "defaultContent" : ""},
+						{
+							"data" : "introduction", 
+							"defaultContent" : "",
+							"render":function(data, type, row){
+								if (type === 'display') {
+					                if (data != null && data.length > 60) {
+					                    return '<span title="' + data + '">' + data.substr(0, 60) + '...</span>';
+					                } else {
+					                    return '<span title="' + data + '">' + data + '</span>';
+					                }
+					            }
+					            return data;
+							}	
+						},
+		            ],
+		           "order": [[ 0, "asc" ]]
+		        });
+		}
+		
+		
+		$("#searchBtdi").click(function(){
+			exampled.ajax.reload();
+		});
+		
+		
+		//选择演员-弹窗
+		$("#getActor").click(function(){
+			$("#chooseActor").show();
+			
+		});
+		
+		$("#closeActor").click(function(){
+			$("[name='acheckbox']").prop("checked",false);//取消全选
+			$("#ActorName").val("");
+			$("#chooseActor").hide();
+		});
+		
+		//选好演员保存
+		$("#saveActor").click(function(){	
+		    $('input[name="acheckbox"]:checked').each(function(){
+		    	var diva = "<div class='form-inline' title="+$(this).attr('title')+" value="+$(this).val()+" >"+
+		    				"<input class='form-control' name='act' value="+$(this).val()+"  style='width:200px;'>"+
+		    				"<button style='width:150px;color:blue; background-color:transparent; border:0' onclick='delActor(this)'>删除</button>"+
+		    				"</div><br/>";
+
+				$("#selectedActor").append(diva);
+				
+	        })
+	        
+		    $("[name='acheckbox']").prop("checked",false);//取消全选
+		    $("#ActorName").val("");
+		    $("#chooseActor").hide();
+		});
+		
+		//删除选好的演员
+		function delActor(Obj){
+			Obj.parentNode.parentNode.removeChild(Obj.parentNode);
+		}
+		
+		var	examplea;
+		showActor();
+		function showActor(){
+			examplea = 
+		    	$('#ac-table').DataTable({
+		        	"searching": false,
+		        	"processing": false,
+		        	"serverSide" : true,
+		        	"language": {
+		                "url": "/js/plugin/datatables/Chinese.lang"
+		            },
+		        	"ajax": {
+		        		"url" : "/actors",
+		        		"type":"get",
+		        		"data":function(d){
+		    				d.Name = $("#ActorName").val();
+		    			}
+		        	},
+		        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
+		            "columns": [
+			        	{			"data" : null, 
+			            			"defaultContent" : "",
+									"render" : function(data, type, full, meta){
+										return meta.row + 1 + meta.settings._iDisplayStart;
+									}
+						},
+						{
+									"data" : "", 
+									"defaultContent" : "",
+									"render": function (data, type, row) {
+										var acId = row['id'];
+										var acName = row['name'];
+				                		var checkbox = "<input type='checkbox' name='acheckbox' title="+acId+" value="+acName+"  >";
+				                		
+				                        return checkbox;
+				                  	}
+						},
+						{
+									"data" : "picture", 
+									"defaultContent" : "",
+									"render": function (data, type, row) {
+				                		var picture = row['picture'];
+				                      	var img = "<img class='apicture' style='width:40px;height: 40px;' src='"+picture+"' title='"+picture+"' >";
+				                      	
+				                        return img;
+				                  	}
+						},
+						{"data" : "name", "defaultContent" : ""},
+						{"data" : "country", "defaultContent" : ""},
+						{
+							"data" : "introduction", 
+							"defaultContent" : "",
+							"render":function(data, type, row){
+								if (type === 'display') {
+					                if (data != null && data.length > 60) {
+					                    return '<span title="' + data + '">' + data.substr(0, 60) + '...</span>';
+					                } else {
+					                    return '<span title="' + data + '">' + data + '</span>';
+					                }
+					            }
+					            return data;
+							}	
+						},
+		            ],
+		           "order": [[ 0, "asc" ]]
+		        });
+		}
+		
+		
+		$("#searchBtac").click(function(){
+			examplea.ajax.reload();
+		});
+		
 	</script>
 </body>
 </html>

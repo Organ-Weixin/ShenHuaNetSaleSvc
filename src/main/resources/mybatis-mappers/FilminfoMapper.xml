@@ -12,7 +12,7 @@
 				and FilmCode = #{params.FilmCode} 
 			</if>
 			<if test="params.FilmName != null and params.FilmName != ''">
-				and FilmName = #{params.FilmName} 
+				and FilmName like concat('%', #{params.FilmName}, '%') 
 			</if>
 			<if test="params.Version != null and params.Version != ''">
 				and Version = #{params.Version} 
@@ -83,8 +83,14 @@
 			<if test="Producer != null">
 				Producer = #{Producer}, 
 			</if>
+			<if test="DirectorId != null">
+				DirectorId = #{DirectorId}, 
+			</if>
 			<if test="Director != null">
 				Director = #{Director}, 
+			</if>
+			<if test="CastId != null">
+				CastId = #{CastId}, 
 			</if>
 			<if test="Cast != null">
 				Cast = #{Cast}, 
@@ -113,7 +119,6 @@
 			<if test="Trailer != null">
 				Trailer = #{Trailer}
 			</if>
-
 		</set>
 
 		where t.Id = #{Id}

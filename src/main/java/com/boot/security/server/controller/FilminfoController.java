@@ -15,10 +15,7 @@ import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,19 +32,20 @@ import org.springframework.web.multipart.MultipartFile;
 import com.boot.security.server.page.table.PageTableRequest;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
+import com.boot.security.server.service.impl.ActorServiceImpl;
+import com.boot.security.server.service.impl.DirectorServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.utils.FileUploadUtils;
 import com.boot.security.server.utils.HttpHelper;
 import com.boot.security.server.utils.PropertyHolder;
 import com.google.gson.Gson;
 
-import freemarker.template.SimpleDate;
-
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
-import com.boot.security.server.dao.FilminfoDao;
+import com.boot.security.server.model.Actor;
 import com.boot.security.server.model.BaiduFilmInfomation;
 import com.boot.security.server.model.BaiduFilmInfomation.Result.Movie;
+import com.boot.security.server.model.Director;
 import com.boot.security.server.model.Filminfo;
 
 import io.swagger.annotations.ApiOperation;
@@ -58,6 +56,10 @@ public class FilminfoController {
 
     @Autowired
     private FilminfoServiceImpl _filmInfoService;
+    @Autowired
+    private DirectorServiceImpl _directorService;
+    @Autowired
+    private ActorServiceImpl _actorService;
 
     @PostMapping
     @ApiOperation(value = "保存")
@@ -70,12 +72,52 @@ public class FilminfoController {
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取")
     public Filminfo get(@PathVariable Long id) {
-        return _filmInfoService.getById(id);
+    	Filminfo film = _filmInfoService.getById(id);
+    	if(film.getDirectorId() != null){	//导演id
+    		StringBuffer direbf = new StringBuffer();
+    		String[] directorlist = film.getDirectorId().split(",");
+    		for(int i=0;i<directorlist.length;i++){
+    			Director dire = _directorService.getById(Long.valueOf(directorlist[i]));
+    			direbf.append(dire.getName()+",");
+    		}
+    		film.setDirector(direbf.substring(0, direbf.length()-1));
+    	}
+    	
+    	if(film.getCastId() != null){	//演员
+    		StringBuffer acbf = new StringBuffer();
+    		String[] actorlist = film.getCastId().split(",");
+    		for(int i=0;i<actorlist.length;i++){
+    			Actor actor = _actorService.getById(Long.valueOf(actorlist[i]));
+    			acbf.append(actor.getName()+",");
+    		}
+    		film.setCast(acbf.substring(0, acbf.length()-1));
+    	}
+    	System.out.println("------"+new Gson().toJson(film));
+        return film;
     }
 
     @PutMapping
     @ApiOperation(value = "修改")
     public Filminfo update(@RequestBody Filminfo filminfo){
+    	if(filminfo.getDirectorId() != null){	//导演
+    		StringBuffer direbf = new StringBuffer();
+    		String[] directorlist = filminfo.getDirectorId().split(",");
+    		for(int i=0;i<directorlist.length;i++){
+    			Director dire = _directorService.getById(Long.valueOf(directorlist[i]));
+    			direbf.append(dire.getName()+",");
+    		}
+    		filminfo.setDirector(direbf.substring(0, direbf.length()-1));
+    	}
+    	
+    	if(filminfo.getCastId() != null){	//演员
+    		StringBuffer acbf = new StringBuffer();
+    		String[] actorlist = filminfo.getCastId().split(",");
+    		for(int i=0;i<actorlist.length;i++){
+    			Actor actor = _actorService.getById(Long.valueOf(actorlist[i]));
+    			acbf.append(actor.getName()+",");
+    		}
+    		filminfo.setCast(acbf.substring(0, acbf.length()-1));
+    	}
     	_filmInfoService.update(filminfo);
         return filminfo;
     }
@@ -184,7 +226,7 @@ public class FilminfoController {
         map.put("output","json");
         String JsonStr=HttpHelper.sendGetByUrlConnection(UrlAddress, map,"UTF-8");
         //log.info("抓取影片返回："+JsonStr);
-        //System.out.println(JsonStr);
+        System.out.println(JsonStr);
         BaiduFilmInfomation baidufilm=new Gson().fromJson(JsonStr,BaiduFilmInfomation.class);
         for(Movie movie: baidufilm.getResult().getMovie()){
         	List<Filminfo> films=_filmInfoService.getFilmByFilmName(movie.getMovie_name());
@@ -203,12 +245,46 @@ public class FilminfoController {
             				film.setPublishDate(new SimpleDateFormat("yyyy-MM-dd").parse(movie.getMovie_release_date()));
             			}catch(ParseException ex){}
             		}
-            		if(film.getDirector()==null||film.getDirector().equals("")){
-            			film.setDirector(movie.getMovie_director());
+            		if(film.getDirector()==null||film.getDirector().equals("")){//导演
+            			if(movie.getMovie_director() != null){
+            				String[] dlist = movie.getMovie_director().split(",");
+            				StringBuffer buf = new StringBuffer();
+            				for(int i=0;i<dlist.length;i++){
+            					Director dire = _directorService.getByName(dlist[i]);
+            					if(dire == null){
+            						dire = new Director();
+            						dire.setCreateTime(new Date());
+            						dire.setValid(1);
+            						dire.setName(dlist[i]);
+            						_directorService.save(dire);
+            					}
+            					buf.append(dire.getId()+",");
+            				}
+            				film.setDirectorId(buf.substring(0, buf.length()-1));
+            				film.setDirector(movie.getMovie_director());
+            			}
             		}
-            		if(film.getCast()==null||film.getCast().equals("")){
-            			film.setCast(movie.getMovie_starring());
+            		
+            		if(film.getCast()==null||film.getCast().equals("")){	//演员
+            			if(movie.getMovie_starring() != null){
+            				String[] alist = movie.getMovie_starring().split(",");
+            				StringBuffer buff = new StringBuffer();
+            				for(int i=0;i<alist.length;i++){
+            					Actor actor = _actorService.getByName(alist[i]);
+            					if(actor == null){
+            						actor = new Actor();
+            						actor.setCreateTime(new Date());
+            						actor.setValid(1);
+            						actor.setName(alist[i]);
+            						_actorService.save(actor);
+            					}
+            					buff.append(actor.getId()+",");
+            				}
+            				film.setCastId(buff.substring(0, buff.length()-1));
+                			film.setCast(movie.getMovie_starring());
+            			}
             		}
+            		
             		if(film.getScore()==null||film.getScore().equals("")){
             			film.setScore(Double.valueOf(movie.getMovie_score()));
             		}

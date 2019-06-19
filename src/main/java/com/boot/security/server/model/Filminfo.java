@@ -23,6 +23,9 @@ public class Filminfo extends BaseEntity<Long> {
 	public String Image;
 	public String Trailer;
 
+	private String DirectorId;
+	private String CastId;
+	
 	public Long getId() {
 		return Id;
 	}
@@ -131,6 +134,17 @@ public class Filminfo extends BaseEntity<Long> {
 	public void setTrailer(String trailer) {
 		Trailer = trailer;
 	}
+	public String getDirectorId() {
+		return DirectorId;
+	}
+	public void setDirectorId(String directorId) {
+		DirectorId = directorId;
+	}
+	public String getCastId() {
+		return CastId;
+	}
+	public void setCastId(String castId) {
+		CastId = castId;
+	}
 	
-
 }

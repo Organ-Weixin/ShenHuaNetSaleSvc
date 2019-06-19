@@ -17,6 +17,9 @@ public interface ActorDao {
 
     @Select("select * from actor t where t.id = #{id}")
     Actor getById(Long id);
+    
+    @Select("select * from actor t where t.Name = #{name}")
+    Actor getByName(String name);
 
     @Delete("delete from actor where id = #{id}")
     int delete(Long id);
