@@ -36,7 +36,8 @@ public enum ErrorCodeEnum {
 	SnatchFailure("抢红包失败","10000031"),
 	CardLevelNonsupport("此会员卡不支持线上绑定","10000032"),
 	CouponNotAvailable("优惠券不可用或已过期","10000033"),
-	CouponMismatch("优惠券与所选门店不对应","10000034");
+	CouponMismatch("优惠券与所选门店不对应","10000034"),
+	CardPwdNotNum("会员卡密码必须是6位数字","10000035");
 	
 	private String Message;
 	private String Code;

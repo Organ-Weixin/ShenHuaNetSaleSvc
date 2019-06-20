@@ -349,7 +349,7 @@ public class OrderController {
 		//排期信息
 		List<Adminorderview> adminorderviewList = adminorderviewService.getByOrderCode(CinemaCode, OrderCode);
 		if(adminorderviewList.size()>0){
-			if(filminfo!=null&&filminfo.getDuration()!=null){
+			if(filminfo!=null && filminfo.getDuration()!=null && !"".equals(filminfo.getDuration())){
 				String endtime = String.valueOf(adminorderviewList.get(0).getSessiontime().getTime()+Integer.valueOf(filminfo.getDuration())*60*1000);
 				SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 				data.setShowTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(adminorderviewList.get(0).getSessiontime())+"-"+sdf.format(new Date(Long.parseLong(endtime))));
@@ -391,6 +391,9 @@ public class OrderController {
 		}
 		if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
 			data.setEwmPicture(new FileUploadUtils().generateEwm(orders.getSubmitOrderCode()));
+		}
+		if(cinemaview.getCinemaType() == CinemaTypeEnum.YueKe.getTypeCode()){
+			data.setEwmPicture(FileUploadUtils.generateEwm(orders.getPrintNo()));
 		}
 		ticketOrderReply.setData(data);
 		ticketOrderReply.SetSuccessReply();

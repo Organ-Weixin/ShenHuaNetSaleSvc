@@ -207,6 +207,15 @@ public class BaseReply {
         ErrorMessage = ErrorCodeEnum.MemberCardInvalid.getMessage();
     }
     /// <summary>
+    /// 会员卡密码不是6位数字
+    /// </summary>
+    public void SetCardPwdNotNumReply()
+    {
+        Status = StatusEnum.Failure.getStatusCode();
+        ErrorCode = ErrorCodeEnum.CardPwdNotNum.getCode();
+        ErrorMessage = ErrorCodeEnum.CardPwdNotNum.getMessage();
+    }
+    /// <summary>
     /// 会员卡充值类型非法
     /// </summary>
     public void SetCardChargeTypeInvalidReply()

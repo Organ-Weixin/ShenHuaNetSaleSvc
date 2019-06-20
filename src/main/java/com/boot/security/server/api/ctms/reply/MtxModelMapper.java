@@ -9,6 +9,7 @@ import java.util.Date;
 import com.boot.security.server.model.Screenseatinfo;
 import com.boot.security.server.model.SessionSeat;
 import com.boot.security.server.model.SessionSeatStatusEnum;
+import com.boot.security.server.model.LoveFlagEnum;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.Screeninfo;
@@ -32,6 +33,13 @@ public class MtxModelMapper {
 		 entity.setXCoord(Integer.valueOf(model.getGraphRow()));
 		 entity.setYCoord(Integer.valueOf(model.getGraphCol()));
 		 entity.setGroupCode(model.getSeatPieceNo());
+		 if("0".equals(model.getLeftCount()) && "1".equals(model.getRightCount())){
+			 entity.setLoveFlag(LoveFlagEnum.LEFT.getFlagCode());	//情侣左座
+		 } else if("1".equals(model.getLeftCount()) && "0".equals(model.getRightCount())){
+			 entity.setLoveFlag(LoveFlagEnum.RIGHT.getFlagCode());	//情侣右座
+		 } else {
+			 entity.setLoveFlag(LoveFlagEnum.Normal.getFlagCode());
+		 }
 		 entity.setUpdateTime(new Date());
 		return entity; 
 	 }

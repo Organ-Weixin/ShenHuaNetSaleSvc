@@ -84,7 +84,7 @@ public class WebService {
 					TokenId, Token, userCinema.getDefaultPassword());
 			String result = WebService.cinemaTss(userCinema.getUrl()).getHall(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), TokenId, pVerifyInfo);
-			// System.out.println(result);
+//			System.out.println("+++++++++"+result);
 			Gson gson = new Gson();
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "GetHallResult"), MtxGetHallResult.class);
 		} catch (Exception e) {
@@ -104,7 +104,7 @@ public class WebService {
 					screen.getSCode(), userCinema.getDefaultPassword());
 			String result = WebService.cinemaTss(userCinema.getUrl()).getHallAllSeat(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), screen.getSCode(), pVerifyInfo);
-			// System.out.println(result);
+//			System.out.println("座位---"+result);
 			Gson gson = new Gson();
 			return gson.fromJson(result, MtxGetHallAllSeatResult.class);
 		} catch (Exception e) {
@@ -116,14 +116,14 @@ public class WebService {
 	 * GetCinemaPlan获取对应影院对应日期的排期  应用编码 +影院编码+  获取排期日期+令牌id  +  token+验证密钥
 	 *         检验信息转小写（MD5（转小写（pAppCode + pCinemaID + pPlanDate + pTokenID + token+验证密钥）））
 	 */
-	public static MtxGetCinemaPlanResult GetCinemaPlan(Usercinemaview userCinema, Date StartDate, Date EndDate) {
+	public static MtxGetCinemaPlanResult GetCinemaPlan(Usercinemaview userCinema,String StartDate) {
 		try {
 
-			String pVerifyInfo = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
+			String pVerifyInfo = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),StartDate,
 					TokenId, Token, userCinema.getDefaultPassword());
 			String result = WebService.cinemaTss(userCinema.getUrl()).getCinemaPlan(userCinema.getDefaultUserName(),
-					userCinema.getCinemaCode(), null, TokenId, pVerifyInfo);
-//			System.out.println(result);
+					userCinema.getCinemaCode(), StartDate, TokenId, pVerifyInfo);
+			System.out.println("排期++++++++"+result);
 			Gson gson = new Gson();
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "GetCinemaPlanResult"), MtxGetCinemaPlanResult.class);
 		} catch (Exception e) {

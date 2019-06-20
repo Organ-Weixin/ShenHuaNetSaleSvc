@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.aspectj.weaver.ast.Or;
-
 import com.alibaba.fastjson.JSONObject;
 import com.boot.security.server.api.ctms.reply.MtxGetCardTraceRecordResult.ResBean.CardTraceRecordsBean.CardTraceRecordBean;
 import com.boot.security.server.api.ctms.reply.MtxGetCardTypeResult.ResBean.MemberTypesBean.MemberTypeBean;
@@ -31,7 +29,6 @@ import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.Goodscomponents;
-import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.LoveFlagEnum;
 import com.boot.security.server.model.Membercard;
@@ -39,7 +36,6 @@ import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orders;
-import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
 import com.boot.security.server.model.SessionSeat;
@@ -85,7 +81,7 @@ public class MtxInterface implements ICTMSInterface {
 	 //region 查询影厅基本信息 (完成)
 	public CTMSQueryCinemaReply QueryCinema(Usercinemaview userCinema) {
 		CTMSQueryCinemaReply reply = new CTMSQueryCinemaReply();
-		MtxGetHallResult mtxReply = mtxService.GetHall(userCinema);
+		MtxGetHallResult mtxReply = WebService.GetHall(userCinema);
 		if ("0".equals(mtxReply.getGetHallResult().getResultCode())) {
 			// 更新影厅信息
 			List<Screeninfo> newScreens = new ArrayList<Screeninfo>();
@@ -114,29 +110,29 @@ public class MtxInterface implements ICTMSInterface {
 	//region 查询影厅座位信息(完成)
 	public CTMSQuerySeatReply QuerySeat(Usercinemaview userCinema, Screeninfo screen) throws Exception {
 		CTMSQuerySeatReply reply = new CTMSQuerySeatReply();
-		MtxGetHallAllSeatResult mtxReply = mtxService.GetHallAllSeat(userCinema, screen);
+		MtxGetHallAllSeatResult mtxReply = WebService.GetHallAllSeat(userCinema, screen);
 		if ("0".equals(mtxReply.getResultCode())) {
 			// 更新影厅座位信息
-			if (_screenseatinfoService.getByCinemaCodeAndScreenCode(userCinema.getCinemaCode(),
-					screen.getSCode()) != null) {
-				List<Screenseatinfo> newScreens = new ArrayList<Screenseatinfo>();
-				List<HallAllSeatBean> hallAllSeatBeans = mtxReply.getHallSeats();
-				for (HallAllSeatBean hallAllSeatBean : hallAllSeatBeans) {
-					Screenseatinfo screenseat = new Screenseatinfo();// 创建实例
-					MtxModelMapper.MapToEntity(hallAllSeatBean, screenseat);
-					screenseat.setCinemaCode(userCinema.getCinemaCode());
-					screenseat.setScreenCode(screen.getSCode());
-					screenseat.setLoveFlag(LoveFlagEnum.Normal.getFlagCode());
-					screenseat.setStatus(SessionSeatStatusEnum.Available.getStatusCode());
-					newScreens.add(screenseat);
-				}
-				// 先删除旧影厅座位
-				_screenseatinfoService.deleteByScreenCode(userCinema.getCinemaCode(), screen.getSCode());
-				// 插入座位信息
-				for (Screenseatinfo screenseat : newScreens) {
-					_screenseatinfoService.save(screenseat);
-				}
+			List<Screenseatinfo> newScreens = new ArrayList<Screenseatinfo>();
+			List<HallAllSeatBean> hallAllSeatBeans = mtxReply.getHallSeats();
+			for (HallAllSeatBean hallAllSeatBean : hallAllSeatBeans) {
+				Screenseatinfo screenseat = new Screenseatinfo();// 创建实例
+				MtxModelMapper.MapToEntity(hallAllSeatBean, screenseat);
+				screenseat.setCinemaCode(userCinema.getCinemaCode());
+				screenseat.setScreenCode(screen.getSCode());
+				screenseat.setStatus(SessionSeatStatusEnum.Available.getStatusCode());
+				newScreens.add(screenseat);
 			}
+			// 先删除旧影厅座位
+			_screenseatinfoService.deleteByScreenCode(userCinema.getCinemaCode(), screen.getSCode());
+			// 插入座位信息
+			for (Screenseatinfo screenseat : newScreens) {
+				_screenseatinfoService.save(screenseat);
+			}
+			
+			screen.setSeatCount(hallAllSeatBeans.size());
+			_screeninfoService.update(screen);	//更新影厅表的座位数
+			
 			reply.Status = StatusEnum.Success;
 		} else {
 			reply.Status = StatusEnum.Failure;
@@ -151,17 +147,16 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSQuerySessionReply QuerySession(Usercinemaview userCinema, Date StartDate, Date EndDate)
 			throws Exception {
 		CTMSQuerySessionReply reply = new CTMSQuerySessionReply();
-		MtxGetCinemaPlanResult mtxReply = mtxService.GetCinemaPlan(userCinema, StartDate, EndDate);
+		MtxGetCinemaPlanResult mtxReply = WebService.GetCinemaPlan(userCinema,new SimpleDateFormat("yyyy-MM-dd").format(StartDate));
 		Date newDate = new Date();
 		String s = new SimpleDateFormat("yyyy-MM-dd").format(newDate);
 		s += " 01:00:00";
 		Date d1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(s);
-		System.out.println("d1=" + d1);
+		
 		String t = new SimpleDateFormat("yyyy-MM-dd").format(newDate);
 		t += " 06:00:00";
 		Date d2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(t);
-		System.out.println("d2=" + d2);
-		System.out.println(newDate);
+		
 		if (newDate.getTime() > d1.getTime() && newDate.getTime() < d2.getTime()) {
 			reply.Status = StatusEnum.Success;
 			reply.ErrorCode = "0";
@@ -178,17 +173,14 @@ public class MtxInterface implements ICTMSInterface {
 					newSessions.add(session);
 				}
 				// 先删除旧排期信息
-				Map<String, Object> params = new HashMap<String, Object>();
-				params.put("CCode", userCinema.getCinemaCode());
-				params.put("UserId", userCinema.getUserId());
-				params.put("StartTime", new SimpleDateFormat("yyyy-MM-dd").format(StartDate));
-				_sessioninfoService.deleteByCinemaCode(params);
+				System.out.println("删除————————"+_sessioninfoService.deleteByCinemaCodeAndDate(userCinema.getUserId(), userCinema.getCinemaCode(), StartDate, EndDate));
 				// 插入排期信息
 				int num = 0;
 				for (Sessioninfo sessionInfo : newSessions) {
 					_sessioninfoService.save(sessionInfo);
 					num++;
 				}
+				System.out.println("插入++++"+num);
 				reply.Status = StatusEnum.Success;
 			} else {
 				reply.Status = StatusEnum.Failure;
