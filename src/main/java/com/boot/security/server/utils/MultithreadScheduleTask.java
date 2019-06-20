@@ -3,11 +3,9 @@ package com.boot.security.server.utils;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -21,15 +19,16 @@ import com.boot.security.server.api.core.QueryCardLevelReply;
 import com.boot.security.server.api.core.QueryCinemaReply;
 import com.boot.security.server.api.core.QueryFilmReply;
 import com.boot.security.server.api.core.QueryGoodsReply;
+import com.boot.security.server.api.core.QueryPrintReply;
 import com.boot.security.server.api.core.QuerySeatReply;
 import com.boot.security.server.api.core.QuerySessionReply;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CouponGroupStatusEnum;
 import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.Goodsorders;
+import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Screeninfo;
-import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
@@ -37,9 +36,7 @@ import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
-import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
-import com.boot.security.server.websocket.ChatRoomServer;
 
 @Component
 @EnableScheduling   // 1.开启定时任务
@@ -59,8 +56,6 @@ public class MultithreadScheduleTask {
 	private OrderServiceImpl orderService;
 	@Autowired
 	private GoodsOrderServiceImpl goodsOrderService;
-	@Autowired
-	private SessioninfoServiceImpl sessioninfoService;
 	
 	//更新影院、影厅信息
 	@Async
@@ -109,8 +104,8 @@ public class MultithreadScheduleTask {
     }
 	//更新排期
 	@Async
-	//@Scheduled(fixedRate = 7200000)
-    @Scheduled(cron="0 0 3 * * ?")  //每天03点开始执行
+	@Scheduled(fixedRate = 7200000)
+    //@Scheduled(cron="0 0 3 * * ?")  //每天03点开始执行
     public void QuerySession() throws InterruptedException, ParseException {
 		List<Cinema> cinemaList = cinemaService.AllCinema();
 		String StartDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
@@ -120,7 +115,7 @@ public class MultithreadScheduleTask {
 				if(!sessionReply.Status.equals("Success")){
 					continue;
 				}
-			Thread.sleep(1000 * 10);
+			//Thread.sleep(1000 * 10);
 		}
     }
 	//更新会员卡等级
@@ -152,7 +147,7 @@ public class MultithreadScheduleTask {
 	//更新第三方价格
 	@Async
 	//@Scheduled(fixedRate = 7200000)
-    @Scheduled(cron="0 0 3 * * ?")  //每天03点开始执行 
+    //@Scheduled(cron="0 0 3 * * ?")  //每天03点开始执行 
     public void getQmmPrice() throws InterruptedException, ParseException, IOException {
 		List<Cinema> cinemaList = cinemaService.AllCinema();
 		for(int i=0; i<cinemaList.size(); i++){
@@ -198,11 +193,19 @@ public class MultithreadScheduleTask {
 	public void updateOrderPrintStatus(){
 		List<Cinema> cinemaList = cinemaService.AllCinema();
 		for(int i=0; i<cinemaList.size(); i++){
-			//List<Orders> orderList = orderService.getByOrderCode(cinemacode, ordercode);
+			//获取所有已完成未取票或未知取票状态的订单
+			List<Orders> orderList = orderService.getUnknownPrintStatus(cinemaList.get(i).getCode(), OrderStatusEnum.Complete.getStatusCode(), 0);
+			for(Orders order : orderList){
+				//更新所有的取票状态
+				QueryPrintReply result = new NetSaleSvcCore().QueryPrint("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", order.getCinemaCode(), order.getPrintNo(), order.getVerifyCode());
+				if(!result.Status.equals("Success")){
+					continue;
+				}
+			}
 		}
 	}
 	//启动时执行，开启符合条件的放映厅
-	@PostConstruct
+	/*@PostConstruct
     public void init() throws ParseException, IOException {
         System.out.println("启动时执行");
         //获取所有电影院,把符合开启条件的房间开启
@@ -238,11 +241,11 @@ public class MultithreadScheduleTask {
 //            }
 //
 //        }.start();
-    }
+    }*/
 	
 	
 	//定时开启聊天室房间，每五分钟执行一次(包含关闭房间的线程)
-	@Async
+	/*@Async
 	@Scheduled(cron="10 0/5 * * * ?")
 	public void openChatRoom(){
         //获取所有电影院cinemaId,把符合开启条件的房间开启
@@ -269,7 +272,7 @@ public class MultithreadScheduleTask {
                 new ChatRoomServer().OpenRoomName(roomName,sessioninfo);
             }
         }
-    }
+    }*/
 	
 	
 	public static void main(String[] args) {

@@ -1297,7 +1297,7 @@ public class ReplyExtension {
 	//endregion
 	
 	//region QueryWantedFilmReply
-	public static boolean RequestInfoGuard(QueryUserFilmReply reply, String Username, String Password,String OpenID,String Status) {
+	public static boolean RequestInfoGuard(QueryUserFilmReply reply, String Username, String Password,String OpenID) {
 		if (Username == null || "".equals(Username)) {
 			reply.SetNecessaryParamMissReply("Username");
 			return false;
@@ -1308,10 +1308,6 @@ public class ReplyExtension {
 		}
 		if (OpenID == null || "".equals(OpenID)) {
 			reply.SetNecessaryParamMissReply("OpenID");
-			return false;
-		}
-		if (Status == null || "".equals(Status)) {
-			reply.SetNecessaryParamMissReply("Status");
 			return false;
 		}
 		return true;

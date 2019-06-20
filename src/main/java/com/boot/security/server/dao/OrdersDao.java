@@ -93,6 +93,10 @@ public interface OrdersDao {
     List<Orders> getUserAllOrders(@Param("cinemacode")String cinemacode,@Param("openid")String openid,@Param("orderstatus")String orderstatus);
     
     //获取用户已完成并且已出票的订单
-    @Select("select * from orders t where t.openid = #{openid} and t.orderstatus = #{orderstatus} and t.printstatus #{printstatus} group by filmcode order by sessiontime desc")
+    @Select("select * from orders t where t.openid = #{openid} and t.orderstatus = #{orderstatus} and t.printstatus =#{printstatus} group by filmcode order by sessiontime desc")
     List<Orders> getUserCompleteOrders(@Param("openid")String openid,@Param("orderstatus")Integer orderstatus,@Param("printstatus")Integer printstatus);
+    
+    //查询影院已完成未打印或打印状态未知的订单
+    @Select("select * from orders t where t.cinemacode =#{cinemacode} and t.orderstatus =#{orderstatus} and (t.printstatus =#{printstatus} or t.printstatus is null)")
+    List<Orders> getUnknownPrintStatus(@Param("cinemacode")String cinemacode,@Param("orderstatus")Integer orderstatus,@Param("printstatus")Integer printstatus);
 } 

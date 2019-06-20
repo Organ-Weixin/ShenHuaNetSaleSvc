@@ -28,12 +28,6 @@ public interface OrderService {
     
     int delete(Long id);
 
-    //int update(Orders orders);
-    
-    /*@Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into orders(Id, CinemaCode, UserId, SessionCode, ScreenCode, SessionTime, FilmCode, FilmName, TicketCount, TotalPrice, TotalFee, TotalSalePrice, OrderStatus, MobilePhone, LockTime, AutoUnlockDatetime, LockOrderCode, SubmitTime, SubmitOrderCode, PrintNo, VerifyCode, PrintStatus, PrintTime, RefundTime, Created, Updated, Deleted, ErrorMessage, SerialNum, IsMemberPay, PayType, Printpassword, PaySeqNo, IDCardNumber) values(#{Id}, #{CinemaCode}, #{UserId}, #{SessionCode}, #{ScreenCode}, #{SessionTime}, #{FilmCode}, #{FilmName}, #{TicketCount}, #{TotalPrice}, #{TotalFee}, #{TotalSalePrice}, #{OrderStatus}, #{MobilePhone}, #{LockTime}, #{AutoUnlockDatetime}, #{LockOrderCode}, #{SubmitTime}, #{SubmitOrderCode}, #{PrintNo}, #{VerifyCode}, #{PrintStatus}, #{PrintTime}, #{RefundTime}, #{Created}, #{Updated}, #{Deleted}, #{ErrorMessage}, #{SerialNum}, #{IsMemberPay}, #{PayType}, #{Printpassword}, #{PaySeqNo}, #{IDCardNumber})")
-    int save(Orders orders);*/
-    
     int count(@Param("params") Map<String, Object> params);
 
     List<Orders> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
@@ -77,4 +71,7 @@ public interface OrderService {
 	List<Orders> getUserAllOrders(String cinemacode,String openid,String orderstatus);
 	
 	List<Orders> getUserCompleteOrders(String openid,Integer orderstatus,Integer printstatus);
+	
+    List<Orders> getUnknownPrintStatus(String cinemacode,Integer orderstatus,Integer printstatus);
+
 }	

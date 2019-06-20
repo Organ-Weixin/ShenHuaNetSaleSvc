@@ -29,6 +29,7 @@ import com.boot.security.server.apicontroller.reply.QueryUserTicketReply;
 import com.boot.security.server.apicontroller.reply.QueryUserNumberReply;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.QueryUserLookedFilmsReply.QueryUserLookedFilmsReplyUser;
+import com.boot.security.server.apicontroller.reply.QueryUserLookedFilmsReply.QueryUserLookedFilmsReplyUser.QueryUserLookedFilmsReplyUserLookedFilms;
 import com.boot.security.server.apicontroller.reply.QueryUserTicketReply.QueryUserTicketReplyUser;
 import com.boot.security.server.apicontroller.reply.QueryUserTicketReply.QueryUserTicketReplyUser.QueryUserTicketReplyUserTicket;
 import com.boot.security.server.apicontroller.reply.QueryCinemaGoodsReply;
@@ -52,7 +53,6 @@ import com.boot.security.server.apicontroller.reply.UserLoginReply.UserLoginResu
 import com.boot.security.server.apicontroller.reply.UserPhoneInput;
 import com.boot.security.server.apicontroller.reply.UserWXResult;
 import com.boot.security.server.dao.GoodsorderdetailsDao;
-import com.boot.security.server.dao.MiniprogramordersviewDao;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaMiniProgramAccounts;
 import com.boot.security.server.model.CouponGroupStatusEnum;
@@ -62,7 +62,6 @@ import com.boot.security.server.model.Couponsgroup;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
-import com.boot.security.server.model.Miniprogramordersview;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Registeractive;
@@ -121,8 +120,6 @@ public class AppUserController {
 	private GoodsOrderServiceImpl _goodsOrderService;
 	@Autowired
 	private GoodsorderdetailsDao goodsorderdetailsDao;
-	@Autowired
-	private MiniprogramordersviewDao miniprogramordersviewDao;
 	@Autowired
 	private RegisteractiveServiceImpl registeractiveService;
 	@Autowired
@@ -560,84 +557,6 @@ public class AppUserController {
 		reply.SetSuccessReply();
 		return reply;
 	}
-	/*@GetMapping("/QueryCinemaTicket/{UserName}/{Password}/{CinemaCode}/{OpenID}")
-	@ApiOperation(value = "查询用户购买的电影票记录")
-	public QueryCinemaTicketReply QueryCinemaTicket(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
-			@PathVariable String OpenID){
-		QueryCinemaTicketReply queryCinemaTicketReply=new QueryCinemaTicketReply();
-		// 校验参数
-		if (!ReplyExtension.RequestInfoGuard(queryCinemaTicketReply, UserName, Password, CinemaCode,OpenID)) {
-			return queryCinemaTicketReply;
-		}
-		// 获取用户信息
-		Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
-		if (UserInfo == null) {
-			queryCinemaTicketReply.SetUserCredentialInvalidReply();
-			return queryCinemaTicketReply;
-		}
-		//验证影院是否存在且可访问
-		Cinema cinema=_cinemaService.getByCinemaCode(CinemaCode);
-		if(cinema == null){
-			queryCinemaTicketReply.SetCinemaInvalidReply();
-			return queryCinemaTicketReply;
-		}
-		//验证用户OpenId是否存在
-		Ticketusers ticketuser = _ticketusersService.getByopenids(OpenID);
-		if(ticketuser == null){
-			queryCinemaTicketReply.SetOpenIDNotExistReply();
-			return queryCinemaTicketReply;
-		}
-	//	List<Adminorderview> adminorderviewList=adminorderviewDao.getByCinemaCode(CinemaCode);
-		List<Miniprogramordersview>  ordersviewList=miniprogramordersviewDao.getByCinemaCodeAndOpenID(CinemaCode, OpenID);
-		queryCinemaTicketReply.setData(queryCinemaTicketReply.new QueryCinemaTicket());
-		if(ordersviewList==null||ordersviewList.size()==0){
-			queryCinemaTicketReply.getData().setCount(0);
-		}else{
-			queryCinemaTicketReply.getData().setCount(ordersviewList.size());
-			queryCinemaTicketReply.getData().setTicket(new ArrayList<CinemaTicket>());
-			for(Miniprogramordersview miniprogramordersview:ordersviewList){
-				CinemaTicket cinemaTicket =queryCinemaTicketReply.getData().new  CinemaTicket();
-				cinemaTicket.setFilmName(miniprogramordersview.getFilmName());
-				cinemaTicket.setSessionDateTime(miniprogramordersview.getSessionTime());
-				cinemaTicket.setCinemaName(miniprogramordersview.getCinemaName());
-				List<Filminfo> filminfo=_filminfoServiceImpl.getFilmByFilmCode(miniprogramordersview.getFilmCode());
-				for(Filminfo filmi:filminfo){
-				//	CinemaTicket cinematicket =queryCinemaTicketReply.getData().new  CinemaTicket();
-					cinemaTicket.setVersion(filmi.getVersion());
-					cinemaTicket.setImage(filmi.getImage());
-				//	queryCinemaTicketReply.getData().getTicket().add(cinematicket);
-					System.out.println("55555555555=:"+filmi.getVersion());
-				}
-				cinemaTicket.setSeatName(miniprogramordersview.getSeatName());
-				cinemaTicket.setScreenName(miniprogramordersview.getScreenName());
-				cinemaTicket.setPrintNo(miniprogramordersview.getPrintNo());
-				cinemaTicket.setOrderCode(miniprogramordersview.getOrderCode());
-				cinemaTicket.setCreated(miniprogramordersview.getCreated());
-				cinemaTicket.setMobilePhone(miniprogramordersview.getMobilePhone());
-				if(miniprogramordersview.getTicketCount()!=null){
-				cinemaTicket.setTicketCount(String.valueOf(miniprogramordersview.getTicketCount()));
-				}
-				cinemaTicket.setAddress(cinema.getAddress());
-				cinemaTicket.setCinemaPhone(cinema.getCinemaPhone());
-				if(miniprogramordersview.getTotalConponPrice()==null){
-					miniprogramordersview.setTotalConponPrice(0.00);
-				}
-				if(miniprogramordersview.getTotalSalePrice()!=null){
-				cinemaTicket.setPrice(String.valueOf(miniprogramordersview.getTotalSalePrice()-miniprogramordersview.getTotalConponPrice()));
-				}
-				if(miniprogramordersview.getOrderStatus()!=null){
-				cinemaTicket.setStatus(String.valueOf(miniprogramordersview.getOrderStatus()));
-				}
-				cinemaTicket.setMobilePhone(miniprogramordersview.getMobilePhone());
-				cinemaTicket.setTicketInfoCode(miniprogramordersview.getTicketInfoCode());
-				queryCinemaTicketReply.getData().getTicket().add(cinemaTicket);
-
-			}
-		}
-		queryCinemaTicketReply.SetSuccessReply();
-		return queryCinemaTicketReply;
-	}*/
-	
 	@GetMapping("/QueryUserTicket/{UserName}/{Password}/{CinemaCode}/{OpenID}")
 	@ApiOperation(value = "查询用户购买的电影票")
 	public QueryUserTicketReply QueryUserTicket(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
@@ -748,12 +667,6 @@ public class AppUserController {
 				queryCinemaGoods.setCinemaName(cinema.getName());
 				queryCinemaGoods.setAddress(cinema.getAddress());
 				queryCinemaGoods.setCinemaPhone(cinema.getCinemaPhone());
-				/*if(goodsorders.getCouponsPrice()==null){
-					goodsorders.setCouponsPrice(0.00);
-				}
-				if(goodsorders.getTotalFee()==null){
-					goodsorders.setTotalFee(0.00);
-				}*/
 				queryCinemaGoods.setSubTotalSettleAmount(goodsorders.getTotalSettlePrice());
 				queryCinemaGoods.setOrderCode(goodsorders.getOrderCode());
 				queryCinemaGoods.setCreated(goodsorders.getCreated());
@@ -822,12 +735,11 @@ public class AppUserController {
 		return updateUserWantedFilmReply;
 	}
 	
-	@GetMapping("/QueryUserFilm/{UserName}/{Password}/{OpenID}/{Status}")
-	@ApiOperation(value = "查看用户电影列表")
-	public QueryUserFilmReply QueryUserFilm(@PathVariable String UserName,@PathVariable String Password,@PathVariable String OpenID,
-			@PathVariable String Status){
+	@GetMapping("/QueryUserFilm/{UserName}/{Password}/{OpenID}")
+	@ApiOperation(value = "用户想看的电影")
+	public QueryUserFilmReply QueryUserFilm(@PathVariable String UserName,@PathVariable String Password,@PathVariable String OpenID){
 		QueryUserFilmReply queryUserFilmReply = new QueryUserFilmReply();
-		if (!ReplyExtension.RequestInfoGuard(queryUserFilmReply, UserName, Password, OpenID ,Status)) {
+		if (!ReplyExtension.RequestInfoGuard(queryUserFilmReply, UserName, Password, OpenID)) {
 			return queryUserFilmReply;
 		}
 		// 获取用户信息
@@ -843,13 +755,7 @@ public class AppUserController {
 			return queryUserFilmReply;
 		}
 		QueryUserFilmReplyUserFilm data = new QueryUserFilmReplyUserFilm();
-		List<Ticketuserfilm> ticketuserfilmList = new ArrayList<Ticketuserfilm>();
-		if(Status.equals("1")){
-			ticketuserfilmList = ticketuserfilmService.getByOpenId(OpenID, UserFilmStatusEnum.Wanted.getStatusCode());
-		}
-		if(Status.equals("0")){
-			ticketuserfilmList = ticketuserfilmService.getByOpenId(OpenID, UserFilmStatusEnum.Looked.getStatusCode());
-		}
+		List<Ticketuserfilm> ticketuserfilmList = ticketuserfilmService.getByOpenId(OpenID, UserFilmStatusEnum.Wanted.getStatusCode());
 		int count = 0;
 		if(ticketuserfilmList.size()>0){
 			List<QueryUserFilmReplyFilm> filmReplyList = new ArrayList<QueryUserFilmReplyFilm>();
@@ -908,7 +814,7 @@ public class AppUserController {
 		return checkUserFilmOrdersReply;
 	}
 	
-	@GetMapping("/QueryUserLookedFilms{UserName}/{Password}/{OpenID}")
+	@GetMapping("/QueryUserLookedFilms/{UserName}/{Password}/{OpenID}")
 	@ApiOperation(value = "用户看过的电影")
 	public QueryUserLookedFilmsReply QueryUserLookedFilms(@PathVariable String UserName,@PathVariable String Password,@PathVariable String OpenID){
 		QueryUserLookedFilmsReply queryUserLookedFilmsReply = new QueryUserLookedFilmsReply();
@@ -932,14 +838,27 @@ public class AppUserController {
 		List<Orders> ordersList = orderService.getUserCompleteOrders(OpenID, OrderStatusEnum.Complete.getStatusCode(), 1);
 		QueryUserLookedFilmsReplyUser data = new QueryUserLookedFilmsReplyUser();
 		if(ordersList.size()>0){
+			List<QueryUserLookedFilmsReplyUserLookedFilms> userLookedFilmsList = new ArrayList<QueryUserLookedFilmsReplyUserLookedFilms>();
 			for(Orders orders : ordersList){
-				
 				//获取所有影片信息
-				if(orders!=null){
-					
+				Filminfo filminfo = _filminfoServiceImpl.getByFilmCode(orders.getFilmCode());
+				QueryUserLookedFilmsReplyUserLookedFilms userLookedFilms = new QueryUserLookedFilmsReplyUserLookedFilms();
+				if(filminfo!=null){
+					userLookedFilms.setArea(filminfo.getArea());
+					userLookedFilms.setCast(filminfo.getCast());
+					userLookedFilms.setFilmImage(filminfo.getImage());
+					userLookedFilms.setFilmName(filminfo.getFilmName());
+					if(filminfo.getPublishDate()!=null){
+						userLookedFilms.setPublishDate(new SimpleDateFormat("yyyy-MM-dd").format(filminfo.getPublishDate()));
+					}
 				}
+				userLookedFilmsList.add(userLookedFilms);
 			}
+			data.setFilm(userLookedFilmsList);
 		}
+		data.setCount(ordersList.size());
+		queryUserLookedFilmsReply.setData(data);
+		queryUserLookedFilmsReply.SetSuccessReply();
 		return queryUserLookedFilmsReply;
 	}
 	

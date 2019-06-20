@@ -211,4 +211,9 @@ public class OrderServiceImpl implements OrderService{
 		return ordersDao.getUserCompleteOrders(openid, orderstatus, printstatus);
 	}
 
+	@Override
+	public List<Orders> getUnknownPrintStatus(String cinemacode, Integer orderstatus, Integer printstatus) {
+		return ordersDao.getUnknownPrintStatus(cinemacode, orderstatus, printstatus);
+	}
+
 }
