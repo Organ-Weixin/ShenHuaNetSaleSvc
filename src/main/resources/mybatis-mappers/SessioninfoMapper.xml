@@ -106,22 +106,6 @@
 		
 		</where>
 	</sql>
-	<sql id="deleteWhere">
-		<where>
-			<if test="params.CCode != null and params.CCode != ''">
-			    CCode = #{params.CCode} 
-			</if>
-			<if test="params.UserId != null and params.UserId != ''">
-				and UserId = #{params.UserId} 
-			</if>
-			<if test="params.StartTime !=null and params.StartTime != ''">
-				and StartTime >= #{params.StartTime}
-			</if>
-			<if test="params.EndTime !=null and params.EndTime != ''">
-				and #{params.EndTime} >= StartTime  
-			</if>
-		</where>
-	</sql>
 
 	<select id="count" resultType="int">
 		select count(1) from sessioninfo t
@@ -157,11 +141,6 @@
 		left join (select q.*,sc.scode from qmmprice q,screeninfo sc where q.cinemaCode = sc.ccode and q.screenName = sc.SName) qs
 		on s.CCode=qs.cinemaCode and s.ScreenCode=qs.scode and s.startTime=qs.showTime 
 	</select>
-	
-	<delete id="deleteByCinemaCode">
-		delete from sessioninfo 
-		<include refid="deleteWhere"/>
-	</delete>
 	
 	<update id="update">
 		update sessioninfo t

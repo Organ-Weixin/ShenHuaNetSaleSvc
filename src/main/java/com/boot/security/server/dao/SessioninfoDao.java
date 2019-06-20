@@ -32,9 +32,6 @@ public interface SessioninfoDao {
 	@Select("select * from sessioninfo where CCode = #{ccode} and Date(StartTime) > #{StartTime}")
 	List<Sessioninfo> getByCCode(@Param("ccode")String ccode,@Param("StartTime")Date StartTime);
 	
-	//通过影院编码、日期、删除排期
-	int deleteByCinemaCode(@Param("params")Map<String, Object> params);
-	
 	//通过影院编码获取影片信息
 	List<Sessioninfo> getFilms(@Param("params")Map<String, Object> params);
 	

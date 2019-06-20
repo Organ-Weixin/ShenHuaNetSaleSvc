@@ -70,11 +70,6 @@ public class SessioninfoServiceImpl implements SessioninfoService{
 	}
 
 	@Override
-	public int deleteByCinemaCode(Map<String, Object> params) {
-		return sessioninfoDao.deleteByCinemaCode(params);
-	}
-
-	@Override
 	public List<Sessioninfo> getFilms(Map<String, Object> params) {
 		// TODO Auto-generated method stub
 		return sessioninfoDao.getFilms(params);

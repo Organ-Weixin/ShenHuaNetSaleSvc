@@ -308,18 +308,10 @@ public class Dy1905Interface implements ICTMSInterface {
 					}
 				}
 			//删除旧的放映信息
-			Map<String,Object> params = new HashMap<String,Object>();
-			params.put("CCode", userCinema.getCinemaCode());
-			params.put("UserId", userCinema.getUserId());
-			if(StartDate!=null){
-				params.put("StartTime", new SimpleDateFormat("yyyy-MM-dd").format(StartDate));
-			}
-			if(EndDate!=null){
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-				String sd = sdf.format(new Date(Long.parseLong(String.valueOf(EndDate.getTime()+24*60*60*1000))));
-				params.put("EndTime", new SimpleDateFormat("yyyy-MM-dd").format(new SimpleDateFormat("yyyy-MM-dd").parse(sd)));
-			}
-			sessioninfoService.deleteByCinemaCode(params);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String sd = sdf.format(new Date(Long.parseLong(String.valueOf(EndDate.getTime()+24*60*60*1000))));
+			Date EndTime = new SimpleDateFormat("yyyy-MM-dd").parse(sd);
+			sessioninfoService.deleteByCinemaCodeAndDate(userCinema.getUserId(), userCinema.getCinemaCode(), StartDate, EndTime);
 			//添加新的放映信息
 			for(Sessioninfo sessioninfo :newSessions){
 				sessioninfoService.save(sessioninfo);
@@ -1446,6 +1438,10 @@ public class Dy1905Interface implements ICTMSInterface {
 			CTMSSubmitGoodsOrderReply reply = new CTMSSubmitGoodsOrderReply();
 			GoodsOrderView orders = new GoodsCouponsPriceUtil().getGoodsCouponsPrice(order.getOrderBaseInfo().getLocalOrderCode());
 			List<Goodsorderdetails> orderGoodsDetails = orders.getOrderGoodsDetails();
+			//判断是否立即取餐
+			if(orders.getOrderBaseInfo().getIsReady()==1){
+				orders.getOrderBaseInfo().setDeliveryType(2);
+			}
 			Map<String,String> param = new LinkedHashMap<String,String>();
 			//循环遍历出卖品编码、卖品数量、卖品价格
 			String GoodsCode = null;
@@ -1537,6 +1533,10 @@ public class Dy1905Interface implements ICTMSInterface {
 				return reply;
 			}
 			List<Goodsorderdetails> orderGoodsDetails = order.getOrderGoodsDetails();
+			//判断是否立即取餐
+			if(order.getOrderBaseInfo().getIsReady()==1){
+				order.getOrderBaseInfo().setDeliveryType(2);
+			}
 			Map<String,String> param = new LinkedHashMap<String,String>();
 			//循环遍历出卖品编码、卖品数量、卖品价格
 			String GoodsCode = null;

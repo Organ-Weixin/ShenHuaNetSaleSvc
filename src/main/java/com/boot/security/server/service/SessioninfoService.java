@@ -20,8 +20,6 @@ public interface SessioninfoService {
 	
 	int delete(Long id);
 	
-	int deleteByCinemaCode(Map<String, Object> params);
-	
 	List<Sessioninfo> getFilms(Map<String, Object> params);
 	
 	List<Sessioninfo> getByCCodeGroupByFilm(Long userid,String cinemacode,Date StartDate,Date EndDate);
