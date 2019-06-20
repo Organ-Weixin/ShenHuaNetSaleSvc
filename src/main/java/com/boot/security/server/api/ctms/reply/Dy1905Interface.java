@@ -226,12 +226,6 @@ public class Dy1905Interface implements ICTMSInterface {
 		if(Dy1905Reply.getGetFeatureFilmResult().getResultCode().equals("0")){
 			Map<String,Object> params = new HashMap<String,Object>();
 			params.put("CCode", userCinema.getCinemaCode());
-			if(StartDate!=null){
-				params.put("StartTime", new SimpleDateFormat("yyyy-MM-dd").format(StartDate));
-			}
-			if(EndDate!=null){
-				params.put("EndTime", new SimpleDateFormat("yyyy-MM-dd").format(EndDate));
-			}
 			List<FilmBean> filmReplyList = Dy1905Reply.getGetFeatureFilmResult().getFilms().getFilm();
 			List<Filminfo> filminfoList = new ArrayList<Filminfo>();
 			for(FilmBean filmReply:filmReplyList){
@@ -244,7 +238,6 @@ public class Dy1905Interface implements ICTMSInterface {
 					filminfo.setLanguage(filmReply.getLanguage());
 					filminfoService.save(filminfo);
 				}else{
-					filminfo = new Filminfo();
 					filminfo.setFilmCode(filmReply.getFilmCode());
 					filminfo.setFilmName(filmReply.getFilmName());
 					filminfo.setVersion(filmReply.getFilmType());
