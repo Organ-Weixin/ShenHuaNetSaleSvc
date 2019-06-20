@@ -1,16 +1,10 @@
 package com.boot.security.server.api.ctms.reply;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
-
 import com.boot.security.server.model.Screenseatinfo;
-import com.boot.security.server.model.SessionSeat;
-import com.boot.security.server.model.SessionSeatStatusEnum;
 import com.boot.security.server.model.LoveFlagEnum;
-import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Sessioninfo;
@@ -57,12 +51,7 @@ public class MtxModelMapper {
 		 entity.setStandardPrice(model.getStandPric());
 		 entity.setSettlePrice(Double.valueOf(model.getAppPric()));
 		 entity.setTicketFee((double) 0);
-		 entity.setPlaythroughFlag("No");
-		 Date startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(model.getFeatureDate() + " " + model.getFeatureTime());
-		 Date endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(model.getFeatureDate() + " " + model.getTotalTime());
-		 entity.setStartTime(startTime);
-		 entity.setDuration((int)(endTime.getTime()-startTime.getTime())/1000/60);	
-		 entity.setDimensional("3D");
+		 entity.setPlaythroughFlag("N");
 		 entity.setSequence(1);
 		 entity.setAddFee(0.0);
 		 entity.setCinemaAllowance(0.0);

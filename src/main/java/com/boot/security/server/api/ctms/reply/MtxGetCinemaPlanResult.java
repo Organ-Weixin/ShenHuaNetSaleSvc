@@ -2,9 +2,6 @@ package com.boot.security.server.api.ctms.reply;
 
 import java.util.List;
 
-import com.boot.security.server.model.SessionSeatStatusEnum;
-import com.boot.security.server.model.StatusEnum;
-
 public class MtxGetCinemaPlanResult {
 	// GetCinemaPlan获取对应影院对应日期的排期
 	private ResBean GetCinemaPlanResult;
@@ -61,8 +58,8 @@ public class MtxGetCinemaPlanResult {
 				private String AppPric;// 票价
 				private double StandPric;//标准价格
 				private double ProtectPrice;// 保护价
-				private SessionSeatStatusEnum SetClose;// 计划状态0未售，1开售，2截止，3停售，5统计，9注销
-				private StatusEnum UseSign;// 可用性0可用，1不可用，3待审核
+				private String SetClose;// 计划状态0未售，1开售，2截止，3停售，5统计，9注销
+				private String UseSign;// 可用性0可用，1不可用，3待审核
 				private String CopyType;// 拷贝类型
 				private String CopyLanguage;// 拷贝语言
 				private int AvailableSeats;// 剩余座位数
@@ -139,16 +136,16 @@ public class MtxGetCinemaPlanResult {
 				public void setProtectPrice(double protectPrice) {
 					ProtectPrice = protectPrice;
 				}
-				public SessionSeatStatusEnum getSetClose() {
+				public String getSetClose() {
 					return SetClose;
 				}
-				public void setSetClose(SessionSeatStatusEnum setClose) {
+				public void setSetClose(String setClose) {
 					SetClose = setClose;
 				}
-				public StatusEnum getUseSign() {
+				public String getUseSign() {
 					return UseSign;
 				}
-				public void setUseSign(StatusEnum useSign) {
+				public void setUseSign(String useSign) {
 					UseSign = useSign;
 				}
 				public String getCopyType() {

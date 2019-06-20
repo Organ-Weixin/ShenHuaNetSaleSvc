@@ -116,13 +116,13 @@ public class WebService {
 	 * GetCinemaPlan获取对应影院对应日期的排期  应用编码 +影院编码+  获取排期日期+令牌id  +  token+验证密钥
 	 *         检验信息转小写（MD5（转小写（pAppCode + pCinemaID + pPlanDate + pTokenID + token+验证密钥）））
 	 */
-	public static MtxGetCinemaPlanResult GetCinemaPlan(Usercinemaview userCinema,String StartDate) {
+	public static MtxGetCinemaPlanResult GetCinemaPlan(Usercinemaview userCinema) {
 		try {
 
-			String pVerifyInfo = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),StartDate,
+			String pVerifyInfo = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
 					TokenId, Token, userCinema.getDefaultPassword());
 			String result = WebService.cinemaTss(userCinema.getUrl()).getCinemaPlan(userCinema.getDefaultUserName(),
-					userCinema.getCinemaCode(), StartDate, TokenId, pVerifyInfo);
+					userCinema.getCinemaCode(), null, TokenId, pVerifyInfo);
 			System.out.println("排期++++++++"+result);
 			Gson gson = new Gson();
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "GetCinemaPlanResult"), MtxGetCinemaPlanResult.class);

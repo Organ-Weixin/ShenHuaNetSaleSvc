@@ -2,7 +2,6 @@ package com.boot.security.server.apicontroller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -212,7 +211,7 @@ public class ScreenController {
         }
         //读取影厅座位
         List<Screenseatinfo> screenseatinfos = _screenseatinfoService.getByCinemaCodeAndScreenCode(CinemaCode, ScreenCode);
-        System.out.println("===="+new Gson().toJson(screenseatinfos));
+//        System.out.println("===="+new Gson().toJson(screenseatinfos));
         queryScreenSeatsArrangementReply.setData(new DataBean());
         if(screenseatinfos!=null){
         	//region 座位排列组合
@@ -245,8 +244,8 @@ public class ScreenController {
             	//System.out.println(currentRow1);
             	//得到当前行的座位列表
             	List<Screenseatinfo> currentRowSeats = screenseatinfos.stream().filter(st->st.getYCoord()==currentRow1).collect(Collectors.toList());
-            	//System.out.println("-----"+new Gson().toJson(currentRowSeats));
-            	if(currentRowSeats!=null){
+//            	System.out.println("-----"+new Gson().toJson(currentRowSeats));
+            	if(currentRowSeats!=null && currentRowSeats.size()>0){
             		RowBean rowBean=new RowBean();
             		rowBean.setRowNum(currentRowSeats.get(0).getRowNum());
             		rowBean.setSeats(new ArrayList<SeatBean>());

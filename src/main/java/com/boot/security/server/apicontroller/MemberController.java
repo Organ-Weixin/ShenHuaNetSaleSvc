@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -57,7 +58,9 @@ import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelRuleRepl
 import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelReply;
 import com.boot.security.server.model.Choosemembercardcreditrule;
 import com.boot.security.server.model.Cinema;
+import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Cinemapaymentsettings;
+import com.boot.security.server.model.Cinemaview;
 import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
@@ -78,6 +81,7 @@ import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.ChoosemembercardcreditruleServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.CinemapaymentsettingsServiceImpl;
+import com.boot.security.server.service.impl.CinemaviewServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
@@ -85,7 +89,6 @@ import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.MembercardcreditruleServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.service.impl.OrderseatdetailsServiceImpl;
-import com.boot.security.server.service.impl.PriceplanServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
@@ -107,14 +110,16 @@ public class MemberController {
 	private UserInfoServiceImpl _userInfoService;
 	@Autowired
 	private CinemaServiceImpl _cinemaService;
+	@Autowired
+	private CinemaviewServiceImpl cinemaviewService;
 	@Autowired 
-	MemberCardServiceImpl _memberCardService;
+	private MemberCardServiceImpl _memberCardService;
 	@Autowired
-	UserCinemaViewServiceImpl _userCinemaViewService;
+	private UserCinemaViewServiceImpl _userCinemaViewService;
 	@Autowired
-	CinemapaymentsettingsServiceImpl _cinemapaymentsettingsService;
+	private CinemapaymentsettingsServiceImpl _cinemapaymentsettingsService;
 	@Autowired
-	TicketusersServiceImpl _ticketusersService;
+	private TicketusersServiceImpl _ticketusersService;
 	@Autowired
     private HttpServletRequest request;
 	@Autowired
@@ -128,13 +133,11 @@ public class MemberController {
 	@Autowired
 	private GoodsOrderServiceImpl goodsOrderService;
 	@Autowired
-	CouponsServiceImpl _couponsService;
+	private CouponsServiceImpl _couponsService;
 	@Autowired
-	SessioninfoServiceImpl _sessioninfoService;
+	private SessioninfoServiceImpl _sessioninfoService;
 	@Autowired
-	OrderseatdetailsServiceImpl _orderseatdetailService;
-	@Autowired
-	PriceplanServiceImpl _priceplanService;
+	private OrderseatdetailsServiceImpl _orderseatdetailService;
 	
 	//region 会员卡登陆
 	@GetMapping("/LoginCard/{Username}/{Password}/{CinemaCode}/{OpenID}/{CardNo}/{CardPassword}")
@@ -628,6 +631,15 @@ public class MemberController {
 			if(membercardcreditrule.getRuleCode()==null){
 				cardRegisterReply.SetCardChargeTypeInvalidReply();
 				return cardRegisterReply;
+			}
+			Cinemaview cinemaview = cinemaviewService.getByCinemaCode(CinemaCode);
+			if(cinemaview.getCinemaType() == CinemaTypeEnum.YueKe.getTypeCode()){	//粤科的会员卡密码为6位数字
+				Pattern pattern = Pattern.compile("\\d{6}");
+				boolean matches = pattern.matcher(CardPassword).matches();
+				if(!matches){
+					cardRegisterReply.SetCardPwdNotNumReply();
+					return cardRegisterReply;
+				}
 			}
 			InitialAmount = String.valueOf(membercardcreditrule.getCredit()+membercardcreditrule.getGivenAmount());
 			cardRegisterReply = new NetSaleSvcCore().CardRegister(Username, Password, CinemaCode, CardPassword, LevelCode, InitialAmount, CardUserName, MobilePhone, IDNumber, Sex);

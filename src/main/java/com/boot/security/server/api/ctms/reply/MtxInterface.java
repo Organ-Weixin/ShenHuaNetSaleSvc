@@ -147,7 +147,7 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSQuerySessionReply QuerySession(Usercinemaview userCinema, Date StartDate, Date EndDate)
 			throws Exception {
 		CTMSQuerySessionReply reply = new CTMSQuerySessionReply();
-		MtxGetCinemaPlanResult mtxReply = WebService.GetCinemaPlan(userCinema,new SimpleDateFormat("yyyy-MM-dd").format(StartDate));
+		MtxGetCinemaPlanResult mtxReply = WebService.GetCinemaPlan(userCinema);
 		Date newDate = new Date();
 		String s = new SimpleDateFormat("yyyy-MM-dd").format(newDate);
 		s += " 01:00:00";
@@ -164,23 +164,32 @@ public class MtxInterface implements ICTMSInterface {
 			if ("0".equals(mtxReply.getGetCinemaPlanResult().getResultCode())) {
 				// 更新排期信息
 				List<Sessioninfo> newSessions = new ArrayList<Sessioninfo>();
-				List<CinemaPlanBean> cinemaPlanBeans = mtxReply.getGetCinemaPlanResult().getCinemaPlans()
-						.getCinemaPlan();
+				List<CinemaPlanBean> cinemaPlanBeans = mtxReply.getGetCinemaPlanResult().getCinemaPlans().getCinemaPlan();
 				for (CinemaPlanBean cinemaPlanBean : cinemaPlanBeans) {
-					Sessioninfo session = new Sessioninfo();// 创建实例
-					MtxModelMapper.MapToEntity(cinemaPlanBean, session);
-					session.setUserID(userCinema.getUserId());
-					newSessions.add(session);
+					Date startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(cinemaPlanBean.getFeatureDate() + " " + cinemaPlanBean.getFeatureTime());
+					Date endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(cinemaPlanBean.getFeatureDate() + " " + cinemaPlanBean.getTotalTime());
+					if(startTime.getTime() > StartDate.getTime() && startTime.getTime() < EndDate.getTime() 
+							&& ("0".equals(cinemaPlanBean.getUseSign()) || "1".equals(cinemaPlanBean.getUseSign()))
+							&& ("1".equals(cinemaPlanBean.getSetClose()) || "2".equals(cinemaPlanBean.getSetClose()))){
+						Sessioninfo session = new Sessioninfo();// 创建实例
+						MtxModelMapper.MapToEntity(cinemaPlanBean, session);
+						session.setStartTime(startTime);
+						long num = endTime.getTime()-startTime.getTime();
+						if(num > 0){
+							session.setDuration((int)num/1000/60);
+						} else {
+							session.setDuration((int)num/1000/60+60*24);
+						}
+						session.setUserID(userCinema.getUserId());
+						newSessions.add(session);
+					}
 				}
 				// 先删除旧排期信息
-				System.out.println("删除————————"+_sessioninfoService.deleteByCinemaCodeAndDate(userCinema.getUserId(), userCinema.getCinemaCode(), StartDate, EndDate));
+				_sessioninfoService.deleteByCinemaCodeAndDate(userCinema.getUserId(), userCinema.getCinemaCode(), StartDate, EndDate);
 				// 插入排期信息
-				int num = 0;
 				for (Sessioninfo sessionInfo : newSessions) {
 					_sessioninfoService.save(sessionInfo);
-					num++;
 				}
-				System.out.println("插入++++"+num);
 				reply.Status = StatusEnum.Success;
 			} else {
 				reply.Status = StatusEnum.Failure;
@@ -238,7 +247,7 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSQuerySessionSeatReply QuerySessionSeat(Usercinemaview userCinema, String SessionCode,
 			SessionSeatStatusEnum Status) throws Exception {
 		CTMSQuerySessionSeatReply reply = new CTMSQuerySessionSeatReply();
-		MtxGetPlanSiteStateResult mtxReply = mtxService.GetPlanSiteState(userCinema, SessionCode, Status);
+		MtxGetPlanSiteStateResult mtxReply = WebService.GetPlanSiteState(userCinema, SessionCode, Status);
 		if ("0".equals(mtxReply.getGetPlanSiteStateResult().getResultCode())) {
 			List<SessionSeat> newSessionSeat = new ArrayList<SessionSeat>();
 			List<PlanSiteStateBean> planSiteStateBeans = mtxReply.getGetPlanSiteStateResult().getPlanSiteStates()
@@ -281,7 +290,7 @@ public class MtxInterface implements ICTMSInterface {
 	@Override
 	public CTMSLockSeatReply LockSeat(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSLockSeatReply reply = new CTMSLockSeatReply();
-		MtxLiveRealCheckSeatStateResult mtxReply = mtxService.LiveRealCheckSeatState(userCinema, order);
+		MtxLiveRealCheckSeatStateResult mtxReply = WebService.LiveRealCheckSeatState(userCinema, order);
 		if ("0".equals(mtxReply.getRealCheckSeatStateResult().getResultCode())) {
 			Date newDate = new Date();
 			order.getOrderBaseInfo().setLockOrderCode(mtxReply.getRealCheckSeatStateResult().getOrderNo());
@@ -303,7 +312,7 @@ public class MtxInterface implements ICTMSInterface {
 	@Override
 	public CTMSReleaseSeatReply ReleaseSeat(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSReleaseSeatReply reply = new CTMSReleaseSeatReply();
-		MtxUnLockOrderCenCinResult mtxUnLockReply = mtxService.UnLockOrderCenCin(userCinema, order);
+		MtxUnLockOrderCenCinResult mtxUnLockReply = WebService.UnLockOrderCenCin(userCinema, order);
 		if ("0".equals(mtxUnLockReply.getUnLockOrderCenCinResult().getResultCode())) {
 			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Released.getStatusCode());
 			reply.Status = StatusEnum.Success;
@@ -321,7 +330,7 @@ public class MtxInterface implements ICTMSInterface {
 	@Override
 	public CTMSSubmitOrderReply SubmitOrder(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSSubmitOrderReply reply = new CTMSSubmitOrderReply();
-		MtxSellTicketResult mtxReply = mtxService.SellTicket(userCinema, order);
+		MtxSellTicketResult mtxReply = WebService.SellTicket(userCinema, order);
 		if ("0".equals(mtxReply.getSellTicketResult().getResultCode())) {
 			Date newDate = new Date();
 			order.getOrderBaseInfo().setSubmitOrderCode(mtxReply.getSellTicketResult().getOrderNo());
