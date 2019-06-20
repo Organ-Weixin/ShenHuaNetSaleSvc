@@ -2,6 +2,8 @@ package com.boot.security.server.service;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.boot.security.server.model.Couponsgroup;
 
 public interface CouponsgroupService {
@@ -27,6 +29,8 @@ public interface CouponsgroupService {
 	int update(Couponsgroup couponsgroup);
 	
 	int changePast(Integer status);
+	
+	int updateIssuedNumber(Integer issuednumber,String groupcode);
 	
 	Couponsgroup getUserCouponsGroup(String groupcode,Integer status,String cinemacode);
 	

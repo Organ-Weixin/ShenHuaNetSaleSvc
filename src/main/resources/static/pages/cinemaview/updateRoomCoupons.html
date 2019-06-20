@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<input type="hidden" id="id" name="id">
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院编码</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='cinemaCode' type='text' name='cinemaCode' id='cinemaCode' data-bv-notempty='true' readonly="readonly">
+				</div>
+			</div>
+			<div class='form-group'>
+				<input type="hidden" name="giftType" id="giftType">
+				<input type="hidden" name="giftName" id="giftName">
+				<input type="hidden" id="couponsCode">
+				<label class='col-md-2 control-label'>选择优惠券</label>
+				<div class='col-md-10'>
+					<select class="form-control couponSelect" name="giftCode" id="CouponSelect" data-bv-notempty='true' data-bv-notempty-message='请选择优惠券'>
+						<option value="">选择优惠券...</option>
+					</select>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>每组发放数量</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='sendNumber' id='sendNumber' data-bv-notempty='true' data-bv-notempty-message='每组发放数量 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>发放组数</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='groupNumber' id='groupNumber' data-bv-notempty='true' data-bv-notempty-message='发放组数 不能为空'>
+				</div>
+			</div>
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="goBack()">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="update()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript">
+		//返回
+		function goBack(){
+			window.location.href="roomgiftList.html?cinemacode="+$("#cinemaCode").val();
+		}
+		
+		$("#CouponSelect").blur(function(){
+			$("#giftName").val($(this).find("option:selected").attr('title'));
+		});
+	
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		});
+		
+		initData();
+		
+		function initData(){
+			var id = getUrlParam("id");
+			if(id != ""){
+				$.ajax({
+					type : 'get',
+					url : '/roomgifts/'+id,
+					async : false,
+					success : function(data) {
+						$('#id').val(data.id);
+						$('#cinemaCode').val(data.cinemaCode);
+						$('#giftCode').val(data.giftCode);
+						$('#giftName').val(data.giftName);
+						$('#Image').val(data.Image);
+						$('#giftDesc').val(data.giftDesc);
+						$('#groupNumber').val(data.groupNumber);
+						$('#sendNumber').val(data.sendNumber);
+						$('#giftType').val(data.giftType);
+						$("#couponsCode").val(data.giftCode);
+						getCouponGroups(data.cinemaCode);
+					}
+				});
+			}
+		}
+		
+		//获取登陆人的对应影院的优惠券
+		function getCouponGroups(cinemacode){
+			$.ajax({
+				url:'/couponsgroups/getCouponGroups?cinemacode='+cinemacode,
+				type:'post',
+				success:function(data){
+					for(var i=0; i<data.length; i++){
+						var option = "<option value='"+data[i].groupCode+"' title='"+data[i].couponsName+"' >"+data[i].couponsName+"</option>";
+						$("#CouponSelect").append(option);
+						$("#CouponSelect").val($("#couponsCode").val());
+					}
+				}
+			});
+		}
+
+		function update() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var formdata = $("#form").serializeObject();
+
+			$.ajax({
+				type : 'put',
+				url : '/roomgifts',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("修改成功", {shift: -1, time: 1000}, function(){
+                        location.href = "roomgiftList.html?cinemacode="+$("#cinemaCode").val();
+                    });
+				}
+			});
+		}
+		
+	</script>
+</body>
+</html>

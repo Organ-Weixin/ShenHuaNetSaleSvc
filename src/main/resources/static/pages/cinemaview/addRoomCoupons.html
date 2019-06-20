@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<input type="hidden" name="giftType" id="giftType" value="2">
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院编码</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='cinemaCode' type='text' name='cinemaCode' id='cinemaCode' data-bv-notempty='true' readonly="readonly">
+				</div>
+			</div>
+			<div class='form-group'>
+				<input type="hidden" name="giftName" id="giftName">
+				<label class='col-md-2 control-label'>选择优惠券</label>
+				<div class='col-md-10'>
+					<select class="form-control couponSelect" name="giftCode" id="CouponSelect" data-bv-notempty='true' data-bv-notempty-message='请选择优惠券'>
+						<option value="">选择优惠券...</option>
+					</select>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>发放组数</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='groupNumber' id='groupNumber' data-bv-notempty='true' data-bv-notempty-message='发放组数 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>每组发放数量</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='sendNumber' id='sendNumber' data-bv-notempty='true' data-bv-notempty-message='每组发放数量 不能为空'>
+				</div>
+			</div>
+
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="goBack()">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="add()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript">
+	function getUrlParam(name) {//封装方法    
+		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象    
+		var r = window.location.search.substr(1).match(reg); //匹配目标参数    
+		if (r != null) {
+			return unescape(r[2]);    
+		}
+		
+		return null; //返回参数值
+	}
+	
+	$("#cinemaCode").val(getUrlParam("cinemacode"));
+	
+	//返回上页
+	function goBack(){
+		window.location.href="roomgiftList.html?cinemacode="+getUrlParam("cinemacode");
+	}
+	//获取登陆人的对应影院的优惠券
+	getCouponGroups();
+	function getCouponGroups(){
+		$.ajax({
+			url:'/couponsgroups/getCouponGroups?cinemacode='+getUrlParam("cinemacode"),
+			type:'post',
+			success:function(data){
+				for(var i=0; i<data.length; i++){
+					var option = "<option value='"+data[i].groupCode+"' title='"+data[i].couponsName+"' count='"+data[i].couponsNumber+"' issued='"+data[i].issuedNumber+"'>"+data[i].couponsName+"</option>";
+					$("#CouponSelect").append(option);
+				}
+			}
+		});
+	}
+	$("#CouponSelect").blur(function(){
+		$("#giftName").val($(this).find("option:selected").attr('title'));
+	});
+	//验证可使用数量
+	$("#groupNumber").blur(function(){
+		//总数量
+		var couponsNumber = $("#CouponSelect").find("option:checked").attr('count');
+		//已发放数量
+		var issuedNumber = $("#CouponSelect").find("option:checked").attr('issued');
+		//可使用数量
+		var canuseNumber = couponsNumber - issuedNumber;
+		//每组发放数量
+		var sendNumber = $("#sendNumber").val();
+		//组数
+		var groupNumber = $("#groupNumber").val();
+		//本次发放数量
+		var thisSendNumber = sendNumber * groupNumber;
+		if(thisSendNumber > couponsNumber){
+			layer.msg("剩余可发放数量不足，剩余数量为"+canuseNumber);
+			$("#sendNumber").val(null);
+			$("#groupNumber").val(null);
+		}
+	});
+	
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		});
+		
+		function add() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var formdata = $("#form").serializeObject();
+
+			$.ajax({
+				type : 'post',
+				url : '/roomgifts',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("添加成功", {shift: -1, time: 1000}, function(){
+                        location.href = "roomgiftList.html?cinemacode="+getUrlParam("cinemacode");
+                    });
+				}
+			});
+		}
+		
+	</script>
+</body>
+</html>

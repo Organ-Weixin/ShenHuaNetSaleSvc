@@ -9,7 +9,7 @@
 				and Id = #{params.Id} 
 			</if>
 			<if test="params.CinemaCode != null and params.CinemaCode != ''">
-				and CinemaCode = #{params.CinemaCode} 
+				and (CinemaCode = #{params.CinemaCode} or find_in_set(CinemaCode,#{params.CinemaCode}))
 			</if>
 			<if test="params.OpenID != null and params.OpenID != ''">
 				and OpenID = #{params.OpenID} 

@@ -146,7 +146,8 @@
 	              	{				"data" : "", 
 				  					"defaultContent" : "",
 									"render": function (data, type, row) {
-										var button = "<button style='color:blue; background-color:transparent; border:0' onclick='room()'>放映厅</button>";
+										var cinemacode = row['code'];
+										var button = "<button style='color:blue; background-color:transparent; border:0' value='"+cinemacode+"' class='room'>放映厅</button>";
 				    					return button;
 				  					}		
 				  	},
@@ -184,9 +185,9 @@
 	});
 	
 	//读取放映厅
-	function room(){
-		window.location.href = "roomgiftList.html";
-	}
+	$("body").on('click','.room',function(){
+		window.location.href = "roomgiftList.html?cinemacode="+$(this).val();
+	});
 	
 	function del(id){
 		layer.confirm('确定要删除吗？', {

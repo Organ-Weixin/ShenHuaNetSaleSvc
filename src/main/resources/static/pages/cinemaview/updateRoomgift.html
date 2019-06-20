@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<form class="form-horizontal" onsubmit="return false" id="form">
+		<fieldset>
+			<input type="hidden" id="id" name="id">
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>影院编码</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='cinemaCode' type='text' name='cinemaCode' id='cinemaCode' data-bv-notempty='true' readonly="readonly">
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>礼品名称</label>
+				<div class='col-md-10'>
+					<input class='form-control' placeholder='礼品名称' type='text' name='giftName' id='giftName' data-bv-notempty='true' data-bv-notempty-message='礼品名称 不能为空'>
+				</div>
+			</div>
+			<div class="form-group">
+			<input type="hidden" name="image"  id="Image"/>
+			<label class="col-md-2 control-label">图片</label>
+			<div class="col-md-10">
+				<div class="layui-upload-drag" id="filmImage"></div>
+				<span class="help-block" id="plogoblock">不能超过1000KB，建议大小340*470</span>
+					<img class="layui-upload-img headImage" src="http://t.cn/RCzsdCq"
+					id="preview" width="118" height="118">
+					<p id="resultMsg"></p>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>礼品描述</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='giftDesc' id='giftDesc' data-bv-notempty='true' data-bv-notempty-message='giftDesc 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>每组发放数量</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='sendNumber' id='sendNumber' data-bv-notempty='true' data-bv-notempty-message='每组发放数量 不能为空'>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-md-2 control-label'>发放组数</label>
+				<div class='col-md-10'>
+					<input class='form-control' type='text' name='groupNumber' id='groupNumber' data-bv-notempty='true' data-bv-notempty-message='发放组数 不能为空'>
+				</div>
+			</div>
+			<div class="form-actions">
+				<div class="row" align="center">
+					<div class="col-md-12">
+					    <button class="btn btn-primary" onclick="goBack()">返回</button>
+						<button class="btn btn-primary" type="submit" onclick="update()">
+							<i class="fa fa-save"></i> 保存
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</fieldset>
+	</form>
+</div>
+	<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jq.js"></script>
+	<script type="text/javascript" src="../../js/plugin/bootstrapvalidator/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../layui/layui.js"></script>
+	<script type="text/javascript">
+	layui.use([ "jquery", "upload", "form", "layer", "element" ],function() {
+		var $ = layui.$, element = layui.element, layer = layui.layer, upload = layui.upload, form = layui.form;
+		//拖拽上传
+		var uploadInst = upload.render({
+				elem : '#filmImage',
+				url : '/filminfos/upload/filmImage',
+				size : 1000,
+				exts: 'jpg|png|gif|bmp|jpeg',
+				before : function(obj) {
+					//预读本地文件示例，不支持ie8
+					obj.preview(function(index,file, result) {
+						$('#preview').attr('src',result); //图片链接（base64）
+					});
+				},
+				done : function(res) {
+					//如果上传失败
+					if (res.code > 0) {
+						return layer.msg('上传失败');
+					}
+					//上传成功
+					//打印后台传回的地址: 把地址放入一个隐藏的input中, 和表单一起提交到后台, 此处略..
+					console.log(res.data.src);
+					$("#Image").val(res.data.src);//将地址存储好
+					window.parent.uploadHeadImage(res.data.src);
+					var resultMsg = $('#resultMsg');
+					resultMsg.html('<span style="color: #8f8f8f;">上传成功!!!</span>');
+				},
+				error : function() {
+					//演示失败状态，并实现重传
+					var resultMsg = $('#resultMsg');
+					resultMsg
+							.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
+					resultMsg.find('.demo-reload').on(
+							'click', function() {
+								uploadInst.upload();
+							});
+				}
+			});
+		element.init();
+	});
+	
+		//返回
+		function goBack(){
+			window.location.href="roomgiftList.html?cinemacode="+$("#cinemaCode").val();
+		}
+	
+		layui.use(['layer','laydate'], function(){
+		    var layer = layui.layer;
+		});
+		
+		initData();
+		
+		function initData(){
+			var id = getUrlParam("id");
+			if(id != ""){
+				$.ajax({
+					type : 'get',
+					url : '/roomgifts/'+id,
+					async : false,
+					success : function(data) {
+						$('#id').val(data.id);
+						$('#cinemaCode').val(data.cinemaCode);
+						$('#giftCode').val(data.giftCode);
+						$('#giftName').val(data.giftName);
+						$('#Image').val(data.Image);
+						$('#preview').prop("src",data.image);
+						$('#giftDesc').val(data.giftDesc);
+						$('#groupNumber').val(data.groupNumber);
+						$('#sendNumber').val(data.sendNumber);
+						$('#giftType').val(data.giftType);
+
+					}
+				});
+			}
+		}
+
+		function update() {
+			$('#form').bootstrapValidator();
+			var bootstrapValidator = $("#form").data('bootstrapValidator');
+			bootstrapValidator.validate();
+		    if(!bootstrapValidator.isValid()){
+			   return;
+		    }
+		    
+		    var formdata = $("#form").serializeObject();
+
+			$.ajax({
+				type : 'put',
+				url : '/roomgifts',
+				contentType: "application/json; charset=utf-8",  
+				data : JSON.stringify(formdata),
+				success : function(data) {
+					layer.msg("修改成功", {shift: -1, time: 1000}, function(){
+                        location.href = "roomgiftList.html?cinemacode="+$("#cinemaCode").val();
+                    });
+				}
+			});
+		}
+		
+	</script>
+</body>
+</html>

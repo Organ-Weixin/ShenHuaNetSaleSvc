@@ -64,4 +64,7 @@ public interface CouponsgroupDao {
     
     @Select("select * from couponsgroup where IsUseChatRoom=1 and (CouponsNumber-IssuedNumber)>0 and cinemacodes=#{cinemacode} and status=1")
     List<Couponsgroup> getChatRoomCouponsByCinemaCode(String cinemacode);
+    
+    @Update("update couponsgroup set issuednumber = #{issuednumber} where groupcode = #{groupcode}")
+    int updateIssuedNumber(@Param("issuednumber")Integer issuednumber,@Param("groupcode")String groupcode);
 }

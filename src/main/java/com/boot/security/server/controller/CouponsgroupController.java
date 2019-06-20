@@ -26,11 +26,8 @@ import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
-import com.boot.security.server.dao.CouponsDao;
 import com.boot.security.server.dao.CouponsgroupDao;
 import com.boot.security.server.model.CouponGroupStatusEnum;
-import com.boot.security.server.model.Coupons;
-import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.Couponsgroup;
 
 import io.swagger.annotations.ApiOperation;
@@ -41,8 +38,6 @@ public class CouponsgroupController {
 
     @Autowired
     private CouponsgroupDao couponsgroupDao;
-    @Autowired
-    private CouponsDao couponsDao;
     @Autowired
     private CouponsServiceImpl couponsService;
     @Autowired
@@ -167,6 +162,7 @@ public class CouponsgroupController {
     @ApiOperation(value = "获取对应影院的优惠券")
     public List<Couponsgroup> getCouponGroups(@RequestParam("cinemacode") String cinemacode){
     	List<Couponsgroup> list = new ArrayList<>();
+    	System.out.println("cinemacode--"+cinemacode);
     	String CinemaCodesList []  = cinemacode.split(",");
     	List<String> strings = new ArrayList<>();
     	for(int i=0; i<CinemaCodesList.length; i++){
@@ -175,6 +171,7 @@ public class CouponsgroupController {
     			strings.add(couponsgroupService.getCanUseByGroupCode(CinemaCodesList[i]).get(j).getGroupCode());
     		}
     	}
+    	System.out.println(strings.size());
     	Set<String> set = new HashSet<>();
     	//得到去除重复之后的优惠券组编码
     	for(String s : strings){
@@ -190,6 +187,7 @@ public class CouponsgroupController {
     	list.addAll(couponsgroupService.getAllCinemaCanUseCoupons());
     	return list;
     }
+    
     //随机字符串
     public static String getCharAndNumr(int length) {
     	  String val = "";

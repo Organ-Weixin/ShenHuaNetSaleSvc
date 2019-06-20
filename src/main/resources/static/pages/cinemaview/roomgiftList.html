@@ -23,8 +23,13 @@
 									</form>
 	                   			</td>
 	                   			<td align="right">
-	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addRoomgift.html'">
+	                   				<button class="layui-btn layui-btn-sm" onclick="addRoomgift()">
                                       <i class="layui-icon">&#xe608;</i> 新增奖品
+                                    </button>
+	                   			</td>
+	                   			<td align="right">
+	                   				<button class="layui-btn layui-btn-sm" onclick="addRoomCoupons()">
+                                      <i class="layui-icon">&#xe608;</i> 新增优惠券
                                     </button>
 	                   			</td>
 	                   		</tr> 
@@ -57,10 +62,10 @@
                 <div class="form-actions">
 					<div class="row" align="center">
 						<div class="col-md-12">
+							<button class="btn btn-primary" onclick="location.href='cinemaviewList.html'">返回</button>
 							<button class="btn btn-primary" type="submit" onclick="update()">
 								<i class="fa fa-save"></i> 保存
 							</button>
-							<button class="btn btn-primary" onclick="location.href='cinemaviewList.html'">返回</button>
 						</div>
 					</div>
 				</div>
@@ -79,6 +84,16 @@
 <script type="text/javascript" src="../../layui/layui.js"></script>
 <script type="text/javascript" src="../../js/my/permission.js"></script>
 <script type="text/javascript">
+	function getUrlParam(name) {//封装方法    
+		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象    
+		var r = window.location.search.substr(1).match(reg); //匹配目标参数    
+		if (r != null) {
+			return unescape(r[2]);    
+		}
+		
+		return null; //返回参数值
+	}
+	
 	var pers = checkPermission();
 	
 	var example;
@@ -96,6 +111,7 @@
 	        		"type":"get",
 	        		"data":function(d){
 	    				d.id = $("#id").val();
+	    				d.cinemaCode = getUrlParam("cinemacode");
 	    			}
 	        	},
 	        	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
@@ -126,7 +142,12 @@
 									"orderable":false,
 							        "render": function (data, type, row) {
 	                		           var id = row['id'];
-	                		           var href = "updateRoomgift.html?id=" + id;
+	                		           var giftType = row['giftType'];
+	                		           if(giftType == 1){
+		                		           var href = "updateRoomgift.html?id=" + id;
+	                		           }else{
+	                		        	   var href = "updateRoomCoupons.html?id=" + id;
+	                		           }
 	                                   var edit = buttonEdit(href, "", pers);
 	                		           var del = buttonDel(id, "", pers);
 	                                   return edit + del;
@@ -152,6 +173,14 @@
 		document.getElementById('MyDiv').style.display = 'none';
 	
 	});
+	//新增礼品
+	function addRoomgift(){
+		window.location.href="addRoomgift.html?cinemacode="+getUrlParam("cinemacode");
+	}
+	//新增优惠券
+	function addRoomCoupons(){
+		window.location.href="addRoomCoupons.html?cinemacode="+getUrlParam("cinemacode");
+	}
 	
 	function del(id){
 		layer.confirm('确定要删除吗？', {

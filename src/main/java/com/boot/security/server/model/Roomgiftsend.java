@@ -8,6 +8,7 @@ import java.util.Date;
  */
 public class Roomgiftsend {
 	private Long id;
+	private String cinemaCode;
 	private String roomCode;
 	private String giftCode;
 	private String giftName;
@@ -22,6 +23,12 @@ public class Roomgiftsend {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public String getCinemaCode() {
+		return cinemaCode;
+	}
+	public void setCinemaCode(String cinemaCode) {
+		this.cinemaCode = cinemaCode;
 	}
 	public String getRoomCode() {
 		return roomCode;

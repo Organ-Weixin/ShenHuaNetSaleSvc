@@ -24,7 +24,7 @@ public interface RoomgiftsendDao {
     int update(Roomgiftsend roomgiftsend);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into roomgiftsend(roomCode, giftCode, giftName, giftType, sendNumber, openid, sendTime,timestamp) values(#{roomCode}, #{giftCode}, #{giftName}, #{giftType}, #{sendNumber}, #{openid}, #{sendTime},#{timestamp})")
+    @Insert("insert into roomgiftsend(cinemaCode, roomCode, giftCode, giftName, giftType, sendNumber, openid, sendTime,timestamp) values(#{cinemaCode}, #{roomCode}, #{giftCode}, #{giftName}, #{giftType}, #{sendNumber}, #{openid}, #{sendTime},#{timestamp})")
     int save(Roomgiftsend roomgiftsend);
     
     int count(@Param("params") Map<String, Object> params);

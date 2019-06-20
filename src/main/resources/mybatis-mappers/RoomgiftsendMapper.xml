@@ -8,6 +8,9 @@
 			<if test="params.id != null and params.id != ''">
 				and id = #{params.id} 
 			</if>
+			<if test="params.cinemaCode != null and params.cinemaCode != ''">
+				and cinemaCode = #{params.cinemaCode} 
+			</if>
 			<if test="params.roomCode != null and params.roomCode != ''">
 				and roomCode = #{params.roomCode} 
 			</if>
@@ -48,6 +51,9 @@
 	<update id="update">
 		update roomgiftsend t
 		<set>
+			<if test="roomCode != null">
+				cinemaCode = #{cinemaCode}, 
+			</if>
 			<if test="roomCode != null">
 				roomCode = #{roomCode}, 
 			</if>

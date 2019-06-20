@@ -7,15 +7,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,13 +57,11 @@ import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelRuleRepl
 import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelReply;
 import com.boot.security.server.model.Choosemembercardcreditrule;
 import com.boot.security.server.model.Cinema;
-import com.boot.security.server.model.CinemaTypeEnum;
 import com.boot.security.server.model.Cinemapaymentsettings;
 import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
-import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardcreditrule;
@@ -76,7 +71,6 @@ import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Orderseatdetails;
-import com.boot.security.server.model.Priceplan;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.model.Usercinemaview;
@@ -149,12 +143,6 @@ public class MemberController {
 			@PathVariable String OpenID,@PathVariable String CardNo,@PathVariable String CardPassword){
 		LoginCardReply loginCardReply = new NetSaleSvcCore().LoginCard(Username, Password, CinemaCode, CardNo, CardPassword);
 		if(loginCardReply.Status.equals("Success")){
-			/*Membercardlevel membercardlevel = _memberCardLevelService.getByCinemaCodeAndLevelCode(loginCardReply.getCinemaCode(), loginCardReply.getCard().getLevelCode());
-			if(membercardlevel==null||membercardlevel.getStatus()!=1){
-				loginCardReply.setCard(null);
-				loginCardReply.SetCardLevelNonsupportReply();
-				return loginCardReply;
-			}*/
 			Membercard membercard = _memberCardService.getByCardNo(CinemaCode, CardNo);
 			membercard.setOpenId(OpenID);
 			membercard.setStatus(1);
