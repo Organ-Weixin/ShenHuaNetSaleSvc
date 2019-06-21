@@ -46,10 +46,12 @@ public class GoodscomponentsServiceImpl implements GoodscomponentsService{
 	public List<Goodscomponents> list(Map<String, Object> params, Integer offset, Integer limit) {
 		return goodscomponentsDao.list(params, offset, limit);
 	}
+	
 	@Override
-	public Goodscomponents getByGoodsCode(String goodscode) {
-		return goodscomponentsDao.getByGoodsCode(goodscode);
+	public Goodscomponents getByPackageAndGoodsCode(String cinemacode, String packagecode, String goodscode) {
+		return goodscomponentsDao.getByPackageAndGoodsCode(cinemacode, packagecode, goodscode);
 	}
+	
 	@Override
 	public List<Goodscomponents> getByRecommendCode(String cinemacode, String recommendcode) {
 		return goodscomponentsDao.getByRecommendCode(cinemacode, recommendcode);
@@ -62,5 +64,6 @@ public class GoodscomponentsServiceImpl implements GoodscomponentsService{
 	public int deleteByPackageCode(String cinemacode, String packagecode) {
 		return goodscomponentsDao.deleteByPackageCode(cinemacode, packagecode);
 	}
+	
 	
 }

@@ -26,8 +26,8 @@ public interface GoodscomponentsDao {
     @Select("select * from goodscomponents t where t.CinemaCode = #{cinemacode} and t.RecommendCode = #{recommendcode} group by packageCode")
     List<Goodscomponents> getByRecommendCode(@Param("cinemacode") String cinemacode, @Param("recommendcode") String recommendcode);
     
-    @Select("select * from goodscomponents t where goodscode = #{goodscode}")
-    Goodscomponents getByGoodsCode(String goodscode);
+    @Select("select * from goodscomponents t where t.CinemaCode = #{cinemacode} and t.PackageCode = #{packagecode} and t.goodscode = #{goodscode}")
+    Goodscomponents getByPackageAndGoodsCode(@Param("cinemacode") String cinemacode,@Param("packagecode") String packagecode,@Param("goodscode") String goodscode);
     
     @Delete("delete from goodscomponents where id = #{id}")
     int delete(Long id);

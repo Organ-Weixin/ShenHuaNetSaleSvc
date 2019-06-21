@@ -3,10 +3,7 @@ package com.boot.security.server.apicontroller.reply;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import com.boot.security.server.apicontroller.reply.PrePayOrderQueryJson.PrePayOrderQueryJsonSeat;
 import com.boot.security.server.apicontroller.reply.QueryFilmReply.QueryFilmReplyFilm;
 import com.boot.security.server.apicontroller.reply.QueryGoodsOrderReply.QueryGoodsOrderReplyOrder;
 import com.boot.security.server.apicontroller.reply.QueryGoodsOrderReply.QueryGoodsOrderReplyOrder.QueryGoodsOrderReplyGoodsList;
@@ -31,8 +28,6 @@ import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodstype;
 import com.boot.security.server.model.Membercard;
-import com.boot.security.server.model.OrderView;
-import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
 import com.boot.security.server.model.Sessioninfo;
@@ -111,7 +106,7 @@ public class ModelMapper {
 		membercard.setMobilePhone(entity.getMobilePhone());
 		membercard.setCardNo(entity.getCardNo());
 		membercard.setCardPassword(entity.getCardPassword());
-		membercard.setBalance(Float.valueOf(String.valueOf(entity.getBalance())));
+		membercard.setBalance(entity.getBalance()==null?0.0f:Float.valueOf(String.valueOf(entity.getBalance())));
 		if(entity.getScore()!=null){
 			membercard.setScore(entity.getScore());
 		}

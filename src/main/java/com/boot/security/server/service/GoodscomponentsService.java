@@ -8,7 +8,7 @@ import com.boot.security.server.model.Goodscomponents;
 public interface GoodscomponentsService {
 	    Goodscomponents getById(Long id);
 	    
-	    Goodscomponents getByGoodsCode(String goodscode);
+	    Goodscomponents getByPackageAndGoodsCode(String cinemacode,String packagecode,String goodscode);
 
 	    int delete(Long id);
 	    

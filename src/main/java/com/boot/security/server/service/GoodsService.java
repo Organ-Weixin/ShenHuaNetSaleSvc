@@ -13,8 +13,6 @@ public interface GoodsService {
 	
 	int update(Goods goods);
 	
-	Goods getByGoodsCode(String goodscode);
-	
 	int deleteByCinemaCode(Long userid,String cinemacode);
 	
 	int deleteByCinemaCodeAndGoodsCode(String cinemacode,String goodscode);

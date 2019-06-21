@@ -4,7 +4,6 @@ package com.boot.security.server.api.ctms.reply;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,9 +31,9 @@ import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.Goodscomponents;
 import com.boot.security.server.model.Goodsorders;
-import com.boot.security.server.model.LoveFlagEnum;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
+import com.boot.security.server.model.Membercardrecharge;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orders;
@@ -53,6 +52,7 @@ import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.GoodscomponentsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
+import com.boot.security.server.service.impl.MembercardrechargeServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
@@ -65,22 +65,21 @@ import cn.cmts.pay.webservice.Webservice;
 
 public class MtxInterface implements ICTMSInterface {
 	
-	 private WebService mtxService;
-	 CinemaServiceImpl _cinemaService=SpringUtil.getBean(CinemaServiceImpl.class);
-	 ScreeninfoServiceImpl _screeninfoService=SpringUtil.getBean(ScreeninfoServiceImpl.class);
-	 ScreenseatinfoServiceImpl _screenseatinfoService=SpringUtil.getBean(ScreenseatinfoServiceImpl.class);
-	 SessioninfoServiceImpl  _sessioninfoService=SpringUtil.getBean(SessioninfoServiceImpl.class);
-	 FilminfoServiceImpl _filminfoService=SpringUtil.getBean(FilminfoServiceImpl.class);
-	 GoodsServiceImpl _goodsService=SpringUtil.getBean(GoodsServiceImpl.class);
-	 GoodsOrderServiceImpl _goodsOrderService=SpringUtil.getBean(GoodsOrderServiceImpl.class);
+	CinemaServiceImpl _cinemaService=SpringUtil.getBean(CinemaServiceImpl.class);
+	ScreeninfoServiceImpl _screeninfoService=SpringUtil.getBean(ScreeninfoServiceImpl.class);
+	ScreenseatinfoServiceImpl _screenseatinfoService=SpringUtil.getBean(ScreenseatinfoServiceImpl.class);
+	SessioninfoServiceImpl  _sessioninfoService=SpringUtil.getBean(SessioninfoServiceImpl.class);
+	FilminfoServiceImpl _filminfoService=SpringUtil.getBean(FilminfoServiceImpl.class);
+	GoodsServiceImpl _goodsService=SpringUtil.getBean(GoodsServiceImpl.class);
+	GoodsOrderServiceImpl _goodsOrderService=SpringUtil.getBean(GoodsOrderServiceImpl.class);
 	GoodscomponentsServiceImpl _goodscomponentsService=SpringUtil.getBean(GoodscomponentsServiceImpl.class);
 	CinemaMiniProgramAccountsServiceImpl _cinemaMiniProgramAccountsService = SpringUtil.getBean(CinemaMiniProgramAccountsServiceImpl.class);
 	//会员卡
-	 private Webservice mtxCardService;
-	 MemberCardServiceImpl _memberCardService=SpringUtil.getBean(MemberCardServiceImpl.class);
-	 MemberCardLevelServiceImpl _memberCardLevelService=SpringUtil.getBean(MemberCardLevelServiceImpl.class);
+	MemberCardServiceImpl _memberCardService=SpringUtil.getBean(MemberCardServiceImpl.class);
+	MemberCardLevelServiceImpl _memberCardLevelService=SpringUtil.getBean(MemberCardLevelServiceImpl.class);
+	MembercardrechargeServiceImpl _membercardrechargeService = SpringUtil.getBean(MembercardrechargeServiceImpl.class);
 	
-	 //region 查询影厅基本信息 (完成)
+	//region 查询影厅基本信息 (完成)
 	public CTMSQueryCinemaReply QueryCinema(Usercinemaview userCinema) {
 		CTMSQueryCinemaReply reply = new CTMSQueryCinemaReply();
 		MtxGetHallResult mtxReply = WebService.GetHall(userCinema);
@@ -293,7 +292,7 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSLockSeatReply LockSeat(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSLockSeatReply reply = new CTMSLockSeatReply();
 		MtxLiveRealCheckSeatStateResult mtxReply = WebService.LiveRealCheckSeatState(userCinema, order);
-		System.out.println("---"+new Gson().toJson(mtxReply));
+		System.out.println("锁座返回---"+new Gson().toJson(mtxReply));
 		if ("0".equals(mtxReply.getRealCheckSeatStateResult().getResultCode())) {
 			Date newDate = new Date();
 			order.getOrderBaseInfo().setLockOrderCode(mtxReply.getRealCheckSeatStateResult().getOrderNo());
@@ -357,7 +356,7 @@ public class MtxInterface implements ICTMSInterface {
 	@Override
 	public CTMSQueryPrintReply QueryPrint(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSQueryPrintReply reply = new CTMSQueryPrintReply();
-		MtxGetOrderStatusResult mtxReply = mtxService.GetOrderStatus(userCinema, order);
+		MtxGetOrderStatusResult mtxReply = WebService.GetOrderStatus(userCinema, order);
 		if ("0".equals(mtxReply.getGetOrderStatusResult().getResultCode())) {
 			if ("8".equals(mtxReply.getGetOrderStatusResult().getOrderStatus())) { // 8已打票
 				order.getOrderBaseInfo().setPrintStatus(1);
@@ -377,7 +376,7 @@ public class MtxInterface implements ICTMSInterface {
 	@Override
 	public CTMSRefundTicketReply RefundTicket(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSRefundTicketReply reply = new CTMSRefundTicketReply();
-		MtxBackTicketResult mtxBackTicketReply = mtxService.BackTicket(userCinema, order);
+		MtxBackTicketResult mtxBackTicketReply = WebService.BackTicket(userCinema, order);
 		if ("0".equals(mtxBackTicketReply.getBackTicketResult().getResultCode())) {
 			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Refund.getStatusCode());
 			order.getOrderBaseInfo().setRefundTime(new Date());
@@ -393,7 +392,7 @@ public class MtxInterface implements ICTMSInterface {
 	@Override
 	public CTMSQueryOrderReply QueryOrder(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSQueryOrderReply reply = new CTMSQueryOrderReply();
-		MtxGetOrderStatusResult mtxReply = mtxService.GetOrderStatus(userCinema, order);
+		MtxGetOrderStatusResult mtxReply = WebService.GetOrderStatus(userCinema, order);
 		if ("0".equals(mtxReply.getGetOrderStatusResult().getResultCode())
 				&& ("7".equals(mtxReply.getGetOrderStatusResult().getOrderStatus())
 						|| "8".equals(mtxReply.getGetOrderStatusResult().getOrderStatus())
@@ -424,7 +423,7 @@ public class MtxInterface implements ICTMSInterface {
 	@Override
 	public CTMSQueryTicketReply QueryTicket(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSQueryTicketReply reply = new CTMSQueryTicketReply();
-		MtxAppPrintTicketResult mtxReply = mtxService.AppPrintTicket(userCinema, order, "0");
+		MtxAppPrintTicketResult mtxReply = WebService.AppPrintTicket(userCinema, order, "0");
 		Date newDate = new Date();
 		String st = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderBaseInfo().getSessionTime());
 		Date dd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(st);
@@ -473,7 +472,7 @@ public class MtxInterface implements ICTMSInterface {
 	@Override
 	public CTMSFetchTicketReply FetchTicket(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSFetchTicketReply reply = new CTMSFetchTicketReply();
-		MtxAppPrintTicketResult mtxReply = mtxService.AppPrintTicket(userCinema, order, "1");
+		MtxAppPrintTicketResult mtxReply = WebService.AppPrintTicket(userCinema, order, "1");
 		Date newDate = new Date();
 		String st = new SimpleDateFormat().format(order.getOrderBaseInfo().getSessionTime());
 		Date dd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(st);
@@ -501,9 +500,10 @@ public class MtxInterface implements ICTMSInterface {
 			throws Exception {
 		CTMSCardRegisterReply reply = new CTMSCardRegisterReply();
 		String num = new SimpleDateFormat("yyyyMMdd").format(new Date());
-		String cardNo = num + RandomStringUtils.randomNumeric(8);;// 卡号(最大长度16位)
-//		System.out.println("卡号"+cardNo);
-		MtxRegisterCardResult mtxReply = Webservice.RegisterCard(userCinema, cardNo, CardPassword, LevelCode, InitialAmount,
+		String cardNo = num + RandomStringUtils.randomNumeric(8);// 卡号(最大长度16位)
+		IDNumber = cardNo;	//一个证件号只能开一张卡
+		int amount = (int) Math.round(Double.valueOf(InitialAmount));
+		MtxRegisterCardResult mtxReply = Webservice.RegisterCard(userCinema, cardNo, CardPassword, LevelCode, String.valueOf(amount),
 				CardUserName, MobilePhone, IDNumber, Sex);
 		if ("0".equals(mtxReply.getRegisterMemberReturn().getResultCode())) {
 			Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
@@ -552,7 +552,7 @@ public class MtxInterface implements ICTMSInterface {
 			throws Exception {
 		CTMSLoginCardReply reply = new CTMSLoginCardReply();
 		MtxLoginCardResult mtxReply = Webservice.LoginCard(userCinema, CardNo, CardPassword);
-		System.out.println("会员卡登录接口返回：" + new Gson().toJson(mtxReply));
+//		System.out.println("会员卡登录接口返回：" + new Gson().toJson(mtxReply));
 		if ("0".equals(mtxReply.getLoginCardReturn().getResultCode())) {
 			Cinema cinema = _cinemaService.getByCinemaCode(userCinema.getCinemaCode());
 			String cinemacodes = "";
@@ -636,10 +636,10 @@ public class MtxInterface implements ICTMSInterface {
 				memcard.setSex(mtxReply.getQueryCardReturn().getSex());
 				memcard.setCreditNum(mtxReply.getQueryCardReturn().getIdNum());
 				if (mtxReply.getQueryCardReturn().getBirthDay() != null) {
-					memcard.setBirthday(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(mtxReply.getQueryCardReturn().getBirthDay()));
+					memcard.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse(mtxReply.getQueryCardReturn().getBirthDay()));
 				}
 				if(mtxReply.getQueryCardReturn().getExpirationTime() != null){
-					memcard.setExpireDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(mtxReply.getQueryCardReturn().getExpirationTime()));
+					memcard.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").parse(mtxReply.getQueryCardReturn().getExpirationTime()));
 				}
 				memcard.setAccStatus(Integer.valueOf(mtxReply.getQueryCardReturn().getAccStatus()));
 				memcard.setUpdated(new Date());
@@ -674,10 +674,10 @@ public class MtxInterface implements ICTMSInterface {
 				memcard.setCreditNum(mtxReply.getQueryCardReturn().getIdNum());
 				memcard.setCreateTime(new Date());
 				if (mtxReply.getQueryCardReturn().getBirthDay() != null) {
-					memcard.setBirthday(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(mtxReply.getQueryCardReturn().getBirthDay()));
+					memcard.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse(mtxReply.getQueryCardReturn().getBirthDay()));
 				}
 				if(mtxReply.getQueryCardReturn().getExpirationTime() != null){
-					memcard.setExpireDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(mtxReply.getQueryCardReturn().getExpirationTime()));
+					memcard.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").parse(mtxReply.getQueryCardReturn().getExpirationTime()));
 				}
 				memcard.setStatus(0);
 				memcard.setAccStatus(Integer.valueOf(mtxReply.getQueryCardReturn().getAccStatus()));
@@ -699,8 +699,8 @@ public class MtxInterface implements ICTMSInterface {
 			String CardPassword, String LevelCode, String SessionCode, String SessionTime, String FilmCode,
 			String ScreenType, String ListingPrice, String LowestPrice) throws Exception {
 		CTMSQueryDiscountReply reply = new CTMSQueryDiscountReply();
-		MtxGetDiscountResult mtxReply = mtxCardService.GetDiscount(userCinema, TicketCount, CardNo, CardPassword,
-				LevelCode, SessionCode, SessionTime, FilmCode, ScreenType, ListingPrice, LowestPrice);
+		Sessioninfo sess = _sessioninfoService.getSessionCode(userCinema.getCinemaCode(), SessionCode);
+		MtxGetDiscountResult mtxReply = Webservice.GetDiscount(userCinema, CardNo, sess.getFeatureNo(), SessionTime);
 		if ("0".equals(mtxReply.getGetDiscountReturn().getResultCode())) {
 			reply.setCinemaCode(userCinema.getCinemaCode());
 			reply.setDiscountType(Integer.valueOf(mtxReply.getGetDiscountReturn().getDiscountType()));
@@ -719,8 +719,8 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSCardPayReply CardPay(Usercinemaview userCinema, String CardNo, String CardPassword, float PayAmount,float GoodsPayAmount,
 			String SessionCode, String FilmCode, String TicketNum) throws Exception {
 		CTMSCardPayReply reply = new CTMSCardPayReply();
-		MtxSerialCardPayResult mtxReply = mtxCardService.SerialCardPay(userCinema, CardNo, CardPassword, PayAmount,
-				SessionCode, FilmCode, TicketNum);
+		Sessioninfo sess = _sessioninfoService.getSessionCode(userCinema.getCinemaCode(), SessionCode);
+		MtxSerialCardPayResult mtxReply = Webservice.SerialCardPay(userCinema, CardNo, CardPassword, PayAmount,	sess.getFeatureNo(), FilmCode, TicketNum);
 		if ("0".equals(mtxReply.getResultCode())) {
 			reply.setTradeNo(mtxReply.getGroundTradeNo());
 			reply.setDeductAmount(Float.valueOf(mtxReply.getDeductMoney()));
@@ -738,8 +738,7 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSCardPayBackReply CardPayBack(Usercinemaview userCinema, String CardNo, String CardPassword,
 			String TradeNo, float PayBackAmount) throws Exception {
 		CTMSCardPayBackReply reply = new CTMSCardPayBackReply();
-		MtxSerialCardPayBackResult mtxReply = mtxCardService.SerialCardPayBack(userCinema, CardNo, CardPassword,
-				TradeNo, PayBackAmount);
+		MtxSerialCardPayBackResult mtxReply = Webservice.SerialCardPayBack(userCinema, CardNo, CardPassword, TradeNo, PayBackAmount);
 		if ("0".equals(mtxReply.getResultCode())) {
 			reply.setTradeNo(mtxReply.getTraceNoCenter());
 
@@ -757,23 +756,21 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSQueryCardTradeRecordReply QueryCardTradeRecord(Usercinemaview userCinema, String CardNo,
 			String CardPassword, String StartDate, String EndDate, String PageSize, String PageNum) throws Exception {
 		CTMSQueryCardTradeRecordReply reply = new CTMSQueryCardTradeRecordReply();
-		MtxGetCardTraceRecordResult mtxReply = mtxCardService.GetCardTraceRecord(userCinema, CardNo, CardPassword,
-				StartDate, EndDate, PageSize, PageNum);
+		MtxGetCardTraceRecordResult mtxReply = Webservice.GetCardTraceRecord(userCinema, CardNo, CardPassword, StartDate, EndDate);
 		if ("0".equals(mtxReply.getGetCardTraceRecordReturn().getResultCode())) {
 			List<CardTradeRecord> cardTR = new ArrayList<CardTradeRecord>();
-			List<CardTraceRecordBean> cardTraceRecords = mtxReply.getGetCardTraceRecordReturn().getCardTraceRecords()
-					.getCardTraceRecord();
-			reply.setCardTradeRecords(cardTR);
+			List<CardTraceRecordBean> cardTraceRecords = mtxReply.getGetCardTraceRecordReturn().getCardTraceRecords().getCardTraceRecord();	
 			for (CardTraceRecordBean cardTraceRecord : cardTraceRecords) {
 				CardTradeRecord ctr = new CardTradeRecord();
 				ctr.setTradeNo(cardTraceRecord.getTraceNo());
-				ctr.setTradeType(cardTraceRecord.getTraceTypeNo());
+				ctr.setTradeType(cardTraceRecord.getTraceTypeName());
 				ctr.setTradeTime((new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 						.parse(cardTraceRecord.getTraceDate() + " " + cardTraceRecord.getTraceTime())));
 				ctr.setTradePrice(Float.valueOf(cardTraceRecord.getPrice()));
 				ctr.setCinemaName(cardTraceRecord.getCinemaName());
 				cardTR.add(ctr);
 			}
+			reply.setCardTradeRecords(cardTR);
 			reply.Status = StatusEnum.Success;
 		} else {
 			reply.Status = StatusEnum.Failure;
@@ -788,9 +785,24 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSCardChargeReply CardCharge(Usercinemaview userCinema, String CardNo, String CardPassword,
 			CardChargeTypeEnum ChargeType, float ChargeAmount) throws Exception {
 		CTMSCardChargeReply reply = new CTMSCardChargeReply();
-		MtxSerialCardRechargeResult mtxReply = mtxCardService.SerialCardRecharge(userCinema, CardNo, CardPassword,
-				ChargeType, ChargeAmount);
+		MtxSerialCardRechargeResult mtxReply = Webservice.SerialCardRecharge(userCinema, CardNo, CardPassword, ChargeAmount);
 		if ("0".equals(mtxReply.getResultCode())) {
+			Membercard memercard = _memberCardService.getByCardNo(userCinema.getCinemaCode(), CardNo);
+			memercard.setBalance(Double.valueOf(mtxReply.getBalance()));
+			memercard.setScore(Integer.valueOf(mtxReply.getScore()));
+			memercard.setUpdated(new Date());
+			_memberCardService.Update(memercard);
+			
+			Membercardrecharge membercardrecharge = new Membercardrecharge();
+			membercardrecharge.setCinemaCode(memercard.getCinemaCode());
+			membercardrecharge.setCardNo(memercard.getCardNo());
+			membercardrecharge.setUserName(memercard.getUserName());
+			membercardrecharge.setMobilePhone(memercard.getMobilePhone());
+			membercardrecharge.setRechargeAmount(Double.valueOf(ChargeAmount));
+			membercardrecharge.setBalance(memercard.getBalance());
+			membercardrecharge.setUpdated(new Date());
+			_membercardrechargeService.save(membercardrecharge);		//更新会员卡充值记录表
+			
 			reply.Status = StatusEnum.Success;
 		} else {
 			reply.Status = StatusEnum.Failure;
@@ -829,13 +841,14 @@ public class MtxInterface implements ICTMSInterface {
 		reply.ErrorMessage = mtxReply.getGetCardTypeReturn().getResultMsg();
 		return reply;
 	}
-	//卖品------获取卖品
+	
+	
+		//卖品------获取卖品
 		@Override
 		public CTMSQueryGoodsReply QueryGoods(Usercinemaview userCinema) throws Exception {
 			CTMSQueryGoodsReply reply = new CTMSQueryGoodsReply();
-			MtxGetSPInfosResult mtxReply = mtxService.GetSPInfos(userCinema);
+			MtxGetSPInfosResult mtxReply = WebService.GetSPInfos(userCinema);
 			if ("0".equals(mtxReply.getResultCode())) {
-				List<Goods> goods = new ArrayList<Goods>();
 				List<GetSPInfosBean> getSPInfosBeans = mtxReply.getSpinfos();
 				List<Goods> goodslist = _goodsService.getByCinemaCode(userCinema.getUserId(), userCinema.getCinemaCode());
 				for(Goods goo : goodslist){
@@ -853,59 +866,54 @@ public class MtxInterface implements ICTMSInterface {
 				}
 				for (GetSPInfosBean getSPInfosBean : getSPInfosBeans) {
 					Goods goo = new Goods();
-					goo.setCinemaCode(userCinema.getCinemaCode());
-					goo.setUserId(userCinema.getUserId());
 					goo.setGoodsCode(getSPInfosBean.getSpno());
 					goo.setGoodsName(getSPInfosBean.getSpname());
-					if (getSPInfosBean.getSptype() != null) {
-						goo.setGoodsType(getSPInfosBean.getSptype());
-					}
+					goo.setGoodsType(getSPInfosBean.getSptype());
 					if (getSPInfosBean.getSellprice() != null) {
 						goo.setStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));
-					}
-					if (getSPInfosBean.getSellprice() != null) {
 						goo.setSettlePrice(Double.valueOf(getSPInfosBean.getSellprice()));
 					}
-					//goo.setGoodsPic();//没有卖品图片
-					goo.setStockCount(999);//库存给定100
-					goo.setGoodsDesc(getSPInfosBean.getInfo());//卖品描述
-					goo.setShowSeqNo(0);//展示顺序 默认0
+					goo.setGoodsDesc(getSPInfosBean.getInfo());//卖品描述	
 					goo.setUnitName(getSPInfosBean.getUnitname());//卖品单位
-					goo.setIsDiscount(0);//是否享受会员卡优惠，1是；0 否 默认0
-					goo.setGoodsStatus(0);//卖品状态 
-					goo.setIsRecommand(0);//是否推荐  默认0
 					goo.setUpdated(new Date());//更新时间
 					if (getSPInfosBean.getComponents() != null && getSPInfosBean.getComponents().size() > 0) {
 						goo.setIsPackage(1);//是否套餐，1套餐
-							List<GetSPInfosBean.GetSPInfoBean> getSPInfoBeans=getSPInfosBean.getComponents();
-							for(GetSPInfoBean getSPInfoBean:getSPInfoBeans){
-								Goodscomponents gcs=new Goodscomponents();
-								gcs.setCinemaCode(userCinema.getCinemaCode());
-								gcs.setPackageCode(getSPInfosBean.getSpno());
-								gcs.setPackageName(getSPInfosBean.getSpname());
-								gcs.setGoodsCode(getSPInfoBean.getSpno());
-								gcs.setGoodsName(getSPInfoBean.getSpname());
-								gcs.setGoodsCount(getSPInfoBean.getCount());
-								if(getSPInfosBean.getSellprice()!=null){
-								gcs.setGoodsStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));
-								}
-								if(getSPInfosBean.getSellprice()!=null){
-								gcs.setPackageSettlePrice(Double.valueOf(getSPInfosBean.getSellprice())*Double.valueOf(getSPInfoBean.getCount()));
-								}
-								gcs.setStatus(1);
-								gcs.setUnitName(getSPInfoBean.getUnitname());
-								if(_goodscomponentsService.getByGoodsCode(getSPInfoBean.getSpno())==null){
-									_goodscomponentsService.save(gcs);
-								}else{
-									_goodscomponentsService.update(gcs);
-								}
+						List<GetSPInfosBean.GetSPInfoBean> getSPInfoBeans=getSPInfosBean.getComponents();
+						for(GetSPInfoBean getSPInfoBean:getSPInfoBeans){
+							Goodscomponents gcs=new Goodscomponents();
+							gcs.setPackageCode(getSPInfosBean.getSpno());
+							gcs.setPackageName(getSPInfosBean.getSpname());
+							gcs.setGoodsCode(getSPInfoBean.getSpno());
+							gcs.setGoodsName(getSPInfoBean.getSpname());
+							gcs.setGoodsCount(getSPInfoBean.getCount());
+							gcs.setUnitName(getSPInfoBean.getUnitname());
+							if(getSPInfosBean.getSellprice()!=null){
+								gcs.setPackageStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));
+								gcs.setPackageSettlePrice(Double.valueOf(getSPInfosBean.getSellprice()));
 							}
+							
+							if(_goodscomponentsService.getByPackageAndGoodsCode(userCinema.getCinemaCode(), getSPInfosBean.getSpno(),
+									getSPInfoBean.getSpno())==null){
+								gcs.setCinemaCode(userCinema.getCinemaCode());
+								gcs.setStatus(1);
+								_goodscomponentsService.save(gcs);
+							}else{
+								_goodscomponentsService.update(gcs);
+							}
+						}
 
 					} else {
 						goo.setIsPackage(0);//是否套餐，0非套餐
 					}
-					if (_goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(),
-							getSPInfosBean.getSpno()) == null) {
+					if (_goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(),getSPInfosBean.getSpno()) == null) {
+						goo.setCinemaCode(userCinema.getCinemaCode());
+						goo.setUserId(userCinema.getUserId());
+						//goo.setGoodsPic();//没有卖品图片
+						goo.setStockCount(999);//库存给定100
+						goo.setShowSeqNo(0);//展示顺序 默认0
+						goo.setIsDiscount(0);//是否享受会员卡优惠，1是；0 否 默认0
+						goo.setGoodsStatus(0);//卖品状态 
+						goo.setIsRecommand(0);//是否推荐  默认0
 						_goodsService.save(goo);
 					} else {
 						_goodsService.update(goo);
@@ -936,7 +944,7 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSSubmitGoodsOrderReply SubmitGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
 			throws Exception {
 		CTMSSubmitGoodsOrderReply reply=new CTMSSubmitGoodsOrderReply();
-		MtxConfirmSPInfoResult mtxReply=mtxService.ConfirmSPInfo(userCinema, order);
+		MtxConfirmSPInfoResult mtxReply = WebService.ConfirmSPInfo(userCinema, order);
 		if("0".equals(mtxReply.getResultCode())){
 			order.getOrderBaseInfo().setOrderCode(mtxReply.getOrderNo());
 			order.getOrderBaseInfo().setPickUpCode(mtxReply.getValidCode());
@@ -960,7 +968,7 @@ public class MtxInterface implements ICTMSInterface {
 	@Override
 	public CTMSRefundGoodsReply RefundGoods(Usercinemaview userCinema, GoodsOrderView order) throws Exception {
 		CTMSRefundGoodsReply reply=new CTMSRefundGoodsReply();
-		MtxBackSellGoodsResult mtxReply=mtxService.BackSellGoods(userCinema, order);
+		MtxBackSellGoodsResult mtxReply = WebService.BackSellGoods(userCinema, order);
 		if("0".equals(mtxReply.getBackSellGoodsResult().getResultCode())){
 			order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Refund.getStatusCode());
 			order.getOrderBaseInfo().setRefundTime(new Date());
@@ -978,7 +986,7 @@ public class MtxInterface implements ICTMSInterface {
 			throws Exception {
 		CTMSSubmitMixOrderReply reply=new CTMSSubmitMixOrderReply();
 		boolean flag=order.getOrderBaseInfo().getCardNo() == null?false:true;//是否使用会员卡
-		Sessioninfo sessioninfo=_sessioninfoService.getSessionCode(userCinema.getCinemaCode(), order.getOrderBaseInfo().getScreenCode());
+		Sessioninfo sessioninfo=_sessioninfoService.getSessionCode(userCinema.getCinemaCode(), order.getOrderBaseInfo().getSessionCode());
 		///
 		List<Map<String, Object>> ticketList=new ArrayList<Map<String,Object>>();
 		Orders orders=order.getOrderBaseInfo();
@@ -1016,7 +1024,7 @@ public class MtxInterface implements ICTMSInterface {
 		input.put("passWord", goodsorder.getOrderBaseInfo().getCardPassword());
 		input.put("price", goodsorder.getOrderBaseInfo().getTotalPrice());
 		input.put("tracePrice", goodsorder.getOrderBaseInfo().getTotalFee());
-		String data=input.toJSONString();
+//		String data=input.toJSONString();
    
 		
 		return reply;

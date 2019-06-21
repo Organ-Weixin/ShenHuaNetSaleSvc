@@ -2,39 +2,24 @@ package cn.cmts.pay.webservice;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Random;
-
-import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
-import com.alibaba.druid.sql.visitor.functions.Substring;
-import com.boot.security.server.api.ctms.reply.CTMSQueryDiscountReply;
 import com.boot.security.server.api.ctms.reply.MtxGetCardTraceRecordResult;
 import com.boot.security.server.api.ctms.reply.MtxGetCardTypeResult;
 import com.boot.security.server.api.ctms.reply.MtxGetDiscountResult;
-import com.boot.security.server.api.ctms.reply.MtxGetHallAllSeatResult;
-import com.boot.security.server.api.ctms.reply.MtxGetPlanSiteStateResult;
 import com.boot.security.server.api.ctms.reply.MtxLoginCardResult;
 import com.boot.security.server.api.ctms.reply.MtxQueryCardResult;
 import com.boot.security.server.api.ctms.reply.MtxRegisterCardResult;
 import com.boot.security.server.api.ctms.reply.MtxSerialCardPayBackResult;
 import com.boot.security.server.api.ctms.reply.MtxSerialCardPayResult;
 import com.boot.security.server.api.ctms.reply.MtxSerialCardRechargeResult;
-import com.boot.security.server.model.CardChargeTypeEnum;
-import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Usercinemaview;
-import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
-import com.boot.security.server.service.impl.SessioninfoServiceImpl;
-import com.boot.security.server.utils.SpringUtil;
 import com.boot.security.server.utils.XmlToJsonUtil;
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
-
-import cn.cmts.main.webservice.WebService;
 
 /*	
  * @version 1.0 满天星会员卡接口
@@ -67,7 +52,7 @@ public class Webservice {
 			String InitialAmount, String CardUserName, String MobilePhone, String IDNumber, String Sex) {
 		try {
 			String partnerId = "";// 合作商流水号(最大20位)	
-			String memoryId = RandomStringUtils.randomNumeric(20);;// 芯片号(最大长度20位)
+			String memoryId = RandomStringUtils.randomNumeric(20);// 芯片号(最大长度20位)
 			String score = "0";// 初始积分
 			String birthday = "";// 出生日期
 			String email = "";
@@ -122,7 +107,7 @@ public class Webservice {
 					partnerId, memoryId, userCinema.getDefaultPassword());
 			String result = Webservice.cinemaTss(userCinema.getMemberUrl()).queryCard(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), partnerId, memoryId, validateKey);
-			System.out.println("queryCard 查询会员卡账户信息返回" + result);
+//			System.out.println("查询会员卡账户信息返回" + result);
 			Gson gson = new Gson();
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "QueryCardReturn"), MtxQueryCardResult.class);
 		} catch (Exception e) {
@@ -134,25 +119,19 @@ public class Webservice {
 	 * 	合作商代码	   持卡影院编码  合作商流水号   卡号/账户号    手机号       排期号         放映时间        放映日期     
 	 *Md5((partnerCode + placeNo + partnerId + cardId + mobilePhone+featureNo+featureDate+ featureTime+ partnerKey)小写)小写 
 	 * */
-	public static MtxGetDiscountResult GetDiscount(Usercinemaview userCinema, String TicketCount, String CardNo,
-			String CardPassword, String LevelCode, String SessionCode, String SessionTime, String FilmCode,
-			String ScreenType, String ListingPrice, String LowestPrice) {
+	public static MtxGetDiscountResult GetDiscount(Usercinemaview userCinema, String CardNo, String FeatureNo, String SessionTime) {
 		try {
 			String partnerId = "";
 			String mobilePhone = "";
-			String featureDate = "";
-			String featureTime = "";
-			featureDate = SessionTime.substring(0, 10);
-			featureTime = SessionTime.substring(11, 16);
+			String featureDate = SessionTime.substring(0, 10);
+			String featureTime = SessionTime.substring(11, 16);
 			String validateKey = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
-					partnerId, CardNo, mobilePhone, SessionCode, featureDate, featureTime,
-					userCinema.getDefaultPassword());
+					partnerId, CardNo, mobilePhone, FeatureNo, featureDate, featureTime, userCinema.getDefaultPassword());
 			String result = Webservice.cinemaTss(userCinema.getMemberUrl()).getDiscount(userCinema.getDefaultUserName(),
-					userCinema.getCinemaCode(), partnerId, CardNo, mobilePhone, SessionCode, featureDate, featureTime,
-					validateKey);
-//			System.out.println("getDiscount 折扣查询返回" + result);
+					userCinema.getCinemaCode(), partnerId, CardNo, mobilePhone, FeatureNo, featureDate, featureTime, validateKey);
+//			System.out.println("折扣查询返回" + result);
 			Gson gson = new Gson();
-			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "GetDiscount"), MtxGetDiscountResult.class);
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "GetDiscountReturn"), MtxGetDiscountResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -163,7 +142,7 @@ public class Webservice {
 	 *oldPrice预算/支付 + tracePrice交易手续费 + discount折扣，范围：0~10 + featureNo排期号 + filmNo影片编号 + ticketNum票数，预算传1 + partnerKey)小写)小写 
 	 */
 	public static MtxSerialCardPayResult SerialCardPay(Usercinemaview userCinema, String CardNo, String CardPassword,
-			float PayAmount, String SessionCode, String FilmCode, String TicketNum) {
+			float PayAmount, String FeatureNo, String FilmCode, String TicketNum) {
 		try {
 			Date date = new Date();
 			SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSS");
@@ -176,12 +155,12 @@ public class Webservice {
 			String traceMemo = "";// 备注
 			String validateKey = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
 					partnerId, CardNo, mobilePhone, CardPassword, traceTypeNo, String.valueOf(PayAmount), tracePrice,
-					discount, SessionCode, FilmCode, TicketNum, userCinema.getDefaultPassword());
+					discount, FeatureNo, FilmCode, TicketNum, userCinema.getDefaultPassword());
 			String result = Webservice.cinemaTss(userCinema.getMemberUrl()).serialCardPay(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), partnerId, CardNo, mobilePhone, CardPassword, traceTypeNo,
-					String.valueOf(PayAmount), tracePrice, discount, SessionCode, FilmCode, TicketNum, traceMemo,
+					String.valueOf(PayAmount), tracePrice, discount, FeatureNo, FilmCode, TicketNum, traceMemo,
 					validateKey);
-			// System.out.println("会员卡支付（流水号必传）、预算接口返回" + result);
+//			System.out.println("会员卡支付（流水号必传）、预算接口返回" + result);
 			Gson gson = new Gson();
 			return gson.fromJson(result, MtxSerialCardPayResult.class);
 		} catch (Exception e) {
@@ -195,10 +174,8 @@ public class Webservice {
 	public static MtxSerialCardPayBackResult SerialCardPayBack(Usercinemaview userCinema, String CardNo,
 			String CardPassword, String TradeNo, float PayBackAmount) {
 		try {
-			Date date = new Date();
 			SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSS");
-			String str = format.format(date);
-			String partnerId = str;// 16位流水号
+			String partnerId = format.format(new Date());// 16位流水号
 			String mobilePhone = "";
 			String traceType = "02";// 冲费(撤销)
 			String tracePrice = "0";// 交易手续费
@@ -221,7 +198,7 @@ public class Webservice {
 	 * Md5((partnerCode + placeNo + cardId + mobilePhone + passWord + startDate + endDate + partnerKey)小写)小写
 	 * */
 	public static MtxGetCardTraceRecordResult GetCardTraceRecord(Usercinemaview userCinema, String CardNo,
-			String CardPassword, String StartDate, String EndDate, String PageSize, String PageNum) {
+			String CardPassword, String StartDate, String EndDate) {
 		try {
 			String mobilePhone = "";
 			String validateKey = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(), CardNo,
@@ -231,8 +208,7 @@ public class Webservice {
 					StartDate, EndDate, validateKey);
 //			System.out.println("getCardTraceRecord查询会员卡交易记录接口返回" + result);
 			Gson gson = new Gson();
-			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "GetCardTraceRecord"),
-					MtxGetCardTraceRecordResult.class);
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "GetCardTraceRecordReturn"), MtxGetCardTraceRecordResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -242,13 +218,10 @@ public class Webservice {
 	/*serialCardRecharge会员卡充值接口（流水号必传）
 	 * Md5((partnerCode + placeNo + partnerId + cardId + mobilePhone + passWord + price + partnerKey)小写)小写
 	 * */
-	public static MtxSerialCardRechargeResult SerialCardRecharge(Usercinemaview userCinema, String CardNo,
-			String CardPassword, CardChargeTypeEnum ChargeType, float ChargeAmount) {
+	public static MtxSerialCardRechargeResult SerialCardRecharge(Usercinemaview userCinema, String CardNo, String CardPassword,float ChargeAmount){
 		try {
-			Date date = new Date();
 			SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSS");
-			String str = format.format(date);
-			String partnerId = str;// 16位流水号
+			String partnerId =  format.format(new Date());// 16位流水号
 			String mobilePhone = "";
 			String traceMemo = "";// 备注
 			String validateKey = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),

@@ -910,7 +910,7 @@ public class MemberController {
 	}
 	//endregion
 	
-	//region 根据手机号码查询会员卡信息(本地已绑定)
+	//region 根据手机号码查询会员卡信息()
 	@GetMapping("/QueryMemberCardByPhone/{Username}/{Password}/{CinemaCode}/{MobilePhone}")
 	@ApiOperation(value = "根据手机号码查询会员卡信息(本地已绑定)")
 	public QueryMemberCardByPhoneReply QueryMemberCardByPhone(@PathVariable String Username,@PathVariable String Password,

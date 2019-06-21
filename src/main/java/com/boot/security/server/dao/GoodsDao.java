@@ -18,9 +18,6 @@ public interface GoodsDao {
     @Select("select * from goods t where t.id = #{id}")
     Goods getById(Long id);
     
-    @Select("select * from goods t where t.goodscode = #{goodscode}")
-    Goods getByGoodsCode(String goodscode);
-    
     @Select("select * from goods t where t.cinemacode = #{cinemacode}")
     List<Goods> getByCinemaCode(@Param("userid") Long userid,@Param("cinemacode") String cinemacode);
     

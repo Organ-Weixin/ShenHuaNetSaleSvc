@@ -1,6 +1,5 @@
 package cn.cmts.main.webservice;
 
-import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -144,7 +143,7 @@ public class WebService {
 					SessionCode, TokenId, Token, userCinema.getDefaultPassword());
 			String result = WebService.cinemaTss(userCinema.getUrl()).getPlanSiteState(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), SessionCode, TokenId, pVerifyInfo);
-			System.out.println("座位状态-----"+result);
+//			System.out.println("座位状态-----"+result);
 			Gson gson = new Gson();
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "GetPlanSiteStateResult"), MtxGetPlanSiteStateResult.class);
 		} catch (Exception e) {
@@ -170,7 +169,6 @@ public class WebService {
 			Random rand = new Random();
 			int x = rand.nextInt(900) + 100;
 			param.setSerialNum(str + x);
-//			System.out.println("锁座流水号" + str + x);
 			orderView.getOrderBaseInfo().setSerialNum(str + x);
 			MtxRealCheckSeatStateXmlSeatInfos seatInfoList = new MtxRealCheckSeatStateXmlSeatInfos();
 			List<MtxRealCheckSeatStateXmlSeatInfo> seatinfos = new ArrayList<MtxRealCheckSeatStateXmlSeatInfo>();
@@ -346,7 +344,7 @@ public class WebService {
 			String pVerifyInfo = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),userCinema.getDefaultPassword());
 			String result = WebService.cinemaTss(userCinema.getUrl()).getSPInfos(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), pVerifyInfo);
-//			System.out.println("获取卖品信息返回"+result);
+			System.out.println("获取卖品信息返回"+result);
 			Gson gson = new Gson();
 			return gson.fromJson(result, MtxGetSPInfosResult.class);
 		} catch (Exception e) {
@@ -360,29 +358,27 @@ public class WebService {
 	public static MtxConfirmSPInfoResult ConfirmSPInfo(Usercinemaview userCinema, GoodsOrderView order){
 		try {
 			int count=0;
-		List<Map<String, String>> sPInfos =new ArrayList<Map<String,String>>();
-		for(Goodsorderdetails goodsorderdetails:order.getOrderGoodsDetails()){
-			Map<String, String> goodsmap=new LinkedHashMap<String,String>();
-			goodsmap.put("sPNo", goodsorderdetails.getGoodsCode());
-			goodsmap.put("sPCount", String.valueOf(goodsorderdetails.getGoodsCount()));
-			count+=goodsorderdetails.getGoodsCount();
-			goodsmap.put("sPPrice", String.valueOf(goodsorderdetails.getStandardPrice()*goodsorderdetails.getGoodsCount()));
-			sPInfos.add(goodsmap);
-		}
-		JSONObject  jo=new JSONObject();
-		jo.put("appCode", userCinema.getDefaultUserName());
-		jo.put("cinemaId", userCinema.getCinemaCode());
-		jo.put("orderNo", order.getOrderBaseInfo().getOrderCode());
-		jo.put("payType",order.getOrderBaseInfo().getPayType());
-		jo.put("paySeqNo", order.getOrderBaseInfo().getPaySeqNo());
-		jo.put("sPInfos",sPInfos );
-	
-		String pVerifyInfo=GenerateVerifyInfo(userCinema.getDefaultUserName(),userCinema.getCinemaCode(),order.getOrderBaseInfo().getOrderCode(),
-				order.getOrderBaseInfo().getPayType(),String.valueOf(count),userCinema.getDefaultPassword());
+			List<Map<String, String>> sPInfos =new ArrayList<Map<String,String>>();
+			for(Goodsorderdetails goodsorderdetails:order.getOrderGoodsDetails()){
+				Map<String, String> goodsmap=new LinkedHashMap<String,String>();
+				goodsmap.put("sPNo", goodsorderdetails.getGoodsCode());
+				goodsmap.put("sPCount", String.valueOf(goodsorderdetails.getGoodsCount()));
+				count+=goodsorderdetails.getGoodsCount();
+				goodsmap.put("sPPrice", String.valueOf(goodsorderdetails.getStandardPrice()*goodsorderdetails.getGoodsCount()));
+				sPInfos.add(goodsmap);
+			}
+			JSONObject  jo=new JSONObject();
+			jo.put("appCode", userCinema.getDefaultUserName());
+			jo.put("cinemaId", userCinema.getCinemaCode());
+			jo.put("orderNo", order.getOrderBaseInfo().getOrderCode());
+			jo.put("payType",order.getOrderBaseInfo().getPayType());
+			jo.put("paySeqNo", order.getOrderBaseInfo().getPaySeqNo());
+			jo.put("sPInfos",sPInfos );
 		
-		jo.put("verifyInfo", GenerateVerifyInfo(userCinema.getDefaultUserName(),userCinema.getCinemaCode(),order.getOrderBaseInfo().getOrderCode(),
-				order.getOrderBaseInfo().getPayType(),String.valueOf(count),userCinema.getDefaultPassword()));
-		String pJsonString=jo.toJSONString();
+			String pVerifyInfo=GenerateVerifyInfo(userCinema.getDefaultUserName(),userCinema.getCinemaCode(),order.getOrderBaseInfo().getOrderCode(),
+					order.getOrderBaseInfo().getPayType(),String.valueOf(count),userCinema.getDefaultPassword());
+			jo.put("verifyInfo", pVerifyInfo);
+			String pJsonString=jo.toJSONString();
 			String result=WebService.cinemaTss(userCinema.getUrl()).confirmSPInfo(pJsonString);
 			System.out.println("确认卖品接口1返回"+result);
 			Gson gson = new Gson();
@@ -403,7 +399,7 @@ public class WebService {
 					order.getOrderBaseInfo().getOrderCode(), order.getOrderBaseInfo().getPaySeqNo(), pVerifyInfo);
 			System.out.println("获取退卖品的返回"+result);
 			Gson gson=new Gson();
-			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "MtxBackSellGoodsResult"), MtxBackSellGoodsResult.class);
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "BackSellGoodsResult"), MtxBackSellGoodsResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
