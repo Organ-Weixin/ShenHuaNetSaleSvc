@@ -9,20 +9,11 @@ public class Couponsgroup {
 	private String GroupCode;
 	private Integer CouponsType;
 	private String CouponsName;
-	private Integer ValidityType;
 	private Date EffectiveDate;
 	private Date ExpireDate;
-	private Integer EffectiveDays;
-	private Integer ValidityDays;
-	private Integer CanUsePeriodType;
-	private String WeekDays;
-	private String TimePeriod;
-	private Integer LimitNum;
 	private Integer ReductionType;
-	private Double InitialAmount;
+	private Double ThresholdAmount;
 	private Double ReductionPrice;
-	private String FilmCodes;
-	private String GoodsCodes;
 	private Integer IsShare;
 	private String Remark;
 	private Integer CanUseCinemaType;
@@ -33,12 +24,9 @@ public class Couponsgroup {
 	private Integer FetchNumber;
 	private Integer RemainingNumber;
 	private Integer UsedNumber;
-	private Integer SendGroupNumber;
-	private Integer SendNumber;
-	private String GiftType = "2";
 	private Date CreateDate;
 	private Date UpdateDate;
-	private Integer IsUseChatRoom;
+
 
 	public Long getId() {
 		return Id;
@@ -64,12 +52,7 @@ public class Couponsgroup {
 	public void setCouponsName(String CouponsName) {
 		this.CouponsName = CouponsName;
 	}
-	public Integer getValidityType() {
-		return ValidityType;
-	}
-	public void setValidityType(Integer ValidityType) {
-		this.ValidityType = ValidityType;
-	}
+	
 	public Date getEffectiveDate() {
 		return EffectiveDate;
 	}
@@ -82,71 +65,23 @@ public class Couponsgroup {
 	public void setExpireDate(Date expireDate) {
 		ExpireDate = expireDate;
 	}
-	public Integer getEffectiveDays() {
-		return EffectiveDays;
-	}
-	public void setEffectiveDays(Integer EffectiveDays) {
-		this.EffectiveDays = EffectiveDays;
-	}
-	public Integer getValidityDays() {
-		return ValidityDays;
-	}
-	public void setValidityDays(Integer ValidityDays) {
-		this.ValidityDays = ValidityDays;
-	}
-	public Integer getCanUsePeriodType() {
-		return CanUsePeriodType;
-	}
-	public void setCanUsePeriodType(Integer CanUsePeriodType) {
-		this.CanUsePeriodType = CanUsePeriodType;
-	}
-	public String getWeekDays() {
-		return WeekDays;
-	}
-	public void setWeekDays(String WeekDays) {
-		this.WeekDays = WeekDays;
-	}
-	public String getTimePeriod() {
-		return TimePeriod;
-	}
-	public void setTimePeriod(String TimePeriod) {
-		this.TimePeriod = TimePeriod;
-	}
-	public Integer getLimitNum() {
-		return LimitNum;
-	}
-	public void setLimitNum(Integer LimitNum) {
-		this.LimitNum = LimitNum;
-	}
 	public Integer getReductionType() {
 		return ReductionType;
 	}
 	public void setReductionType(Integer ReductionType) {
 		this.ReductionType = ReductionType;
 	}
-	public Double getInitialAmount() {
-		return InitialAmount;
+	public Double getThresholdAmount() {
+		return ThresholdAmount;
 	}
-	public void setInitialAmount(Double initialAmount) {
-		InitialAmount = initialAmount;
+	public void setThresholdAmount(Double thresholdAmount) {
+		ThresholdAmount = thresholdAmount;
 	}
 	public Double getReductionPrice() {
 		return ReductionPrice;
 	}
 	public void setReductionPrice(Double ReductionPrice) {
 		this.ReductionPrice = ReductionPrice;
-	}
-	public String getFilmCodes() {
-		return FilmCodes;
-	}
-	public void setFilmCodes(String FilmCodes) {
-		this.FilmCodes = FilmCodes;
-	}
-	public String getGoodsCodes() {
-		return GoodsCodes;
-	}
-	public void setGoodsCodes(String GoodsCodes) {
-		this.GoodsCodes = GoodsCodes;
 	}
 	public Integer getIsShare() {
 		return IsShare;
@@ -208,25 +143,6 @@ public class Couponsgroup {
 	public void setUsedNumber(Integer UsedNumber) {
 		this.UsedNumber = UsedNumber;
 	}
-	
-	public Integer getSendGroupNumber() {
-		return SendGroupNumber;
-	}
-	public void setSendGroupNumber(Integer sendGroupNumber) {
-		SendGroupNumber = sendGroupNumber;
-	}
-	public Integer getSendNumber() {
-		return SendNumber;
-	}
-	public void setSendNumber(Integer sendNumber) {
-		SendNumber = sendNumber;
-	}
-	public String getGiftType() {
-		return GiftType;
-	}
-	public void setGiftType(String giftType) {
-		GiftType = giftType;
-	}
 	public Date getCreateDate() {
 		return CreateDate;
 	}
@@ -239,12 +155,4 @@ public class Couponsgroup {
 	public void setUpdateDate(Date UpdateDate) {
 		this.UpdateDate = UpdateDate;
 	}
-	public Integer getIsUseChatRoom() {
-		return IsUseChatRoom;
-	}
-	public void setIsUseChatRoom(Integer isUseChatRoom) {
-		IsUseChatRoom = isUseChatRoom;
-	}
-	
-
 }

@@ -1,6 +1,7 @@
 package com.boot.security.server.api.ctms.reply;
 
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -544,21 +545,34 @@ public class YkInterface implements ICTMSInterface {
 		Sessioninfo sessioninfo = _sessioninfoService.getBySessionCode(userCinema.getUserId(), userCinema.getCinemaCode(), order.getOrderBaseInfo().getSessionCode());
 		List<Map<String,Object>> ticketList = new ArrayList<Map<String,Object>>();
 		List<Orderseatdetails> orderseatdetails = order.getOrderSeatDetails();	//订单详情列表
-		for(Orderseatdetails orderseat : orderseatdetails){
+		Double dealPrice=0.00;
+		for(int i=0;i<orderseatdetails.size();i++){
 			Map<String,Object> orderMap = new LinkedHashMap<String,Object>();
-			orderMap.put("seatId", orderseat.getSeatCode());
-			orderMap.put("ticketPrice", String.valueOf(orderseat.getPrice()));
-			orderMap.put("ticketFee", String.valueOf(orderseat.getFee()));
+			orderMap.put("seatId", orderseatdetails.get(i).getSeatCode());
+			orderMap.put("ticketPrice", String.valueOf(orderseatdetails.get(i).getPrice()));
+			orderMap.put("ticketFee", String.valueOf(orderseatdetails.get(i).getFee()));
 			if(flag){
 				orderMap.put("isCardDiscount", true);
 			}
-			if(orderseat.getConponCode() != null){	//优惠列表
-				Map<String,String> promotion = new LinkedHashMap<String,String>();
-				promotion.put("promotionName", orderseat.getConponCode());
-				promotion.put("discountAmount", orderseat.getConponPrice().toString());
-				List<Map<String,String>> promotionList = new ArrayList<Map<String,String>>();
-				promotionList.add(promotion);
-				orderMap.put("promotionList", promotionList);
+			if(order.getOrderBaseInfo().getCouponsCode() != null){	//优惠列表
+				if(i<orderseatdetails.size()-1){
+					Map<String,String> promotion = new LinkedHashMap<String,String>();
+					promotion.put("promotionName", order.getOrderBaseInfo().getCouponsCode());
+					Double discountAmount=order.getOrderBaseInfo().getCouponsPrice()/orderseatdetails.size();
+					dealPrice+=discountAmount;
+					promotion.put("discountAmount", new DecimalFormat("0.00").format(discountAmount));
+					List<Map<String,String>> promotionList = new ArrayList<Map<String,String>>();
+					promotionList.add(promotion);
+					orderMap.put("promotionList", promotionList);
+				}else{
+					Map<String,String> promotion = new LinkedHashMap<String,String>();
+					promotion.put("promotionName", order.getOrderBaseInfo().getCouponsCode());
+					Double discountAmount=order.getOrderBaseInfo().getCouponsPrice()-dealPrice;
+					promotion.put("discountAmount", new DecimalFormat("0.00").format(discountAmount));
+					List<Map<String,String>> promotionList = new ArrayList<Map<String,String>>();
+					promotionList.add(promotion);
+					orderMap.put("promotionList", promotionList);
+				}
 			}
 			ticketList.add(orderMap);
 		}
@@ -623,17 +637,15 @@ public class YkInterface implements ICTMSInterface {
 				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Complete.getStatusCode());	//订单状态
 				order.getOrderBaseInfo().setSubmitTime(new Date());					//订单提交时间
 				// 更新优惠券已使用
-				for (Orderseatdetails seat : order.getOrderSeatDetails()) {
-					if (seat.getConponCode() != null && !seat.getConponCode().equals("")) {
-						CouponsView couponsview=_couponsService.getWithCouponsCode(seat.getConponCode());
-						if(couponsview!=null){
-							couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
-							couponsview.getCoupons().setUsedDate(new Date());
-							//使用数量+1
-							couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
-							//更新优惠券及优惠券分组表
-							_couponsService.update(couponsview);
-						}
+				if (order.getOrderBaseInfo().getCouponsCode() != null && !order.getOrderBaseInfo().getCouponsCode().equals("")) {
+					CouponsView couponsview=_couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
+					if(couponsview!=null){
+						couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
+						couponsview.getCoupons().setUsedDate(new Date());
+						//使用数量+1
+						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+						//更新优惠券及优惠券分组表
+						_couponsService.update(couponsview);
 					}
 				}
 				reply.Status = StatusEnum.Success;

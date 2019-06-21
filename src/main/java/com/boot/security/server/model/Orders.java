@@ -43,7 +43,8 @@ public class Orders  extends BaseEntity<Long>{
 	private Double TotalLoveSeatDifferences;
 	private Integer FeePayType;
 	private Double TotalGuestPayFee;
-	private Double TotalConponPrice;
+	private String CouponsCode;
+	private Double CouponsPrice;
 	private String RefundTradeNo;
 	private Integer PayFlag;
 	private Integer OrderPayType;
@@ -291,11 +292,18 @@ public class Orders  extends BaseEntity<Long>{
 	public void setTotalGuestPayFee(Double totalGuestPayFee) {
 		TotalGuestPayFee = totalGuestPayFee;
 	}
-	public Double getTotalConponPrice() {
-		return TotalConponPrice;
+	
+	public String getCouponsCode() {
+		return CouponsCode;
 	}
-	public void setTotalConponPrice(Double totalConponPrice) {
-		TotalConponPrice = totalConponPrice;
+	public void setCouponsCode(String couponsCode) {
+		CouponsCode = couponsCode;
+	}
+	public Double getCouponsPrice() {
+		return CouponsPrice;
+	}
+	public void setCouponsPrice(Double couponsPrice) {
+		CouponsPrice = couponsPrice;
 	}
 	public String getRefundTradeNo() {
 		return RefundTradeNo;

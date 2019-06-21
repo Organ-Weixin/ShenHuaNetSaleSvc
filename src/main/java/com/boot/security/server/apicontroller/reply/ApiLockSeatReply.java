@@ -3,37 +3,37 @@ package com.boot.security.server.apicontroller.reply;
 import java.util.List;
 
 
-public class LockSeatReply extends BaseReply {
-	private LockSeatReplydata data;
+public class ApiLockSeatReply extends BaseReply {
+	private ApiLockSeatReplydata data;
 
-	public LockSeatReplydata getData() {
+	public ApiLockSeatReplydata getData() {
 		return data;
 	}
 
-	public void setData(LockSeatReplydata data) {
+	public void setData(ApiLockSeatReplydata data) {
 		this.data = data;
 	}
-	public static class LockSeatReplydata{
-		private LockSeatReplyOrder Order;
-		private LockSeatReplyCoupon Coupon;
-		public LockSeatReplyOrder getOrder() {
+	public static class ApiLockSeatReplydata{
+		private ApiLockSeatReplyOrder Order;
+		private ApiLockSeatReplyCoupon Coupon;
+		public ApiLockSeatReplyOrder getOrder() {
 			return Order;
 		}
-		public void setOrder(LockSeatReplyOrder order) {
+		public void setOrder(ApiLockSeatReplyOrder order) {
 			Order = order;
 		}
-		public LockSeatReplyCoupon getCoupon() {
+		public ApiLockSeatReplyCoupon getCoupon() {
 			return Coupon;
 		}
-		public void setCoupon(LockSeatReplyCoupon coupon) {
+		public void setCoupon(ApiLockSeatReplyCoupon coupon) {
 			Coupon = coupon;
 		}
-		public static class LockSeatReplyOrder{
+		public static class ApiLockSeatReplyOrder{
 			private String OrderCode;
 			private String AutoUnlockDatetime;
 			private String SessionCode;
 			private int Count;
-			private List<LockSeatReplySeat> Seat;
+			private List<ApiLockSeatReplySeat> Seat;
 			public String getOrderCode() {
 				return OrderCode;
 			}
@@ -58,13 +58,13 @@ public class LockSeatReply extends BaseReply {
 			public void setCount(int count) {
 				Count = count;
 			}
-			public List<LockSeatReplySeat> getSeat() {
+			public List<ApiLockSeatReplySeat> getSeat() {
 				return Seat;
 			}
-			public void setSeat(List<LockSeatReplySeat> seat) {
+			public void setSeat(List<ApiLockSeatReplySeat> seat) {
 				Seat = seat;
 			}
-			public static class LockSeatReplySeat{
+			public static class ApiLockSeatReplySeat{
 				private String SeatCode;
 
 				public String getSeatCode() {
@@ -77,17 +77,17 @@ public class LockSeatReply extends BaseReply {
 				
 			}
 		}
-		public static class LockSeatReplyCoupon{
-			private List<LockSeatReplyCoupons> Coupons;
+		public static class ApiLockSeatReplyCoupon{
+			private List<ApiLockSeatReplyCoupons> Coupons;
 
-			public List<LockSeatReplyCoupons> getCoupons() {
+			public List<ApiLockSeatReplyCoupons> getCoupons() {
 				return Coupons;
 			}
 
-			public void setCoupons(List<LockSeatReplyCoupons> coupons) {
+			public void setCoupons(List<ApiLockSeatReplyCoupons> coupons) {
 				Coupons = coupons;
 			}
-			public static class LockSeatReplyCoupons{
+			public static class ApiLockSeatReplyCoupons{
 				private String CouponsCode;
 				private int CouponsType;
 				private String CouponsName;

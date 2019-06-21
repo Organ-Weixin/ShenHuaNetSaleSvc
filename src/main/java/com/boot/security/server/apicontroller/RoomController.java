@@ -176,8 +176,8 @@ public class RoomController {
 			RoomGiftReply newgift2 = new RoomGiftReply();
 			newgift2.setGiftCode(coupon.getGroupCode());
 			newgift2.setGiftName(coupon.getCouponsName());
-			newgift2.setGiftType(coupon.getGiftType());
-			newgift2.setSendNumber(String.valueOf(coupon.getSendNumber()));
+			//newgift2.setGiftType(coupon.getGiftType());
+			//newgift2.setSendNumber(String.valueOf(coupon.getSendNumber()));
 //			newgift2.setImage();
 			data.add(newgift2);
 		}

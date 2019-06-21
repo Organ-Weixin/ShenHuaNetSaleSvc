@@ -240,11 +240,11 @@ public class ChatRoomServer {
 //                        session.getBasicRemote().sendText(chatMessage.toString());
 //                        return;
 //                    }
-                    couponsgroup.setSendNumber(couponsgroup.getSendNumber());
-                    couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()==null?1:couponsgroup.getIssuedNumber()+couponsgroup.getSendNumber());
+                    //couponsgroup.setSendNumber(couponsgroup.getSendNumber());
+                    //couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()==null?1:couponsgroup.getIssuedNumber()+couponsgroup.getSendNumber());
                     couponsgroupService.update(couponsgroup);
                     //生成优惠券
-                    for(int i=0;i<couponsgroup.getCouponsNumber();i++){
+                    /*for(int i=0;i<couponsgroup.getCouponsNumber();i++){
                 		Coupons coupons = new Coupons();
                 		//优惠券编码--13位时间戳加5位随机数
                 		String couponsCode = String.valueOf(new Date().getTime());
@@ -256,9 +256,9 @@ public class ChatRoomServer {
                     	coupons.setGroupCode(couponsgroup.getGroupCode());
                     	coupons.setStatus(CouponsStatusEnum.Created.getStatusCode());
                     	couponsService.save(coupons);
-                	}
+                	}*/
                     
-                    Roomgiftsend giftSendRecords = new Roomgiftsend();
+                    /*Roomgiftsend giftSendRecords = new Roomgiftsend();
                     giftSendRecords.setGiftName(couponsgroup.getCouponsName()); //奖品名
                     giftSendRecords.setSendNumber(couponsgroup.getSendNumber()); //发送数量       //少了一个券包，少了一层
                     //giftSendRecords.setMemo(couponsgroup.getCouponsName());
@@ -268,7 +268,7 @@ public class ChatRoomServer {
                     giftSendRecords.setTimestamp(prizeInfo[1]);
                     giftSendRecords.setGiftType("2");
                     roomgiftsendService.save(giftSendRecords);
-                    log.info("555555");
+                    log.info("555555");*/
                 }
             }else{
                 log.info("普通用户不能发送奖品");
@@ -365,14 +365,6 @@ public class ChatRoomServer {
 
                         List<Coupons> couponsList=couponsService.getByGroupCode(couponsgroup.getGroupCode());
                         for(Coupons coupons :couponsList){
-                        	if(couponsgroup.getValidityType()==2){
-                				Calendar c = Calendar.getInstance();
-                				c.add(Calendar.DAY_OF_MONTH, couponsgroup.getEffectiveDays());
-                				coupons.setEffectiveDate(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(c.getTime())));
-                				c.add(Calendar.DAY_OF_MONTH, couponsgroup.getValidityDays());
-                				coupons.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(c.getTime())));
-                    		}
-                			coupons.setReceiveDate(new Date());
                 			coupons.setOpenID(phoneOrOpenid);
                 			coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
                 			couponsService.update(coupons);
@@ -395,7 +387,7 @@ public class ChatRoomServer {
                         sendMessage(phoneOrOpenid+roomName,chatMessage.toString());
                         Roomgiftsend sendRecords = roomgiftsendService.getByGiftAndRoomAndTimestamp("2",prizeInfo[0],roomName,prizeInfo[1]);
                         chatMessage.setMessageType("22");
-                        chatMessage.setContent(String.valueOf(couponsgroup.getSendNumber()-list.size()-1));
+                        //chatMessage.setContent(String.valueOf(couponsgroup.getSendNumber()-list.size()-1));
                         sendMessage(phoneOrOpenid+roomName,chatMessage.toString());
                     }
                 }

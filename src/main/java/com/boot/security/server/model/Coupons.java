@@ -7,13 +7,10 @@ public class Coupons extends BaseEntity<Long> {
 	private Long Id;
 	private String CouponsCode;
 	private String CouponsName;
-	private Date EffectiveDate;
-	private Date ExpireDate;
 	private String GroupCode;
 	private Integer Status;
 	private String OpenID;
 	private Date CreateDate;
-	private Date ReceiveDate;
 	private Date UsedDate;
 
 	public Long getId() {
@@ -33,18 +30,6 @@ public class Coupons extends BaseEntity<Long> {
 	}
 	public void setCouponsName(String CouponsName) {
 		this.CouponsName = CouponsName;
-	}
-	public Date getEffectiveDate() {
-		return EffectiveDate;
-	}
-	public void setEffectiveDate(Date EffectiveDate) {
-		this.EffectiveDate = EffectiveDate;
-	}
-	public Date getExpireDate() {
-		return ExpireDate;
-	}
-	public void setExpireDate(Date ExpireDate) {
-		this.ExpireDate = ExpireDate;
 	}
 	public String getGroupCode() {
 		return GroupCode;
@@ -69,12 +54,6 @@ public class Coupons extends BaseEntity<Long> {
 	}
 	public void setCreateDate(Date CreateDate) {
 		this.CreateDate = CreateDate;
-	}
-	public Date getReceiveDate() {
-		return ReceiveDate;
-	}
-	public void setReceiveDate(Date ReceiveDate) {
-		this.ReceiveDate = ReceiveDate;
 	}
 	public Date getUsedDate() {
 		return UsedDate;

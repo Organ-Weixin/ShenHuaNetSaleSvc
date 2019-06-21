@@ -126,12 +126,6 @@
 			<if test="Deleted != null">
 				Deleted = #{Deleted}, 
 			</if>
-			<if test="ConponCode != null">
-				ConponCode = #{ConponCode}, 
-			</if>
-			<if test="ConponPrice != null">
-				ConponPrice = #{ConponPrice}, 
-			</if>
 			<if test="CinemaAllowance != null">
 				CinemaAllowance = #{CinemaAllowance}, 
 			</if>

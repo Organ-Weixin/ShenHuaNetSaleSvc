@@ -173,28 +173,11 @@ public class ModelMapper {
 		
 	}
 
-	
-	public static OrderView MapFrom(OrderView order, PrePayOrderQueryJson QueryJson)
-    {
-        order.getOrderBaseInfo().setTotalConponPrice(QueryJson.getSeats().stream().mapToDouble(PrePayOrderQueryJsonSeat::getReductionPrice).sum());
-        for(Orderseatdetails seat:order.getOrderSeatDetails()){
-        	List<PrePayOrderQueryJsonSeat> seatinfo = QueryJson.getSeats().stream()
-					.filter((PrePayOrderQueryJsonSeat s) -> seat.getSeatCode().equals(s.getSeatCode()))
-					.collect(Collectors.toList());
-        	if(seatinfo!=null){
-        		seat.setConponCode(seatinfo.get(0).getCouponsCode());
-        		seat.setConponPrice(seatinfo.get(0).getReductionPrice());
-        	}
-        }
-        return order;
-    }
 	public static QueryUserConponsReply.QueryUserConponsBeans.QueryUserConponsBean MapForm(QueryUserConponsReply.QueryUserConponsBeans.QueryUserConponsBean userConpon,Coupons entity){
 		userConpon.setConponId(entity.getId());
 		userConpon.setGroupCode(entity.getGroupCode());
 		userConpon.setOpenID(entity.getOpenID());
 		userConpon.setConponCode(entity.getCouponsCode());
-		userConpon.setEffectiveDate(new SimpleDateFormat("yyyy-MM-dd").format(entity.getEffectiveDate()));
-		userConpon.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").format(entity.getExpireDate()));
 		userConpon.setStatus(String.valueOf(entity.getStatus()));
 		userConpon.setUseDate(String.valueOf(entity.getUsedDate()));
 		return userConpon;
@@ -205,24 +188,14 @@ public class ModelMapper {
 		entity.setGroupCode(model.getGroupCode());
 		entity.setCouponsType(model.getCouponsType().toString());
 		entity.setCouponsName(model.getCouponsName());
-		entity.setValidityType(model.getValidityType());
 		entity.setEffectiveDate(model.getEffectiveDate()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(model.getEffectiveDate()));
 		entity.setExpireDate(model.getExpireDate()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(model.getExpireDate()));
-		entity.setEffectiveDays(model.getEffectiveDays());
-		entity.setValidityDays(model.getValidityDays());
-		entity.setCanUsePeriodType(model.getCanUsePeriodType());
-		entity.setWeekDays(model.getWeekDays());
-		entity.setTimePeriod(model.getTimePeriod());
-		entity.setLimitNum(model.getLimitNum());
 		entity.setReductionType(model.getReductionType());
 		entity.setReductionPrice(model.getReductionPrice());
-		entity.setFilmCodes(model.getFilmCodes());
-		entity.setGoodsCodes(model.getGoodsCodes());
 		entity.setIsShare(model.getIsShare());
 		entity.setStatus(model.getStatus().toString());
 		entity.setRemainingNumber(model.getRemainingNumber());
 		entity.setRemark(model.getRemark());
-		
         return entity;
     }
 	

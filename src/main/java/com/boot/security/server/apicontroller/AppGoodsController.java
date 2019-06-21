@@ -83,7 +83,6 @@ import com.boot.security.server.service.impl.GoodsTypeServiceImpl;
 import com.boot.security.server.service.impl.GoodscomponentsServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
-import com.boot.security.server.utils.CouponsUtil;
 import com.boot.security.server.utils.FileUploadUtils;
 import com.boot.security.server.utils.SendSmsHelper;
 import com.boot.security.server.utils.WxPayUtil;
@@ -201,28 +200,24 @@ public class AppGoodsController {
 						if(!usecoupons.getCouponsCode().equals("")&&!usecoupons.getCouponsCode().equals(null)){
 							CouponsView couponsview = _couponsService.getWithCouponsCode(usecoupons.getCouponsCode());
 							if(couponsview.getCoupons()!=null){
-								boolean ifCanUse=new CouponsUtil().CouponsCanUse(couponsview,order.getOrderBaseInfo().getCinemaCode());
+								boolean ifCanUse = true;
+								//优惠券状态不对
+								if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
+									ifCanUse=false;
+								}
+								//如果是部分门店可用，并且当前订单的影院不在可用门店里面
+								if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
+									if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(order.getOrderBaseInfo().getCinemaCode())==-1){
+										ifCanUse = false;
+									}
+								}
 								if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==2){
-									if(!couponsview.getCouponsgroup().getGoodsCodes().equals(null)&&!couponsview.getCouponsgroup().getGoodsCodes().equals("")){
-										//循环判断每个卖品是不是在可使用优惠的卖品里面
-										for(Goodsorderdetails goodsdetail:order.getOrderGoodsDetails()){
-											if(couponsview.getCouponsgroup().getGoodsCodes().indexOf(goodsdetail.getGoodsCode())==-1){
-												ifCanUse=false;
-												break;
-											}else{
-												continue;
-											}
-										}
-									}
-									//如果到最后还是可以使用
-									if(ifCanUse){
-										CreateGoodsOrderReplyCoupons replyCoupons=new CreateGoodsOrderReplyCoupons();
-										replyCoupons.setCouponsCode(couponsview.getCoupons().getCouponsCode());
-										replyCoupons.setCouponsName(couponsview.getCoupons().getCouponsName());
-										replyCoupons.setCouponsType(couponsview.getCouponsgroup().getCouponsType());
-										replyCoupons.setReductionPrice(couponsview.getCouponsgroup().getReductionPrice());
-										coupons.add(replyCoupons);
-									}
+									CreateGoodsOrderReplyCoupons replyCoupons=new CreateGoodsOrderReplyCoupons();
+									replyCoupons.setCouponsCode(couponsview.getCoupons().getCouponsCode());
+									replyCoupons.setCouponsName(couponsview.getCoupons().getCouponsName());
+									replyCoupons.setCouponsType(couponsview.getCouponsgroup().getCouponsType());
+									replyCoupons.setReductionPrice(couponsview.getCouponsgroup().getReductionPrice());
+									coupons.add(replyCoupons);
 								}
 							}
 						}
@@ -517,19 +512,13 @@ public class AppGoodsController {
 			prePayParametersReply.SetGoodsCountInvalidReply();
 			return prePayParametersReply;
 		}
-		// 验证优惠券是否使用
-		if (null!=QueryJson.getCouponsCode()&&""!=QueryJson.getCouponsCode()) {
-			Coupons coupons = _couponsService.getByCouponsCode(QueryJson.getCouponsCode());
-			if (coupons.getStatus() != CouponsStatusEnum.Fetched.getStatusCode())// 不是已领取状态
-			{
-				prePayParametersReply.SetCouponsNotExistOrUsedReply();
-				return prePayParametersReply;
-			}
-		}
-		//得到优惠券组
-		String CouponsCodes=QueryJson.getCouponsCode();
-		//更新优惠券价格
-		Map<String,Double> map=new CouponsUtil().getCouponsPrice(QueryJson.getCinemaCode(),"",QueryJson.getOrderCode(), CouponsCodes);
+
+		//判断更新优惠价到订单
+		order.setOrderBaseInfo(_couponsService.updateCouponsPricetoGoodsOrder(order.getOrderBaseInfo(), QueryJson.getCouponsCode()));
+		
+		//更新卖品订单主表
+		_goodsOrderService.UpdateOrderBaseInfo(order.getOrderBaseInfo());
+		
 		//region 准备支付参数
 		//总支付金额=总结算金额-优惠金额
 		Double TotalPrice;

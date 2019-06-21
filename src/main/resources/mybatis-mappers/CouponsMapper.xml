@@ -14,12 +14,6 @@
 			<if test="params.CouponsName != null and params.CouponsName != ''">
 				and CouponsName = #{params.CouponsName} 
 			</if>
-			<if test="params.EffectiveDate != null and params.EffectiveDate != ''">
-				and EffectiveDate = #{params.EffectiveDate} 
-			</if>
-			<if test="params.ExpireDate != null and params.ExpireDate != ''">
-				and ExpireDate = #{params.ExpireDate} 
-			</if>
 			<if test="params.GroupCode != null and params.GroupCode != ''">
 				and GroupCode = #{params.GroupCode} 
 			</if>
@@ -31,9 +25,6 @@
 			</if>
 			<if test="params.CreateDate != null and params.CreateDate != ''">
 				and CreateDate = #{params.CreateDate} 
-			</if>
-			<if test="params.ReceiveDate != null and params.ReceiveDate != ''">
-				and ReceiveDate = #{params.ReceiveDate} 
 			</if>
 			<if test="params.UsedDate != null and params.UsedDate != ''">
 				and UsedDate = #{params.UsedDate} 
@@ -66,12 +57,6 @@
 			<if test="CouponsName != null">
 				CouponsName = #{CouponsName}, 
 			</if>
-			<if test="EffectiveDate != null">
-				EffectiveDate = #{EffectiveDate}, 
-			</if>
-			<if test="ExpireDate != null">
-				ExpireDate = #{ExpireDate}, 
-			</if>
 			<if test="GroupCode != null">
 				GroupCode = #{GroupCode}, 
 			</if>
@@ -84,15 +69,10 @@
 			<if test="CreateDate != null">
 				CreateDate = #{CreateDate}, 
 			</if>
-			<if test="ReceiveDate != null">
-				ReceiveDate = #{ReceiveDate}, 
-			</if>
 			<if test="UsedDate != null">
 				UsedDate = #{UsedDate}, 
 			</if>
-
 		</set>
-
 		where t.id = #{id}
 	</update>
 

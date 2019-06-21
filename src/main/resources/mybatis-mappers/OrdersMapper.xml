@@ -241,8 +241,11 @@
 			<if test="TotalGuestPayFee != null">
 				TotalGuestPayFee = #{TotalGuestPayFee}, 
 			</if>
-			<if test="TotalConponPrice != null">
-				TotalConponPrice = #{TotalConponPrice}, 
+			<if test="CouponsCode != null">
+				CouponsCode = #{CouponsCode}, 
+			</if>
+			<if test="CouponsPrice != null">
+				CouponsPrice = #{CouponsPrice}, 
 			</if>
 			<if test="RefundTradeNo != null">
 				RefundTradeNo = #{RefundTradeNo}, 
@@ -507,8 +510,11 @@
 			<if test="TotalGuestPayFee != null">
 				TotalGuestPayFee = #{TotalGuestPayFee}, 
 			</if>
-			<if test="TotalConponPrice != null">
-				TotalConponPrice = #{TotalConponPrice}, 
+			<if test="CouponsCode != null">
+				CouponsCode = #{CouponsCode}, 
+			</if>
+			<if test="CouponsPrice != null">
+				CouponsPrice = #{CouponsPrice}, 
 			</if>
 			<if test="RefundTradeNo != null">
 				RefundTradeNo = #{RefundTradeNo}, 

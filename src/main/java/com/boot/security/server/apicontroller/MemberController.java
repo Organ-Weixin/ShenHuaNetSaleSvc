@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -14,6 +15,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,6 +67,7 @@ import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
+import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardcreditrule;
@@ -74,6 +77,7 @@ import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Orderseatdetails;
+import com.boot.security.server.model.Priceplan;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.model.Usercinemaview;
@@ -89,11 +93,11 @@ import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.MembercardcreditruleServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.service.impl.OrderseatdetailsServiceImpl;
+import com.boot.security.server.service.impl.PriceplanServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
-import com.boot.security.server.utils.CouponsUtil;
 import com.boot.security.server.utils.GoodsCouponsPriceUtil;
 import com.boot.security.server.utils.SendSmsHelper;
 import com.boot.security.server.utils.WxPayUtil;
@@ -138,6 +142,8 @@ public class MemberController {
 	private SessioninfoServiceImpl _sessioninfoService;
 	@Autowired
 	private OrderseatdetailsServiceImpl _orderseatdetailService;
+	@Autowired
+	PriceplanServiceImpl _priceplanService;
 	
 	//region 会员卡登陆
 	@GetMapping("/LoginCard/{Username}/{Password}/{CinemaCode}/{OpenID}/{CardNo}/{CardPassword}")
@@ -207,10 +213,75 @@ public class MemberController {
 			@PathVariable String LockOrderCode,@PathVariable String LocalOrderCode,@PathVariable String CardNo,@PathVariable String CardPassword,
 			@PathVariable String PayAmount,@PathVariable String GoodsPayAmount,@PathVariable String SessionCode,
 			@PathVariable String FilmCode,@PathVariable String TicketNum,@PathVariable String CouponsCodes){
-		Map<String,Double> map=new CouponsUtil().getCouponsPrice(CinemaCode,LockOrderCode,LocalOrderCode,CouponsCodes);
-		CardPayReply reply = new NetSaleSvcCore().CardPay(Username, Password, CinemaCode, CardNo, CardPassword,String.valueOf(map.get("realPayAmount")),String.valueOf(map.get("realGoodsPayAmount")), SessionCode, FilmCode, TicketNum);
 		OrderView order = orderService.getOrderWidthLockOrderCode(CinemaCode, LockOrderCode);
 		GoodsOrderView goodsOrder = goodsOrderService.getWithLocalOrderCode(CinemaCode,LocalOrderCode);
+		if(!"".equals(CouponsCodes)&&CouponsCodes!=null){
+			String[] CouponsCodesArr=CouponsCodes.split(",");
+			//region 更新购票订单优惠券及金额
+			if(!"".equals(CouponsCodesArr[0])){
+				CouponsView couponsview=_couponsService.getWithCouponsCode(CouponsCodesArr[0]);
+				if(couponsview.getCoupons()!=null){
+					boolean ifCanUse = true;
+					//优惠券状态不对
+					if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
+						ifCanUse=false;
+					}
+					//如果是部分门店可用，并且当前订单的影院不在可用门店里面
+					if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
+						if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(order.getOrderBaseInfo().getCinemaCode())==-1){
+							ifCanUse = false;
+						}
+					}
+					//如果减免类型是影片
+					if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1){
+						order.getOrderBaseInfo().setCouponsCode(couponsview.getCoupons().getCouponsCode());
+						order.getOrderBaseInfo().setCouponsPrice(couponsview.getCouponsgroup().getReductionPrice());
+	                }else{
+	                	order.getOrderBaseInfo().setCouponsPrice(0D);
+	                }
+				}else{
+					order.getOrderBaseInfo().setCouponsPrice(0D);
+				}
+			}else{
+				order.getOrderBaseInfo().setCouponsPrice(0D);
+			}
+			orderService.update(order.getOrderBaseInfo());
+			//endregion
+			//region 更新卖品订单优惠券及金额
+			if(!"".equals(CouponsCodesArr[1])){
+				CouponsView couponsview=_couponsService.getWithCouponsCode(CouponsCodesArr[1]);
+				if(couponsview.getCoupons()!=null){
+					boolean ifCanUse = true;
+					//优惠券状态不对
+					if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
+						ifCanUse=false;
+					}
+					//如果是部分门店可用，并且当前订单的影院不在可用门店里面
+					if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
+						if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(goodsOrder.getOrderBaseInfo().getCinemaCode())==-1){
+							ifCanUse = false;
+						}
+					}
+					//如果减免类型是卖品
+					if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==2){
+						//如果到最后还是可以使用
+						goodsOrder.getOrderBaseInfo().setCouponsCode(couponsview.getCoupons().getCouponsCode());
+						goodsOrder.getOrderBaseInfo().setCouponsPrice(couponsview.getCouponsgroup().getReductionPrice());
+					}else{
+						goodsOrder.getOrderBaseInfo().setCouponsPrice(0D);//优惠券不可使用
+					}
+				}else{
+					goodsOrder.getOrderBaseInfo().setCouponsPrice(0D);
+				}
+			}else{
+				goodsOrder.getOrderBaseInfo().setCouponsPrice(0D);
+			}
+			Double TotalSettlePrice=goodsOrder.getOrderBaseInfo().getTotalSettlePrice()+goodsOrder.getOrderBaseInfo().getTotalFee()-goodsOrder.getOrderBaseInfo().getCouponsPrice();
+			goodsOrder.getOrderBaseInfo().setTotalSettlePrice(TotalSettlePrice);
+			goodsOrderService.UpdateOrderBaseInfo(goodsOrder.getOrderBaseInfo());
+			//endregion
+		}
+		CardPayReply reply = new NetSaleSvcCore().CardPay(Username, Password, CinemaCode, CardNo, CardPassword,String.valueOf(order.getOrderBaseInfo().getTotalSalePrice()),String.valueOf(goodsOrder.getOrderBaseInfo().getTotalSettlePrice()), SessionCode, FilmCode, TicketNum);
 		//region 更新订单支付状态
 		if(order!=null&&order.getOrderBaseInfo()!=null){
 			if(reply.Status.equals("Success")){
@@ -224,18 +295,16 @@ public class MemberController {
 				order.getOrderBaseInfo().setOrderPayType(OrderPayTypeEnum.MemberCardPay.getTypeCode());
 				order.getOrderBaseInfo().setUpdated(new Date());
 				//更新优惠券已使用
-				for (Orderseatdetails seat : order.getOrderSeatDetails()) {
-					if (seat.getConponCode()!=null&&seat.getConponCode()!="") {
-						CouponsView couponsview=_couponsService.getWithCouponsCode(seat.getConponCode());
-						if(couponsview!=null){
-							couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
-							couponsview.getCoupons().setUsedDate(new Date());
-							//使用数量+1
-							couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
-							couponsview.getCouponsgroup().setRemainingNumber(couponsview.getCouponsgroup().getRemainingNumber()-1);
-							//更新优惠券及优惠券分组表
-							_couponsService.update(couponsview);
-						}
+				if (order.getOrderBaseInfo().getCouponsCode()!=null&&order.getOrderBaseInfo().getCouponsCode()!="") {
+					CouponsView couponsview=_couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
+					if(couponsview!=null){
+						couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
+						couponsview.getCoupons().setUsedDate(new Date());
+						//使用数量+1
+						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+						couponsview.getCouponsgroup().setRemainingNumber(couponsview.getCouponsgroup().getRemainingNumber()-1);
+						//更新优惠券及优惠券分组表
+						_couponsService.update(couponsview);
 					}
 				}
 			}else{
@@ -281,11 +350,41 @@ public class MemberController {
 	public SellTicketCustomMemberReply SellTicketCustomMember(@PathVariable String Username,@PathVariable String Password,
 			@PathVariable String CinemaCode,@PathVariable String LockOrderCode,@PathVariable String MobilePhone,
 			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String CouponsCodes) throws Exception{
-		//更新一下座位价格
-		Map<String,Double> map=new CouponsUtil().getCouponsPrice(CinemaCode,LockOrderCode,"",CouponsCodes);
+		Orders orders = orderService.getByLockOrderCode(CinemaCode, LockOrderCode);
+		
+		//region 更新购票订单优惠券及金额
+		if(!"".equals(CouponsCodes)){
+			CouponsView couponsview=_couponsService.getWithCouponsCode(CouponsCodes);
+			if(couponsview.getCoupons()!=null){
+				boolean ifCanUse = true;
+				//优惠券状态不对
+				if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
+					ifCanUse=false;
+				}
+				//如果是部分门店可用，并且当前订单的影院不在可用门店里面
+				if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
+					if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(orders.getCinemaCode())==-1){
+						ifCanUse = false;
+					}
+				}
+				//如果减免类型是影片
+				if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1){
+					orders.setCouponsCode(couponsview.getCoupons().getCouponsCode());
+					orders.setCouponsPrice(couponsview.getCouponsgroup().getReductionPrice());
+                }else{
+                	orders.setCouponsPrice(0D);
+                }
+			}else{
+				orders.setCouponsPrice(0D);
+			}
+		}else{
+			orders.setCouponsPrice(0D);
+		}
+		orderService.update(orders);
+		//endregion
+		
 		SellTicketCustomMemberReply reply = new Dy1905Interface().SellTicketCustomMember(Username, Password, CinemaCode, LockOrderCode, CardNo, CardPassword);
 		if(reply.Status.equals("Success")){
-			Orders orders = orderService.getByLockOrderCode(CinemaCode, LockOrderCode);
 			if(orders!=null){
 				orders.setMobilePhone(MobilePhone);
 				orderService.update(orders);
@@ -301,12 +400,43 @@ public class MemberController {
 	public GoodsOrderMemberReply GoodsOrderMember(@PathVariable String Username,@PathVariable String Password,
 			@PathVariable String CinemaCode,@PathVariable String LocalOrderCode,@PathVariable String MobilePhone,
 			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String CouponsCodes) throws Exception{
-		//更新卖品优惠
-		Map<String,Double> map=new CouponsUtil().getCouponsPrice(CinemaCode,"",LocalOrderCode,CouponsCodes);
-		new GoodsCouponsPriceUtil().getGoodsCouponsPrice(LocalOrderCode);
+		Goodsorders goodsorders = goodsOrderService.getByLocalOrderCode(LocalOrderCode);
+		//region 更新卖品订单优惠券及金额
+		if(!"".equals(CouponsCodes)){
+			CouponsView couponsview=_couponsService.getWithCouponsCode(CouponsCodes);
+			if(couponsview.getCoupons()!=null){
+				boolean ifCanUse = true;
+				//优惠券状态不对
+				if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
+					ifCanUse=false;
+				}
+				//如果是部分门店可用，并且当前订单的影院不在可用门店里面
+				if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
+					if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(goodsorders.getCinemaCode())==-1){
+						ifCanUse = false;
+					}
+				}
+				//如果减免类型是卖品
+				if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==2){
+					//如果到最后还是可以使用
+					goodsorders.setCouponsCode(couponsview.getCoupons().getCouponsCode());
+					goodsorders.setCouponsPrice(couponsview.getCouponsgroup().getReductionPrice());
+				}else{
+					goodsorders.setCouponsPrice(0D);//优惠券不可使用
+				}
+			}else{
+				goodsorders.setCouponsPrice(0D);
+			}
+		}else{
+			goodsorders.setCouponsPrice(0D);
+		}
+		Double TotalSettlePrice=goodsorders.getTotalSettlePrice()+goodsorders.getTotalFee()-goodsorders.getCouponsPrice();
+		goodsorders.setTotalSettlePrice(TotalSettlePrice);
+		goodsOrderService.UpdateOrderBaseInfo(goodsorders);
+		//endregion
+		
 		GoodsOrderMemberReply reply =new Dy1905Interface().GoodsOrderMember(Username, Password, CinemaCode, LocalOrderCode, CardNo, CardPassword);
 		if(reply.Status.equals("Success")){
-			Goodsorders goodsorders = goodsOrderService.getByLocalOrderCode(LocalOrderCode);
 			if(goodsorders!=null){
 				goodsorders.setMobilePhone(MobilePhone);
 				goodsOrderService.update(goodsorders);
@@ -321,8 +451,75 @@ public class MemberController {
 	@ApiOperation(value = "会员卡混合支付（1905）")
 	public MemberCardPayReply MemberCardPay(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String LockOrderCode,@PathVariable String LocalOrderCode,@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String CouponsCodes) throws Exception{
-		//更新购票以及卖品优惠金额
-		Map<String,Double> map=new CouponsUtil().getCouponsPrice(CinemaCode,LockOrderCode,LocalOrderCode,CouponsCodes);
+		OrderView order = orderService.getOrderWidthLockOrderCode(CinemaCode, LockOrderCode);
+		GoodsOrderView goodsOrder = goodsOrderService.getWithLocalOrderCode(CinemaCode,LocalOrderCode);
+		if(!"".equals(CouponsCodes)&&CouponsCodes!=null){
+			String[] CouponsCodesArr=CouponsCodes.split(",");
+			//region 更新购票订单优惠券及金额
+			if(!"".equals(CouponsCodesArr[0])){
+				CouponsView couponsview=_couponsService.getWithCouponsCode(CouponsCodesArr[0]);
+				if(couponsview.getCoupons()!=null){
+					boolean ifCanUse = true;
+					//优惠券状态不对
+					if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
+						ifCanUse=false;
+					}
+					//如果是部分门店可用，并且当前订单的影院不在可用门店里面
+					if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
+						if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(order.getOrderBaseInfo().getCinemaCode())==-1){
+							ifCanUse = false;
+						}
+					}
+					//如果减免类型是影片
+					if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1){
+						order.getOrderBaseInfo().setCouponsCode(couponsview.getCoupons().getCouponsCode());
+						order.getOrderBaseInfo().setCouponsPrice(couponsview.getCouponsgroup().getReductionPrice());
+	                }else{
+	                	order.getOrderBaseInfo().setCouponsPrice(0D);
+	                }
+				}else{
+					order.getOrderBaseInfo().setCouponsPrice(0D);
+				}
+			}else{
+				order.getOrderBaseInfo().setCouponsPrice(0D);
+			}
+			orderService.update(order.getOrderBaseInfo());
+			//endregion
+			//region 更新卖品订单优惠券及金额
+			if(!"".equals(CouponsCodesArr[1])){
+				CouponsView couponsview=_couponsService.getWithCouponsCode(CouponsCodesArr[1]);
+				if(couponsview.getCoupons()!=null){
+					boolean ifCanUse = true;
+					//优惠券状态不对
+					if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
+						ifCanUse=false;
+					}
+					//如果是部分门店可用，并且当前订单的影院不在可用门店里面
+					if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
+						if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(goodsOrder.getOrderBaseInfo().getCinemaCode())==-1){
+							ifCanUse = false;
+						}
+					}
+					//如果减免类型是卖品
+					if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==2){
+						//如果到最后还是可以使用
+						goodsOrder.getOrderBaseInfo().setCouponsCode(couponsview.getCoupons().getCouponsCode());
+						goodsOrder.getOrderBaseInfo().setCouponsPrice(couponsview.getCouponsgroup().getReductionPrice());
+					}else{
+						goodsOrder.getOrderBaseInfo().setCouponsPrice(0D);//优惠券不可使用
+					}
+				}else{
+					goodsOrder.getOrderBaseInfo().setCouponsPrice(0D);
+				}
+			}else{
+				goodsOrder.getOrderBaseInfo().setCouponsPrice(0D);
+			}
+			Double TotalSettlePrice=goodsOrder.getOrderBaseInfo().getTotalSettlePrice()+goodsOrder.getOrderBaseInfo().getTotalFee()-goodsOrder.getOrderBaseInfo().getCouponsPrice();
+			goodsOrder.getOrderBaseInfo().setTotalSettlePrice(TotalSettlePrice);
+			goodsOrderService.UpdateOrderBaseInfo(goodsOrder.getOrderBaseInfo());
+			//endregion
+		}
+		
 		return new Dy1905Interface().MemberCardPay(Username, Password, CinemaCode, LockOrderCode, LocalOrderCode, CardNo, CardPassword);
 	}
 	//endregion
@@ -332,8 +529,6 @@ public class MemberController {
 	@ApiOperation(value = "会员卡购票（粤科）")
 	public SellTicketCustomMemberReply YkTicketmMember(@PathVariable String Username,@PathVariable String Password,	@PathVariable String CinemaCode,
 			@PathVariable String LockOrderCode,@PathVariable String MobilePhone,@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String CouponsCodes) throws Exception{
-		//更新一下座位价格
-		new CouponsUtil().getCouponsPrice(CinemaCode,LockOrderCode,"",CouponsCodes);
 		SellTicketCustomMemberReply reply = new SellTicketCustomMemberReply();
 		// 获取用户信息
 		Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
@@ -359,6 +554,37 @@ public class MemberController {
 			reply.SetMemberCardInvalidReply();
 			return reply;
 		}
+		
+		//region 更新购票订单优惠券及金额
+		if(!"".equals(CouponsCodes)){
+			CouponsView couponsview=_couponsService.getWithCouponsCode(CouponsCodes);
+			if(couponsview.getCoupons()!=null){
+				boolean ifCanUse = true;
+				//优惠券状态不对
+				if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
+					ifCanUse=false;
+				}
+				//如果是部分门店可用，并且当前订单的影院不在可用门店里面
+				if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
+					if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(order.getOrderBaseInfo().getCinemaCode())==-1){
+						ifCanUse = false;
+					}
+				}
+				//如果减免类型是影片
+				if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1){
+					order.getOrderBaseInfo().setCouponsCode(couponsview.getCoupons().getCouponsCode());
+					order.getOrderBaseInfo().setCouponsPrice(couponsview.getCouponsgroup().getReductionPrice());
+                }else{
+                	order.getOrderBaseInfo().setCouponsPrice(0D);
+                }
+			}else{
+				order.getOrderBaseInfo().setCouponsPrice(0D);
+			}
+		}else{
+			order.getOrderBaseInfo().setCouponsPrice(0D);
+		}
+		orderService.update(order.getOrderBaseInfo());
+		//endregion
 		
 		order.getOrderBaseInfo().setMobilePhone(MobilePhone);
 		order.getOrderBaseInfo().setCardNo(CardNo);
@@ -387,8 +613,7 @@ public class MemberController {
 	@ApiOperation(value = "会员卡卖品（粤科）")
 	public SubmitGoodsOrderReply YkGoodsOrderMember(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String LocalOrderCode,@PathVariable String MobilePhone,@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String CouponsCodes) throws Exception{
-		//更新卖品优惠
-		new CouponsUtil().getCouponsPrice(CinemaCode,"",LocalOrderCode,CouponsCodes);
+		
 		SubmitGoodsOrderReply reply = new SubmitGoodsOrderReply();
 		// 获取用户信息
 		Userinfo UserInfo = _userInfoService.getByUserCredential(Username, Password);
@@ -414,6 +639,40 @@ public class MemberController {
 			reply.SetMemberCardInvalidReply();
 			return reply;
 		}
+		
+		//region 更新卖品订单优惠券及金额
+		if(!"".equals(CouponsCodes)){
+			CouponsView couponsview=_couponsService.getWithCouponsCode(CouponsCodes);
+			if(couponsview.getCoupons()!=null){
+				boolean ifCanUse = true;
+				//优惠券状态不对
+				if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
+					ifCanUse=false;
+				}
+				//如果是部分门店可用，并且当前订单的影院不在可用门店里面
+				if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
+					if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(order.getOrderBaseInfo().getCinemaCode())==-1){
+						ifCanUse = false;
+					}
+				}
+				//如果减免类型是卖品
+				if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==2){
+					//如果到最后还是可以使用
+					order.getOrderBaseInfo().setCouponsCode(couponsview.getCoupons().getCouponsCode());
+					order.getOrderBaseInfo().setCouponsPrice(couponsview.getCouponsgroup().getReductionPrice());
+				}else{
+					order.getOrderBaseInfo().setCouponsPrice(0D);//优惠券不可使用
+				}
+			}else{
+				order.getOrderBaseInfo().setCouponsPrice(0D);
+			}
+		}else{
+			order.getOrderBaseInfo().setCouponsPrice(0D);
+		}
+		Double TotalSettlePrice=order.getOrderBaseInfo().getTotalSettlePrice()+order.getOrderBaseInfo().getTotalFee()-order.getOrderBaseInfo().getCouponsPrice();
+		order.getOrderBaseInfo().setTotalSettlePrice(TotalSettlePrice);
+		goodsOrderService.UpdateOrderBaseInfo(order.getOrderBaseInfo());
+		//endregion
 		
 		order.getOrderBaseInfo().setMobilePhone(MobilePhone);
 		order.getOrderBaseInfo().setCardNo(CardNo);
@@ -454,18 +713,16 @@ public class MemberController {
 				order.getOrderBaseInfo().setRefundTime(new Date());
 				orderService.update(order.getOrderBaseInfo());
 				//退优惠券
-				for(Orderseatdetails seat:order.getOrderSeatDetails()){
-					if(seat.getConponCode()!=null&&seat.getConponCode()!=""){
-						CouponsView couponsview = _couponsService.getWithCouponsCode(seat.getConponCode());
-						if(couponsview!=null){
-							couponsview.getCoupons().setStatus(CouponsStatusEnum.Fetched.getStatusCode());
-							couponsview.getCoupons().setUsedDate(null);
-							//使用数量-1
-							couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()-1);
-							couponsview.getCouponsgroup().setRemainingNumber(couponsview.getCouponsgroup().getRemainingNumber()+1);
-							//更新优惠券及优惠券分组表
-							_couponsService.update(couponsview);
-						}
+				if(order.getOrderBaseInfo().getCouponsCode()!=null&&order.getOrderBaseInfo().getCouponsCode()!=""){
+					CouponsView couponsview = _couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
+					if(couponsview!=null){
+						couponsview.getCoupons().setStatus(CouponsStatusEnum.Fetched.getStatusCode());
+						couponsview.getCoupons().setUsedDate(null);
+						//使用数量-1
+						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()-1);
+						couponsview.getCouponsgroup().setRemainingNumber(couponsview.getCouponsgroup().getRemainingNumber()+1);
+						//更新优惠券及优惠券分组表
+						_couponsService.update(couponsview);
 					}
 				}
 			}

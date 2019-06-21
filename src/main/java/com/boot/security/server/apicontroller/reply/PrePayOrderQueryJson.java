@@ -7,6 +7,8 @@ public class PrePayOrderQueryJson {
 	private String Password;
 	private String CinemaCode;
 	private String OrderCode;
+	private String CouponsCode;//卡券码
+	private Double ReductionPrice;//减免金额
 	private List<PrePayOrderQueryJsonSeat> Seats;
 	public String getUserName() {
 		return UserName;
@@ -32,6 +34,18 @@ public class PrePayOrderQueryJson {
 	public void setOrderCode(String orderCode) {
 		OrderCode = orderCode;
 	}
+	public String getCouponsCode() {
+		return CouponsCode;
+	}
+	public void setCouponsCode(String couponsCode) {
+		CouponsCode = couponsCode;
+	}
+	public Double getReductionPrice() {
+		return ReductionPrice;
+	}
+	public void setReductionPrice(Double reductionPrice) {
+		ReductionPrice = reductionPrice;
+	}
 	public List<PrePayOrderQueryJsonSeat> getSeats() {
 		return Seats;
 	}
@@ -40,28 +54,12 @@ public class PrePayOrderQueryJson {
 	}
 	public static class PrePayOrderQueryJsonSeat{
 		private String SeatCode;
-		private String CouponsCode;//卡券码
-		private Double ReductionPrice;//减免金额
 		public String getSeatCode() {
 			return SeatCode;
 		}
 		public void setSeatCode(String seatCode) {
 			SeatCode = seatCode;
 		}
-		public String getCouponsCode() {
-			return CouponsCode;
-		}
-		public void setCouponsCode(String couponsCode) {
-			CouponsCode = couponsCode;
-		}
-		public Double getReductionPrice() {
-			return ReductionPrice;
-		}
-		public void setReductionPrice(Double reductionPrice) {
-			ReductionPrice = reductionPrice;
-		}
-		
-		
 	}
 
 }

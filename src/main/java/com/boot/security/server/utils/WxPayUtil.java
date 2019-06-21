@@ -72,7 +72,7 @@ public class WxPayUtil {
 		map.put("out_trade_no", TradeNo);// 商家交易号
 		map.put("spbill_create_ip",StrUtil.getMyIP());//StrUtil.getIpAddress(request)
 		map.put("time_expire", ExpireDate);
-		map.put("total_fee", "1");//TotalFee
+		map.put("total_fee", TotalFee);
 		map.put("trade_type", "JSAPI");
 		String sign = getSign(map, "key", WxpayKey, "UTF-8");
 		map.put("sign", sign);
@@ -200,8 +200,8 @@ public class WxPayUtil {
 		map.put("op_user_id",WxpayMchId);
 		map.put("out_refund_no",TradeNo);//商家退款单号
 		//map.put("out_trade_no","");
-		map.put("refund_fee","1");//RefundFee
-		map.put("total_fee","1");//RefundFee
+		map.put("refund_fee",RefundFee);//
+		map.put("total_fee",RefundFee);//
 		map.put("transaction_id",OrderTradeNo);
 		String sign = getSign(map, "key", WxpayKey, "UTF-8");
 		map.put("sign",sign);

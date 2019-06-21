@@ -34,7 +34,7 @@ public interface CouponsDao {
     int changePast(Integer status);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into coupons(CouponsCode, CouponsName, EffectiveDate, ExpireDate, GroupCode, Status, OpenID, CreateDate, ReceiveDate, UsedDate) values(#{CouponsCode}, #{CouponsName}, #{EffectiveDate}, #{ExpireDate}, #{GroupCode}, #{Status}, #{OpenID}, Now(), #{ReceiveDate}, #{UsedDate})")
+    @Insert("insert into coupons(CouponsCode, CouponsName,GroupCode, Status, OpenID, CreateDate,UsedDate) values(#{CouponsCode}, #{CouponsName}, #{GroupCode}, #{Status}, #{OpenID}, Now(), #{UsedDate})")
     int save(Coupons coupons);
     
     int count(@Param("params") Map<String, Object> params);

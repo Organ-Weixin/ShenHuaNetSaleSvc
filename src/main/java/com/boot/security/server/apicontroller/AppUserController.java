@@ -53,6 +53,7 @@ import com.boot.security.server.apicontroller.reply.UserLoginReply.UserLoginResu
 import com.boot.security.server.apicontroller.reply.UserPhoneInput;
 import com.boot.security.server.apicontroller.reply.UserWXResult;
 import com.boot.security.server.dao.GoodsorderdetailsDao;
+import com.boot.security.server.dao.MiniprogramordersviewDao;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaMiniProgramAccounts;
 import com.boot.security.server.model.CouponGroupStatusEnum;
@@ -62,6 +63,7 @@ import com.boot.security.server.model.Couponsgroup;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
+import com.boot.security.server.model.Miniprogramordersview;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Registeractive;
@@ -120,6 +122,8 @@ public class AppUserController {
 	private GoodsOrderServiceImpl _goodsOrderService;
 	@Autowired
 	private GoodsorderdetailsDao goodsorderdetailsDao;
+	@Autowired
+	private MiniprogramordersviewDao miniprogramordersviewDao;
 	@Autowired
 	private RegisteractiveServiceImpl registeractiveService;
 	@Autowired
@@ -241,21 +245,10 @@ public class AppUserController {
             							coupons.setCouponsCode(couponsCode);
             							coupons.setCouponsName(couponsgroup.getCouponsName());
             							//如果有效期类型为2（领取后N天生效，有效时长M天）
-            							if(couponsgroup.getValidityType()==2){
-        			        				Calendar c = Calendar.getInstance();
-        			        				c.add(Calendar.DAY_OF_MONTH, couponsgroup.getEffectiveDays());
-        			        				coupons.setEffectiveDate(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(c.getTime())));
-        			        				c.add(Calendar.DAY_OF_MONTH, couponsgroup.getValidityDays());
-        			        				coupons.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(c.getTime())));
-        			            		}else{
-        			            			coupons.setEffectiveDate(couponsgroup.getEffectiveDate());
-        			            			coupons.setExpireDate(couponsgroup.getExpireDate());
-        			            		}
             							coupons.setGroupCode(couponsgroup.getGroupCode());
             							coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
             							coupons.setOpenID(ticketuser.getOpenID());
             							coupons.setCreateDate(new Date());
-        								coupons.setReceiveDate(new Date());
         								result = couponsService.save(coupons);
             						}
             					}

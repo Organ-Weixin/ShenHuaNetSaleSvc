@@ -41,6 +41,7 @@ import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
+import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
@@ -1013,19 +1014,16 @@ public class Dy1905Interface implements ICTMSInterface {
 			String MemberPrice = null;
 			String Fee = null;
 			SeatCode = order.getOrderSeatDetails().get(0).getSeatCode();
-			if(order.getOrderSeatDetails().get(0).getConponPrice()==null){
-				order.getOrderSeatDetails().get(0).setConponPrice(0.00);
+			if(order.getOrderBaseInfo().getCouponsPrice()==null){
+				order.getOrderBaseInfo().setCouponsPrice(0.00);
 			}
 			//计算实际支付价格
-			MemberPrice = String.valueOf(order.getOrderSeatDetails().get(0).getSalePrice()-order.getOrderSeatDetails().get(0).getConponPrice());
+			MemberPrice = String.valueOf(order.getOrderSeatDetails().get(0).getSalePrice());
 			Fee = String.valueOf(order.getOrderSeatDetails().get(0).getFee());
 			if(order.getOrderSeatDetails().size()>1){
 				for(int i=1;i<order.getOrderSeatDetails().size();i++){
 					SeatCode += ","+order.getOrderSeatDetails().get(i).getSeatCode();
-					if(order.getOrderSeatDetails().get(i).getConponPrice()==null){
-						order.getOrderSeatDetails().get(i).setConponPrice(0.00);
-					}
-					MemberPrice += ","+(order.getOrderSeatDetails().get(i).getSalePrice()-order.getOrderSeatDetails().get(i).getConponPrice());
+					MemberPrice += ","+(order.getOrderSeatDetails().get(i).getSalePrice());
 					Fee += ","+order.getOrderSeatDetails().get(i).getFee();
 				}
 			}
@@ -1063,17 +1061,15 @@ public class Dy1905Interface implements ICTMSInterface {
 				order.getOrderBaseInfo().setTotalFee(order.getOrderSeatDetails().get(0).getFee()*order.getOrderBaseInfo().getTicketCount());
 				order.getOrderBaseInfo().setTotalSalePrice(order.getOrderSeatDetails().get(0).getSalePrice()*order.getOrderBaseInfo().getTicketCount());
 				// 更新优惠券已使用
-				for (Orderseatdetails seat : order.getOrderSeatDetails()) {
-					if (seat.getConponCode()!=null&&seat.getConponCode()!="") {
-						CouponsView couponsview=_couponsService.getWithCouponsCode(seat.getConponCode());
-						if(couponsview!=null){
-							couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
-							couponsview.getCoupons().setUsedDate(new Date());
-							//使用数量+1
-							couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
-							//更新优惠券及优惠券分组表
-							_couponsService.update(couponsview);
-						}
+				if (order.getOrderBaseInfo().getCouponsCode()!=null&&order.getOrderBaseInfo().getCouponsCode()!="") {
+					CouponsView couponsview=_couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
+					if(couponsview!=null){
+						couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
+						couponsview.getCoupons().setUsedDate(new Date());
+						//使用数量+1
+						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+						//更新优惠券及优惠券分组表
+						_couponsService.update(couponsview);
 					}
 				}
 			}else{
@@ -1452,7 +1448,7 @@ public class Dy1905Interface implements ICTMSInterface {
 			//实际支付金额
 			Double payPrice = orders.getOrderBaseInfo().getTotalSettlePrice();
 			if(orders.getOrderBaseInfo().getCouponsPrice()!=null){
-				payPrice = orders.getOrderBaseInfo().getTotalSettlePrice() - orders.getOrderBaseInfo().getCouponsPrice();
+				payPrice = orders.getOrderBaseInfo().getTotalSettlePrice();
 			}
 			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() 
 			+ orders.getOrderBaseInfo().getLocalOrderCode().substring(0,20)
@@ -1547,7 +1543,7 @@ public class Dy1905Interface implements ICTMSInterface {
 			//实际支付金额
 			Double payPrice = order.getOrderBaseInfo().getTotalSettlePrice();
 			if(order.getOrderBaseInfo().getCouponsPrice()!=null){
-				payPrice = order.getOrderBaseInfo().getTotalSettlePrice() - order.getOrderBaseInfo().getCouponsPrice();
+				payPrice = order.getOrderBaseInfo().getTotalSettlePrice();
 			}
 			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() 
 			+ order.getOrderBaseInfo().getLocalOrderCode().substring(0,20)

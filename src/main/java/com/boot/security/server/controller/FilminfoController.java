@@ -226,7 +226,7 @@ public class FilminfoController {
         map.put("output","json");
         String JsonStr=HttpHelper.sendGetByUrlConnection(UrlAddress, map,"UTF-8");
         //log.info("抓取影片返回："+JsonStr);
-        System.out.println(JsonStr);
+        //System.out.println(JsonStr);
         BaiduFilmInfomation baidufilm=new Gson().fromJson(JsonStr,BaiduFilmInfomation.class);
         for(Movie movie: baidufilm.getResult().getMovie()){
         	List<Filminfo> films=_filmInfoService.getFilmByFilmName(movie.getMovie_name());

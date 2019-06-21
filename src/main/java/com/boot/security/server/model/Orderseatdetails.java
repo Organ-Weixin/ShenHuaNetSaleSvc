@@ -21,8 +21,6 @@ public class Orderseatdetails extends BaseEntity<Long>{
 	private Date Created;
 	private Date Updated;
 	private Integer Deleted;
-	private String ConponCode;
-	private Double ConponPrice;
 	//后台管理添加一下四个字段，数据库添加PreferentialPrice、AddedPrice两个字段
 	private Double CinemaAllowance;//影院补贴
 	private Double AddFee;//增值服务费
@@ -142,18 +140,6 @@ public class Orderseatdetails extends BaseEntity<Long>{
 	}
 	public void setDeleted(Integer Deleted) {
 		this.Deleted = Deleted;
-	}
-	public String getConponCode() {
-		return ConponCode;
-	}
-	public void setConponCode(String conponCode) {
-		ConponCode = conponCode;
-	}
-	public Double getConponPrice() {
-		return ConponPrice;
-	}
-	public void setConponPrice(Double conponPrice) {
-		ConponPrice = conponPrice;
 	}
 	public String getSeat() {
 		return Seat;

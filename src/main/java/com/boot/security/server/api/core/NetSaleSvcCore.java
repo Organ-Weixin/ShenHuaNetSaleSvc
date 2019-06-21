@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.boot.security.server.api.core.CreateGoodsOrderQueryXml.CreateGoodsOrderQueryXmlGoodsList;
 import com.boot.security.server.api.core.CreateGoodsOrderQueryXml.CreateGoodsOrderQueryXmlGoodsList.CreateGoodsOrderQueryXmlGoods;
 import com.boot.security.server.api.core.CreateGoodsOrderReply.CreateGoodsOrderReplyOrder;
+import com.boot.security.server.api.core.LockSeatQueryXml.LockSeatQueryXmlOrder.LockSeatQueryXmlSeat;
 import com.boot.security.server.api.core.LockSeatReply.LockSeatReplyOrder.LockSeatReplySeat;
 import com.boot.security.server.api.core.QueryCardLevelReply.QueryCardLevelReplyLevels.QueryCardLevelReplyLevel;
 import com.boot.security.server.api.core.QueryCardTradeRecordReply.QueryCardTradeRecordReplyTradeRecord.QueryCardTradeRecordReplyRecord;
@@ -40,6 +41,7 @@ import com.boot.security.server.api.core.SubmitGoodsOrderReply.SubmitGoodsOrderR
 import com.boot.security.server.api.core.SubmitMixOrderQueryXml.SubmitMixOrderQueryXmlGoods;
 import com.boot.security.server.api.core.SubmitMixOrderReply.SubmitGoodsOrder;
 import com.boot.security.server.api.core.SubmitMixOrderReply.SubmitTicketsOrder;
+import com.boot.security.server.api.core.LockSeatReply;
 import com.boot.security.server.api.core.SubmitMixOrderReply.SubmitTicketsOrder.SubmitOrderSeat;
 import com.boot.security.server.api.core.SubmitOrderReply.SubmitOrderReplyOrder.SubmitOrderReplySeat;
 import com.boot.security.server.api.ctms.reply.CTMSCardChargeReply;
@@ -79,6 +81,7 @@ import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
+import com.boot.security.server.model.Goodscomponents;
 import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Membercard;
@@ -86,7 +89,9 @@ import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
+import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Orderseatdetails;
+import com.boot.security.server.model.Priceplan;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
 import com.boot.security.server.model.SessionSeat;
@@ -101,6 +106,7 @@ import com.boot.security.server.service.impl.GoodscomponentsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
+import com.boot.security.server.service.impl.PriceplanServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
@@ -124,6 +130,7 @@ public class NetSaleSvcCore {
 	 GoodsServiceImpl _goodsService=SpringUtil.getBean(GoodsServiceImpl.class);
 	 GoodsOrderServiceImpl _goodsOrderService=SpringUtil.getBean(GoodsOrderServiceImpl.class);
 	 GoodscomponentsServiceImpl _goodscomponentsService=SpringUtil.getBean(GoodscomponentsServiceImpl.class);
+	 PriceplanServiceImpl _pricePlanService=SpringUtil.getBean(PriceplanServiceImpl.class);
 	 protected static Logger log = LoggerFactory.getLogger(NetSaleSvcCore.class);
 	 
 	 public NetSaleSvcCore(){
@@ -575,25 +582,107 @@ public class NetSaleSvcCore {
 		}
 		// 将请求参数转为订单
 		OrderView order = new OrderView();
-		order = ModelMapper.MapFrom(order, userCinema, QueryXmlObj, sessionInfo);
-		// 得到当前提交的seatcode
-		List<String> seatcodeslist = order.getOrderSeatDetails().stream().map(Orderseatdetails::getSeatCode)
-				.collect(Collectors.toList());
-		String seatcodes = String.join(",", seatcodeslist);
-		log.info("====="+seatcodes);
-		//List<Screenseatinfo> seatInfos = _seatInfoService.getBySeatCodes(userCinema.getCinemaCode(),sessionInfo.getScreenCode(), seatcodes);
-		//log.info(seatInfos.toString());
-		for (Orderseatdetails seat : order.getOrderSeatDetails()) {
-			//List<Screenseatinfo> seatinfo = seatInfos.stream().filter((Screenseatinfo s) -> seat.getSeatCode().equals(s.getSeatCode())).collect(Collectors.toList());
-			Screenseatinfo seatinfo=_seatInfoService.getBySeatCode(userCinema.getCinemaCode(),sessionInfo.getScreenCode(),seat.getSeatCode());
+		Orders orders=new Orders();
+		orders = ModelMapper.MapFrom(orders, userCinema, QueryXmlObj, sessionInfo);
+		
+		//region 购票价格计算（得到最终上报价，最终销售价，最终服务费）
+		Double SubmitPrice;// 最终上报价格
+		Double SalePrice;// 最终销售价格
+		Double TicketFee;//服务费
+		Double AddFee;//增值服务费
+		Double CinemaAllowance;//影院补贴
+		int TicketCount = orders.getTicketCount();// 总票数
+		List<Priceplan> priceplans = _pricePlanService.getByCode(orders.getUserId(),
+				orders.getCinemaCode(), orders.getFilmCode(),
+				orders.getSessionCode());
+		// 得到价格计划
+		Priceplan priceplan = new Priceplan();
+		if (priceplans.size() > 1) {
+			priceplan = priceplans.stream().filter((Priceplan s) -> s.getType() == 1).collect(Collectors.toList())
+					.get(0);
+		} else if (priceplans.size() == 1) {
+			priceplan = priceplans.get(0);
+		}
+		Double priceplanPrice;
+		//如果是会员支付
+		if("1".equals(QueryXmlObj.getOrder().getPayType())){
+			priceplanPrice = null == priceplan.getMemberPrice() ? sessionInfo.getStandardPrice() : priceplan.getMemberPrice();
+		}else
+		{
+			priceplanPrice = null == priceplan.getPrice() ? sessionInfo.getStandardPrice() : priceplan.getPrice();
+		}
+		//如果座位表中已有销售价，说明已设置会员卡折扣价
+		if(order.getOrderSeatDetails().get(0).getSalePrice()!=null&&order.getOrderSeatDetails().get(0).getSalePrice()!=0){
+			priceplanPrice=order.getOrderSeatDetails().get(0).getSalePrice();
+		}
+		Double priceplanFee = null == priceplan.getTicketFee() ? 0 : priceplan.getTicketFee();
+		Double priceplanAddFee = null == priceplan.getAddFee() ? 0 : priceplan.getAddFee();
+		Double priceplanCinemaAllowance = null == priceplan.getCinemaAllowance() ? 0 : priceplan.getCinemaAllowance();
+		Double basisSubmitPrice;//基础上报价格=标准价/最低价
+		//System.out.println("====="+userCinema.getIsUseLowestPriceReport());
+		if(userCinema.getIsUseLowestPriceReport()==null){
+			userCinema.setIsUseLowestPriceReport(0);
+		}
+		if(userCinema.getIsUseLowestPriceReport()==1){
+			basisSubmitPrice=sessionInfo.getLowestPrice();
+		}else{
+			basisSubmitPrice=sessionInfo.getStandardPrice();
+		}
+		//System.out.println("-----"+userCinema.getIsUseLowestPriceReport());
+		if(userCinema.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
+			//如果是辰星系统
+			// 上报价=场次标准价+场次服务费+场次增值服务费
+			SubmitPrice = basisSubmitPrice + sessionInfo.getTicketFee()+sessionInfo.getAddFee();
+			// 销售价=真实标准价+场次服务费+场次增值服务费-场次影院补贴
+			SalePrice = priceplanPrice + sessionInfo.getTicketFee() + sessionInfo.getAddFee() - sessionInfo.getCinemaAllowance();
+			TicketFee=sessionInfo.getTicketFee();
+			AddFee=sessionInfo.getAddFee();
+			CinemaAllowance=sessionInfo.getCinemaAllowance();
+		}else
+		{
+			//其他系统
+			//上报价=场次标准价+服务费（后台设置影院服务费）
+			SubmitPrice=basisSubmitPrice+priceplanFee;
+		    // 销售价=真实标准价+价格设置表服务费+价格设置表增值服务费-价格设置表影院补贴
+		 	SalePrice = priceplanPrice + priceplanFee + priceplanAddFee - priceplanCinemaAllowance;
+		 	TicketFee=priceplanFee;
+		 	AddFee=priceplanAddFee;
+		 	CinemaAllowance=priceplanCinemaAllowance;
+		}
+		//endregion
+		
+		// 更新订单信息
+		// 总上报金额=上报价*总票数
+		orders.setTotalPrice(SubmitPrice * TicketCount);
+		orders.setTotalFee(TicketFee * TicketCount);
+		orders.setTotalSalePrice(SalePrice * TicketCount);
+		order.setOrderBaseInfo(orders);
+		
+		List<Orderseatdetails> seats = new ArrayList<Orderseatdetails>();
+		for (LockSeatQueryXmlSeat xmlseat : QueryXmlObj.getOrder().getSeat()) {
+			Orderseatdetails seat = new Orderseatdetails();
+			seat.setSeatCode(xmlseat.getSeatCode());
+			seat.setDeleted(0);
+			seat.setCreated(new Date());
+			seats.add(seat);
+		}
+		for(Orderseatdetails seatdetail:seats){
+			seatdetail.setPrice(SubmitPrice);
+			seatdetail.setSalePrice(SalePrice);
+			seatdetail.setFee(TicketFee);
+			seatdetail.setAddFee(AddFee);
+			seatdetail.setCinemaAllowance(CinemaAllowance);
+			//把座位里的其他信息更新到订单座位详细
+			Screenseatinfo seatinfo=_seatInfoService.getBySeatCode(userCinema.getCinemaCode(),sessionInfo.getScreenCode(),seatdetail.getSeatCode());
 			if (seatinfo != null) {
-				seat.setRowNum(seatinfo.getRowNum());
-				seat.setColumnNum(seatinfo.getColumnNum());
+				seatdetail.setRowNum(seatinfo.getRowNum());
+				seatdetail.setColumnNum(seatinfo.getColumnNum());
 				// 因为vista这个奇葩要用到坐标来锁座，所以把坐标也保存到订单座位
-				seat.setXCoord(seatinfo.getXCoord());
-				seat.setYCoord(seatinfo.getYCoord());
+				seatdetail.setXCoord(seatinfo.getXCoord());
+				seatdetail.setYCoord(seatinfo.getYCoord());
 			}
 		}
+		order.setOrderSeatDetails(seats);
 		return LockSeat(lockSeatReply, userCinema, order);
 	}
 
@@ -1866,7 +1955,7 @@ ScreenType,ListingPrice,LowestPrice))
 			goods.setGoodsCode(localGoods.getGoodsCode());
 			goods.setGoodsName(localGoods.getGoodsName());
 			goods.setStandardPrice(localGoods.getStandardPrice());
-			goods.setSettlePrice(localGoods.getSettlePrice());
+			goods.setSettlePrice(localGoods.getSettlePrice()==null?localGoods.getStandardPrice():localGoods.getSettlePrice());
 			goods.setChannelFee(xmlgoods.getGoodsChannelFee());
 			goods.setGoodsCount(xmlgoods.getGoodsCount());
 			goods.setSubTotalAmount(localGoods.getStandardPrice()*xmlgoods.getGoodsCount());

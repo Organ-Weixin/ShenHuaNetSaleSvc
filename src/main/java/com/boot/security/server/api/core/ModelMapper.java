@@ -103,59 +103,31 @@ public class ModelMapper {
 		return session;
 	}
 
-	public static OrderView MapFrom(OrderView order, Usercinemaview userCinema, LockSeatQueryXml queryXmlObj,
+	public static Orders MapFrom(Orders order, Usercinemaview userCinema, LockSeatQueryXml queryXmlObj,
 			Sessioninfo sessionInfo) {
 		// 订单基本信息
-		Orders orderBaseInfo = new Orders();
-		orderBaseInfo.setCinemaCode(userCinema.getCinemaCode());
-		orderBaseInfo.setUserId(userCinema.getUserId());
-		orderBaseInfo.setSessionCode(sessionInfo.getSCode());
-		orderBaseInfo.setScreenCode(sessionInfo.getScreenCode());
-		orderBaseInfo.setSessionTime(sessionInfo.getStartTime());
-		orderBaseInfo.setFilmCode(sessionInfo.getFilmCode());
-		orderBaseInfo.setFilmName(sessionInfo.getFilmName());
-		orderBaseInfo.setTicketCount(queryXmlObj.getOrder().getCount());
-		orderBaseInfo.setTotalPrice(
-				queryXmlObj.getOrder().getSeat().stream().mapToDouble(LockSeatQueryXmlSeat::getPrice).sum());
-		orderBaseInfo
-				.setTotalFee(queryXmlObj.getOrder().getSeat().stream().mapToDouble(LockSeatQueryXmlSeat::getFee).sum());
-		// 接入商总售价, 暂定
-		double totalSalePrice = queryXmlObj.getOrder().getSeat().stream().mapToDouble(LockSeatQueryXmlSeat::getPrice)
-				.sum() + queryXmlObj.getOrder().getSeat().stream().mapToDouble(LockSeatQueryXmlSeat::getFee).sum();
-		orderBaseInfo.setTotalSalePrice(totalSalePrice);
-		orderBaseInfo.setOrderStatus(OrderStatusEnum.Created.getStatusCode());
-		orderBaseInfo.setCreated(new Date());
-		orderBaseInfo.setDeleted(0); // 订单删除标识
-		orderBaseInfo.setIsMemberPay(Integer.valueOf(queryXmlObj.getOrder().getPayType()));
+		order.setCinemaCode(userCinema.getCinemaCode());
+		order.setUserId(userCinema.getUserId());
+		order.setSessionCode(sessionInfo.getSCode());
+		order.setScreenCode(sessionInfo.getScreenCode());
+		order.setSessionTime(sessionInfo.getStartTime());
+		order.setFilmCode(sessionInfo.getFilmCode());
+		order.setFilmName(sessionInfo.getFilmName());
+		order.setTicketCount(queryXmlObj.getOrder().getCount());
+		order.setOrderStatus(OrderStatusEnum.Created.getStatusCode());
+		order.setCreated(new Date());
+		order.setDeleted(0); // 订单删除标识
+		order.setIsMemberPay(Integer.valueOf(queryXmlObj.getOrder().getPayType()));
 		if (userCinema.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode()) {
 			// 数据库中会员及非会员支付类型以逗号分隔存于PayType字段中，会员在前
 			if ("1".equals(queryXmlObj.getOrder().getPayType())) {
-				orderBaseInfo.setIsMemberPay(1);
-				orderBaseInfo.setPayType(userCinema.getPayType().split(",")[0]);
+				order.setIsMemberPay(1);
+				order.setPayType(userCinema.getPayType().split(",")[0]);
 			} else {
-				orderBaseInfo.setIsMemberPay(0);
-				orderBaseInfo.setPayType(userCinema.getPayType().split(",")[1]);
+				order.setIsMemberPay(0);
+				order.setPayType(userCinema.getPayType().split(",")[1]);
 			}
 		}
-		order.setOrderBaseInfo(orderBaseInfo);
-
-		List<Orderseatdetails> seats = new ArrayList<Orderseatdetails>();
-		for (LockSeatQueryXmlSeat xmlseat : queryXmlObj.getOrder().getSeat()) {
-			Orderseatdetails seat = new Orderseatdetails();
-			seat.setSeatCode(xmlseat.getSeatCode());
-			seat.setPrice(xmlseat.getPrice());
-			seat.setFee(xmlseat.getFee());
-			seat.setAddFee(xmlseat.getAddFee());
-			seat.setCinemaAllowance(xmlseat.getCinemaAllowance());
-			// 实际销售价格计算 =上报价格+服务费+增值服务费-影院补贴
-			Double SalePrice = xmlseat.getPrice() + xmlseat.getFee() + xmlseat.getAddFee()
-					- xmlseat.getCinemaAllowance();
-			seat.setSalePrice(SalePrice);
-			seat.setDeleted(0);
-			seat.setCreated(new Date());
-			seats.add(seat);
-		}
-		order.setOrderSeatDetails(seats);
 		return order;
 	}
 

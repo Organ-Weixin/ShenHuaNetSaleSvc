@@ -17,47 +17,20 @@
 			<if test="params.CouponsName != null and params.CouponsName != ''">
 				and CouponsName = #{params.CouponsName} 
 			</if>
-			<if test="params.ValidityType != null and params.ValidityType != ''">
-				and ValidityType = #{params.ValidityType} 
-			</if>
 			<if test="params.EffectiveDate != null and params.EffectiveDate != ''">
 				and EffectiveDate = #{params.EffectiveDate} 
 			</if>
 			<if test="params.ExpireDate != null and params.ExpireDate != ''">
 				and ExpireDate = #{params.ExpireDate} 
 			</if>
-			<if test="params.EffectiveDays != null and params.EffectiveDays != ''">
-				and EffectiveDays = #{params.EffectiveDays} 
-			</if>
-			<if test="params.ValidityDays != null and params.ValidityDays != ''">
-				and ValidityDays = #{params.ValidityDays} 
-			</if>
-			<if test="params.CanUsePeriodType != null and params.CanUsePeriodType != ''">
-				and CanUsePeriodType = #{params.CanUsePeriodType} 
-			</if>
-			<if test="params.WeekDays != null and params.WeekDays != ''">
-				and WeekDays = #{params.WeekDays} 
-			</if>
-			<if test="params.TimePeriod != null and params.TimePeriod != ''">
-				and TimePeriod = #{params.TimePeriod} 
-			</if>
-			<if test="params.LimitNum != null and params.LimitNum != ''">
-				and LimitNum = #{params.LimitNum} 
-			</if>
 			<if test="params.ReductionType != null and params.ReductionType != ''">
 				and ReductionType = #{params.ReductionType} 
 			</if>
-			<if test="params.InitialAmount != null and params.InitialAmount != ''">
-				and InitialAmount = #{params.InitialAmount} 
+			<if test="params.ThresholdAmount != null and params.ThresholdAmount != ''">
+				and ThresholdAmount = #{params.ThresholdAmount}
 			</if>
 			<if test="params.ReductionPrice != null and params.ReductionPrice != ''">
 				and ReductionPrice = #{params.ReductionPrice} 
-			</if>
-			<if test="params.FilmCodes != null and params.FilmCodes != ''">
-				and FilmCodes = #{params.FilmCodes} 
-			</if>
-			<if test="params.GoodsCodes != null and params.GoodsCodes != ''">
-				and GoodsCodes = #{params.GoodsCodes} 
 			</if>
 			<if test="params.IsShare != null and params.IsShare != ''">
 				and IsShare = #{params.IsShare} 
@@ -131,47 +104,20 @@
 			<if test="CouponsName != null">
 				CouponsName = #{CouponsName}, 
 			</if>
-			<if test="ValidityType != null">
-				ValidityType = #{ValidityType}, 
-			</if>
 			<if test="EffectiveDate != null">
 				EffectiveDate = #{EffectiveDate}, 
 			</if>
 			<if test="ExpireDate != null">
 				ExpireDate = #{ExpireDate}, 
 			</if>
-			<if test="EffectiveDays != null">
-				EffectiveDays = #{EffectiveDays}, 
-			</if>
-			<if test="ValidityDays != null">
-				ValidityDays = #{ValidityDays}, 
-			</if>
-			<if test="CanUsePeriodType != null">
-				CanUsePeriodType = #{CanUsePeriodType}, 
-			</if>
-			<if test="WeekDays != null">
-				WeekDays = #{WeekDays}, 
-			</if>
-			<if test="TimePeriod != null">
-				TimePeriod = #{TimePeriod}, 
-			</if>
-			<if test="LimitNum != null">
-				LimitNum = #{LimitNum}, 
-			</if>
 			<if test="ReductionType != null">
 				ReductionType = #{ReductionType}, 
 			</if>
-			<if test="InitialAmount != null">
-				InitialAmount = #{InitialAmount}, 
+			<if test="ThresholdAmount != null">
+				ThresholdAmount = #{ThresholdAmount}, 
 			</if>
 			<if test="ReductionPrice != null">
 				ReductionPrice = #{ReductionPrice}, 
-			</if>
-			<if test="FilmCodes != null">
-				FilmCodes = #{FilmCodes}, 
-			</if>
-			<if test="GoodsCodes != null">
-				GoodsCodes = #{GoodsCodes}, 
 			</if>
 			<if test="IsShare != null">
 				IsShare = #{IsShare}, 
@@ -203,25 +149,12 @@
 			<if test="UsedNumber != null">
 				UsedNumber = #{UsedNumber}, 
 			</if>
-			<if test="SendGroupNumber != null">
-				SendGroupNumber = #{SendGroupNumber}, 
-			</if>
-			<if test="SendNumber != null">
-				SendNumber = #{SendNumber}, 
-			</if>
-			<if test="GiftType != null">
-				GiftType = #{GiftType}, 
-			</if>
 			<if test="CreateDate != null">
 				CreateDate = #{CreateDate}, 
 			</if>
 			<if test="UpdateDate != null">
 				UpdateDate = #{UpdateDate}, 
 			</if>
-			<if test="IsUseChatRoom != null">
-				IsUseChatRoom = #{IsUseChatRoom}, 
-			</if>
-
 		</set>
 
 		where t.id = #{id}

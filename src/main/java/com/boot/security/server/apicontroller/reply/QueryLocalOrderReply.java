@@ -33,7 +33,6 @@ public class QueryLocalOrderReply extends BaseReply {
 		private Double TotalLoveSeatDifferences;	//情侣座总差价
 		private String FeePayType;					//服务费支付类型
 		private Double TotalGuestPayFee;
-		private Double TotalConponPrice;
 		private String OpenID;
 		private List<Seats> Seats;
 		
@@ -132,12 +131,6 @@ public class QueryLocalOrderReply extends BaseReply {
 		}
 		public void setTotalGuestPayFee(Double totalGuestPayFee) {
 			TotalGuestPayFee = totalGuestPayFee;
-		}
-		public Double getTotalConponPrice() {
-			return TotalConponPrice;
-		}
-		public void setTotalConponPrice(Double totalConponPrice) {
-			TotalConponPrice = totalConponPrice;
 		}
 		public String getOpenID() {
 			return OpenID;

@@ -8,8 +8,10 @@ public class PrePayMixOrderQueryJson {
 	private String Password;
 	private String CinemaCode;
 	private String OrderCode;//购票卖品用同一个订单号
-	private String CouponsCode;//卡券码 卖品是订单使用优惠券
-	private Double ReductionPrice;//减免金额  卖品是订单使用优惠券
+	private String CouponsCode;//卡券码
+	private Double ReductionPrice;//减免金额 
+	private String CouponsCode2;//卡券码
+	private Double ReductionPrice2;//减免金额
 	private List<PrePayMixOrderQueryJsonSeat> Seats;
 	private List<PrePayMixOrderQueryJsonGoods> GoodsList;
 	public String getUserName() {
@@ -49,6 +51,19 @@ public class PrePayMixOrderQueryJson {
 	public void setReductionPrice(Double reductionPrice) {
 		ReductionPrice = reductionPrice;
 	}
+	
+	public String getCouponsCode2() {
+		return CouponsCode2;
+	}
+	public void setCouponsCode2(String couponsCode2) {
+		CouponsCode2 = couponsCode2;
+	}
+	public Double getReductionPrice2() {
+		return ReductionPrice2;
+	}
+	public void setReductionPrice2(Double reductionPrice2) {
+		ReductionPrice2 = reductionPrice2;
+	}
 	public List<PrePayMixOrderQueryJsonSeat> getSeats() {
 		return Seats;
 	}
@@ -63,27 +78,12 @@ public class PrePayMixOrderQueryJson {
 	}
 	public static class PrePayMixOrderQueryJsonSeat{
 		private String SeatCode;
-		private String CouponsCode;//卡券码
-		private Double ReductionPrice;//减免金额
 		public String getSeatCode() {
 			return SeatCode;
 		}
 		public void setSeatCode(String seatCode) {
 			SeatCode = seatCode;
 		}
-		public String getCouponsCode() {
-			return CouponsCode;
-		}
-		public void setCouponsCode(String couponsCode) {
-			CouponsCode = couponsCode;
-		}
-		public Double getReductionPrice() {
-			return ReductionPrice;
-		}
-		public void setReductionPrice(Double reductionPrice) {
-			ReductionPrice = reductionPrice;
-		}
-		
 	}
 	public static class PrePayMixOrderQueryJsonGoods{
 		private String GoodsCode;

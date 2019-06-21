@@ -10,7 +10,10 @@ import org.springframework.stereotype.Service;
 import com.boot.security.server.dao.CouponsDao;
 import com.boot.security.server.dao.CouponsgroupDao;
 import com.boot.security.server.model.Coupons;
+import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.CouponsView;
+import com.boot.security.server.model.Goodsorders;
+import com.boot.security.server.model.Orders;
 import com.boot.security.server.service.CouponsService;
 
 @Service
@@ -106,5 +109,72 @@ public class CouponsServiceImpl implements CouponsService{
 	public int save(Coupons Coupons) {
 		// TODO Auto-generated method stub
 		return couponsdao.save(Coupons);
+	}
+	//把优惠价更新到订单
+	public Orders updateCouponsPricetoOrder(Orders order,String CouponsCode){
+		if(!"".equals(CouponsCode)&&CouponsCode!=null){
+			CouponsView couponsview = getWithCouponsCode(CouponsCode);
+			if(couponsview.getCoupons()!=null){
+				boolean ifCanUse = true;
+				//优惠券状态不对
+				if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
+					ifCanUse=false;
+				}
+				//如果是部分门店可用，并且当前订单的影院不在可用门店里面
+				if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
+					if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(order.getCinemaCode())==-1){
+						ifCanUse = false;
+					}
+				}
+				//如果减免类型是影片
+				if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1){
+					order.setCouponsCode(couponsview.getCoupons().getCouponsCode());
+					order.setCouponsPrice(couponsview.getCouponsgroup().getReductionPrice());
+                }else{
+                	order.setCouponsPrice(0D);
+                }
+			}else{
+				order.setCouponsPrice(0D);
+			}
+		}else{
+			order.setCouponsPrice(0D);
+		}
+		Double TotalSalePrice=order.getTotalSalePrice()-order.getCouponsPrice();
+		order.setTotalSalePrice(TotalSalePrice);
+		return order;
+	}
+    public Goodsorders updateCouponsPricetoGoodsOrder(Goodsorders order,String CouponsCode){
+    	if(!"".equals(CouponsCode)&&CouponsCode!=null){
+			CouponsView couponsview = getWithCouponsCode(CouponsCode);
+			if(couponsview.getCoupons()!=null){
+				boolean ifCanUse = true;
+				//优惠券状态不对
+				if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
+					ifCanUse=false;
+				}
+				//如果是部分门店可用，并且当前订单的影院不在可用门店里面
+				if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
+					if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(order.getCinemaCode())==-1){
+						ifCanUse = false;
+					}
+				}
+				//如果减免类型是卖品
+				if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==2){
+					//如果到最后还是可以使用
+					order.setCouponsCode(couponsview.getCoupons().getCouponsCode());
+					order.setCouponsPrice(couponsview.getCouponsgroup().getReductionPrice());
+				}else{
+					order.setCouponsPrice(0D);//优惠券不可使用
+				}
+			}else{
+				order.setCouponsPrice(0D);
+			}
+		}else{
+			order.setCouponsPrice(0D);
+		}
+    	//卖品总结算价=总结算价+总服务费-优惠券金额
+    	Double TotalSettlePrice=order.getTotalSettlePrice()+order.getTotalFee()-order.getCouponsPrice();
+    	order.setTotalSettlePrice(TotalSettlePrice);
+    	return order;
 	}
 }

@@ -141,13 +141,11 @@ public class ConponController {
 							sum++;
 							queryUserConponsBean.setCinemaCode(cou.getCinemaCodes());
 							queryUserConponsBean.setRemark(cou.getRemark());
-							queryUserConponsBean.setGoodsCodes(cou.getGoodsCodes());
-							queryUserConponsBean.setFilmCodes(cou.getFilmCodes());
 							queryUserConponsBean.setPrice(cou.getReductionPrice());
 							queryUserConponsBean.setCouonsType(cou.getCouponsType());
 							queryUserConponsBean.setTitle(cou.getCouponsName());
 							queryUserConponsBean.setCanUseCinemaType(cou.getCanUseCinemaType());
-							queryUserConponsBean.setInitialAmount(cou.getInitialAmount());
+							queryUserConponsBean.setInitialAmount(cou.getThresholdAmount());//门槛金额
 							// 获取可用影院名称
 							String cinemacodeList[] = cou.getCinemaCodes().split(",");
 							String cinemaname = "";
@@ -161,54 +159,7 @@ public class ConponController {
 								queryUserConponsBean.setCinemaName(cinemaname.substring(0, cinemaname.length() - 1));
 							}
 							queryUserConponsBean.setReductionType(cou.getReductionType());
-							// 获取影片名称
-							String filmcodesList[] = cou.getFilmCodes().split(",");
-							String filmname = "";
-							for (int j = 0; j < filmcodesList.length; j++) {
-								Filminfo fil = _filminfoService.getByFilmCode(filmcodesList[j]);
-								if (fil != null) {
-									filmname += fil.getFilmName() + ",";
-								}
-							}
-							if (filmname.length() > 0) {
-								queryUserConponsBean.setFilmName(filmname.substring(0, filmname.length() - 1));
-							}
-							// 获取卖品名称
-							String goodscodeList[] = cou.getGoodsCodes().split(",");
-							String goodsNames = "";
-							for (int j = 0; j < cinemacodeList.length; j++) {
-								for (int m = 0; m < goodscodeList.length; m++) {
-									Goods goo = _goodsService.getByCinemaCodeAndGoodsCode(cinemacodeList[j],
-											goodscodeList[m]);
-									if (goo != null) {
-										goodsNames += goo.getGoodsName() + ",";
-									}
-								}
-							}
-							if (goodsNames.length() > 0) {
-								queryUserConponsBean.setGoodsName(goodsNames.substring(0, goodsNames.length() - 1));
-							}
-							queryUserConponsBean.setCanUsePeriodType(cou.getCanUsePeriodType());
-							queryUserConponsBean.setWeekDays(cou.getWeekDays());
-							queryUserConponsBean.setTimePeriod(cou.getTimePeriod());
-							if (cou.getReductionType() == 1
-									&& (cou.getFilmCodes().equals("") || cou.getFilmCodes().equals(null))) {
-								queryUserConponsBean.setIsAllFilm(true);
-							}
-							if (cou.getReductionType() == 1
-									&& (!cou.getFilmCodes().equals("") && !cou.getFilmCodes().equals(null))) {
-								queryUserConponsBean.setIsAllFilm(false);
-							}
-							if (cou.getReductionType() == 2
-									&& (cou.getGoodsCodes().equals("") || cou.getGoodsCodes().equals(null))) {
-								queryUserConponsBean.setIsAllGoods(true);
-							}
-							if (cou.getReductionType() == 2
-									&& (!cou.getGoodsCodes().equals("") && !cou.getGoodsCodes().equals(null))) {
-								queryUserConponsBean.setIsAllGoods(false);
-							}
 							queryUserConponsBean.setIsShare(cou.getIsShare());
-							
 							queryUserConponsBeanss.add(queryUserConponsBean);
 						}
 					data.setConponCount(sum);
@@ -268,15 +219,6 @@ public class ConponController {
 		//进行绑定
 		coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
 		coupons.setOpenID(OpenID);
-		coupons.setReceiveDate(new Date());
-		//更新有效期
-		if(couponsgroup.getValidityType()==2){
-			Calendar c = Calendar.getInstance();
-			c.add(Calendar.DAY_OF_MONTH, couponsgroup.getEffectiveDays());
-			coupons.setEffectiveDate(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(c.getTime())));
-			c.add(Calendar.DAY_OF_MONTH, couponsgroup.getValidityDays());
-			coupons.setExpireDate(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(c.getTime())));
-		}
 		if(_couponsService.update(coupons)>0){
 			//更新优惠券数量
 			couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()+1);
