@@ -144,9 +144,9 @@ public class WebService {
 					SessionCode, TokenId, Token, userCinema.getDefaultPassword());
 			String result = WebService.cinemaTss(userCinema.getUrl()).getPlanSiteState(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), SessionCode, TokenId, pVerifyInfo);
-//			System.out.println(result);
+			System.out.println("座位状态-----"+result);
 			Gson gson = new Gson();
-			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "GetPlanSiteState"), MtxGetPlanSiteStateResult.class);
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "GetPlanSiteStateResult"), MtxGetPlanSiteStateResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -170,7 +170,7 @@ public class WebService {
 			Random rand = new Random();
 			int x = rand.nextInt(900) + 100;
 			param.setSerialNum(str + x);
-			System.out.println("锁座流水号" + str + x);
+//			System.out.println("锁座流水号" + str + x);
 			orderView.getOrderBaseInfo().setSerialNum(str + x);
 			MtxRealCheckSeatStateXmlSeatInfos seatInfoList = new MtxRealCheckSeatStateXmlSeatInfos();
 			List<MtxRealCheckSeatStateXmlSeatInfo> seatinfos = new ArrayList<MtxRealCheckSeatStateXmlSeatInfo>();
@@ -196,9 +196,9 @@ public class WebService {
 			// 把请求参数转成xml
 			String LockSeatXml = JaxbXmlUtil.convertToXml(param);
 			String result = WebService.cinemaTss(userCinema.getUrl()).liveRealCheckSeatState(LockSeatXml);
-//			System.out.println("锁座返回：" + result);
+			System.out.println("锁座返回：" + result);
 			Gson gson = new Gson();
-			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "MtxLiveRealCheckSeatStateResult"),
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "RealCheckSeatStateResult"),
 					MtxLiveRealCheckSeatStateResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -218,7 +218,7 @@ public class WebService {
 					userCinema.getCinemaCode(), orderView.getOrderBaseInfo().getLockOrderCode(), TokenId, pVerifyInfo);
 //			System.out.println(result);
 			Gson gson = new Gson();
-			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "UnLockOrderCenCin"),
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "UnLockOrderCenCinResult"),
 					MtxUnLockOrderCenCinResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -273,9 +273,9 @@ public class WebService {
 			String SellTicketXml = JaxbXmlUtil.convertToXml(param);
 
 			String result = WebService.cinemaTss(userCinema.getUrl()).sellTicket(SellTicketXml);
-//			System.out.println("提交订单返回：" + result);
+			System.out.println("提交订单返回：" + result);
 			Gson gson = new Gson();
-			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "SellTicket"), MtxSellTicketResult.class);
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "SellTicketResult"), MtxSellTicketResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -293,7 +293,7 @@ public class WebService {
 					userCinema.getCinemaCode(), orderView.getOrderBaseInfo().getSerialNum(), TokenId, pVerifyInfo);
 //			System.out.println(result);
 			Gson gson = new Gson();
-			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "GetOrderStatus"), MtxGetOrderStatusResult.class);
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "GetOrderStatusResult"), MtxGetOrderStatusResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -311,7 +311,7 @@ public class WebService {
 					pVerifyInfo);
 //			System.out.println(result);
 			Gson gson = new Gson();
-			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "BackTicket"), MtxBackTicketResult.class);
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "BackTicketResult"), MtxBackTicketResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -331,7 +331,7 @@ public class WebService {
 					orderView.getOrderBaseInfo().getVerifyCode(), requestType, TokenId, pVerifyInfo);
 //			System.out.println(result);
 			Gson gson = new Gson();
-			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "MtxAppPrintTicketResult"),
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "AppPrintTicketResult"),
 					MtxAppPrintTicketResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();

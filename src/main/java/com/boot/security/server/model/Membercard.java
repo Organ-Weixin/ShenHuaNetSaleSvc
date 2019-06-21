@@ -24,6 +24,7 @@ public class Membercard extends BaseEntity<Long> {
 	private String CinemaCodes;
 	private Date Updated;
 	private Integer Status;
+	private Integer AccStatus;
 
 	public Long getId() {
 		return Id;
@@ -138,6 +139,12 @@ public class Membercard extends BaseEntity<Long> {
 	}
 	public void setCinemaCodes(String cinemaCodes) {
 		CinemaCodes = cinemaCodes;
+	}
+	public Integer getAccStatus() {
+		return AccStatus;
+	}
+	public void setAccStatus(Integer accStatus) {
+		AccStatus = accStatus;
 	}
 	
 }

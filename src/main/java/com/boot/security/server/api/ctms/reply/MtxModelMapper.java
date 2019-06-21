@@ -5,7 +5,6 @@ import java.util.Date;
 
 import com.boot.security.server.model.Screenseatinfo;
 import com.boot.security.server.model.LoveFlagEnum;
-import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Sessioninfo;
 
@@ -58,47 +57,5 @@ public class MtxModelMapper {
 		 entity.setUpdateTime(new Date());
 		 return entity;
 	 }
-	
-	 //获取影院会员卡级别接口转为entity
-	public static Membercardlevel MapToEntity(MtxGetCardTypeResult.ResBean.MemberTypesBean.MemberTypeBean model,
-			Membercardlevel entity) {
-		entity.setLevelCode(model.getMemberType());// 会员卡类型编号
-		entity.setLevelName(model.getMemberTypeName());// 会员卡类型名称
-		return entity;
-	}
-
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
 	 
 }

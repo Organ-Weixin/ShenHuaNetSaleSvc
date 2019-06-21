@@ -63,31 +63,27 @@ public class Webservice {
 	 * 		合作商代码		影院编号  合作商流水号  卡号         芯片号         会员卡密码   手机号			证件号     校验
 	 * Md5((partnerCode + placeNo + partnerId + cardNo + memoryId + passWord + mobilePhone + idNum + partnerKey)小写)小写
 	 * */
-	public static MtxRegisterCardResult RegisterCard(Usercinemaview userCinema, String CardPassword, String LevelCode,
+	public static MtxRegisterCardResult RegisterCard(Usercinemaview userCinema, String cardNo, String CardPassword, String LevelCode,
 			String InitialAmount, String CardUserName, String MobilePhone, String IDNumber, String Sex) {
 		try {
-			String partnerId = "";// 合作商流水号(最大20位)
-			String cardNo = RandomStringUtils.randomNumeric(16);;// 卡号(最大长度16位)
-			System.out.println("卡号"+cardNo);
+			String partnerId = "";// 合作商流水号(最大20位)	
 			String memoryId = RandomStringUtils.randomNumeric(20);;// 芯片号(最大长度20位)
-			System.out.println("芯片号"+cardNo);
-			String passWord = CardPassword;// 会员卡密码
 			String score = "0";// 初始积分
 			String birthday = "";// 出生日期
 			String email = "";
 			String address = "";
-			String lifeDate = "2020-02-02";
+			String lifeDate = "2039-01-01";
 			String traceMemo = "";
 			//满天星会员卡注册的校验信息只需要这几个字段即可
 			String validateKey = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
-					partnerId, cardNo, memoryId, passWord, MobilePhone, IDNumber, userCinema.getDefaultPassword());
-			String result = Webservice.cinemaTss(userCinema.getUrl()).registerCard(userCinema.getDefaultUserName(),
+					partnerId, cardNo, memoryId, CardPassword, MobilePhone, IDNumber, userCinema.getDefaultPassword());
+			String result = Webservice.cinemaTss(userCinema.getMemberUrl()).registerCard(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), partnerId, cardNo, memoryId, CardPassword, MobilePhone, IDNumber,
 					CardUserName, InitialAmount, score, LevelCode,Sex, birthday, email, address, lifeDate, traceMemo,
 					validateKey);
 //			System.out.println("registerCard 带卡号的会员卡开户接口返回"+result);
 			Gson gson = new Gson();
-			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "RegisterCard"), MtxRegisterCardResult.class);
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "RegisterMemberReturn"), MtxRegisterCardResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -103,7 +99,7 @@ public class Webservice {
 			String mobilePhone = "";
 			String validateKey = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
 					partnerId, CardNo, mobilePhone, CardPassword, userCinema.getDefaultPassword());
-			String result = Webservice.cinemaTss(userCinema.getUrl()).loginCard(userCinema.getDefaultUserName(),
+			String result = Webservice.cinemaTss(userCinema.getMemberUrl()).loginCard(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), partnerId, CardNo, mobilePhone, CardPassword, validateKey);
 //			System.out.println("loginCard会员卡登录接口返回" + result);
 			Gson gson = new Gson();
@@ -124,11 +120,11 @@ public class Webservice {
 			String memoryId = "*" + CardNo;
 			String validateKey = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
 					partnerId, memoryId, userCinema.getDefaultPassword());
-			String result = Webservice.cinemaTss(userCinema.getUrl()).queryCard(userCinema.getDefaultUserName(),
+			String result = Webservice.cinemaTss(userCinema.getMemberUrl()).queryCard(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), partnerId, memoryId, validateKey);
-//			System.out.println("queryCard 查询会员卡账户信息返回" + result);
+			System.out.println("queryCard 查询会员卡账户信息返回" + result);
 			Gson gson = new Gson();
-			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "QueryCard"), MtxQueryCardResult.class);
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "QueryCardReturn"), MtxQueryCardResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -151,7 +147,7 @@ public class Webservice {
 			String validateKey = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
 					partnerId, CardNo, mobilePhone, SessionCode, featureDate, featureTime,
 					userCinema.getDefaultPassword());
-			String result = Webservice.cinemaTss(userCinema.getUrl()).getDiscount(userCinema.getDefaultUserName(),
+			String result = Webservice.cinemaTss(userCinema.getMemberUrl()).getDiscount(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), partnerId, CardNo, mobilePhone, SessionCode, featureDate, featureTime,
 					validateKey);
 //			System.out.println("getDiscount 折扣查询返回" + result);
@@ -181,7 +177,7 @@ public class Webservice {
 			String validateKey = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
 					partnerId, CardNo, mobilePhone, CardPassword, traceTypeNo, String.valueOf(PayAmount), tracePrice,
 					discount, SessionCode, FilmCode, TicketNum, userCinema.getDefaultPassword());
-			String result = Webservice.cinemaTss(userCinema.getUrl()).serialCardPay(userCinema.getDefaultUserName(),
+			String result = Webservice.cinemaTss(userCinema.getMemberUrl()).serialCardPay(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), partnerId, CardNo, mobilePhone, CardPassword, traceTypeNo,
 					String.valueOf(PayAmount), tracePrice, discount, SessionCode, FilmCode, TicketNum, traceMemo,
 					validateKey);
@@ -210,7 +206,7 @@ public class Webservice {
 			String validateKey = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
 					partnerId, CardNo, mobilePhone, CardPassword, traceType, TradeNo, tracePrice,
 					String.valueOf(PayBackAmount), traceMemo, userCinema.getDefaultPassword());
-			String result = Webservice.cinemaTss(userCinema.getUrl()).serialCardPayBack(userCinema.getDefaultUserName(),
+			String result = Webservice.cinemaTss(userCinema.getMemberUrl()).serialCardPayBack(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), partnerId, CardNo, mobilePhone, CardPassword, traceType, TradeNo,
 					tracePrice, String.valueOf(PayBackAmount), traceMemo, validateKey);
 //			System.out.println("serialCardPayBack会员卡冲费（撤销）接口（流水号必传）返回" + result);
@@ -230,7 +226,7 @@ public class Webservice {
 			String mobilePhone = "";
 			String validateKey = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(), CardNo,
 					mobilePhone, CardPassword, StartDate, EndDate, userCinema.getDefaultPassword());
-			String result = Webservice.cinemaTss(userCinema.getUrl()).getCardTraceRecord(
+			String result = Webservice.cinemaTss(userCinema.getMemberUrl()).getCardTraceRecord(
 					userCinema.getDefaultUserName(), userCinema.getCinemaCode(), CardNo, mobilePhone, CardPassword,
 					StartDate, EndDate, validateKey);
 //			System.out.println("getCardTraceRecord查询会员卡交易记录接口返回" + result);
@@ -258,7 +254,7 @@ public class Webservice {
 			String validateKey = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
 					partnerId, CardNo, mobilePhone, CardPassword, String.valueOf(ChargeAmount), traceMemo,
 					userCinema.getDefaultPassword());
-			String result = Webservice.cinemaTss(userCinema.getUrl()).serialCardRecharge(
+			String result = Webservice.cinemaTss(userCinema.getMemberUrl()).serialCardRecharge(
 					userCinema.getDefaultUserName(), userCinema.getCinemaCode(), partnerId, CardNo, mobilePhone,
 					CardPassword, String.valueOf(ChargeAmount), traceMemo, validateKey);
 //			System.out.println("serialCardRecharge会员卡充值接口（流水号必传）返回" + result);
@@ -276,11 +272,11 @@ public class Webservice {
 		try {
 			String validateKey = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
 					userCinema.getDefaultPassword());
-			String result = Webservice.cinemaTss(userCinema.getUrl()).getCardType(userCinema.getDefaultUserName(),
+			String result = Webservice.cinemaTss(userCinema.getMemberUrl()).getCardType(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), validateKey);
 //			System.out.println("getCardType获取影院会员卡级别接口返回" + result);
 			Gson gson = new Gson();
-			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "GetCardType"), MtxGetCardTypeResult.class);
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "GetCardTypeReturn"), MtxGetCardTypeResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

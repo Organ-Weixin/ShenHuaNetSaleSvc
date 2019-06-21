@@ -59,7 +59,9 @@
 			<if test="params.Status != null and params.Status != ''">
 				and Status = #{params.Status} 
 			</if>
-		
+			<if test="params.AccStatus != null and params.AccStatus != ''">
+				and AccStatus = #{params.AccStatus} 
+			</if>
 		</where>
 	</sql>
 
@@ -132,7 +134,9 @@
 			<if test="Status != null">
 				Status = #{Status}, 
 			</if>
-
+			<if test="AccStatus != null">
+				AccStatus = #{AccStatus}, 
+			</if>
 		</set>
 
 		where t.id = #{id}

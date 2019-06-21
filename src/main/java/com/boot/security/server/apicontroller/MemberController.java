@@ -890,7 +890,7 @@ public class MemberController {
 				return cardRegisterReply;
 			}
 			Cinemaview cinemaview = cinemaviewService.getByCinemaCode(CinemaCode);
-			if(cinemaview.getCinemaType() == CinemaTypeEnum.YueKe.getTypeCode()){	//粤科的会员卡密码为6位数字
+			if(cinemaview.getCinemaType() == CinemaTypeEnum.YueKe.getTypeCode() || cinemaview.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode()){	//粤科和满天星的会员卡密码为6位数字
 				Pattern pattern = Pattern.compile("\\d{6}");
 				boolean matches = pattern.matcher(CardPassword).matches();
 				if(!matches){

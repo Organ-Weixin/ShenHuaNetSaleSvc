@@ -31,7 +31,7 @@ public interface MembercardDao {
     int memberCardUnbind(@Param("cinemacode") String cinemacode,@Param("cardno") String cardno);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into membercard(Id, CinemaCode, CardNo, CardPassword, MobilePhone, LevelCode, LevelName, Score, Balance, UserName, Sex, CreditNum, Birthday, ExpireDate, CreateTime,CinemaCodes, Updated, Status) values(#{Id}, #{CinemaCode}, #{CardNo}, #{CardPassword}, #{MobilePhone}, #{LevelCode}, #{LevelName}, #{Score}, #{Balance}, #{UserName}, #{Sex}, #{CreditNum}, #{Birthday}, #{ExpireDate}, #{CreateTime},#{CinemaCodes}, #{Updated}, 0)")
+    @Insert("insert into membercard(CinemaCode, OpenId, CardNo, CardPassword, MobilePhone, LevelCode, LevelName, Score, Balance, UserName, Sex, CreditNum, Birthday, ExpireDate, CreateTime, CinemaCodes, Updated, Status, AccStatus) values(#{CinemaCode}, #{OpenId}, #{CardNo}, #{CardPassword}, #{MobilePhone}, #{LevelCode}, #{LevelName}, #{Score}, #{Balance}, #{UserName}, #{Sex}, #{CreditNum}, #{Birthday}, #{ExpireDate}, #{CreateTime}, #{CinemaCodes}, #{Updated}, #{Status}, #{AccStatus})")
     int save(Membercard membercard);
     
     int count(@Param("params") Map<String, Object> params);
