@@ -17,6 +17,8 @@ import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply;
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions;
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions.QueryFilmSessionsReplyFilm;
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions.QueryFilmSessionsReplyFilm.QueryFilmSessionsReplySession;
+import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions.QueryFilmSessionsReplyFilm.QueryFilmSessionsReplyDirector;
+import com.boot.security.server.apicontroller.reply.QueryFilmSessionsReply.QueryFilmSessionsReplyFilmSessions.QueryFilmSessionsReplyFilm.QueryFilmSessionsReplyCast;
 import com.boot.security.server.apicontroller.reply.QueryOrderSessionReply;
 import com.boot.security.server.apicontroller.reply.QueryOrderSessionReply.QueryOrderSessionReplyOrderSession;
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionPriceReply.QueryFimlSessionPriceReplyFilm;
@@ -25,7 +27,10 @@ import com.boot.security.server.apicontroller.reply.QueryFilmSessionPriceReply.Q
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionPriceReply.QueryFimlSessionPriceReplyFilm.QueryFimlSessionPriceReplySessionDate.QueryFimlSessionPriceReplySession.QueryFimlSessionPriceReplyMemberPrice;
 import com.boot.security.server.apicontroller.reply.QueryFilmSessionPriceReply.QueryFimlSessionPriceReplyFilm.QueryFimlSessionPriceReplySessionDate.QueryFimlSessionPriceReplySession.QueryFimlSessionPriceReplySessionPrice;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
+import com.boot.security.server.model.Actor;
+import com.boot.security.server.model.Actorconfiguration;
 import com.boot.security.server.model.Cinema;
+import com.boot.security.server.model.Director;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Membercardcreditrule;
 import com.boot.security.server.model.Membercardlevel;
@@ -34,7 +39,10 @@ import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Sessioninfo;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.modelView.Sessioninfoview;
+import com.boot.security.server.service.impl.ActorServiceImpl;
+import com.boot.security.server.service.impl.ActorconfigurationServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
+import com.boot.security.server.service.impl.DirectorServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MembercardcreditruleServiceImpl;
@@ -67,6 +75,13 @@ public class SessionController {
 	private MembercardcreditruleServiceImpl _membercardcreditruleService;
 	@Autowired
 	private SessioninfoviewServiceImpl _sessioninfoviewService;
+	@Autowired
+	private ActorconfigurationServiceImpl _actorconfigurationService;
+	@Autowired
+	private DirectorServiceImpl _directorService;
+	@Autowired
+	private ActorServiceImpl _actorService;
+	
 	@GetMapping("/QueryFilmSessions/{UserName}/{Password}/{CinemaCode}")
 	@ApiOperation(value = "获取场次影片信息")
 	public QueryFilmSessionsReply QueryFilmSessions(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode) throws ParseException{
@@ -114,15 +129,14 @@ public class SessionController {
 				filmReply.setLanguage(film.getLanguage());
 				filmReply.setName(film.getFilmName());
 				Filminfo filminfo = _filminfoService.getByFilmCode(filmcode);
+				//获取影片信息
 				if(filminfo!=null){
 					filmReply.setArea(filminfo.getArea());
-					filmReply.setCast(filminfo.getCast());
-					filmReply.setDirector(filminfo.getDirector());
 					filmReply.setImage(filminfo.getImage());
 					filmReply.setIntroduction(filminfo.getIntroduction());
 					filmReply.setProducer(filminfo.getProducer());
 					if(filminfo.getPublishDate()!=null){
-						filmReply.setPublishDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(filminfo.getPublishDate()));
+						filmReply.setPublishDate(new SimpleDateFormat("yyyy-MM-dd").format(filminfo.getPublishDate()));
 					}
 					filmReply.setPublisher(filminfo.getPublisher());
 					if(filminfo.getScore()!=null){
@@ -132,9 +146,49 @@ public class SessionController {
 					filmReply.setTrailer(filminfo.getTrailer());
 					filmReply.setType(filminfo.getType());
 					filmReply.setVersion(filminfo.getVersion());
+					filmReply.setStagePhoto1(filminfo.getStagePhoto1());
+					filmReply.setStagePhoto2(filminfo.getStagePhoto2());
+					filmReply.setStagePhoto3(filminfo.getStagePhoto3());
+					filmReply.setStagePhoto4(filminfo.getStagePhoto4());
+					filmReply.setStagePhoto5(filminfo.getStagePhoto5());
+					filmReply.setStagePhoto6(filminfo.getStagePhoto6());
+					//获取影片对应的导演编码
+					List<Actorconfiguration> directorList = _actorconfigurationService.getByFilmCodeAndType(filminfo.getFilmCode(), "1");
+					List<QueryFilmSessionsReplyDirector> directorReplyList = new ArrayList<QueryFilmSessionsReplyDirector>();
+					if(directorList.size()>0){
+						for(Actorconfiguration director : directorList){
+							//获取导演信息
+							Director directorE = _directorService.getById(director.getId());
+							if(directorE!=null){
+								QueryFilmSessionsReplyDirector directorReply = new QueryFilmSessionsReplyDirector();
+								directorReply.setDirectorName(directorE.getName());
+								directorReply.setDirectorPicture(directorE.getPicture());
+								directorReplyList.add(directorReply);
+							}
+						}
+					}
+					//添加导演信息到实体
+					filmReply.setDirector(directorReplyList);
+					//获取影片对应的演员编码
+					List<Actorconfiguration> actorList = _actorconfigurationService.getByFilmCodeAndType(filminfo.getFilmCode(), "2");
+					List<QueryFilmSessionsReplyCast> actorReplyList = new ArrayList<QueryFilmSessionsReplyCast>();
+					if(directorList.size()>0){
+						for(Actorconfiguration actor : actorList){
+							Actor catorE = _actorService.getById(actor.getId());
+							if(catorE!=null){
+								QueryFilmSessionsReplyCast actorReply = new QueryFilmSessionsReplyCast();
+								actorReply.setCastName(catorE.getName());
+								actorReply.setCastPicture(catorE.getPicture());
+								actorReplyList.add(actorReply);
+							}
+						}
+					}
+					//添加演员信息到实体
+					filmReply.setCast(actorReplyList);
 				}
 				List<Sessioninfo> sessionList = _sessionInfoService.getByCinemaCodeAndFilmCodeAndTime(film.getCCode(), filmcode, StartDate);
 				List<QueryFilmSessionsReplySession> sessionReplyList = new ArrayList<QueryFilmSessionsReplySession>();
+				//获取排期中的信息
 				for(Sessioninfo session :sessionList){
 					QueryFilmSessionsReplySession sessionReply = new QueryFilmSessionsReplySession();
 					sessionReply.setFeatureNo(session.getFeatureNo());

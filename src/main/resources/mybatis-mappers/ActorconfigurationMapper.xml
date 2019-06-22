@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.security.server.dao.ActorconfigurationDao">
+
+	<sql id="where">
+		<where>
+			<if test="params.Id != null and params.Id != ''">
+				and Id = #{params.Id} 
+			</if>
+			<if test="params.FilmCode != null and params.FilmCode != ''">
+				and FilmCode = #{params.FilmCode} 
+			</if>
+			<if test="params.ActorId != null and params.ActorId != ''">
+				and ActorId = #{params.ActorId} 
+			</if>
+			<if test="params.Type != null and params.Type != ''">
+				and Type = #{params.Type} 
+			</if>
+		
+		</where>
+	</sql>
+
+	<select id="count" resultType="int">
+		select count(1) from actorconfiguration t
+		<include refid="where" />
+	</select>
+
+	<select id="list" resultType="Actorconfiguration">
+		select * from actorconfiguration t
+		<include refid="where" />
+		${params.orderBy}
+		limit #{offset}, #{limit}
+	</select>
+
+	<update id="update">
+		update actorconfiguration t
+		<set>
+			<if test="Id != null">
+				Id = #{Id}, 
+			</if>
+			<if test="FilmCode != null">
+				FilmCode = #{FilmCode}, 
+			</if>
+			<if test="ActorId != null">
+				ActorId = #{ActorId}, 
+			</if>
+			<if test="Type != null">
+				Type = #{Type}, 
+			</if>
+
+		</set>
+
+		where t.id = #{id}
+	</update>
+
+</mapper>

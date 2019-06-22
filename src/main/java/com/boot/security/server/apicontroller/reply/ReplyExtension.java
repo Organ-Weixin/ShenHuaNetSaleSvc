@@ -1455,4 +1455,22 @@ public class ReplyExtension {
 		return true;
 	}
 	//endregion
+	
+	//region UpdateHeadUrlReply
+	public static boolean RequestInfoGuard(UpdateHeadUrlReply reply, String UserName, String Password,String OpenID) {
+		if (UserName == null || "".equals(UserName)) {
+			reply.SetNecessaryParamMissReply("UserName");
+			return false;
+		}
+		if (Password == null || "".equals(Password)) {
+			reply.SetNecessaryParamMissReply("Password");
+			return false;
+		}
+		if (OpenID == null || "".equals(OpenID)) {
+			reply.SetNecessaryParamMissReply("openID");
+			return false;
+		}
+		return true;
+	}
+	//endregion
 }

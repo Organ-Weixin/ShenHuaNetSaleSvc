@@ -1,14 +1,22 @@
 package com.boot.security.server.apicontroller;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +24,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.boot.security.server.apicontroller.reply.CheckUserFilmOrdersReply;
 import com.boot.security.server.apicontroller.reply.Jscode2sessionReply;
@@ -44,6 +56,8 @@ import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.apicontroller.reply.RoomGiftInput;
 import com.boot.security.server.apicontroller.reply.SendVerifyCodeReply;
 import com.boot.security.server.apicontroller.reply.SendVerifyCodeReply.SendVerifyCodeBean;
+import com.boot.security.server.apicontroller.reply.UpdateHeadUrlReply;
+import com.boot.security.server.apicontroller.reply.UpdateHeadUrlReply.UpdateHeadUrlReplyHeadUrl;
 import com.boot.security.server.apicontroller.reply.UpdateUserInfoReply;
 import com.boot.security.server.apicontroller.reply.UpdateUserWantedFilmReply;
 import com.boot.security.server.apicontroller.reply.UserInfo;
@@ -53,7 +67,6 @@ import com.boot.security.server.apicontroller.reply.UserLoginReply.UserLoginResu
 import com.boot.security.server.apicontroller.reply.UserPhoneInput;
 import com.boot.security.server.apicontroller.reply.UserWXResult;
 import com.boot.security.server.dao.GoodsorderdetailsDao;
-import com.boot.security.server.dao.MiniprogramordersviewDao;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaMiniProgramAccounts;
 import com.boot.security.server.model.CouponGroupStatusEnum;
@@ -63,7 +76,6 @@ import com.boot.security.server.model.Couponsgroup;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
-import com.boot.security.server.model.Miniprogramordersview;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Registeractive;
@@ -94,7 +106,9 @@ import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.AESHelper;
+import com.boot.security.server.utils.FileUploadUtils;
 import com.boot.security.server.utils.HttpHelper;
+import com.boot.security.server.utils.PropertyHolder;
 import com.boot.security.server.utils.SendSmsHelper;
 import com.google.gson.Gson;
 
@@ -122,8 +136,6 @@ public class AppUserController {
 	private GoodsOrderServiceImpl _goodsOrderService;
 	@Autowired
 	private GoodsorderdetailsDao goodsorderdetailsDao;
-	@Autowired
-	private MiniprogramordersviewDao miniprogramordersviewDao;
 	@Autowired
 	private RegisteractiveServiceImpl registeractiveService;
 	@Autowired
@@ -932,6 +944,99 @@ public class AppUserController {
 		}
 		return updateUserInfoReply;
 	}
+	
+	//region 修改头像
+    @RequestMapping(value = "/UpdateHeadUrl", method = {RequestMethod.POST})
+    @ResponseBody
+    public UpdateHeadUrlReply filmImage(@RequestParam(value="file",required=false) MultipartFile file, HttpServletRequest request, HttpServletResponse response,UserInfo userinfo) throws Exception {
+    	UpdateHeadUrlReply updateHeadUrlReply = new UpdateHeadUrlReply();
+    	//校验参数
+    	if (!ReplyExtension.RequestInfoGuard(updateHeadUrlReply, userinfo.getUserName(), userinfo.getPassword(), userinfo.getOpenID())) {
+			return updateHeadUrlReply;
+		}
+		// 获取用户信息
+		Userinfo UserInfo = _userInfoService.getByUserCredential(userinfo.getUserName(), userinfo.getPassword());
+		if (UserInfo == null) {
+			updateHeadUrlReply.SetUserCredentialInvalidReply();
+			return updateHeadUrlReply;
+		}
+		//验证用户OpenId是否存在
+		Ticketusers ticketuser = _ticketusersService.getByopenids(userinfo.getOpenID());
+		if(ticketuser == null){
+			updateHeadUrlReply.SetOpenIDNotExistReply();
+			return updateHeadUrlReply;
+		}
+    	Map<String,Object> map2=new HashMap<>();
+        Map<String,Object> map=new HashMap<>();
+    	String suffix="";
+        String saveroot="";
+        String returnroot="";
+        String path="";
+        String fileName="";
+        //保存上传
+        OutputStream out = null;
+        InputStream fileInput=null;
+        System.out.println("file="+file);
+        try{
+            if(file!=null){
+                String originalName = file.getOriginalFilename();
+                suffix=originalName.substring(originalName.lastIndexOf(".")+1);//文件后缀
+                returnroot=request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+request.getContextPath()+"/upload";
+                //上线路径
+        		saveroot=PropertyHolder.get().getServerPath()+"/upload";
+                path=new SimpleDateFormat("yyyyMM").format(new Date());
+                fileName=new Date().getTime()+new Random().nextInt(1000)+"." +suffix;//新的文件名
+                File files =new File(saveroot+ File.separator +path+ File.separator);
+                File targetFile = new File(files, fileName);
+                if(!targetFile.getParentFile().exists()){
+                	targetFile.getParentFile().mkdirs();
+                }
+                file.transferTo(targetFile);
+                System.out.println(targetFile);
+                
+                //上传到OSS服务器
+        		if(true){
+        			String BUCKET="whtxcx";
+        			String BUCKETPATH ="upload";
+        			String filePath="/" +path+ "/"+fileName;
+        			String mess = FileUploadUtils.uploadOss(saveroot,filePath,BUCKET,BUCKETPATH);
+        			System.out.println(mess);
+        			if(!"".equals(mess)){
+        				map.put("code",-1);
+        		        map.put("msg","图片上传出错："+mess);
+        			}
+        			map2.put("src","https://"+BUCKET+".oss-cn-hangzhou.aliyuncs.com/"+BUCKETPATH+"/"+path+"/"+fileName); 
+        		}else{
+        			map2.put("src",returnroot +"/" + path + "/" +fileName); 
+        		}
+            }
+        }catch (Exception e){
+        }finally{
+	        try {
+	            if(out!=null){
+	                out.close();
+	            }
+	            if(fileInput!=null){
+	                fileInput.close();
+	            }
+	        } catch (IOException e) {
+	        }
+        }
+        UpdateHeadUrlReplyHeadUrl data = new UpdateHeadUrlReplyHeadUrl();
+        //更新到数据库
+        ticketuser.setHeadImgUrl(String.valueOf(map2.get("src")));
+        int result = _ticketusersService.update(ticketuser);
+		if(result>0){
+			data.setHeadUrl(String.valueOf(map2.get("src")));
+		}
+		System.out.println("map="+new Gson().toJson(map));
+		System.out.println("map2="+new Gson().toJson(map2));
+        updateHeadUrlReply.setData(data);
+        updateHeadUrlReply.SetSuccessReply();
+        return updateHeadUrlReply;
+    }
+    //endregion
+    
 	public static void main(String[] args) {
 		String sub = "123456";
 		System.out.println(sub.length());

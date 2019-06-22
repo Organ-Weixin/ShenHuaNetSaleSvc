@@ -150,6 +150,7 @@ public class FilminfoController {
     @RequestMapping(value = "/upload/filmImage", method = {RequestMethod.POST})
     @ResponseBody
     public Object filmImage(@RequestParam(value="file",required=false) MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	System.out.println("file="+file);
     	Map<String,Object> map2=new HashMap<>();
         Map<String,Object> map=new HashMap<>();
     	String suffix="";
@@ -210,6 +211,8 @@ public class FilminfoController {
         map.put("code",0);
         map.put("msg","上传成功！");
         map.put("data",map2);
+        System.out.println("map="+new Gson().toJson(map));
+        System.out.println("map2="+new Gson().toJson(map2));
         return map;
     }
     //endregion

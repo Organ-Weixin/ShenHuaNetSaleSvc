@@ -112,6 +112,7 @@ var example;
 function init(){
 	example = 
     	$('#dt-table').DataTable({
+    		//'paging':false,
         	"searching": false,
         	"processing": false,
         	"serverSide" : true,
@@ -134,7 +135,7 @@ function init(){
     				d.cinemacode = $("#cinemacodes").val();
     			}
         	},
-        	"buttons": [  
+        	/* "buttons": [  
                 {  
                     'extend': 'excelHtml5',  
                     'className': 'btn btn-primary',
@@ -146,9 +147,9 @@ function init(){
                         }  
                     }  
                 }  
-            ],
+            ], */
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",
-        	"dom": 'Bfrtip',
+        	//"dom": 'Bfrtip',
             "columns": [
 				{"data" : null, "defaultContent" : "","orderable":false,
 					"render" : function(data, type, full, meta){
@@ -206,23 +207,12 @@ function init(){
                     	return orderStatusEnum[data];
                   	}	
 				},
-				/* { 
-								"data": "", 
-								"defaultContent": "",
-								"orderable":false,
-						        "render": function (data, type, row) {
-                		           var id = row['id'];
-                		           var href = "updateAdminorderview.html?id=" + id;
-                                   var edit = buttonEdit(href, "", pers); 
-                		           var del = buttonDel(id, "", pers);
-                                   return edit + del; 
-                  	            }		
-							}, */
-                
             ],
            "order": [[ 0, "asc" ]]
         } );
+	
 }
+
 layui.use(['layer','laydate'], function(){
     var layer = layui.layer;
     var laydate = layui.laydate;
