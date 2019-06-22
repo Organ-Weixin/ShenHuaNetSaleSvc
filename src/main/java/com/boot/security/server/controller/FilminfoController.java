@@ -178,7 +178,7 @@ public class FilminfoController {
                 	targetFile.getParentFile().mkdirs();
                 }
                 file.transferTo(targetFile);
-                System.out.println(targetFile);
+                System.out.println("targetFile="+targetFile);
                 
                 //上传到OSS服务器
         		if(true){
@@ -186,7 +186,7 @@ public class FilminfoController {
         			String BUCKETPATH ="upload";
         			String filePath="/" +path+ "/"+fileName;
         			String mess = FileUploadUtils.uploadOss(saveroot,filePath,BUCKET,BUCKETPATH);
-        			System.out.println(mess);
+        			System.out.println("mess="+mess);
         			if(!"".equals(mess)){
         				map.put("code",-1);
         		        map.put("msg","图片上传出错："+mess);
