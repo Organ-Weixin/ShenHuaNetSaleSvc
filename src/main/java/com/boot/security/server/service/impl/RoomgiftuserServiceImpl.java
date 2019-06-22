@@ -21,8 +21,8 @@ public class RoomgiftuserServiceImpl implements RoomgiftuserService {
 	}
 
 	@Override
-	public List<Roomgiftuser> getByOpenidAndRoom(String gifttype,String openid, String roomcode) {
-		return roomgiftuserDao.getByOpenidAndRoom(gifttype,openid, roomcode);
+	public List<Roomgiftuser> getByOpenidAndRoom(String openid, String roomcode) {
+		return roomgiftuserDao.getByOpenidAndRoom(openid, roomcode);
 	}
 
 	@Override

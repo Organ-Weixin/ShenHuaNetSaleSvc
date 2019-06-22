@@ -43,8 +43,6 @@ public class Orders  extends BaseEntity<Long>{
 	private Double TotalLoveSeatDifferences;
 	private Integer FeePayType;
 	private Double TotalGuestPayFee;
-	private String CouponsCode;
-	private Double CouponsPrice;
 	private String RefundTradeNo;
 	private Integer PayFlag;
 	private Integer OrderPayType;
@@ -55,7 +53,8 @@ public class Orders  extends BaseEntity<Long>{
 	private String IDCardNumber;
 	private String MarketingCode;
 	private String OpenID;
-	
+	private String CouponsCode;
+	private Double CouponsPrice;
 	
 	public Orderseatdetails getOrderseatdetails() {
 		return Orderseatdetails;

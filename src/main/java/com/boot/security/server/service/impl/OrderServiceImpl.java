@@ -15,6 +15,7 @@ import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.OrderService;
+import com.google.gson.Gson;
 @Service
 public class OrderServiceImpl implements OrderService{
 	private static final Logger log = LoggerFactory.getLogger("adminLogger");
@@ -84,7 +85,7 @@ public class OrderServiceImpl implements OrderService{
 	
 	@Override
 	public int Insert(OrderView orderview) {
-		ordersDao.save(orderview.getOrderBaseInfo());
+		int result =ordersDao.save(orderview.getOrderBaseInfo());
 		Orders order = ordersDao.getByLockOrderCode(orderview.getOrderBaseInfo().getCinemaCode(), orderview.getOrderBaseInfo().getLockOrderCode());
 		if(order != null){
 			for(Orderseatdetails orderseat:orderview.getOrderSeatDetails()){

@@ -10,7 +10,7 @@ public interface RoomgiftuserService {
 
 	int save(Roomgiftuser roomgiftuser);
 	
-	List<Roomgiftuser> getByOpenidAndRoom(String gifttype,String openid, String roomcode);
+	List<Roomgiftuser> getByOpenidAndRoom(String openid, String roomcode);
 	
 	List<Roomgiftuser> getByRoomGift(String roomcode, String giftcode);
 	

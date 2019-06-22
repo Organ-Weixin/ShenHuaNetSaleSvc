@@ -584,7 +584,6 @@ public class NetSaleSvcCore {
 		OrderView order = new OrderView();
 		Orders orders=new Orders();
 		orders = ModelMapper.MapFrom(orders, userCinema, QueryXmlObj, sessionInfo);
-		
 		//region 购票价格计算（得到最终上报价，最终销售价，最终服务费）
 		Double SubmitPrice;// 最终上报价格
 		Double SalePrice;// 最终销售价格
@@ -595,29 +594,35 @@ public class NetSaleSvcCore {
 		List<Priceplan> priceplans = _pricePlanService.getByCode(orders.getUserId(),
 				orders.getCinemaCode(), orders.getFilmCode(),
 				orders.getSessionCode());
-		// 得到价格计划
-		Priceplan priceplan = new Priceplan();
-		if (priceplans.size() > 1) {
-			priceplan = priceplans.stream().filter((Priceplan s) -> s.getType() == 1).collect(Collectors.toList())
-					.get(0);
-		} else if (priceplans.size() == 1) {
-			priceplan = priceplans.get(0);
-		}
 		Double priceplanPrice;
-		//如果是会员支付
-		if("1".equals(QueryXmlObj.getOrder().getPayType())){
-			priceplanPrice = null == priceplan.getMemberPrice() ? sessionInfo.getStandardPrice() : priceplan.getMemberPrice();
-		}else
-		{
-			priceplanPrice = null == priceplan.getPrice() ? sessionInfo.getStandardPrice() : priceplan.getPrice();
+		Double priceplanFee;
+		Double priceplanAddFee;
+		Double priceplanCinemaAllowance;
+		if(priceplans.size()>0){
+			// 得到价格计划
+			Priceplan priceplan = new Priceplan();
+			if (priceplans.size() > 1) {
+				priceplan = priceplans.stream().filter((Priceplan s) -> s.getType() == 1).collect(Collectors.toList())
+						.get(0);
+			} else if (priceplans.size() == 1) {
+				priceplan = priceplans.get(0);
+			}
+			//如果是会员支付
+			if("1".equals(QueryXmlObj.getOrder().getPayType())){
+				priceplanPrice = null == priceplan.getMemberPrice() ? sessionInfo.getStandardPrice() : priceplan.getMemberPrice();
+			}else
+			{
+				priceplanPrice = null == priceplan.getPrice() ? sessionInfo.getStandardPrice() : priceplan.getPrice();
+			}
+			priceplanFee = null == priceplan.getTicketFee() ? 0 : priceplan.getTicketFee();
+			priceplanAddFee = null == priceplan.getAddFee() ? 0 : priceplan.getAddFee();
+			priceplanCinemaAllowance = null == priceplan.getCinemaAllowance() ? 0 : priceplan.getCinemaAllowance();
+		}else{
+			priceplanPrice=sessionInfo.getStandardPrice();
+			priceplanFee=0D;
+			priceplanAddFee=0D;
+			priceplanCinemaAllowance=0D;
 		}
-		//如果座位表中已有销售价，说明已设置会员卡折扣价
-		if(order.getOrderSeatDetails().get(0).getSalePrice()!=null&&order.getOrderSeatDetails().get(0).getSalePrice()!=0){
-			priceplanPrice=order.getOrderSeatDetails().get(0).getSalePrice();
-		}
-		Double priceplanFee = null == priceplan.getTicketFee() ? 0 : priceplan.getTicketFee();
-		Double priceplanAddFee = null == priceplan.getAddFee() ? 0 : priceplan.getAddFee();
-		Double priceplanCinemaAllowance = null == priceplan.getCinemaAllowance() ? 0 : priceplan.getCinemaAllowance();
 		Double basisSubmitPrice;//基础上报价格=标准价/最低价
 		//System.out.println("====="+userCinema.getIsUseLowestPriceReport());
 		if(userCinema.getIsUseLowestPriceReport()==null){
@@ -650,7 +655,6 @@ public class NetSaleSvcCore {
 		 	CinemaAllowance=priceplanCinemaAllowance;
 		}
 		//endregion
-		
 		// 更新订单信息
 		// 总上报金额=上报价*总票数
 		orders.setTotalPrice(SubmitPrice * TicketCount);
@@ -694,7 +698,6 @@ public class NetSaleSvcCore {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		if (StatusEnum.Success.equals(CTMSReply.Status)) {
 			reply.setOrder(reply.new LockSeatReplyOrder());
 			reply.getOrder().setOrderCode(order.getOrderBaseInfo().getLockOrderCode());

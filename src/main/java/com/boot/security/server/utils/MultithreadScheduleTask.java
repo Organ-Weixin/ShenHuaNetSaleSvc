@@ -104,8 +104,8 @@ public class MultithreadScheduleTask {
     }
 	//更新排期
 	@Async
-	@Scheduled(fixedRate = 7200000)
-    //@Scheduled(cron="0 0 3 * * ?")  //每天03点开始执行
+	//@Scheduled(fixedRate = 7200000)
+    @Scheduled(cron="0 0 3 * * ?")  //每天03点开始执行
     public void QuerySession() throws InterruptedException, ParseException {
 		List<Cinema> cinemaList = cinemaService.AllCinema();
 		String StartDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
@@ -147,7 +147,7 @@ public class MultithreadScheduleTask {
 	//更新第三方价格
 	@Async
 	//@Scheduled(fixedRate = 7200000)
-    //@Scheduled(cron="0 0 3 * * ?")  //每天03点开始执行 
+    @Scheduled(cron="0 0 3 * * ?")  //每天03点开始执行 
     public void getQmmPrice() throws InterruptedException, ParseException, IOException {
 		List<Cinema> cinemaList = cinemaService.AllCinema();
 		for(int i=0; i<cinemaList.size(); i++){

@@ -157,29 +157,17 @@ public class RoomController {
 			reply.SetCinemaInvalidReply();
 			return reply;
 		}
-		
 		List<RoomGiftReply> data = new ArrayList<RoomGiftReply>();
-		//获取实物列表
+		//获取奖品列表，包括礼品和优惠券
 		List<Roomgift> giftlist = roomgiftService.getByCinema(CinemaCode);
 		for(Roomgift gift : giftlist){
 			RoomGiftReply newgift = new RoomGiftReply();
 			newgift.setGiftCode(gift.getGiftCode());
 			newgift.setGiftName(gift.getGiftName());
-			newgift.setGiftType("1");
+			newgift.setGiftType(gift.getGiftType());
 			newgift.setSendNumber(String.valueOf(gift.getSendNumber()));
 			newgift.setImage(gift.getImage());
 			data.add(newgift);
-		}
-		//获取优惠劵列表
-		List<Couponsgroup> coupons = couponsgroupService.getAllUseByGroupCode(CinemaCode);
-		for(Couponsgroup coupon : coupons){
-			RoomGiftReply newgift2 = new RoomGiftReply();
-			newgift2.setGiftCode(coupon.getGroupCode());
-			newgift2.setGiftName(coupon.getCouponsName());
-			//newgift2.setGiftType(coupon.getGiftType());
-			//newgift2.setSendNumber(String.valueOf(coupon.getSendNumber()));
-//			newgift2.setImage();
-			data.add(newgift2);
 		}
 		reply.setData(data);
 		reply.SetSuccessReply();
@@ -215,7 +203,7 @@ public class RoomController {
 			return reply;
 		}
 		
-		List<Roomgiftuser>  roomgiftuserlist = roomgiftuserService.getByOpenidAndRoom("1",input.getOpenID(), input.getRoomCode());
+		List<Roomgiftuser>  roomgiftuserlist = roomgiftuserService.getByOpenidAndRoom(input.getOpenID(), input.getRoomCode());
 		List<QueryRoomGiftRecord> data = new ArrayList<QueryRoomGiftRecord>();
 		for(Roomgiftuser roomgiftuser : roomgiftuserlist){
 			QueryRoomGiftRecord record = new QueryRoomGiftRecord();
