@@ -1473,4 +1473,34 @@ public class ReplyExtension {
 		return true;
 	}
 	//endregion
+	
+		//region QueryUserAvailableCouponsReply
+	public static boolean RequestInfoGuard(QueryUserAvailableCouponsReply reply, String Username, String Password,String CinemaCode,String OpenID,String OrderType,String OrderCode) {
+		if (Username == null || "".equals(Username)) {
+			reply.SetNecessaryParamMissReply("Username");
+			return false;
+		}
+		if (Password == null || "".equals(Password)) {
+			reply.SetNecessaryParamMissReply("Password");
+			return false;
+		}
+		if (CinemaCode == null || "".equals(CinemaCode)) {
+			reply.SetNecessaryParamMissReply("CinemaCode");
+			return false;
+		}
+		if (OpenID == null || "".equals(OpenID)) {
+			reply.SetNecessaryParamMissReply("OpenID");
+			return false;
+		}
+		if (OrderType == null || "".equals(OrderType)) {
+			reply.SetNecessaryParamMissReply("OrderType");
+			return false;
+		}
+		if (OrderCode == null || "".equals(OrderCode)) {
+			reply.SetNecessaryParamMissReply("OrderCode");
+			return false;
+		}
+		return true;
+	}
+	//endregion
 }

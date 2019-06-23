@@ -607,13 +607,7 @@ public class NetSaleSvcCore {
 			} else if (priceplans.size() == 1) {
 				priceplan = priceplans.get(0);
 			}
-			//如果是会员支付
-			if("1".equals(QueryXmlObj.getOrder().getPayType())){
-				priceplanPrice = null == priceplan.getMemberPrice() ? sessionInfo.getStandardPrice() : priceplan.getMemberPrice();
-			}else
-			{
-				priceplanPrice = null == priceplan.getPrice() ? sessionInfo.getStandardPrice() : priceplan.getPrice();
-			}
+			priceplanPrice = null == priceplan.getPrice() ? sessionInfo.getStandardPrice() : priceplan.getPrice();
 			priceplanFee = null == priceplan.getTicketFee() ? 0 : priceplan.getTicketFee();
 			priceplanAddFee = null == priceplan.getAddFee() ? 0 : priceplan.getAddFee();
 			priceplanCinemaAllowance = null == priceplan.getCinemaAllowance() ? 0 : priceplan.getCinemaAllowance();
@@ -660,6 +654,8 @@ public class NetSaleSvcCore {
 		orders.setTotalPrice(SubmitPrice * TicketCount);
 		orders.setTotalFee(TicketFee * TicketCount);
 		orders.setTotalSalePrice(SalePrice * TicketCount);
+		orders.setTotalAddFee(AddFee*TicketCount);
+		orders.setTotalCinemaAllowance(CinemaAllowance*TicketCount);
 		order.setOrderBaseInfo(orders);
 		
 		List<Orderseatdetails> seats = new ArrayList<Orderseatdetails>();

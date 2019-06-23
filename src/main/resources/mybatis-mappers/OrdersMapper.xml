@@ -546,6 +546,12 @@
 			<if test="OpenID != null">
 				OpenID = #{OpenID}, 
 			</if>
+			<if test="TotalAddFee != null">
+				TotalAddFee = #{TotalAddFee}, 
+			</if>
+			<if test="TotalCinemaAllowance != null">
+				TotalCinemaAllowance = #{TotalCinemaAllowance}, 
+			</if>
 
 		</set>
 

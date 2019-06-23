@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.security.server.apicontroller.reply.BindCouponsReply;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
+import com.boot.security.server.apicontroller.reply.QueryUserAvailableCouponsReply;
 import com.boot.security.server.apicontroller.reply.QueryUserConponsReply;
 import com.boot.security.server.apicontroller.reply.QueryUserConponsReply.QueryUserConponsBeans.QueryUserConponsBean;
 import com.boot.security.server.apicontroller.reply.QueryUsingConponsReply;
@@ -25,20 +26,28 @@ import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.CouponsStatusEnum;
+import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.model.Couponsgroup;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
+import com.boot.security.server.model.Goodsorders;
+import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
+import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
+import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.apicontroller.reply.QueryUserConponsReply.QueryUserConponsBeans;
 import com.boot.security.server.apicontroller.reply.BindCouponsReply.BindCouponsReplyBind;
+import com.boot.security.server.apicontroller.reply.QueryUserAvailableCouponsReply.QueryUserAvailableCouponsReplydata;
+import com.boot.security.server.apicontroller.reply.QueryUserAvailableCouponsReply.QueryUserAvailableCouponsReplydata.QueryUserAvailableCouponsReplyCoupons;
+
 import io.swagger.annotations.ApiOperation;
 
 @RestController
@@ -58,6 +67,11 @@ public class ConponController {
 	private FilminfoServiceImpl _filminfoService;
 	@Autowired
 	private GoodsServiceImpl _goodsService;
+	@Autowired
+	private OrderServiceImpl _orderService;
+	@Autowired
+	private GoodsOrderServiceImpl _goodsOrderService;
+	
 	@GetMapping("/QueryUsingConpons/{UserName}/{Password}/{CinemaCode}")
 	@ApiOperation(value = "获取所有启用优惠券")
 	public QueryUsingConponsReply QueryUsingConpons(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode){
@@ -232,5 +246,108 @@ public class ConponController {
 		}
 		bindCouponsReply.setData(data);
 		return bindCouponsReply;
+	}
+	
+	@GetMapping("/QueryUserAvailableCoupons/{UserName}/{Password}/{CinemaCode}/{OpenID}/{OrderType}/{OrderCode}")
+	@ApiOperation(value = "获取当前可用优惠券")
+	public QueryUserAvailableCouponsReply QueryUserAvailableCoupons(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,@PathVariable String OpenID,
+			@PathVariable String OrderType,@PathVariable String OrderCode) throws ParseException{
+		QueryUserAvailableCouponsReply availableCouponsReply = new QueryUserAvailableCouponsReply();
+		//校验参数
+		if(!ReplyExtension.RequestInfoGuard(availableCouponsReply, UserName, Password,CinemaCode, OpenID, OrderType,OrderCode)){
+			return availableCouponsReply;
+		}
+		//获取用户渠道
+		Userinfo UserInfo=_userInfoService.getByUserCredential(UserName, Password);
+		if(UserInfo==null){
+			availableCouponsReply.SetUserCredentialInvalidReply();
+			return availableCouponsReply;
+		}
+		//验证影院是否存在且可访问
+		Cinema cinema=_cinemaService.getByCinemaCode(CinemaCode);
+		if(cinema==null){
+			availableCouponsReply.SetCinemaInvalidReply();
+			return availableCouponsReply;
+		}
+		//验证用户OpenId是否存在
+		Ticketusers ticketusers=_ticketusersService.getByopenids(OpenID);
+		if(ticketusers==null){
+			availableCouponsReply.SetOpenIDNotExistReply();
+			return availableCouponsReply;
+		}
+		//验证订单类型
+		if(!OrderType.equals("1")&&!OrderType.equals("2")){
+			availableCouponsReply.SetOrderNotExistReply();
+			return availableCouponsReply;
+		}
+		Orders orders=null;
+		Goodsorders goodsorders=null;
+		//验证订单是否存在
+		if(OrderType.equals("1")){
+			orders=_orderService.getByLockOrderCode(CinemaCode,OrderCode);
+			if(orders==null){
+				availableCouponsReply.SetOrderNotExistReply();
+				return availableCouponsReply;
+			}
+		}
+		if(OrderType.equals("2")){
+			goodsorders=_goodsOrderService.getByLocalOrderCode(OrderCode);
+			if(goodsorders==null){
+				availableCouponsReply.SetOrderNotExistReply();
+				return availableCouponsReply;
+			}
+		}
+		availableCouponsReply.setData(new QueryUserAvailableCouponsReplydata());
+		List<QueryUserAvailableCouponsReplyCoupons> couponslist=new ArrayList<QueryUserAvailableCouponsReplyCoupons>();
+		//region 读出用户的所有优惠券
+		List<Coupons> UserCouponsList=_couponsService.getUserCoupons(OpenID,CouponsStatusEnum.Fetched.getStatusCode());
+		if(UserCouponsList!=null&&UserCouponsList.size()>0){
+			for(Coupons usecoupons:UserCouponsList){
+				if(!usecoupons.getCouponsCode().equals("")&&!usecoupons.getCouponsCode().equals(null)){
+					CouponsView couponsview = _couponsService.getWithCouponsCode(usecoupons.getCouponsCode());
+					if(couponsview.getCoupons()!=null){
+						boolean ifCanUse = true;
+						//优惠券状态不对
+						if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
+							ifCanUse=false;
+						}
+						//如果是部分门店可用，并且当前订单的影院不在可用门店里面
+						if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
+							if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(CinemaCode)==-1){
+								ifCanUse = false;
+							}
+						}
+						//如果减免类型是影片并且是购票订单，加入返回
+						if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1&& OrderType.equals("1")){
+							//如果是代金券并且当前订单的销售总价大于优惠券的门槛金额才可使用
+							if(couponsview.getCouponsgroup().getCouponsType()==1&&couponsview.getCouponsgroup().getThresholdAmount()<=orders.getTotalSalePrice()){
+								QueryUserAvailableCouponsReplyCoupons replyCoupons=new QueryUserAvailableCouponsReplyCoupons();
+								replyCoupons.setCouponsCode(couponsview.getCoupons().getCouponsCode());
+								replyCoupons.setCouponsName(couponsview.getCoupons().getCouponsName());
+								replyCoupons.setCouponsType(couponsview.getCouponsgroup().getCouponsType());
+								replyCoupons.setReductionPrice(couponsview.getCouponsgroup().getReductionPrice());
+								couponslist.add(replyCoupons);
+							}
+							//如果是其他优惠券类型，分别处理
+		                }
+						//如果减免类型是卖品并且是卖品订单，加入返回
+						if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==2&& OrderType.equals("2")){
+							//如果是代金券并且当前订单的总结算金额大于优惠券的门槛金额才可使用
+							if(couponsview.getCouponsgroup().getCouponsType()==1&&couponsview.getCouponsgroup().getThresholdAmount()<=goodsorders.getTotalSettlePrice()){
+								QueryUserAvailableCouponsReplyCoupons replyCoupons=new QueryUserAvailableCouponsReplyCoupons();
+								replyCoupons.setCouponsCode(couponsview.getCoupons().getCouponsCode());
+								replyCoupons.setCouponsName(couponsview.getCoupons().getCouponsName());
+								replyCoupons.setCouponsType(couponsview.getCouponsgroup().getCouponsType());
+								replyCoupons.setReductionPrice(couponsview.getCouponsgroup().getReductionPrice());
+								couponslist.add(replyCoupons);
+							}
+		                }
+					}
+				}
+			}
+		}
+		//endregion
+		availableCouponsReply.getData().setCouponsList(couponslist);
+		return availableCouponsReply;
 	}
 }

@@ -67,7 +67,7 @@
 		</filter>
 	</appender>
 
-	<appender name="sqlLog"
+	<!-- <appender name="sqlLog"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${logFile}.sql</file>
 		<encoder>
@@ -79,7 +79,7 @@
 			<fileNamePattern>${logFile}.sql.%d{yyyy-MM-dd}.%i</fileNamePattern>
 			<maxFileSize>${maxFileSize}</maxFileSize>
 		</rollingPolicy>
-	</appender>
+	</appender> -->
 
 	<logger name="adminLogger" level="${mylevel}" additivity="true">
 		<appender-ref ref="adminLog" />

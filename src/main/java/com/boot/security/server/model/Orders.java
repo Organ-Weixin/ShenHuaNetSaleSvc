@@ -55,6 +55,8 @@ public class Orders  extends BaseEntity<Long>{
 	private String OpenID;
 	private String CouponsCode;
 	private Double CouponsPrice;
+	private Double TotalAddFee;
+	private Double TotalCinemaAllowance;
 	
 	public Orderseatdetails getOrderseatdetails() {
 		return Orderseatdetails;
@@ -363,6 +365,18 @@ public class Orders  extends BaseEntity<Long>{
 	}
 	public void setOpenID(String openID) {
 		OpenID = openID;
+	}
+	public Double getTotalAddFee() {
+		return TotalAddFee;
+	}
+	public void setTotalAddFee(Double totalAddFee) {
+		TotalAddFee = totalAddFee;
+	}
+	public Double getTotalCinemaAllowance() {
+		return TotalCinemaAllowance;
+	}
+	public void setTotalCinemaAllowance(Double totalCinemaAllowance) {
+		TotalCinemaAllowance = totalCinemaAllowance;
 	}
 	
 

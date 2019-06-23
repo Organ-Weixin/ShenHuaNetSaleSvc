@@ -37,18 +37,6 @@ import com.boot.security.server.api.core.RefundTicketReply;
 import com.boot.security.server.api.core.ReleaseSeatReply;
 import com.boot.security.server.api.core.SubmitMixOrderReply;
 import com.boot.security.server.api.core.SubmitOrderReply;
-import com.boot.security.server.apicontroller.reply.ApiLockSeatReply;
-import com.boot.security.server.apicontroller.reply.ApiLockSeatReply.ApiLockSeatReplydata;
-import com.boot.security.server.apicontroller.reply.ApiLockSeatReply.ApiLockSeatReplydata.ApiLockSeatReplyCoupon;
-import com.boot.security.server.apicontroller.reply.ApiLockSeatReply.ApiLockSeatReplydata.ApiLockSeatReplyCoupon.ApiLockSeatReplyCoupons;
-import com.boot.security.server.apicontroller.reply.ApiLockSeatReply.ApiLockSeatReplydata.ApiLockSeatReplyOrder;
-import com.boot.security.server.apicontroller.reply.ApiLockSeatReply.ApiLockSeatReplydata.ApiLockSeatReplyOrder.ApiLockSeatReplySeat;
-import com.boot.security.server.apicontroller.reply.ApiLockSeatReply;
-import com.boot.security.server.apicontroller.reply.ApiLockSeatReply.ApiLockSeatReplydata;
-import com.boot.security.server.apicontroller.reply.ApiLockSeatReply.ApiLockSeatReplydata.ApiLockSeatReplyCoupon;
-import com.boot.security.server.apicontroller.reply.ApiLockSeatReply.ApiLockSeatReplydata.ApiLockSeatReplyCoupon.ApiLockSeatReplyCoupons;
-import com.boot.security.server.apicontroller.reply.ApiLockSeatReply.ApiLockSeatReplydata.ApiLockSeatReplyOrder;
-import com.boot.security.server.apicontroller.reply.ApiLockSeatReply.ApiLockSeatReplydata.ApiLockSeatReplyOrder.ApiLockSeatReplySeat;
 import com.boot.security.server.apicontroller.reply.NetSaleQueryJson;
 import com.boot.security.server.apicontroller.reply.PrePayMixOrderQueryJson;
 import com.boot.security.server.apicontroller.reply.PrePayMixOrderQueryJson.PrePayMixOrderQueryJsonGoods;
@@ -168,81 +156,23 @@ public class OrderController {
 	// @PostMapping("/LockSeat")
 	@RequestMapping(value = "/LockSeat", method = RequestMethod.POST)
 	@ApiOperation(value = "锁座")
-	public ApiLockSeatReply LockSeat(@RequestBody NetSaleQueryJson QueryJson){
-		ApiLockSeatReply lockSeatReply=new ApiLockSeatReply();
+	public LockSeatReply LockSeat(@RequestBody NetSaleQueryJson QueryJson){
 		try {
-			LockSeatReply corelockSeatReply =NetSaleSvcCore.getInstance().LockSeat(QueryJson.getUserName(),QueryJson.getPassword(),QueryJson.getQueryXml());
+			LockSeatReply lockSeatReply =NetSaleSvcCore.getInstance().LockSeat(QueryJson.getUserName(),QueryJson.getPassword(),QueryJson.getQueryXml());
 			if(QueryJson.getOpenID().equals(null)||QueryJson.getOpenID().equals("")){
 				return lockSeatReply;
 			}
 			//锁座时新增订单需要传入OpenID,之后修改订单就不需要再操作
-			if(corelockSeatReply.Status.equals("Success")){
-				Orders orderbase=_orderService.getOrderBaseByLockOrderCode(corelockSeatReply.getOrder().getOrderCode());
+			if(lockSeatReply.Status.equals("Success")){
+				Orders orderbase=_orderService.getOrderBaseByLockOrderCode(lockSeatReply.getOrder().getOrderCode());
 				orderbase.setOpenID(QueryJson.getOpenID());
 				_orderService.UpdateOrderBaseInfo(orderbase);
-				lockSeatReply.setData(new ApiLockSeatReplydata());
-				//填充返回order
-				ApiLockSeatReplyOrder lockSeatReplyOrder=new ApiLockSeatReplyOrder();
-				lockSeatReplyOrder.setOrderCode(corelockSeatReply.getOrder().getOrderCode());
-				lockSeatReplyOrder.setAutoUnlockDatetime(corelockSeatReply.getOrder().getAutoUnlockDatetime());
-				lockSeatReplyOrder.setSessionCode(corelockSeatReply.getOrder().getSessionCode());
-				lockSeatReplyOrder.setCount(corelockSeatReply.getOrder().getCount());
-				List<ApiLockSeatReplySeat> lockSeatReplySeats=new ArrayList<ApiLockSeatReplySeat>();
-				for(com.boot.security.server.api.core.LockSeatReply.LockSeatReplyOrder.LockSeatReplySeat coreseat:corelockSeatReply.getOrder().getSeat()){
-					ApiLockSeatReplySeat seat=new ApiLockSeatReplySeat();
-					seat.setSeatCode(coreseat.getSeatCode());
-					lockSeatReplySeats.add(seat);
-				}
-				lockSeatReplyOrder.setSeat(lockSeatReplySeats);
-				lockSeatReply.getData().setOrder(lockSeatReplyOrder);
-				//填充返回coupons
-				ApiLockSeatReplyCoupon lockSeatReplyCoupon=new ApiLockSeatReplyCoupon();
-				List<ApiLockSeatReplyCoupons> coupons=new ArrayList<ApiLockSeatReplyCoupons>();
-				//region 读出用户的所有优惠券
-				List<Coupons> UserCouponsList=_couponsService.getUserCoupons(QueryJson.getOpenID(),CouponsStatusEnum.Fetched.getStatusCode());
-				if(UserCouponsList!=null&&UserCouponsList.size()>0){
-					for(Coupons usecoupons:UserCouponsList){
-						if(!usecoupons.getCouponsCode().equals("")&&!usecoupons.getCouponsCode().equals(null)){
-							CouponsView couponsview = _couponsService.getWithCouponsCode(usecoupons.getCouponsCode());
-							if(couponsview.getCoupons()!=null){
-								boolean ifCanUse = true;
-								//优惠券状态不对
-								if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
-									ifCanUse=false;
-								}
-								//如果是部分门店可用，并且当前订单的影院不在可用门店里面
-								if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
-									if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(orderbase.getCinemaCode())==-1){
-										ifCanUse = false;
-									}
-								}
-								//如果减免类型是影片
-								if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1){
-									ApiLockSeatReplyCoupons replyCoupons=new ApiLockSeatReplyCoupons();
-									replyCoupons.setCouponsCode(couponsview.getCoupons().getCouponsCode());
-									replyCoupons.setCouponsName(couponsview.getCoupons().getCouponsName());
-									replyCoupons.setCouponsType(couponsview.getCouponsgroup().getCouponsType());
-									replyCoupons.setReductionPrice(couponsview.getCouponsgroup().getReductionPrice());
-									coupons.add(replyCoupons);
-				                }
-							}
-						}
-					}
-				}
-				//endregion
-				lockSeatReplyCoupon.setCoupons(coupons);
-				lockSeatReply.getData().setCoupon(lockSeatReplyCoupon);
-				lockSeatReply.SetSuccessReply();
-			} else {
-				lockSeatReply.GetErrorFromNetSaleReply(corelockSeatReply);
 			}
 			return lockSeatReply;
 		} catch (JsonSyntaxException e) {
-			
-			return new ApiLockSeatReply();
+			return new LockSeatReply();
 		} catch (Exception e) {
-			
-			return new ApiLockSeatReply();
+			return new LockSeatReply();
 		}
 	}
 	//endregion
@@ -454,6 +384,8 @@ public class OrderController {
 			orderResult.setFeePayType(order.getOrderBaseInfo().getFeePayType()==null?"":order.getOrderBaseInfo().getFeePayType().toString());
 			orderResult.setTotalGuestPayFee(order.getOrderBaseInfo().getTotalGuestPayFee());
 			orderResult.setOpenID(order.getOrderBaseInfo().getOpenID());
+			orderResult.setTotalAddFee(order.getOrderBaseInfo().getTotalAddFee());
+			orderResult.setTotalCinemaAllowance(order.getOrderBaseInfo().getTotalCinemaAllowance());
 			List<Seats> seats = new ArrayList<Seats>();	//座位信息
 			for(Orderseatdetails orderseat : order.getOrderSeatDetails()){
 				Seats seatinfo = new Seats();

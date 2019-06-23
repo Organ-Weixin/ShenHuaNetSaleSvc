@@ -25,15 +25,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Document;
 
+import com.boot.security.server.api.core.CreateGoodsOrderReply;
 import com.boot.security.server.api.core.NetSaleSvcCore;
 import com.boot.security.server.api.core.RefundGoodsReply;
 import com.boot.security.server.api.core.SubmitGoodsOrderReply;
 import com.boot.security.server.apicontroller.reply.CreateGoodsOrderQueryJson;
-import com.boot.security.server.apicontroller.reply.CreateGoodsOrderReply;
-import com.boot.security.server.apicontroller.reply.CreateGoodsOrderReply.CreateGoodsOrderReplydata;
-import com.boot.security.server.apicontroller.reply.CreateGoodsOrderReply.CreateGoodsOrderReplydata.CreateGoodsOrderReplyCoupon;
-import com.boot.security.server.apicontroller.reply.CreateGoodsOrderReply.CreateGoodsOrderReplydata.CreateGoodsOrderReplyCoupon.CreateGoodsOrderReplyCoupons;
-import com.boot.security.server.apicontroller.reply.CreateGoodsOrderReply.CreateGoodsOrderReplydata.CreateGoodsOrderReplyOrder;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.NetSaleQueryJson;
 import com.boot.security.server.apicontroller.reply.PrePayGoodsOrderQueryJson;
@@ -165,15 +161,14 @@ public class AppGoodsController {
 	@PostMapping("/CreateGoodsOrder")
 	@ApiOperation(value = "创建卖品订单")
 	public CreateGoodsOrderReply CreateGoodsOrder(@RequestBody CreateGoodsOrderQueryJson QueryJson){
-		CreateGoodsOrderReply reply=new CreateGoodsOrderReply();
 		try {
-			com.boot.security.server.api.core.CreateGoodsOrderReply corereply = NetSaleSvcCore.getInstance().CreateGoodsOrder(QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getQueryXml());
+			CreateGoodsOrderReply reply = NetSaleSvcCore.getInstance().CreateGoodsOrder(QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getQueryXml());
 			if(QueryJson.getOpenID().equals(null)||QueryJson.getOpenID().equals("")){
 				return reply;
 			}
 			//创建卖品订单时需要保存送货信息
-			if(corereply.Status.equals("Success")){
-				GoodsOrderView order=_goodsOrderService.getWithLocalOrderCode(corereply.getOrder().getOrderCode());
+			if(reply.Status.equals("Success")){
+				GoodsOrderView order=_goodsOrderService.getWithLocalOrderCode(reply.getOrder().getOrderCode());
 				order.getOrderBaseInfo().setOpenID(QueryJson.getOpenID());
 				order.getOrderBaseInfo().setDeliveryType(QueryJson.getDeliveryType());
 				order.getOrderBaseInfo().setDeliveryAddress(QueryJson.getDeliveryAddress());
@@ -181,52 +176,6 @@ public class AppGoodsController {
 				order.getOrderBaseInfo().setIsReady(QueryJson.getIsReady());
 				order.getOrderBaseInfo().setDeliveryMark(QueryJson.getDeliveryMark());
 				_goodsOrderService.UpdateOrderBaseInfo(order.getOrderBaseInfo());
-				
-				reply.setData(new CreateGoodsOrderReplydata());
-				//填充返回Order
-				CreateGoodsOrderReplyOrder createGoodsOrderReplyOrder=new CreateGoodsOrderReplyOrder();
-				createGoodsOrderReplyOrder.setOrderCode(corereply.getOrder().getOrderCode());
-				createGoodsOrderReplyOrder.setOrderStatus(corereply.getOrder().getOrderStatus());
-				createGoodsOrderReplyOrder.setOrderTime(corereply.getOrder().getOrderTime());
-				reply.getData().setOrder(createGoodsOrderReplyOrder);
-				System.out.println(new Gson().toJson(createGoodsOrderReplyOrder));
-				//填充返回coupons
-				CreateGoodsOrderReplyCoupon replycoupon=new CreateGoodsOrderReplyCoupon();
-				List<CreateGoodsOrderReplyCoupons> coupons=new ArrayList<CreateGoodsOrderReplyCoupons>();
-				//读出用户的所有优惠券
-				List<Coupons> UserCouponsList=_couponsService.getUserCoupons(QueryJson.getOpenID(),CouponsStatusEnum.Fetched.getStatusCode());
-				if(UserCouponsList!=null&&UserCouponsList.size()>0){
-					for(Coupons usecoupons:UserCouponsList){
-						if(!usecoupons.getCouponsCode().equals("")&&!usecoupons.getCouponsCode().equals(null)){
-							CouponsView couponsview = _couponsService.getWithCouponsCode(usecoupons.getCouponsCode());
-							if(couponsview.getCoupons()!=null){
-								boolean ifCanUse = true;
-								//优惠券状态不对
-								if(couponsview.getCoupons().getStatus()!=CouponsStatusEnum.Fetched.getStatusCode()){
-									ifCanUse=false;
-								}
-								//如果是部分门店可用，并且当前订单的影院不在可用门店里面
-								if(couponsview.getCouponsgroup().getCanUseCinemaType()==2){
-									if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(order.getOrderBaseInfo().getCinemaCode())==-1){
-										ifCanUse = false;
-									}
-								}
-								if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==2){
-									CreateGoodsOrderReplyCoupons replyCoupons=new CreateGoodsOrderReplyCoupons();
-									replyCoupons.setCouponsCode(couponsview.getCoupons().getCouponsCode());
-									replyCoupons.setCouponsName(couponsview.getCoupons().getCouponsName());
-									replyCoupons.setCouponsType(couponsview.getCouponsgroup().getCouponsType());
-									replyCoupons.setReductionPrice(couponsview.getCouponsgroup().getReductionPrice());
-									coupons.add(replyCoupons);
-								}
-							}
-						}
-					}
-				}
-				System.out.println(new Gson().toJson(coupons));
-				replycoupon.setCoupons(coupons);
-				reply.getData().setCoupon(replycoupon);
-				reply.SetSuccessReply();
 			}
 			System.out.println(new Gson().toJson(reply));
 			return reply;
@@ -237,7 +186,6 @@ public class AppGoodsController {
 			e.printStackTrace();
 			return new CreateGoodsOrderReply();
 		}
-		
 	}
 	//endregion
 	

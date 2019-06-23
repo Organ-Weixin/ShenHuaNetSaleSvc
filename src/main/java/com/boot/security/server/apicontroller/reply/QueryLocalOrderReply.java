@@ -34,6 +34,8 @@ public class QueryLocalOrderReply extends BaseReply {
 		private String FeePayType;					//服务费支付类型
 		private Double TotalGuestPayFee;
 		private String OpenID;
+		private Double TotalAddFee;
+		private Double TotalCinemaAllowance;
 		private List<Seats> Seats;
 		
 		public Long getOrderId() {
@@ -137,6 +139,19 @@ public class QueryLocalOrderReply extends BaseReply {
 		}
 		public void setOpenID(String openID) {
 			OpenID = openID;
+		}
+		
+		public Double getTotalAddFee() {
+			return TotalAddFee;
+		}
+		public void setTotalAddFee(Double totalAddFee) {
+			TotalAddFee = totalAddFee;
+		}
+		public Double getTotalCinemaAllowance() {
+			return TotalCinemaAllowance;
+		}
+		public void setTotalCinemaAllowance(Double totalCinemaAllowance) {
+			TotalCinemaAllowance = totalCinemaAllowance;
 		}
 		public List<Seats> getSeats() {
 			return Seats;

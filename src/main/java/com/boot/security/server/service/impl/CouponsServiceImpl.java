@@ -112,7 +112,7 @@ public class CouponsServiceImpl implements CouponsService{
 	}
 	//把优惠价更新到订单
 	public Orders updateCouponsPricetoOrder(Orders order,String CouponsCode){
-		if(!"".equals(CouponsCode)&&CouponsCode!=null){
+		if(!"".equals(CouponsCode)&&CouponsCode!=null&&!"null".equals(CouponsCode)){
 			CouponsView couponsview = getWithCouponsCode(CouponsCode);
 			if(couponsview.getCoupons()!=null){
 				boolean ifCanUse = true;
@@ -125,6 +125,10 @@ public class CouponsServiceImpl implements CouponsService{
 					if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(order.getCinemaCode())==-1){
 						ifCanUse = false;
 					}
+				}
+				//如果是代金券并且门槛金额大于当前订单总销售价
+				if(couponsview.getCouponsgroup().getCouponsType()==1&&couponsview.getCouponsgroup().getThresholdAmount()>=order.getTotalSalePrice()){
+					ifCanUse=false;
 				}
 				//如果减免类型是影片
 				if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1){
@@ -144,7 +148,7 @@ public class CouponsServiceImpl implements CouponsService{
 		return order;
 	}
     public Goodsorders updateCouponsPricetoGoodsOrder(Goodsorders order,String CouponsCode){
-    	if(!"".equals(CouponsCode)&&CouponsCode!=null){
+    	if(!"".equals(CouponsCode)&&CouponsCode!=null&&!"null".equals(CouponsCode)){
 			CouponsView couponsview = getWithCouponsCode(CouponsCode);
 			if(couponsview.getCoupons()!=null){
 				boolean ifCanUse = true;
@@ -157,6 +161,10 @@ public class CouponsServiceImpl implements CouponsService{
 					if(couponsview.getCouponsgroup().getCinemaCodes().indexOf(order.getCinemaCode())==-1){
 						ifCanUse = false;
 					}
+				}
+				//如果是代金券并且门槛金额大于当前订单总销售价
+				if(couponsview.getCouponsgroup().getCouponsType()==1&&couponsview.getCouponsgroup().getThresholdAmount()>=order.getTotalSettlePrice()){
+					ifCanUse=false;
 				}
 				//如果减免类型是卖品
 				if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==2){
