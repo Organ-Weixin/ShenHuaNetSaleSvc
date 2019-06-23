@@ -25,18 +25,16 @@ import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaMiniProgramAccounts;
-import com.boot.security.server.model.CouponsStatusEnum;
-import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.Goodscomponents;
 import com.boot.security.server.model.Goodsorders;
+import com.boot.security.server.model.Goodstype;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.Membercardrecharge;
-import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orders;
@@ -53,6 +51,7 @@ import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
+import com.boot.security.server.service.impl.GoodsTypeServiceImpl;
 import com.boot.security.server.service.impl.GoodscomponentsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
@@ -75,6 +74,7 @@ public class MtxInterface implements ICTMSInterface {
 	GoodsServiceImpl _goodsService=SpringUtil.getBean(GoodsServiceImpl.class);
 	GoodsOrderServiceImpl _goodsOrderService=SpringUtil.getBean(GoodsOrderServiceImpl.class);
 	GoodscomponentsServiceImpl _goodscomponentsService=SpringUtil.getBean(GoodscomponentsServiceImpl.class);
+	GoodsTypeServiceImpl _goodsTypeService = SpringUtil.getBean(GoodsTypeServiceImpl.class);
 	CinemaMiniProgramAccountsServiceImpl _cinemaMiniProgramAccountsService = SpringUtil.getBean(CinemaMiniProgramAccountsServiceImpl.class);
 	CouponsServiceImpl _couponsService = SpringUtil.getBean(CouponsServiceImpl.class);
 	//会员卡
@@ -343,23 +343,6 @@ public class MtxInterface implements ICTMSInterface {
 			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Submited.getStatusCode());
 			order.getOrderBaseInfo().setSubmitTime(newDate);
 			order.getOrderBaseInfo().setPayTime(newDate);
-			if(order.getOrderBaseInfo().getIsMemberPay() == 1){
-				order.getOrderBaseInfo().setOrderPayType(OrderPayTypeEnum.MemberCardPay.getTypeCode());
-			} else {
-				order.getOrderBaseInfo().setOrderPayType(OrderPayTypeEnum.WxPay.getTypeCode());
-			}
-			// 更新优惠券已使用
-			if (order.getOrderBaseInfo().getCouponsCode() != null && !order.getOrderBaseInfo().getCouponsCode().equals("")) {
-				CouponsView couponsview=_couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
-				if(couponsview!=null){
-					couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
-					couponsview.getCoupons().setUsedDate(new Date());
-					//使用数量+1
-					couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
-					//更新优惠券及优惠券分组表
-					_couponsService.update(couponsview);
-				}
-			}
 			
 			QueryOrder(userCinema, order);// 调用订单查询
 			reply.Status = StatusEnum.Success;
@@ -862,121 +845,126 @@ public class MtxInterface implements ICTMSInterface {
 	}
 	
 	
-		//卖品------获取卖品
-		@Override
-		public CTMSQueryGoodsReply QueryGoods(Usercinemaview userCinema) throws Exception {
-			CTMSQueryGoodsReply reply = new CTMSQueryGoodsReply();
-			MtxGetSPInfosResult mtxReply = WebService.GetSPInfos(userCinema);
-			if ("0".equals(mtxReply.getResultCode())) {
-				List<GetSPInfosBean> getSPInfosBeans = mtxReply.getSpinfos();
-				List<Goods> goodslist = _goodsService.getByCinemaCode(userCinema.getUserId(), userCinema.getCinemaCode());
-				for(Goods goo : goodslist){
-					boolean flag = true;
-					for(GetSPInfosBean getSPI : getSPInfosBeans){
-						if(goo.getGoodsCode().equals(getSPI.getSpno())){
-							flag = false;
-							break;
-						}
-					}
-					if(flag){
-						//删除本地有的而查出来没有的
-						_goodsService.deleteByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), goo.getGoodsCode());
+	//卖品------获取卖品
+	@Override
+	public CTMSQueryGoodsReply QueryGoods(Usercinemaview userCinema) throws Exception {
+		CTMSQueryGoodsReply reply = new CTMSQueryGoodsReply();
+		MtxGetSPInfosResult mtxReply = WebService.GetSPInfos(userCinema);
+		if ("0".equals(mtxReply.getResultCode())) {
+			List<GetSPInfosBean> getSPInfosBeans = mtxReply.getSpinfos();
+			List<Goods> goodslist = _goodsService.getByCinemaCode(userCinema.getUserId(), userCinema.getCinemaCode());
+			for(Goods goo : goodslist){
+				boolean flag = true;
+				for(GetSPInfosBean getSPI : getSPInfosBeans){
+					if(goo.getGoodsCode().equals(getSPI.getSpno())){
+						flag = false;
+						break;
 					}
 				}
-				for (GetSPInfosBean getSPInfosBean : getSPInfosBeans) {
-					Goods goo = _goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(),getSPInfosBean.getSpno());
-					if(goo == null){
-						goo = new Goods();
-						goo.setGoodsCode(getSPInfosBean.getSpno());
-						goo.setGoodsName(getSPInfosBean.getSpname());
-						goo.setGoodsType(getSPInfosBean.getSptype());
-						if (getSPInfosBean.getSellprice() != null) {
-							goo.setStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));
-							goo.setSettlePrice(Double.valueOf(getSPInfosBean.getSellprice()));
-						}
-						goo.setGoodsDesc(getSPInfosBean.getInfo());//卖品描述	
-						goo.setUnitName(getSPInfosBean.getUnitname());//卖品单位
-						goo.setUpdated(new Date());//更新时间
-						if (getSPInfosBean.getComponents() != null && getSPInfosBean.getComponents().size() > 0) {
-							System.out.println("2222");
-							goo.setIsPackage(1);//是否套餐，1套餐
-							for(GetSPInfoBean getSPInfoBean : getSPInfosBean.getComponents()){
-								Goodscomponents gcs = _goodscomponentsService.getByPackageAndGoodsCode(userCinema.getCinemaCode(), 
-										getSPInfosBean.getSpno(), getSPInfoBean.getSpno());
-								if(gcs == null){
-									gcs = new Goodscomponents();
-									gcs.setPackageCode(getSPInfosBean.getSpno());
-									gcs.setPackageName(getSPInfosBean.getSpname());
-									gcs.setGoodsCode(getSPInfoBean.getSpno());
-									gcs.setGoodsName(getSPInfoBean.getSpname());
-									gcs.setGoodsCount(getSPInfoBean.getCount());
-									gcs.setUnitName(getSPInfoBean.getUnitname());
-									if(getSPInfosBean.getSellprice()!=null){
-										gcs.setPackageStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));
-										gcs.setPackageSettlePrice(Double.valueOf(getSPInfosBean.getSellprice()));
-									}
-									gcs.setCinemaCode(userCinema.getCinemaCode());
-									gcs.setStatus(1);
-									_goodscomponentsService.save(gcs);	//插入卖品套餐表
-								} else{
-									gcs.setPackageName(getSPInfosBean.getSpname());
-									gcs.setGoodsCode(getSPInfoBean.getSpno());
-									gcs.setGoodsName(getSPInfoBean.getSpname());
-									gcs.setGoodsCount(getSPInfoBean.getCount());
-									gcs.setUnitName(getSPInfoBean.getUnitname());
-									if(getSPInfosBean.getSellprice()!=null){
-										gcs.setPackageStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));
-										gcs.setPackageSettlePrice(Double.valueOf(getSPInfosBean.getSellprice()));
-									}
-									_goodscomponentsService.update(gcs);
-								}
-							}
-
-						} else {
-							System.out.println("3333");
-							goo.setIsPackage(0);//是否套餐，0非套餐
-						}
-						goo.setCinemaCode(userCinema.getCinemaCode());
-						goo.setUserId(userCinema.getUserId());
-						//goo.setGoodsPic();//没有卖品图片
-						goo.setStockCount(999);//库存给定100
-						goo.setShowSeqNo(1);//展示顺序 默认1
-						goo.setIsDiscount(0);//是否享受会员卡优惠，1是；0 否 默认0
-						goo.setGoodsStatus(1);//卖品状态 
-						goo.setIsRecommand(0);//是否推荐  默认0
-						goo.setUpdated(new Date());//更新时间
-						_goodsService.save(goo);
-						
-					} else {
-						goo.setGoodsCode(getSPInfosBean.getSpno());
-						goo.setGoodsName(getSPInfosBean.getSpname());
-						goo.setGoodsType(getSPInfosBean.getSptype());
-						if (getSPInfosBean.getSellprice() != null) {
-							goo.setStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));
-							goo.setSettlePrice(Double.valueOf(getSPInfosBean.getSellprice()));
-						}
-						goo.setGoodsDesc(getSPInfosBean.getInfo());//卖品描述	
-						goo.setUnitName(getSPInfosBean.getUnitname());//卖品单位
-						if (getSPInfosBean.getComponents() != null && getSPInfosBean.getComponents().size() > 0) {
-							goo.setIsPackage(1);//是否套餐，1套餐
-						} else {
-							goo.setIsPackage(0);//是否套餐，0非套餐
-						}
-						goo.setUpdated(new Date());//更新时间
-						_goodsService.update(goo);
-					}
+				if(flag){
+					//删除本地有的而查出来没有的
+					_goodsService.deleteByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), goo.getGoodsCode());
 				}
-				reply.Status = StatusEnum.Success;
-			} else {
-				reply.Status = StatusEnum.Failure;
 			}
-			reply.ErrorCode = mtxReply.getResultCode();
-			reply.ErrorMessage = mtxReply.getResultmsg();
-			return reply;
+			for (GetSPInfosBean getSPInfosBean : getSPInfosBeans) {
+				Goods goo = _goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(),getSPInfosBean.getSpno());
+				if(goo == null){
+					goo = new Goods();
+					goo.setGoodsCode(getSPInfosBean.getSpno());
+					goo.setGoodsName(getSPInfosBean.getSpname());
+					goo.setGoodsType(getSPInfosBean.getSptype());
+					if (getSPInfosBean.getSellprice() != null) {
+						goo.setStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));
+						goo.setSettlePrice(Double.valueOf(getSPInfosBean.getSellprice()));
+					}
+					goo.setGoodsDesc(getSPInfosBean.getInfo());//卖品描述	
+					goo.setUnitName(getSPInfosBean.getUnitname());//卖品单位
+					goo.setUpdated(new Date());//更新时间
+					if (getSPInfosBean.getComponents() != null && getSPInfosBean.getComponents().size() > 0) {
+						goo.setIsPackage(1);//是否套餐，1套餐
+						for(GetSPInfoBean getSPInfoBean : getSPInfosBean.getComponents()){
+							Goodscomponents gcs = _goodscomponentsService.getByPackageAndGoodsCode(userCinema.getCinemaCode(), 
+									getSPInfosBean.getSpno(), getSPInfoBean.getSpno());
+							if(gcs == null){
+								gcs = new Goodscomponents();
+								gcs.setPackageCode(getSPInfosBean.getSpno());
+								gcs.setPackageName(getSPInfosBean.getSpname());
+								gcs.setGoodsCode(getSPInfoBean.getSpno());
+								gcs.setGoodsName(getSPInfoBean.getSpname());
+								gcs.setGoodsCount(getSPInfoBean.getCount());
+								gcs.setUnitName(getSPInfoBean.getUnitname());
+								if(getSPInfosBean.getSellprice()!=null){
+									gcs.setPackageStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));
+									gcs.setPackageSettlePrice(Double.valueOf(getSPInfosBean.getSellprice()));
+								}
+								gcs.setCinemaCode(userCinema.getCinemaCode());
+								gcs.setStatus(1);
+								_goodscomponentsService.save(gcs);	//插入卖品套餐表
+							} else{
+								gcs.setPackageName(getSPInfosBean.getSpname());
+								gcs.setGoodsCode(getSPInfoBean.getSpno());
+								gcs.setGoodsName(getSPInfoBean.getSpname());
+								gcs.setGoodsCount(getSPInfoBean.getCount());
+								gcs.setUnitName(getSPInfoBean.getUnitname());
+								if(getSPInfosBean.getSellprice()!=null){
+									gcs.setPackageStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));
+									gcs.setPackageSettlePrice(Double.valueOf(getSPInfosBean.getSellprice()));
+								}
+								_goodscomponentsService.update(gcs);
+							}
+						}
+
+					} else {
+						goo.setIsPackage(0);//是否套餐，0非套餐
+					}
+					goo.setCinemaCode(userCinema.getCinemaCode());
+					goo.setUserId(userCinema.getUserId());
+					//goo.setGoodsPic();//没有卖品图片
+					goo.setStockCount(999);//库存给定100
+					goo.setShowSeqNo(1);//展示顺序 默认1
+					goo.setIsDiscount(0);//是否享受会员卡优惠，1是；0 否 默认0
+					goo.setGoodsStatus(1);//卖品状态 
+					goo.setIsRecommand(0);//是否推荐  默认0
+					goo.setUpdated(new Date());//更新时间
+					_goodsService.save(goo);				//插入卖品表
+					
+				} else {
+					goo.setGoodsCode(getSPInfosBean.getSpno());
+					goo.setGoodsName(getSPInfosBean.getSpname());
+					goo.setGoodsType(getSPInfosBean.getSptype());
+					if (getSPInfosBean.getSellprice() != null) {
+						goo.setStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));
+						goo.setSettlePrice(Double.valueOf(getSPInfosBean.getSellprice()));
+					}
+					goo.setGoodsDesc(getSPInfosBean.getInfo());//卖品描述	
+					goo.setUnitName(getSPInfosBean.getUnitname());//卖品单位
+					if (getSPInfosBean.getComponents() != null && getSPInfosBean.getComponents().size() > 0) {
+						goo.setIsPackage(1);//是否套餐，1套餐
+					} else {
+						goo.setIsPackage(0);//是否套餐，0非套餐
+					}
+					goo.setUpdated(new Date());//更新时间
+					_goodsService.update(goo);
+				}
+				Goodstype  goodstype = _goodsTypeService.getByTypeCode(userCinema.getCinemaCode(), getSPInfosBean.getSptype());
+				if(goodstype == null){
+					goodstype = new Goodstype();
+					goodstype.setCinemaCode(userCinema.getCinemaCode());
+					goodstype.setTypeCode(getSPInfosBean.getSptype());
+					_goodsTypeService.save(goodstype);		//插入卖品分类表
+				}
+			}
+			reply.Status = StatusEnum.Success;
+		} else {
+			reply.Status = StatusEnum.Failure;
 		}
+		reply.ErrorCode = mtxReply.getResultCode();
+		reply.ErrorMessage = mtxReply.getResultmsg();
+		return reply;
+	}
 		
 		
-		//创建卖品订单
+	//创建卖品订单
 	@Override
 	public CTMSCreateGoodsOrderReply CreateGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
 			throws Exception {

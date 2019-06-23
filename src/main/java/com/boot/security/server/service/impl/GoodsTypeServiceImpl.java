@@ -16,8 +16,17 @@ public class GoodsTypeServiceImpl implements GoodsTypeService {
 
 	@Override
 	public List<Goodstype> getByCinemaCode(String cinemacode) {
-		// TODO Auto-generated method stub
 		return goodstypeDao.getByCinemaCode(cinemacode);
+	}
+
+	@Override
+	public Goodstype getByTypeCode(String cinemacode, String typecode) {
+		return goodstypeDao.getByTypeCode(cinemacode, typecode);
+	}
+
+	@Override
+	public int save(Goodstype goodstype) {
+		return goodstypeDao.save(goodstype);
 	}
 
 }

@@ -21,6 +21,9 @@ public interface UsercinemaviewDao {
     @Select("select * from usercinemaview t where t.userid = #{userid}")
     List<Usercinemaview> GetUserCinemaViewsByUserId(Long userid);
     
+    @Select("select * from usercinemaview t where t.cinemacode=#{cinemacode}")
+    Usercinemaview GetByCinemaCode(String cinemacode);
+    
     @Select("select * from usercinemaview t where t.userid = #{userid} and t.cinemacode=#{cinemacode}")
     Usercinemaview GetUserCinemaViewsByUserIdAndCinemaCode(@Param("userid")Long userid,@Param("cinemacode")String cinemacode);
 

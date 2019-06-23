@@ -42,8 +42,6 @@ import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaMiniProgramAccounts;
-import com.boot.security.server.model.CouponsStatusEnum;
-import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
@@ -637,18 +635,7 @@ public class YkInterface implements ICTMSInterface {
 				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Complete.getStatusCode());	//订单状态
 				order.getOrderBaseInfo().setSubmitTime(new Date());					//订单提交时间
 				order.getOrderBaseInfo().setPayTime(new Date());					//支付时间
-				// 更新优惠券已使用
-				if (order.getOrderBaseInfo().getCouponsCode() != null && !order.getOrderBaseInfo().getCouponsCode().equals("")) {
-					CouponsView couponsview=_couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
-					if(couponsview!=null){
-						couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
-						couponsview.getCoupons().setUsedDate(new Date());
-						//使用数量+1
-						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
-						//更新优惠券及优惠券分组表
-						_couponsService.update(couponsview);
-					}
-				}
+				
 				reply.Status = StatusEnum.Success;
 			} else {
 				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.SubmitFail.getStatusCode());
@@ -1920,18 +1907,7 @@ public class YkInterface implements ICTMSInterface {
 				} else {
 					order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.SubmitFail.getStatusCode());
 				}
-				// 更新优惠券已使用
-				if (order.getOrderBaseInfo().getCouponsCode() != null && !order.getOrderBaseInfo().getCouponsCode().equals("")) {
-					CouponsView couponsview=_couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
-					if(couponsview!=null){
-						couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
-						couponsview.getCoupons().setUsedDate(new Date());
-						//使用数量+1
-						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
-						//更新优惠券及优惠券分组表
-						_couponsService.update(couponsview);
-					}
-				}
+				
 				reply.Status = StatusEnum.Success;
 			} else {
 				reply.Status = StatusEnum.Failure;

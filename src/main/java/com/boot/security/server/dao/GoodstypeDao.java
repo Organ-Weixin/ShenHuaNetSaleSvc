@@ -20,6 +20,9 @@ public interface GoodstypeDao {
     
     @Select("select * from goodstype t where t.cinemacode = #{cinemacode}")
     List<Goodstype> getByCinemaCode(String cinemacode);
+    
+    @Select("select * from goodstype t where t.CinemaCode = #{cinemacode} and t.TypeCode = #{typecode}")
+    Goodstype getByTypeCode(@Param("cinemacode") String cinemacode,@Param("typecode") String typecode);
 
     @Delete("delete from goodstype where id = #{id}")
     int delete(Long id);

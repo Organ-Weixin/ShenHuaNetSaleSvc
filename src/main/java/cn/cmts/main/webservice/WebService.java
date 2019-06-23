@@ -309,8 +309,7 @@ public class WebService {
 			String pVerifyInfo = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
 					orderView.getOrderBaseInfo().getSubmitOrderCode(), TokenId, Token, userCinema.getDefaultPassword());
 			String result = WebService.cinemaTss(userCinema.getUrl()).backTicket(userCinema.getDefaultUserName(),
-					userCinema.getCinemaCode(), orderView.getOrderBaseInfo().getSubmitOrderCode(), "正常退票", TokenId,
-					pVerifyInfo);
+					userCinema.getCinemaCode(), orderView.getOrderBaseInfo().getSubmitOrderCode(), "正常退票", TokenId,	pVerifyInfo);
 			System.out.println("退票返回"+result);
 			Gson gson = new Gson();
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "BackTicketResult"), MtxBackTicketResult.class);
@@ -379,7 +378,7 @@ public class WebService {
 			jo.put("sPInfos",sPInfos );
 		
 			String pVerifyInfo=GenerateVerifyInfo(userCinema.getDefaultUserName(),userCinema.getCinemaCode(),order.getOrderBaseInfo().getOrderCode(),
-					order.getOrderBaseInfo().getPayType(),String.valueOf(count),userCinema.getDefaultPassword());
+					order.getOrderBaseInfo().getPayType(),order.getOrderBaseInfo().getPaySeqNo(), String.valueOf(count),userCinema.getDefaultPassword());
 			jo.put("verifyInfo", pVerifyInfo);
 			String pJsonString=jo.toJSONString();
 			String result=WebService.cinemaTss(userCinema.getUrl()).confirmSPInfo(pJsonString);

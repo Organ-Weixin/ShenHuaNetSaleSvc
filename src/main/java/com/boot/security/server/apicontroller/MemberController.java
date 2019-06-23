@@ -202,6 +202,7 @@ public class MemberController {
 			@PathVariable String FilmCode,@PathVariable String TicketNum,@PathVariable String CouponsCode,@PathVariable String CouponsCode2){
 		OrderView order = orderService.getOrderWidthLockOrderCode(CinemaCode, LockOrderCode);
 		GoodsOrderView goodsOrder = goodsOrderService.getWithLocalOrderCode(CinemaCode,LocalOrderCode);
+		Usercinemaview userCinema = _userCinemaViewService.getByCinemaCode(CinemaCode);
 		Double realPayAmount=0D;
 		Double realGoodsPayAmount=0D;
 		
@@ -279,6 +280,10 @@ public class MemberController {
 				//更新订单
 				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Payed.getStatusCode());
 				order.getOrderBaseInfo().setIsMemberPay(1);
+				if (userCinema.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode()) {
+					order.getOrderBaseInfo().setPayType(userCinema.getPayType().split(",")[0]);
+					order.getOrderBaseInfo().setPaySeqNo(reply.getTradeNo());
+				}
 				order.getOrderBaseInfo().setPayFlag(1);
 				order.getOrderBaseInfo().setPayTime(new Date());
 				order.getOrderBaseInfo().setOrderTradeNo(reply.getTradeNo());
@@ -313,6 +318,10 @@ public class MemberController {
 				goodsOrder.getOrderBaseInfo().setCardNo(CardNo);
 				goodsOrder.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Payed.getStatusCode());
 				goodsOrder.getOrderBaseInfo().setOrderPayFlag(1);
+				if (userCinema.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode()) {
+					goodsOrder.getOrderBaseInfo().setPayType(userCinema.getPayType().split(",")[0]);
+					goodsOrder.getOrderBaseInfo().setPaySeqNo(reply.getTradeNo());
+				}
 				goodsOrder.getOrderBaseInfo().setOrderPayTime(new Date());
 				goodsOrder.getOrderBaseInfo().setOrderTradeNo(reply.getTradeNo());
 				goodsOrder.getOrderBaseInfo().setOrderPayType(OrderPayTypeEnum.MemberCardPay.getTypeCode());
@@ -452,6 +461,18 @@ public class MemberController {
 			// 更新订单信息
 			order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
 			orderService.Update(order);
+			// 更新优惠券已使用
+			if (order.getOrderBaseInfo().getCouponsCode() != null && !order.getOrderBaseInfo().getCouponsCode().equals("")) {
+				CouponsView couponsview=_couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
+				if(couponsview!=null){
+					couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
+					couponsview.getCoupons().setUsedDate(new Date());
+					//使用数量+1
+					couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+					//更新优惠券及优惠券分组表
+					_couponsService.update(couponsview);
+				}
+			}
 			
 			//返回
 			reply.setOrderNo(order.getOrderBaseInfo().getSubmitOrderCode());
@@ -512,6 +533,18 @@ public class MemberController {
 			// 更新订单信息
 			order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
 			goodsOrderService.Update(order);
+			// 更新优惠券已使用
+			if (order.getOrderBaseInfo().getCouponsCode() != null && !order.getOrderBaseInfo().getCouponsCode().equals("")) {
+				CouponsView couponsview=_couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
+				if(couponsview!=null){
+					couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
+					couponsview.getCoupons().setUsedDate(new Date());
+					//使用数量+1
+					couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+					//更新优惠券及优惠券分组表
+					_couponsService.update(couponsview);
+				}
+			}
 			
 			//返回
 			reply.setOrder(new SubmitGoodsOrderReplyOrder());

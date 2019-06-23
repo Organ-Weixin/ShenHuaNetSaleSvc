@@ -20,9 +20,15 @@ public class UserCinemaViewServiceImpl implements UserCinemaViewService {
 	public List<Usercinemaview> GetUserCinemaViewsByUserId(Long UserId) {
 		return usercinemaviewDao.GetUserCinemaViewsByUserId(UserId);
 	}
+	
 	@Override
 	public Usercinemaview GetUserCinemaViewsByUserIdAndCinemaCode(Long UserId, String CinemaCode) {
 		return usercinemaviewDao.GetUserCinemaViewsByUserIdAndCinemaCode(UserId, CinemaCode);
+	}
+	
+	@Override
+	public Usercinemaview getByCinemaCode(String cinemaCode) {
+		return usercinemaviewDao.GetByCinemaCode(cinemaCode);
 	}
 
 }
