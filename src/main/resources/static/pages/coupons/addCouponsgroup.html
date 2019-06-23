@@ -31,7 +31,7 @@
 						至
 						<input type="text" id="expireDate" placeholder="请选择日期" name="expireDate">
 					</div>
-					<div style="margin-top:2%">
+					<!-- <div style="margin-top:2%">
 						<input type="radio" name="ValidityTypeRadio" value="2"> 领取后,
 						<select id="effectiveDays" name="effectiveDays">
 							<option value="">请选择</option>
@@ -46,7 +46,7 @@
 							<option value="30">30天</option>
 							<option value="180">180天</option>
 						</select>
-					</div>
+					</div> -->
 				</div>
 			</div>
 			<div class='form-group' style="margin-top:2%">
@@ -57,7 +57,7 @@
 						<input type="radio" name="CanUsePeriodTypeRadio" value="1">
 						全部时段
 					</div>
-					<div style="margin-top:2%">
+					<!-- <div style="margin-top:2%">
 						<div>
 							<input type="radio" name="CanUsePeriodTypeRadio" value="2">
 							部分时段
@@ -93,7 +93,7 @@
 								</font>
 							</div>	
 						</div>
-					</div>
+					</div> -->
 				</div>
 			</div>
 			<div class='form-group' style="margin-top:3%">
@@ -139,14 +139,14 @@
 							&nbsp;&nbsp;减&nbsp;
 							<input type="text" style="width:10%" id="filmReductionPrice">&nbsp;金额
 						</span>
-						<div id="Films" style="margin-top:2%;display:none">
+						<!-- <div id="Films" style="margin-top:2%;display:none">
 						<input type="radio" style="margin-left:3%" id="checkFilms" name="FilmOrGoodRadio">指定影片可用
 						</div>
 						<div id="filmsDiv" style="margin-top:2%;display:none">
 							<input type="hidden" id="filmCodes" name="filmCodes">
 							<select id="FilmsSelect" class="form-control" multiple data-s2-options="s2options" data-krajee-select2="selectfilm">
 							</select>
-						</div> 
+						</div>  -->
 					</div>
 					<div style="margin-top:2%">
 						<input type="radio" name="reductionTypeRadio" value="2">卖品
@@ -158,20 +158,27 @@
 							&nbsp;&nbsp;减&nbsp;
 							<input type="text" style="width:10%" id="goodReductionPrice">&nbsp;金额
 						</span>
-						<div id="Goods" style="margin-top:2%;display:none">
+						<!-- <div id="Goods" style="margin-top:2%;display:none">
 						<input type="radio" style="margin-left:3%" id='checkGoods' name="FilmOrGoodRadio">指定卖品可用
 						</div>
 						<div id="goodsDiv" style="margin-top:2%;display:none">
 							<input type="hidden" id="goodsCodes" name="goodsCodes">
 							<select id="GoodsSelect" class="form-control" multiple data-s2-options="s2options" data-krajee-select2="selectgood">
 						</select> 
-						</div>
+						</div> -->
 					</div>
 					<div style="margin-top:2%">
 						优惠共享
 						<select id="isShare" name="isShare"> 
 							<option value="0">不可共享</option>
 							<option value="1">可共享</option>
+						</select>
+					</div>
+					<div style="margin-top:2%">
+						是否可与会员卡叠加使用
+						<select id="isShareWithMemberCard" name="isShareWithMemberCard"> 
+							<option value="0">不可叠加</option>
+							<option value="1">可叠加</option>
 						</select>
 					</div>
 				</div>
