@@ -35,6 +35,7 @@ import com.boot.security.server.api.ctms.reply.MtxSellTicketResult;
 import com.boot.security.server.api.ctms.reply.MtxUnLockOrderCenCinResult;
 import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.Goodsorderdetails;
+import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Screeninfo;
@@ -366,19 +367,25 @@ public class WebService {
 				goodsmap.put("sPNo", goodsorderdetails.getGoodsCode());
 				goodsmap.put("sPCount", String.valueOf(goodsorderdetails.getGoodsCount()));
 				count+=goodsorderdetails.getGoodsCount();
-				goodsmap.put("sPPrice", String.valueOf(goodsorderdetails.getStandardPrice()*goodsorderdetails.getGoodsCount()));
+				goodsmap.put("sPPrice", String.valueOf(goodsorderdetails.getSubTotalAmount()));
 				sPInfos.add(goodsmap);
 			}
 			JSONObject  jo=new JSONObject();
 			jo.put("appCode", userCinema.getDefaultUserName());
 			jo.put("cinemaId", userCinema.getCinemaCode());
-			jo.put("orderNo", order.getOrderBaseInfo().getOrderCode());
+			
+			jo.put("orderNo", "");	//（非必填项）
 			jo.put("payType",order.getOrderBaseInfo().getPayType());
-			jo.put("paySeqNo", order.getOrderBaseInfo().getPaySeqNo());
+			
+			String paySeqNo = "";
+			if(order.getOrderBaseInfo().getOrderPayType() != null && order.getOrderBaseInfo().getOrderPayType() == OrderPayTypeEnum.MemberCardPay.getTypeCode()){
+				paySeqNo = order.getOrderBaseInfo().getPaySeqNo();
+			}
+			jo.put("paySeqNo", paySeqNo);
 			jo.put("sPInfos",sPInfos );
 		
-			String pVerifyInfo=GenerateVerifyInfo(userCinema.getDefaultUserName(),userCinema.getCinemaCode(),order.getOrderBaseInfo().getOrderCode(),
-					order.getOrderBaseInfo().getPayType(),order.getOrderBaseInfo().getPaySeqNo(), String.valueOf(count),userCinema.getDefaultPassword());
+			String pVerifyInfo=GenerateVerifyInfo(userCinema.getDefaultUserName(),userCinema.getCinemaCode(), "",
+					order.getOrderBaseInfo().getPayType(), paySeqNo, String.valueOf(count),userCinema.getDefaultPassword());
 			jo.put("verifyInfo", pVerifyInfo);
 			String pJsonString=jo.toJSONString();
 			String result=WebService.cinemaTss(userCinema.getUrl()).confirmSPInfo(pJsonString);
@@ -395,10 +402,14 @@ public class WebService {
 	 * */
 	public static MtxBackSellGoodsResult BackSellGoods(Usercinemaview userCinema, GoodsOrderView order){
 		try {
+			String paySeqNo = "";
+			if(order.getOrderBaseInfo().getOrderPayType() != null && order.getOrderBaseInfo().getOrderPayType() == OrderPayTypeEnum.MemberCardPay.getTypeCode()){
+				paySeqNo = order.getOrderBaseInfo().getPaySeqNo();
+			}
 			String pVerifyInfo=GenerateVerifyInfo(userCinema.getDefaultUserName(),userCinema.getCinemaCode(),
-					order.getOrderBaseInfo().getOrderCode(),order.getOrderBaseInfo().getPaySeqNo(),userCinema.getDefaultPassword());
+					order.getOrderBaseInfo().getOrderCode(), paySeqNo, userCinema.getDefaultPassword());
 			String result=WebService.cinemaTss(userCinema.getUrl()).backSellGoods(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
-					order.getOrderBaseInfo().getOrderCode(), order.getOrderBaseInfo().getPaySeqNo(), pVerifyInfo);
+					order.getOrderBaseInfo().getOrderCode(), paySeqNo, pVerifyInfo);
 			System.out.println("获取退卖品的返回"+result);
 			Gson gson=new Gson();
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "BackSellGoodsResult"), MtxBackSellGoodsResult.class);

@@ -248,12 +248,17 @@ public class AppGoodsController {
     		//辰星系统(取票码截取影院编码)
     		if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
     			if(orders.getOrderBaseInfo().getPickUpCode()!=null){
-    				order.setEwmPicture(new FileUploadUtils().generateEwm(orders.getOrderBaseInfo().getPickUpCode().substring(8,orders.getOrderBaseInfo().getPickUpCode().length())));
+					order.setEwmPicture(FileUploadUtils.generateEwm(orders.getOrderBaseInfo().getPickUpCode().substring(8,orders.getOrderBaseInfo().getPickUpCode().length())));
     			}
     		}
     		if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
     			if(orders.getOrderBaseInfo().getOrderCode()!=null){
-    				order.setEwmPicture(new FileUploadUtils().generateEwm(orders.getOrderBaseInfo().getOrderCode()));
+					order.setEwmPicture(FileUploadUtils.generateEwm(orders.getOrderBaseInfo().getOrderCode()));
+    			}
+    		}
+    		if(cinemaview.getCinemaType()==CinemaTypeEnum.YueKe.getTypeCode() || cinemaview.getCinemaType()==CinemaTypeEnum.ManTianXing.getTypeCode()){
+    			if(orders.getOrderBaseInfo().getPickUpCode()!=null){
+    				order.setEwmPicture(FileUploadUtils.generateEwm(orders.getOrderBaseInfo().getPickUpCode()));
     			}
     		}
         	queryGoodsOrderReply.setData(order);
@@ -302,12 +307,17 @@ public class AppGoodsController {
     		//辰星系统(取票码截取影院编码)
     		if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
     			if(orders.getOrderBaseInfo().getPickUpCode()!=null){
-    				order.setEwmPicture(new FileUploadUtils().generateEwm(orders.getOrderBaseInfo().getPickUpCode().substring(8,orders.getOrderBaseInfo().getPickUpCode().length())));
+					order.setEwmPicture(FileUploadUtils.generateEwm(orders.getOrderBaseInfo().getPickUpCode().substring(8,orders.getOrderBaseInfo().getPickUpCode().length())));
     			}
     		}
     		if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
     			if(orders.getOrderBaseInfo().getOrderCode()!=null){
-    				order.setEwmPicture(new FileUploadUtils().generateEwm(orders.getOrderBaseInfo().getOrderCode()));
+					order.setEwmPicture(FileUploadUtils.generateEwm(orders.getOrderBaseInfo().getOrderCode()));
+    			}
+    		}
+    		if(cinemaview.getCinemaType()==CinemaTypeEnum.YueKe.getTypeCode() || cinemaview.getCinemaType()==CinemaTypeEnum.ManTianXing.getTypeCode()){
+    			if(orders.getOrderBaseInfo().getPickUpCode()!=null){
+    				order.setEwmPicture(FileUploadUtils.generateEwm(orders.getOrderBaseInfo().getPickUpCode()));
     			}
     		}
         	queryLocalGoodsOrderReply.setData(order);
@@ -318,11 +328,11 @@ public class AppGoodsController {
 	//endregion
 	
 	//region 退订卖品
-	@GetMapping("/RefundGoods/{UserName}/{Password}/{CinemaCode}/{OrderCode}/{PaySeqNo}")
+	@GetMapping("/RefundGoods/{UserName}/{Password}/{CinemaCode}/{OrderCode}")
 	@ApiOperation(value = "退订卖品")
 	public RefundGoodsReply RefundGoods(@PathVariable String UserName, @PathVariable String Password, 
-			@PathVariable String CinemaCode, @PathVariable String OrderCode,@PathVariable String PaySeqNo){
-		RefundGoodsReply reply = NetSaleSvcCore.getInstance().RefundGoods(UserName, Password, CinemaCode, OrderCode, PaySeqNo);
+			@PathVariable String CinemaCode, @PathVariable String OrderCode){
+		RefundGoodsReply reply = NetSaleSvcCore.getInstance().RefundGoods(UserName, Password, CinemaCode, OrderCode);
 		
 		return reply;
 	}

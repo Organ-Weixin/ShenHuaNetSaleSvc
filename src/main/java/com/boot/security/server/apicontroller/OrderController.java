@@ -86,7 +86,6 @@ import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
-import com.boot.security.server.service.impl.OrderseatdetailsServiceImpl;
 import com.boot.security.server.service.impl.PriceplanServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
@@ -141,8 +140,6 @@ public class OrderController {
 	private CinemaviewServiceImpl cinemaviewService;
 	@Autowired
 	private OrderServiceImpl orderService;
-	@Autowired
-	private OrderseatdetailsServiceImpl orderseatdetailsService;
 	@Autowired
 	private HttpServletRequest request;
 	protected static Logger log = LoggerFactory.getLogger(OrderController.class);
@@ -318,13 +315,13 @@ public class OrderController {
 		//辰星系统(取票码截取影院编码)
 		if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
 			if(orders.getPrintNo()!=null&&orders.getPrintNo().length()>8){
-				data.setEwmPicture(new FileUploadUtils().generateEwm(orders.getPrintNo().substring(8,orders.getPrintNo().length())));
+				data.setEwmPicture(FileUploadUtils.generateEwm(orders.getPrintNo().substring(8,orders.getPrintNo().length())));
 			}
 		}
 		if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
-			data.setEwmPicture(new FileUploadUtils().generateEwm(orders.getSubmitOrderCode()));
+			data.setEwmPicture(FileUploadUtils.generateEwm(orders.getSubmitOrderCode()));
 		}
-		if(cinemaview.getCinemaType() == CinemaTypeEnum.YueKe.getTypeCode()){
+		if(cinemaview.getCinemaType() == CinemaTypeEnum.YueKe.getTypeCode() || cinemaview.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode()){
 			data.setEwmPicture(FileUploadUtils.generateEwm(orders.getPrintNo()));
 		}
 		ticketOrderReply.setData(data);

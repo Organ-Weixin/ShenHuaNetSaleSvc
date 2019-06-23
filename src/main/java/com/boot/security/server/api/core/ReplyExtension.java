@@ -779,8 +779,7 @@ public class ReplyExtension {
 	//endregion
 	
 	//region RefundGoodsReply
-	public static boolean RequestInfoGuard(RefundGoodsReply reply, String Username, String Password, String CinemaCode,
-			String OrderCode, String PaySeqNo) {
+	public static boolean RequestInfoGuard(RefundGoodsReply reply, String Username, String Password, String CinemaCode,	String OrderCode) {
 		if (Username.isEmpty()) {
 			reply.SetNecessaryParamMissReply(Username);
 			return false;
@@ -795,10 +794,6 @@ public class ReplyExtension {
 		}
 		if (OrderCode.isEmpty()) {
 			reply.SetNecessaryParamMissReply(OrderCode);
-			return false;
-		}
-		if (PaySeqNo.isEmpty()) {
-			reply.SetNecessaryParamMissReply(PaySeqNo);
 			return false;
 		}
 

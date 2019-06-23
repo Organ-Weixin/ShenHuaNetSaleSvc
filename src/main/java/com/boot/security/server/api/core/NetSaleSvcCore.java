@@ -2148,9 +2148,9 @@ ScreenType,ListingPrice,LowestPrice))
 	//endregion
 	
 	//region 退订卖品(完成)
-	public RefundGoodsReply RefundGoods(String Username, String Password, String CinemaCode, String OrderCode,String PaySeqNo){
+	public RefundGoodsReply RefundGoods(String Username, String Password, String CinemaCode, String OrderCode){
 		RefundGoodsReply refundGoodsReply=new RefundGoodsReply();
-		if (!ReplyExtension.RequestInfoGuard(refundGoodsReply, Username, Password, CinemaCode, OrderCode, PaySeqNo)) {
+		if (!ReplyExtension.RequestInfoGuard(refundGoodsReply, Username, Password, CinemaCode, OrderCode)) {
 			return refundGoodsReply;
 		}
 		// 获取用户信息
@@ -2171,6 +2171,12 @@ ScreenType,ListingPrice,LowestPrice))
 		if (order == null || (order.getOrderBaseInfo().getOrderStatus() != GoodsOrderStatusEnum.Complete.getStatusCode()
 				&& order.getOrderBaseInfo().getOrderStatus() != GoodsOrderStatusEnum.RefundFail.getStatusCode())) {
 			refundGoodsReply.SetOrderNotExistReply();
+			return refundGoodsReply;
+		}
+		// TODO:满天星的订单属于会员卡支付的话暂时要求传入会员卡交易流水号
+		if (userCinema.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode()
+				&& order.getOrderBaseInfo().getOrderPayType()==OrderPayTypeEnum.MemberCardPay.getTypeCode() && order.getOrderBaseInfo().getPaySeqNo().isEmpty()) {
+			refundGoodsReply.SetMemberPaySeqNoNotExistReply();
 			return refundGoodsReply;
 		}
 		return RefundGoods(refundGoodsReply, userCinema, order);

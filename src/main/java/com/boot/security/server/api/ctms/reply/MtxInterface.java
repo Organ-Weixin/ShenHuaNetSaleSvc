@@ -1,6 +1,5 @@
 package com.boot.security.server.api.ctms.reply;
 
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -338,8 +337,9 @@ public class MtxInterface implements ICTMSInterface {
 		if ("0".equals(mtxReply.getSellTicketResult().getResultCode())) {
 			Date newDate = new Date();
 			order.getOrderBaseInfo().setSubmitOrderCode(mtxReply.getSellTicketResult().getOrderNo());
-			order.getOrderBaseInfo().setPrintNo(mtxReply.getSellTicketResult().getOrderNo());
 			order.getOrderBaseInfo().setVerifyCode(mtxReply.getSellTicketResult().getValidCode());
+			//PrintNo(满天星订单号，长度不定，目前为9位) + VerifyCode（验证码，6位）
+			order.getOrderBaseInfo().setPrintNo(mtxReply.getSellTicketResult().getOrderNo() + mtxReply.getSellTicketResult().getValidCode());
 			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Submited.getStatusCode());
 			order.getOrderBaseInfo().setSubmitTime(newDate);
 			order.getOrderBaseInfo().setPayTime(newDate);
@@ -704,9 +704,15 @@ public class MtxInterface implements ICTMSInterface {
 		Sessioninfo sess = _sessioninfoService.getSessionCode(userCinema.getCinemaCode(), SessionCode);
 		MtxGetDiscountResult mtxReply = Webservice.GetDiscount(userCinema, CardNo, sess.getFeatureNo(), SessionTime);
 		if ("0".equals(mtxReply.getGetDiscountReturn().getResultCode())) {
+			Float price = Float.valueOf(String.valueOf(sess.getStandardPrice()));
+			if("0".equals(mtxReply.getGetDiscountReturn().getDiscountType())){
+				price = Float.valueOf(mtxReply.getGetDiscountReturn().getPrice())*price/10f;
+			} else {
+				price = Float.valueOf(mtxReply.getGetDiscountReturn().getPrice());
+			}
 			reply.setCinemaCode(userCinema.getCinemaCode());
-			reply.setDiscountType(Integer.valueOf(mtxReply.getGetDiscountReturn().getDiscountType()));
-			reply.setPrice(Float.valueOf(mtxReply.getGetDiscountReturn().getPrice()));
+			reply.setDiscountType(1);
+			reply.setPrice(price);
 			reply.Status = StatusEnum.Success;
 		} else {
 			reply.Status = StatusEnum.Failure;
@@ -969,7 +975,7 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSCreateGoodsOrderReply CreateGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
 			throws Exception {
 		CTMSCreateGoodsOrderReply reply = new CTMSCreateGoodsOrderReply();
-		reply.setOrderCode(order.getOrderBaseInfo().getOrderCode());
+		reply.setOrderCode(order.getOrderBaseInfo().getLocalOrderCode());
 		reply.Status = StatusEnum.Success;
 		return reply;
 	}
@@ -980,8 +986,11 @@ public class MtxInterface implements ICTMSInterface {
 		CTMSSubmitGoodsOrderReply reply=new CTMSSubmitGoodsOrderReply();
 		MtxConfirmSPInfoResult mtxReply = WebService.ConfirmSPInfo(userCinema, order);
 		if("0".equals(mtxReply.getResultCode())){
-			order.getOrderBaseInfo().setOrderCode(mtxReply.getOrderNo());
-			order.getOrderBaseInfo().setPickUpCode(mtxReply.getValidCode());
+			String orderNo = mtxReply.getOrderNo();
+			order.getOrderBaseInfo().setOrderCode(orderNo);
+			order.getOrderBaseInfo().setVerifyCode(mtxReply.getValidCode());
+			//取货码 用验证码+订单号后两位
+			order.getOrderBaseInfo().setPickUpCode(mtxReply.getValidCode() + orderNo.substring(orderNo.length()-2, orderNo.length()));	
 			order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
 			order.getOrderBaseInfo().setSubmitTime(new Date());
 			order.getOrderBaseInfo().setOrderPayTime(new Date());
