@@ -13,6 +13,8 @@ public interface CouponsService {
 	
 	List<Coupons> getByGroupCode(String groupcode);
 	
+	List<Coupons> getUserCouponsByGroupCodes(String openid,Integer status,String groupcodes);
+	
 	Coupons getByCouponsCode(String couponscode);
 	
 	int update(Coupons coupons);

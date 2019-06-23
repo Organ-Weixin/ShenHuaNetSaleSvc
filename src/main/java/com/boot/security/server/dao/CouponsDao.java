@@ -56,6 +56,9 @@ public interface CouponsDao {
     @Select("select * from coupons t where t.openid = #{openid} and t.status = #{status} group by groupcode")
     List<Coupons> getUserCoupons(@Param("openid")String openid,@Param("status")Integer status);
     
+    @Select("select * from coupons t where t.openid = #{openid} and t.status = #{status} and find_in_set(t.groupcode,#{groupcodes})")
+    List<Coupons> getUserCouponsByGroupCodes(@Param("openid")String openid,@Param("status")Integer status,@Param("groupcodes")String groupcodes);
+    
     @Select("select * from coupons t where t.groupcode = #{groupcode} and t.openid = #{openid} and t.status = #{status}")
     List<Coupons> getByGroupCodeAndOpenId(@Param("groupcode")String groupcode,@Param("openid")String openid,@Param("status")Integer status);
 }

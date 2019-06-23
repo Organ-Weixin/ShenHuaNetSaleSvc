@@ -31,6 +31,7 @@ import com.boot.security.server.model.Couponsgroup;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.Goodsorders;
+import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.model.Userinfo;
@@ -43,6 +44,7 @@ import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
+import com.google.gson.Gson;
 import com.boot.security.server.apicontroller.reply.QueryUserConponsReply.QueryUserConponsBeans;
 import com.boot.security.server.apicontroller.reply.BindCouponsReply.BindCouponsReplyBind;
 import com.boot.security.server.apicontroller.reply.QueryUserAvailableCouponsReply.QueryUserAvailableCouponsReplydata;
@@ -248,13 +250,13 @@ public class ConponController {
 		return bindCouponsReply;
 	}
 	
-	@GetMapping("/QueryUserAvailableCoupons/{UserName}/{Password}/{CinemaCode}/{OpenID}/{OrderType}/{OrderCode}")
+	@GetMapping("/QueryUserAvailableCoupons/{UserName}/{Password}/{CinemaCode}/{OpenID}/{OrderType}/{OrderPayType}/{OrderCode}")
 	@ApiOperation(value = "获取当前可用优惠券")
 	public QueryUserAvailableCouponsReply QueryUserAvailableCoupons(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,@PathVariable String OpenID,
-			@PathVariable String OrderType,@PathVariable String OrderCode) throws ParseException{
+			@PathVariable String OrderType,@PathVariable String OrderPayType,@PathVariable String OrderCode) throws ParseException{
 		QueryUserAvailableCouponsReply availableCouponsReply = new QueryUserAvailableCouponsReply();
 		//校验参数
-		if(!ReplyExtension.RequestInfoGuard(availableCouponsReply, UserName, Password,CinemaCode, OpenID, OrderType,OrderCode)){
+		if(!ReplyExtension.RequestInfoGuard(availableCouponsReply, UserName, Password,CinemaCode, OpenID, OrderType,OrderPayType,OrderCode)){
 			return availableCouponsReply;
 		}
 		//获取用户渠道
@@ -298,9 +300,9 @@ public class ConponController {
 			}
 		}
 		availableCouponsReply.setData(new QueryUserAvailableCouponsReplydata());
-		List<QueryUserAvailableCouponsReplyCoupons> couponslist=new ArrayList<QueryUserAvailableCouponsReplyCoupons>();
-		//region 读出用户的所有优惠券
+		//region 读出用户的所有优惠券(分组列表)
 		List<Coupons> UserCouponsList=_couponsService.getUserCoupons(OpenID,CouponsStatusEnum.Fetched.getStatusCode());
+		StringBuilder couponsgroups=new StringBuilder();
 		if(UserCouponsList!=null&&UserCouponsList.size()>0){
 			for(Coupons usecoupons:UserCouponsList){
 				if(!usecoupons.getCouponsCode().equals("")&&!usecoupons.getCouponsCode().equals(null)){
@@ -317,16 +319,20 @@ public class ConponController {
 								ifCanUse = false;
 							}
 						}
+						if(OrderPayType.equals(String.valueOf(OrderPayTypeEnum.MemberCardPay.getTypeCode()))){
+							if(couponsview.getCouponsgroup().getIsShareWithMemberCard()!=null){
+								if(couponsview.getCouponsgroup().getIsShareWithMemberCard()==0){
+									ifCanUse = false;//当前是会员卡支付，并且当前优惠券不能与会员卡共用
+								}
+							}else{
+								ifCanUse = false;//当前是会员卡支付，并且当前优惠券不能与会员卡共用
+							}
+						}
 						//如果减免类型是影片并且是购票订单，加入返回
 						if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1&& OrderType.equals("1")){
 							//如果是代金券并且当前订单的销售总价大于优惠券的门槛金额才可使用
 							if(couponsview.getCouponsgroup().getCouponsType()==1&&couponsview.getCouponsgroup().getThresholdAmount()<=orders.getTotalSalePrice()){
-								QueryUserAvailableCouponsReplyCoupons replyCoupons=new QueryUserAvailableCouponsReplyCoupons();
-								replyCoupons.setCouponsCode(couponsview.getCoupons().getCouponsCode());
-								replyCoupons.setCouponsName(couponsview.getCoupons().getCouponsName());
-								replyCoupons.setCouponsType(couponsview.getCouponsgroup().getCouponsType());
-								replyCoupons.setReductionPrice(couponsview.getCouponsgroup().getReductionPrice());
-								couponslist.add(replyCoupons);
+								couponsgroups.append(couponsview.getCouponsgroup().getGroupCode()).append(",");
 							}
 							//如果是其他优惠券类型，分别处理
 		                }
@@ -334,20 +340,27 @@ public class ConponController {
 						if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==2&& OrderType.equals("2")){
 							//如果是代金券并且当前订单的总结算金额大于优惠券的门槛金额才可使用
 							if(couponsview.getCouponsgroup().getCouponsType()==1&&couponsview.getCouponsgroup().getThresholdAmount()<=goodsorders.getTotalSettlePrice()){
-								QueryUserAvailableCouponsReplyCoupons replyCoupons=new QueryUserAvailableCouponsReplyCoupons();
-								replyCoupons.setCouponsCode(couponsview.getCoupons().getCouponsCode());
-								replyCoupons.setCouponsName(couponsview.getCoupons().getCouponsName());
-								replyCoupons.setCouponsType(couponsview.getCouponsgroup().getCouponsType());
-								replyCoupons.setReductionPrice(couponsview.getCouponsgroup().getReductionPrice());
-								couponslist.add(replyCoupons);
+								couponsgroups.append(couponsview.getCouponsgroup().getGroupCode()).append(",");
 							}
 		                }
 					}
 				}
 			}
 		}
+		List<QueryUserAvailableCouponsReplyCoupons> couponslist=new ArrayList<QueryUserAvailableCouponsReplyCoupons>();
+		List<Coupons> UserCanUseCouponsList=_couponsService.getUserCouponsByGroupCodes(OpenID,CouponsStatusEnum.Fetched.getStatusCode(),couponsgroups.toString());
+		for(Coupons coupons:UserCanUseCouponsList){
+			CouponsView couponsview = _couponsService.getWithCouponsCode(coupons.getCouponsCode());
+			QueryUserAvailableCouponsReplyCoupons replyCoupons=new QueryUserAvailableCouponsReplyCoupons();
+			replyCoupons.setCouponsCode(couponsview.getCoupons().getCouponsCode());
+			replyCoupons.setCouponsName(couponsview.getCoupons().getCouponsName());
+			replyCoupons.setCouponsType(couponsview.getCouponsgroup().getCouponsType());
+			replyCoupons.setReductionPrice(couponsview.getCouponsgroup().getReductionPrice());
+			couponslist.add(replyCoupons);
+		}
 		//endregion
 		availableCouponsReply.getData().setCouponsList(couponslist);
+		availableCouponsReply.SetSuccessReply();
 		return availableCouponsReply;
 	}
 }

@@ -1475,7 +1475,7 @@ public class ReplyExtension {
 	//endregion
 	
 		//region QueryUserAvailableCouponsReply
-	public static boolean RequestInfoGuard(QueryUserAvailableCouponsReply reply, String Username, String Password,String CinemaCode,String OpenID,String OrderType,String OrderCode) {
+	public static boolean RequestInfoGuard(QueryUserAvailableCouponsReply reply, String Username, String Password,String CinemaCode,String OpenID,String OrderType,String OrderPayType,String OrderCode) {
 		if (Username == null || "".equals(Username)) {
 			reply.SetNecessaryParamMissReply("Username");
 			return false;
@@ -1494,6 +1494,10 @@ public class ReplyExtension {
 		}
 		if (OrderType == null || "".equals(OrderType)) {
 			reply.SetNecessaryParamMissReply("OrderType");
+			return false;
+		}
+		if (OrderPayType == null || "".equals(OrderPayType)) {
+			reply.SetNecessaryParamMissReply("OrderPayType");
 			return false;
 		}
 		if (OrderCode == null || "".equals(OrderCode)) {

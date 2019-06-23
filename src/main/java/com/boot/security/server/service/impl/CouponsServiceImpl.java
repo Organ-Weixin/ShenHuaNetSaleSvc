@@ -185,4 +185,10 @@ public class CouponsServiceImpl implements CouponsService{
     	order.setTotalSettlePrice(TotalSettlePrice);
     	return order;
 	}
+
+	@Override
+	public List<Coupons> getUserCouponsByGroupCodes(String openid,Integer status,String groupcodes) {
+		// TODO Auto-generated method stub
+		return couponsdao.getUserCouponsByGroupCodes(openid, status, groupcodes);
+	}
 }

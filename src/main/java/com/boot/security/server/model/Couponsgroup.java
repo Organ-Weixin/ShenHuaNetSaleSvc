@@ -26,6 +26,7 @@ public class Couponsgroup {
 	private Integer UsedNumber;
 	private Date CreateDate;
 	private Date UpdateDate;
+	private Integer IsShareWithMemberCard;
 
 
 	public Long getId() {
@@ -155,4 +156,11 @@ public class Couponsgroup {
 	public void setUpdateDate(Date UpdateDate) {
 		this.UpdateDate = UpdateDate;
 	}
+	public Integer getIsShareWithMemberCard() {
+		return IsShareWithMemberCard;
+	}
+	public void setIsShareWithMemberCard(Integer isShareWithMemberCard) {
+		IsShareWithMemberCard = isShareWithMemberCard;
+	}
+	
 }

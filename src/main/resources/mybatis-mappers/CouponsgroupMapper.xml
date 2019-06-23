@@ -155,6 +155,9 @@
 			<if test="UpdateDate != null">
 				UpdateDate = #{UpdateDate}, 
 			</if>
+			<if test="IsShareWithMemberCard != null">
+				IsShareWithMemberCard = #{IsShareWithMemberCard},
+			</if>
 		</set>
 
 		where t.id = #{id}
