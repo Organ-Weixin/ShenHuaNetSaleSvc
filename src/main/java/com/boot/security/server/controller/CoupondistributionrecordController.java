@@ -137,7 +137,6 @@ public class CoupondistributionrecordController {
 		    		couponsCode+=(int)((Math.random()*9+1)*10000);
 					coupons.setCouponsCode(couponsCode);
 					coupons.setCouponsName(couponsgroup.getCouponsName());
-					//如果有效期类型为2（领取后N天生效，有效时长M天）
 					coupons.setGroupCode(couponsgroup.getGroupCode());
 					coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
 					coupons.setOpenID(openIDs.get(i%openIDs.size()));

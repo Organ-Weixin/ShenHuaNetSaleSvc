@@ -60,6 +60,7 @@ public class CouponsgroupController {
     	couponsgroup.setFetchNumber(0);
     	couponsgroup.setRemainingNumber(couponsgroup.getCouponsNumber());
     	couponsgroup.setUsedNumber(0);
+    	couponsgroup.setCreateDate(new Date());
     	if(couponsgroup.getThresholdAmount()==null){
     		couponsgroup.setThresholdAmount(0.00);
     	}

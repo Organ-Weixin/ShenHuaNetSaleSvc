@@ -10,6 +10,7 @@ public class Coupons extends BaseEntity<Long> {
 	private String GroupCode;
 	private Integer Status;
 	private String OpenID;
+	private String MobilePhone;
 	private Date CreateDate;
 	private Date UsedDate;
 
@@ -48,6 +49,12 @@ public class Coupons extends BaseEntity<Long> {
 	}
 	public void setOpenID(String OpenID) {
 		this.OpenID = OpenID;
+	}
+	public String getMobilePhone() {
+		return MobilePhone;
+	}
+	public void setMobilePhone(String mobilePhone) {
+		MobilePhone = mobilePhone;
 	}
 	public Date getCreateDate() {
 		return CreateDate;

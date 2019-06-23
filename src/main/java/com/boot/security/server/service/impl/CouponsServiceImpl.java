@@ -145,6 +145,7 @@ public class CouponsServiceImpl implements CouponsService{
 			order.setCouponsPrice(0D);
 		}   
 		Double TotalSalePrice=DoubleUtil.sub(order.getTotalSalePrice(), order.getCouponsPrice());
+		System.out.println("实际支付金额="+TotalSalePrice);
 		order.setTotalSalePrice(TotalSalePrice);
 		return order;
 	}

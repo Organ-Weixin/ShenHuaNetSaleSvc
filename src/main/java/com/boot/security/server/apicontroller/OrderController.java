@@ -515,7 +515,7 @@ public class OrderController {
 				//退票成功进行处理
 				if(reply.Status.equals("Success")){
 					//退优惠券
-					if(orders.getCouponsCode()!=null&&orders.getCouponsCode()!=""){
+					/*if(orders.getCouponsCode()!=null&&orders.getCouponsCode()!=""){
 						Coupons coupons = _couponsService.getByCouponsCode(orders.getCouponsCode());
 						if(coupons!=null){
 							//更新每张券的状态
@@ -536,7 +536,7 @@ public class OrderController {
 								System.out.println("优惠券组库存"+couponsgroupService.update(couponsgroup));
 							}
 						}
-					}
+					}*/
 					//获取影院的退票手续费
 					//无退票手续费
 					if(cinema.getRefundFee()==null){

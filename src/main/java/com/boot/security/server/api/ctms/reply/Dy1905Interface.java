@@ -659,6 +659,7 @@ public class Dy1905Interface implements ICTMSInterface {
 		param.put("pPrintNo", order.getOrderBaseInfo().getPrintNo());
 		param.put("pVerifyInfo",pVerifyInfo);
 		String realCheckSeatStateResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/RefundTicket",param,"UTF-8");
+		System.out.println("退票结果="+realCheckSeatStateResult);
 		Gson gson = new Gson();
 		Dy1905RefundTicketResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(realCheckSeatStateResult, "RealCheckSeatStateResult"), Dy1905RefundTicketResult.class);
 		if(Dy1905Reply.getRealCheckSeatStateResult().getResultCode().equals("0")){
@@ -1037,6 +1038,7 @@ public class Dy1905Interface implements ICTMSInterface {
 					+ sessioninfo.getLowestPrice() + CardNo + CardPassword + UseMonthCard + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
 			param.put("pVerifyInfo", pVerifyInfo);
 			String SellTicketCustomMemberResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/SellTicketCustom/member",param,"UTF-8");
+			System.out.println("购票结果="+SellTicketCustomMemberResult);
 			Gson gson = new Gson();
 			Dy1905SellTicketCustomMemberResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(SellTicketCustomMemberResult,"SellTicketResult"), Dy1905SellTicketCustomMemberResult.class);
 			if(Dy1905Reply.getSellTicketResult().getResultCode().equals("0")){
@@ -1056,9 +1058,6 @@ public class Dy1905Interface implements ICTMSInterface {
 				order.getOrderBaseInfo().setSubmitOrderCode(Dy1905Reply.getSellTicketResult().getOrderNo());
 				order.getOrderBaseInfo().setPrintNo(Dy1905Reply.getSellTicketResult().getPrintNo());
 				order.getOrderBaseInfo().setVerifyCode(Dy1905Reply.getSellTicketResult().getVerifyCode());
-				order.getOrderBaseInfo().setTotalPrice(order.getOrderSeatDetails().get(0).getPrice()*order.getOrderBaseInfo().getTicketCount());
-				order.getOrderBaseInfo().setTotalFee(order.getOrderSeatDetails().get(0).getFee()*order.getOrderBaseInfo().getTicketCount());
-				order.getOrderBaseInfo().setTotalSalePrice(order.getOrderSeatDetails().get(0).getSalePrice()*order.getOrderBaseInfo().getTicketCount());
 				// 更新优惠券已使用
 				if (order.getOrderBaseInfo().getCouponsCode()!=null&&order.getOrderBaseInfo().getCouponsCode()!="") {
 					CouponsView couponsview=_couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());

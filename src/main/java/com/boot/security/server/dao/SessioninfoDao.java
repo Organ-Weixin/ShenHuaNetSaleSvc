@@ -52,7 +52,7 @@ public interface SessioninfoDao {
     int delete(Long id);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into sessioninfo(CCode, SCode, ScreenCode, StartTime, FilmCode, FilmName, Duration, Language, UpdateTime, StandardPrice, LowestPrice, SettlePrice, AddFee, CinemaAllowance, TicketFee, IsAvalible, PlaythroughFlag, Dimensional, Sequence, UserID, ListingPrice, FeatureNo, SessionId, SessionKey, InternalUpdateTime) values(#{CCode}, #{SCode}, #{ScreenCode}, #{StartTime}, #{FilmCode}, #{FilmName}, #{Duration}, #{Language}, #{UpdateTime}, #{StandardPrice}, #{LowestPrice}, #{SettlePrice}, #{TicketFee},#{AddFee},#{CinemaAllowance}, #{IsAvalible}, #{PlaythroughFlag}, #{Dimensional}, #{Sequence}, #{UserID}, #{ListingPrice}, #{FeatureNo}, #{SessionId}, #{SessionKey}, #{InternalUpdateTime})")
+    @Insert("insert into sessioninfo(CCode, SCode, ScreenCode, StartTime, FilmCode, FilmName, Duration, Language, UpdateTime, StandardPrice, LowestPrice, SettlePrice, AddFee, TicketFee, CinemaAllowance, IsAvalible, PlaythroughFlag, Dimensional, Sequence, UserID, ListingPrice, FeatureNo, SessionId, SessionKey, InternalUpdateTime) values(#{CCode}, #{SCode}, #{ScreenCode}, #{StartTime}, #{FilmCode}, #{FilmName}, #{Duration}, #{Language}, #{UpdateTime}, #{StandardPrice}, #{LowestPrice}, #{SettlePrice}, #{AddFee},#{TicketFee},#{CinemaAllowance}, #{IsAvalible}, #{PlaythroughFlag}, #{Dimensional}, #{Sequence}, #{UserID}, #{ListingPrice}, #{FeatureNo}, #{SessionId}, #{SessionKey}, #{InternalUpdateTime})")
     int save(Sessioninfo sessioninfo);
     
     int count(@Param("params") Map<String, Object> params);
@@ -83,8 +83,8 @@ public interface SessioninfoDao {
 	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode=#{filmcode} order by startTime asc")
     List<Sessioninfo> getByCinemaCodeAndFilmCode(@Param("cinemacode") String cinemacode,@Param("filmcode") String filmcode);
 	
-	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode=#{filmcode} and t.starttime >= #{startdate}")
-	List<Sessioninfo> getByCinemaCodeAndFilmCodeAndTime(@Param("cinemacode") String cinemacode,@Param("filmcode") String filmcode,@Param("startdate") String startdate);
+	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode=#{filmcode} and t.starttime >= #{startdate} and #{enddate} >= t.starttime")
+	List<Sessioninfo> getByCinemaCodeAndFilmCodeAndTime(@Param("cinemacode") String cinemacode,@Param("filmcode") String filmcode,@Param("startdate") String startdate,@Param("enddate") String enddate);
 	
 	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode=#{filmcode} and t.starttime >= #{startdate} group by substr(t.starttime,1,10)")
 	List<Sessioninfo> getSessionDate(@Param("cinemacode") String cinemacode,@Param("filmcode") String filmcode,@Param("startdate") String startdate);

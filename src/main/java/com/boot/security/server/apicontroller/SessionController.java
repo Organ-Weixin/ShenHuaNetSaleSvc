@@ -103,7 +103,7 @@ public class SessionController {
 			return queryFilmSessionsReply;
 		}
 		//排期中的全部影片
-		String StartDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+		String StartDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 		List<Sessioninfo> films = _sessionInfoService.getByFilmName(CinemaCode, StartDate);
 		QueryFilmSessionsReplyFilmSessions data = new QueryFilmSessionsReplyFilmSessions();
 		//获取影院可线上开卡的卡号
@@ -121,6 +121,8 @@ public class SessionController {
 			data.setCinemaCode(films.get(0).getCCode());
 			List<QueryFilmSessionsReplyFilm> filmReplyList = new ArrayList<QueryFilmSessionsReplyFilm>();
 			for(Sessioninfo film:films){
+				SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
+				String EndDate = sdf.format(new Date(Long.parseLong(String.valueOf(film.getStartTime().getTime()+8*24*60*60*1000))));
 				QueryFilmSessionsReplyFilm filmReply = new QueryFilmSessionsReplyFilm();
 				String filmcode = film.getFilmCode();
 				filmReply.setCode(filmcode);
@@ -186,7 +188,7 @@ public class SessionController {
 					//添加演员信息到实体
 					filmReply.setCast(actorReplyList);
 				}
-				List<Sessioninfo> sessionList = _sessionInfoService.getByCinemaCodeAndFilmCodeAndTime(film.getCCode(), filmcode, StartDate);
+				List<Sessioninfo> sessionList = _sessionInfoService.getByCinemaCodeAndFilmCodeAndTime(film.getCCode(), filmcode, sdf.format(film.getStartTime()), EndDate);
 				List<QueryFilmSessionsReplySession> sessionReplyList = new ArrayList<QueryFilmSessionsReplySession>();
 				//获取排期中的信息
 				for(Sessioninfo session :sessionList){

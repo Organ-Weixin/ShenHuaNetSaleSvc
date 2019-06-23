@@ -362,10 +362,12 @@ public class MemberController {
 		//endregion
 		
 		SellTicketCustomMemberReply reply = new Dy1905Interface().SellTicketCustomMember(Username, Password, CinemaCode, LockOrderCode, CardNo, CardPassword);
+		System.out.println(new Gson().toJson(reply));
 		if(reply.Status.equals("Success")){
-			if(orders!=null){
+			Orders orders2 = orderService.getByLockOrderCode(CinemaCode, LockOrderCode);
+			if(orders2!=null){
 				orders.setMobilePhone(MobilePhone);
-				orderService.update(orders);
+				orderService.update(orders2);
 			}
 		}
 		return reply;

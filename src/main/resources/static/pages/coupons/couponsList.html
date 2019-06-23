@@ -51,10 +51,10 @@
 									<th>优惠券名称</th>
 									<th>价格</th>
 									<th>优惠券编码</th>
-									<th>有效期</th>
+									<!-- <th>有效期</th> -->
 									<th>状态</th>
 									<th>使用时间</th>
-									<th>操作</th>
+									<!-- <th>操作</th> -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -124,7 +124,7 @@ function init(){
 					}
 				},
 				{"data" : "couponsCode", "defaultContent" : "","orderable":false},
-				{"data" : "expireDate", "defaultContent" : "","orderable":false,
+				/* {"data" : "expireDate", "defaultContent" : "","orderable":false,
 					"render":function(data,type,row){
 						var effectiveDate = row['effectiveDate'];
 						var expireDate = row['expireDate'];
@@ -132,14 +132,14 @@ function init(){
 							return effectiveDate.substr(0,10) + "至" + expireDate.substr(0,10);
 						}
 					}
-				},
+				}, */
 				{"data" : "status", "defaultContent" : "","orderable":false,
 					"render": function (data, type, row) {
 						return couponStatus[data];	
                   	}
 				},
 				{"data" : "usedDate", "defaultContent" : "","orderable":false},
-				{ 
+				/* { 
 								"data": "", 
 								"defaultContent": "",
 								"orderable":false,
@@ -153,7 +153,7 @@ function init(){
                 		        	   return del;
                 		           }
                   	            }		
-							},
+							}, */
                 
             ],
            "order": [[ 0, "asc" ]]

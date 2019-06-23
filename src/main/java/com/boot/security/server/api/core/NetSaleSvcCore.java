@@ -607,9 +607,9 @@ public class NetSaleSvcCore {
 				priceplan = priceplans.get(0);
 			}
 			priceplanPrice = null == priceplan.getPrice() ? sessionInfo.getStandardPrice() : priceplan.getPrice();
-			priceplanFee = null == priceplan.getTicketFee() ? 0 : priceplan.getTicketFee();
-			priceplanAddFee = null == priceplan.getAddFee() ? 0 : priceplan.getAddFee();
-			priceplanCinemaAllowance = null == priceplan.getCinemaAllowance() ? 0 : priceplan.getCinemaAllowance();
+			priceplanFee = null == priceplan.getTicketFee() ? sessionInfo.getTicketFee() : priceplan.getTicketFee();
+			priceplanAddFee = null == priceplan.getAddFee() ? sessionInfo.getAddFee() : priceplan.getAddFee();
+			priceplanCinemaAllowance = null == priceplan.getCinemaAllowance() ? sessionInfo.getCinemaAllowance() : priceplan.getCinemaAllowance();
 		}else{
 			priceplanPrice=sessionInfo.getStandardPrice();
 			priceplanFee=0D;
