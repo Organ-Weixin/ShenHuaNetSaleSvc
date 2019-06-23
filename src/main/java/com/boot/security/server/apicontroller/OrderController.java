@@ -98,6 +98,7 @@ import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
+import com.boot.security.server.utils.DoubleUtil;
 import com.boot.security.server.utils.FileUploadUtils;
 import com.boot.security.server.utils.SendSmsHelper;
 import com.boot.security.server.utils.WxPayUtil;
@@ -555,7 +556,7 @@ public class OrderController {
 					//微信支付
 					if(orders.getOrderPayType()==OrderPayTypeEnum.WxPay.getTypeCode()){
 						//计算退票手续费
-						orders.setTotalSalePrice(orders.getTotalSalePrice()-cinema.getRefundFee());
+						orders.setTotalSalePrice(DoubleUtil.sub(orders.getTotalSalePrice(),cinema.getRefundFee()));
 						//调用微信退款接口
 						RefundPaymentReply paymentReply = RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode());
 						if(paymentReply.Status.equals("Success")){
@@ -676,6 +677,7 @@ public class OrderController {
 	@RequestMapping(value="/PrePayOrder",method = RequestMethod.POST)
 	@ApiOperation(value = "预支付订单")
 	public PrePayParametersReply PrePayOrder(@RequestBody PrePayOrderQueryJson QueryJson) throws IOException{
+		System.out.println(new Gson().toJson(QueryJson));
 		PrePayParametersReply prePayParametersReply=new PrePayParametersReply();
 		// 校验参数
 		if (!ReplyExtension.RequestInfoGuard(prePayParametersReply, QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getCinemaCode(), QueryJson.getOrderCode(),QueryJson.getSeats())) {
@@ -1105,8 +1107,8 @@ public class OrderController {
 			String WxpayKey=cinemapaymentsettings.getWxpayKey();
 			String TradeNo=new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + CinemaCode
 			+ order.getOrderBaseInfo().getId();
-			Double TotalGoodsOrderPrice = goodsorder.getTotalSettlePrice()-goodsorder.getCouponsPrice();
-			Double RefundPrice = order.getOrderBaseInfo().getTotalSalePrice()+TotalGoodsOrderPrice;//退款总金额=购票金额+卖品金额
+			Double TotalGoodsOrderPrice = DoubleUtil.sub(goodsorder.getTotalSettlePrice(),goodsorder.getCouponsPrice());
+			Double RefundPrice =DoubleUtil.add(order.getOrderBaseInfo().getTotalSalePrice(),TotalGoodsOrderPrice);//退款总金额=购票金额+卖品金额
 			String RefundFee = String.valueOf(Double.valueOf(RefundPrice*100).intValue());// 退款金额，以分为单位
 			String OrderTradeNo=order.getOrderBaseInfo().getOrderTradeNo();//微信支付订单号
 			String WxpayRefundCert=cinemapaymentsettings.getWxpayRefundCert();

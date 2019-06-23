@@ -112,6 +112,7 @@ import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
+import com.boot.security.server.utils.DoubleUtil;
 import com.boot.security.server.utils.JaxbXmlUtil;
 import com.boot.security.server.utils.SpringUtil;
 import com.google.gson.Gson;
@@ -631,9 +632,9 @@ public class NetSaleSvcCore {
 		if(userCinema.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
 			//如果是辰星系统
 			// 上报价=场次标准价+场次服务费+场次增值服务费
-			SubmitPrice = basisSubmitPrice + sessionInfo.getTicketFee()+sessionInfo.getAddFee();
+			SubmitPrice =DoubleUtil.add(DoubleUtil.add(basisSubmitPrice, sessionInfo.getTicketFee()),sessionInfo.getAddFee());
 			// 销售价=真实标准价+场次服务费+场次增值服务费-场次影院补贴
-			SalePrice = priceplanPrice + sessionInfo.getTicketFee() + sessionInfo.getAddFee() - sessionInfo.getCinemaAllowance();
+			SalePrice =DoubleUtil.sub(DoubleUtil.add(DoubleUtil.add(priceplanPrice, sessionInfo.getTicketFee()), sessionInfo.getAddFee()), sessionInfo.getCinemaAllowance());
 			TicketFee=sessionInfo.getTicketFee();
 			AddFee=sessionInfo.getAddFee();
 			CinemaAllowance=sessionInfo.getCinemaAllowance();
@@ -641,9 +642,9 @@ public class NetSaleSvcCore {
 		{
 			//其他系统
 			//上报价=场次标准价+服务费（后台设置影院服务费）
-			SubmitPrice=basisSubmitPrice+priceplanFee;
+			SubmitPrice=DoubleUtil.add(basisSubmitPrice, priceplanFee);
 		    // 销售价=真实标准价+价格设置表服务费+价格设置表增值服务费-价格设置表影院补贴
-		 	SalePrice = priceplanPrice + priceplanFee + priceplanAddFee - priceplanCinemaAllowance;
+		 	SalePrice = DoubleUtil.sub(DoubleUtil.add(DoubleUtil.add(priceplanPrice, priceplanFee),priceplanAddFee), priceplanCinemaAllowance);
 		 	TicketFee=priceplanFee;
 		 	AddFee=priceplanAddFee;
 		 	CinemaAllowance=priceplanCinemaAllowance;

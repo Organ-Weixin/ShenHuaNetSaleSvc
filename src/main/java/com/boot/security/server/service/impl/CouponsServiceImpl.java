@@ -15,6 +15,7 @@ import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Orders;
 import com.boot.security.server.service.CouponsService;
+import com.boot.security.server.utils.DoubleUtil;
 
 @Service
 public class CouponsServiceImpl implements CouponsService{
@@ -142,8 +143,8 @@ public class CouponsServiceImpl implements CouponsService{
 			}
 		}else{
 			order.setCouponsPrice(0D);
-		}
-		Double TotalSalePrice=order.getTotalSalePrice()-order.getCouponsPrice();
+		}   
+		Double TotalSalePrice=DoubleUtil.sub(order.getTotalSalePrice(), order.getCouponsPrice());
 		order.setTotalSalePrice(TotalSalePrice);
 		return order;
 	}
@@ -181,7 +182,7 @@ public class CouponsServiceImpl implements CouponsService{
 			order.setCouponsPrice(0D);
 		}
     	//卖品总结算价=总结算价+总服务费-优惠券金额
-    	Double TotalSettlePrice=order.getTotalSettlePrice()+order.getTotalFee()-order.getCouponsPrice();
+    	Double TotalSettlePrice=DoubleUtil.sub(DoubleUtil.add(order.getTotalSettlePrice(), order.getTotalFee()),order.getCouponsPrice());
     	order.setTotalSettlePrice(TotalSettlePrice);
     	return order;
 	}

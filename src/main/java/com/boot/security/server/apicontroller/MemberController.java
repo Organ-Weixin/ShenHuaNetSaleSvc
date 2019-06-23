@@ -96,6 +96,7 @@ import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
+import com.boot.security.server.utils.DoubleUtil;
 import com.boot.security.server.utils.SendSmsHelper;
 import com.boot.security.server.utils.WxPayUtil;
 import com.google.gson.Gson;
@@ -240,7 +241,7 @@ public class MemberController {
 			if(discountReply.getCard().getPrice()>0){
 				for(Orderseatdetails seat:order.getOrderSeatDetails()){
 					//重新计算每个座位的销售价格
-					seat.setSalePrice(discountReply.getCard().getPrice()+seat.getFee()+seat.getAddFee()-seat.getCinemaAllowance());
+					seat.setSalePrice(DoubleUtil.sub(DoubleUtil.add(DoubleUtil.add(discountReply.getCard().getPrice(),seat.getFee()), seat.getAddFee()), seat.getCinemaAllowance()));
 				}
 				Double TotalSalePrice=order.getOrderSeatDetails().stream().mapToDouble(Orderseatdetails::getSalePrice).sum();
 				//更新订单的总实际销售价格=新的实际销售价格-优惠价格
@@ -248,11 +249,11 @@ public class MemberController {
 			}else{
 				for(Orderseatdetails seat:order.getOrderSeatDetails()){
 					//重新计算每个座位的销售价格
-					seat.setSalePrice(priceplanMemberPrice+seat.getFee()+seat.getAddFee()-seat.getCinemaAllowance());
+					seat.setSalePrice(DoubleUtil.sub(DoubleUtil.add(DoubleUtil.add(priceplanMemberPrice, seat.getFee()), seat.getAddFee()),seat.getCinemaAllowance()));
 				}
 				Double TotalSalePrice=order.getOrderSeatDetails().stream().mapToDouble(Orderseatdetails::getSalePrice).sum();
 				//更新主表的实际销售价格-优惠券价格
-				order.getOrderBaseInfo().setTotalSalePrice(TotalSalePrice-order.getOrderBaseInfo().getCouponsPrice());
+				order.getOrderBaseInfo().setTotalSalePrice(DoubleUtil.sub(TotalSalePrice, order.getOrderBaseInfo().getCouponsPrice()));
 			}
 			//更新订单
 			orderService.Update(order);
