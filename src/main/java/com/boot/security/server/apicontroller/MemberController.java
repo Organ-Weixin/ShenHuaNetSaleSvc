@@ -7,17 +7,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.xml.DefaultDocumentLoader;
-import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +29,6 @@ import com.boot.security.server.api.core.QueryCardReply;
 import com.boot.security.server.api.core.QueryCardTradeRecordReply;
 import com.boot.security.server.api.core.QueryDiscountReply;
 import com.boot.security.server.api.core.SubmitGoodsOrderReply;
-import com.boot.security.server.api.core.CreateGoodsOrderQueryXml.CreateGoodsOrderQueryXmlGoodsList.CreateGoodsOrderQueryXmlGoods;
 import com.boot.security.server.api.core.SubmitGoodsOrderReply.SubmitGoodsOrderReplyOrder;
 import com.boot.security.server.api.ctms.reply.CTMSSubmitGoodsOrderReply;
 import com.boot.security.server.api.ctms.reply.CTMSSubmitOrderReply;
@@ -70,7 +65,6 @@ import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
-import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardcreditrule;
@@ -96,14 +90,12 @@ import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.MembercardcreditruleServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
-import com.boot.security.server.service.impl.OrderseatdetailsServiceImpl;
 import com.boot.security.server.service.impl.PriceplanServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
-import com.boot.security.server.utils.GoodsCouponsPriceUtil;
 import com.boot.security.server.utils.SendSmsHelper;
 import com.boot.security.server.utils.WxPayUtil;
 import com.google.gson.Gson;
@@ -145,8 +137,6 @@ public class MemberController {
 	private CouponsServiceImpl _couponsService;
 	@Autowired
 	private SessioninfoServiceImpl _sessioninfoService;
-	@Autowired
-	private OrderseatdetailsServiceImpl _orderseatdetailService;
 	@Autowired
 	PriceplanServiceImpl _priceplanService;
 	@Autowired
@@ -287,6 +277,7 @@ public class MemberController {
 			if(reply.Status.equals("Success")){
 				//更新订单
 				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Payed.getStatusCode());
+				order.getOrderBaseInfo().setIsMemberPay(1);
 				order.getOrderBaseInfo().setPayFlag(1);
 				order.getOrderBaseInfo().setPayTime(new Date());
 				order.getOrderBaseInfo().setOrderTradeNo(reply.getTradeNo());

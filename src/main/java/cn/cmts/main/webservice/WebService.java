@@ -83,7 +83,11 @@ public class WebService {
 					TokenId, Token, userCinema.getDefaultPassword());
 			String result = WebService.cinemaTss(userCinema.getUrl()).getHall(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), TokenId, pVerifyInfo);
-//			System.out.println("+++++++++"+result);
+			
+			//查影院
+//			String pVerifyInfo = GenerateVerifyInfo(userCinema.getDefaultUserName(), TokenId, Token, userCinema.getDefaultPassword());
+//			String result = WebService.cinemaTss(userCinema.getUrl()).getCinema(userCinema.getDefaultUserName(),TokenId, pVerifyInfo);
+			System.out.println("影厅返回+++++++++"+result);
 			Gson gson = new Gson();
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "GetHallResult"), MtxGetHallResult.class);
 		} catch (Exception e) {
@@ -103,7 +107,7 @@ public class WebService {
 					screen.getSCode(), userCinema.getDefaultPassword());
 			String result = WebService.cinemaTss(userCinema.getUrl()).getHallAllSeat(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), screen.getSCode(), pVerifyInfo);
-//			System.out.println("座位---"+result);
+			System.out.println("座位---"+result);
 			Gson gson = new Gson();
 			return gson.fromJson(result, MtxGetHallAllSeatResult.class);
 		} catch (Exception e) {
@@ -143,7 +147,7 @@ public class WebService {
 					SessionCode, TokenId, Token, userCinema.getDefaultPassword());
 			String result = WebService.cinemaTss(userCinema.getUrl()).getPlanSiteState(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), SessionCode, TokenId, pVerifyInfo);
-//			System.out.println("座位状态-----"+result);
+			System.out.println("座位状态-----"+result);
 			Gson gson = new Gson();
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "GetPlanSiteStateResult"), MtxGetPlanSiteStateResult.class);
 		} catch (Exception e) {
@@ -193,10 +197,11 @@ public class WebService {
 
 			// 把请求参数转成xml
 			String LockSeatXml = JaxbXmlUtil.convertToXml(param);
+//			System.out.println("锁座入参"+LockSeatXml);
 			String result = WebService.cinemaTss(userCinema.getUrl()).liveRealCheckSeatState(LockSeatXml);
 			System.out.println("锁座返回：" + result);
 			Gson gson = new Gson();
-			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "RealCheckSeatStateResult"),
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "MtxLiveRealCheckSeatStateResult"),
 					MtxLiveRealCheckSeatStateResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -214,7 +219,7 @@ public class WebService {
 					orderView.getOrderBaseInfo().getLockOrderCode(), TokenId, Token, userCinema.getDefaultPassword());
 			String result = WebService.cinemaTss(userCinema.getUrl()).unLockOrderCenCin(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), orderView.getOrderBaseInfo().getLockOrderCode(), TokenId, pVerifyInfo);
-//			System.out.println(result);
+//			System.out.println("解锁返回---"+result);
 			Gson gson = new Gson();
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "UnLockOrderCenCinResult"),
 					MtxUnLockOrderCenCinResult.class);
@@ -234,13 +239,12 @@ public class WebService {
 			param.setAppCode(userCinema.getDefaultUserName());
 			param.setCinemaId(userCinema.getCinemaCode());
 			param.setFeatureAppNo(orderView.getOrderBaseInfo().getSessionCode());
+			param.setSerialNum(orderView.getOrderBaseInfo().getSerialNum()); // 取锁座流水号
 			Random rand = new Random();
 			int x = rand.nextInt(900) + 100;
-			param.setSerialNum(orderView.getOrderBaseInfo().getSerialNum()); // 取锁座流水号
 			orderView.getOrderBaseInfo().setPrintpassword(userCinema.getCinemaCode() + x);
 
 			param.setPrintpassword(orderView.getOrderBaseInfo().getPrintpassword());
-			System.out.println("取票密码" + orderView.getOrderBaseInfo().getPrintpassword());
 			param.setBalance(0.0);// 默认已全部支付
 			param.setPayType(orderView.getOrderBaseInfo().getPayType());// 付费类型
 			param.setRecvMobilePhone(orderView.getOrderBaseInfo().getMobilePhone());// 接收二维码手机号码
@@ -250,20 +254,20 @@ public class WebService {
 			param.setIsCmtsSendCode(false);// false表示由合作方负责发送二维码。
 			param.setPayMobile(orderView.getOrderBaseInfo().getMobilePhone());// 支付手机号码
 			param.setBookSign("0");// 0全额支付1预定金方式
-			param.setPayed(orderView.getOrderBaseInfo().getTotalPrice() + orderView.getOrderBaseInfo().getTotalFee());// 商城已经支付的金额Payed=总票款+总手续费
+			
+			Double payed = orderView.getOrderBaseInfo().getTotalPrice() + orderView.getOrderBaseInfo().getTotalFee();
+			param.setPayed(payed);// 商城已经支付的金额Payed=总票款+总手续费
 			param.setSendModeID("0");// 满天星发送二唯码的模板编号.不知道是什么，没这个东西
-			param.setPaySeqNo(orderView.getOrderBaseInfo().getIsMemberPay() == 1
-					? orderView.getOrderBaseInfo().getPaySeqNo() : "");// 影院会员卡支付交易流水号
+			
+			String paySeqNo =orderView.getOrderBaseInfo().getIsMemberPay() == 1 ? orderView.getOrderBaseInfo().getPaySeqNo():"";
+			param.setPaySeqNo(paySeqNo);	//影院会员卡支付交易流水号
+			
 			param.setTokenID(TokenId);
 			String pVerifyInfo = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
 					orderView.getOrderBaseInfo().getSessionCode(), orderView.getOrderBaseInfo().getSerialNum(),
 					orderView.getOrderBaseInfo().getPrintpassword(), "0.0", orderView.getOrderBaseInfo().getPayType(),
 					orderView.getOrderBaseInfo().getMobilePhone(), "100", "0", "false", "false",
-					orderView.getOrderBaseInfo().getMobilePhone(), "0",
-					String.valueOf(
-							orderView.getOrderBaseInfo().getTotalPrice() + orderView.getOrderBaseInfo().getTotalFee()),
-					"0", orderView.getOrderBaseInfo().getIsMemberPay() == 1 ? orderView.getOrderBaseInfo().getPaySeqNo()
-							: "",
+					orderView.getOrderBaseInfo().getMobilePhone(), "0",	String.valueOf(payed), "0", paySeqNo,
 					TokenId, Token, userCinema.getDefaultPassword());
 			param.setVerifyInfo(pVerifyInfo);
 //			System.out.println("入参" + param);
@@ -289,7 +293,7 @@ public class WebService {
 					orderView.getOrderBaseInfo().getSerialNum(), TokenId, Token, userCinema.getDefaultPassword());
 			String result = WebService.cinemaTss(userCinema.getUrl()).getOrderStatus(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), orderView.getOrderBaseInfo().getSerialNum(), TokenId, pVerifyInfo);
-//			System.out.println(result);
+			System.out.println("查询订单返回"+result);
 			Gson gson = new Gson();
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "GetOrderStatusResult"), MtxGetOrderStatusResult.class);
 		} catch (Exception e) {
@@ -307,7 +311,7 @@ public class WebService {
 			String result = WebService.cinemaTss(userCinema.getUrl()).backTicket(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), orderView.getOrderBaseInfo().getSubmitOrderCode(), "正常退票", TokenId,
 					pVerifyInfo);
-//			System.out.println(result);
+			System.out.println("退票返回"+result);
 			Gson gson = new Gson();
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "BackTicketResult"), MtxBackTicketResult.class);
 		} catch (Exception e) {
@@ -327,10 +331,9 @@ public class WebService {
 			String result = WebService.cinemaTss(userCinema.getUrl()).appPrintTicket(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), orderView.getOrderBaseInfo().getSubmitOrderCode(),
 					orderView.getOrderBaseInfo().getVerifyCode(), requestType, TokenId, pVerifyInfo);
-//			System.out.println(result);
+			System.out.println("查询影票信息返回"+result);
 			Gson gson = new Gson();
-			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "AppPrintTicketResult"),
-					MtxAppPrintTicketResult.class);
+			return gson.fromJson(XmlToJsonUtil.xmltoJson(result, "MtxAppPrintTicketResult"), MtxAppPrintTicketResult.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -344,7 +347,7 @@ public class WebService {
 			String pVerifyInfo = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),userCinema.getDefaultPassword());
 			String result = WebService.cinemaTss(userCinema.getUrl()).getSPInfos(userCinema.getDefaultUserName(),
 					userCinema.getCinemaCode(), pVerifyInfo);
-			System.out.println("获取卖品信息返回"+result);
+//			System.out.println("获取卖品信息返回"+result);
 			Gson gson = new Gson();
 			return gson.fromJson(result, MtxGetSPInfosResult.class);
 		} catch (Exception e) {

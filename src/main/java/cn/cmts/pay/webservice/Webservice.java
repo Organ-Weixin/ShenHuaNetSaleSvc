@@ -144,10 +144,9 @@ public class Webservice {
 	public static MtxSerialCardPayResult SerialCardPay(Usercinemaview userCinema, String CardNo, String CardPassword,
 			float PayAmount, String FeatureNo, String FilmCode, String TicketNum) {
 		try {
-			Date date = new Date();
 			SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSS");
-			String str = format.format(date);
-			String partnerId = str;// 16位流水号
+			String partnerId = format.format(new Date());// 16位流水号
+			System.out.println("流水号"+partnerId);
 			String mobilePhone = "";
 			String traceTypeNo = "01";// 01支付 02预算
 			String tracePrice = "0";// 交易手续费
@@ -160,7 +159,7 @@ public class Webservice {
 					userCinema.getCinemaCode(), partnerId, CardNo, mobilePhone, CardPassword, traceTypeNo,
 					String.valueOf(PayAmount), tracePrice, discount, FeatureNo, FilmCode, TicketNum, traceMemo,
 					validateKey);
-//			System.out.println("会员卡支付（流水号必传）、预算接口返回" + result);
+			System.out.println("会员卡支付（流水号必传）、预算接口返回" + result);
 			Gson gson = new Gson();
 			return gson.fromJson(result, MtxSerialCardPayResult.class);
 		} catch (Exception e) {

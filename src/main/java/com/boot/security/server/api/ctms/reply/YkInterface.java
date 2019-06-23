@@ -52,6 +52,7 @@ import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.Membercardrecharge;
+import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orders;
@@ -636,6 +637,7 @@ public class YkInterface implements ICTMSInterface {
 				}
 				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Complete.getStatusCode());	//订单状态
 				order.getOrderBaseInfo().setSubmitTime(new Date());					//订单提交时间
+				order.getOrderBaseInfo().setPayTime(new Date());					//支付时间
 				// 更新优惠券已使用
 				if (order.getOrderBaseInfo().getCouponsCode() != null && !order.getOrderBaseInfo().getCouponsCode().equals("")) {
 					CouponsView couponsview=_couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
@@ -835,7 +837,7 @@ public class YkInterface implements ICTMSInterface {
 		String sign = createSign(userCinema.getDefaultPassword(), param);
 		String getTicketInfoResult = HttpHelper.httpClientGet(createVisitUrl(userCinema.getUrl(), "/route/",
 				userCinema.getDefaultPassword(), FormatParam(param), sign), null, "UTF-8");
-//		System.out.println("影票信息返回："+getTicketInfoResult);
+		System.out.println("影票信息返回："+getTicketInfoResult);
 		Gson gson = new Gson();
 		YkGetTicketInfoResult ykResult = gson.fromJson(getTicketInfoResult, YkGetTicketInfoResult.class);
 		
@@ -997,11 +999,13 @@ public class YkInterface implements ICTMSInterface {
 		YkConfirmMixOrderResult ykResult = gson.fromJson(confirmMixOrderResult, YkConfirmMixOrderResult.class);
 		if("0".equals(ykResult.getRetCode())){
 			if("SUCCESS".equals(ykResult.getData().getBizCode())){
+				Date nowdate = new Date();
 				ConfirmMixOrderBean orderBean = ykResult.getData().getData();
 				order.getOrderBaseInfo().setSubmitOrderCode(orderBean.getOrderId());	//平台订单号
 				order.getOrderBaseInfo().setPrintNo(orderBean.getConfirmationId());		//取票号
 				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Complete.getStatusCode());	//订单状态
-				order.getOrderBaseInfo().setSubmitTime(new Date());					//订单提交时间
+				order.getOrderBaseInfo().setSubmitTime(nowdate);					//订单提交时间
+				order.getOrderBaseInfo().setPayTime(nowdate);					//支付时间
 				String str = creatOutLockId();
 				order.getOrderBaseInfo().setVerifyCode(str.substring(str.length()-6));	//取票验证码，随机生成的6位数字
 				List<com.boot.security.server.api.ctms.reply.YkConfirmMixOrderResult.DataBean.ConfirmMixOrderBean.Tickets> ticketsList = orderBean.getTickets();
@@ -1019,8 +1023,8 @@ public class YkInterface implements ICTMSInterface {
 				goodsorder.getOrderBaseInfo().setTotalPrice(Double.valueOf(ykResult.getData().getData().getGoodsOrder().getTotalGoodsPrice()));
 				goodsorder.getOrderBaseInfo().setTotalFee(Double.valueOf(ykResult.getData().getData().getGoodsOrder().getTotalGoodsFee()));
 				goodsorder.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
-				goodsorder.getOrderBaseInfo().setSubmitTime(new Date());
-				
+				goodsorder.getOrderBaseInfo().setSubmitTime(nowdate);
+				goodsorder.getOrderBaseInfo().setOrderPayTime(nowdate);
 				reply.Status = StatusEnum.Success;
 			} else {
 				reply.Status = StatusEnum.Failure;
@@ -1389,11 +1393,14 @@ public class YkInterface implements ICTMSInterface {
 				if(cardPrice.getTickets() != null){
 					for(TicketsPrice ticket:cardPrice.getTickets()){
 						if("成人票".equals(ticket.getTicketType())){	//暂时取成人票的会员价
-							reply.setCinemaCode(userCinema.getCinemaCode());
 							reply.setPrice(Float.valueOf(ticket.getPrice()));
 						}
 					}
+				} else {
+					reply.setPrice(Float.valueOf(String.valueOf(sessioninfo.getStandardPrice())));
 				}
+				reply.setDiscountType(1);
+				reply.setCinemaCode(userCinema.getCinemaCode());
 				reply.Status = StatusEnum.Success;
 			} else {
 				reply.Status = StatusEnum.Failure;
@@ -1405,7 +1412,7 @@ public class YkInterface implements ICTMSInterface {
 			reply.ErrorCode = ykResult.getRetCode();
 			reply.ErrorMessage = ykResult.getRetMsg();
 		}
-		
+		System.out.println("---"+new Gson().toJson(reply));
 		return reply;
 	}
 
@@ -1684,7 +1691,7 @@ public class YkInterface implements ICTMSInterface {
 		input.put("cardPassword", cardPassword);
 		input.put("cardCostFee", cardlevel.getCardCostFee().toString());
 		input.put("memberFee", cardlevel.getMemberFee().toString());
-		input.put("firstRechargeAmount", InitialAmount);//该接口的“首次充值”功能当前版本还没实现，所以接口的 firstRechargeAmount 参数在当前版本请设置为 0。
+		input.put("firstRechargeAmount", "0");//该接口的“首次充值”功能当前版本还没实现，所以接口的 firstRechargeAmount 参数在当前版本请设置为 0。
 		input.put("mobile", MobilePhone);
 		input.put("cardUserName", CardUserName);
 		input.put("idCard", IDNumber);
@@ -1852,6 +1859,7 @@ public class YkInterface implements ICTMSInterface {
 			throws Exception {
 		CTMSSubmitGoodsOrderReply reply = new CTMSSubmitGoodsOrderReply();
 		
+		boolean flag = order.getOrderBaseInfo().getCardNo() == null?false:true;	//是否使用会员卡折扣 
 		List<Map<String,Object>> goodslist = new ArrayList<Map<String,Object>>();
 		for(Goodsorderdetails goodsorderdetails : order.getOrderGoodsDetails()){
 			Map<String,Object> goodsmap = new LinkedHashMap<String,Object>();
@@ -1859,7 +1867,7 @@ public class YkInterface implements ICTMSInterface {
 			goodsmap.put("salePrice", goodsorderdetails.getSettlePrice().toString());
 			goodsmap.put("count", goodsorderdetails.getGoodsCount().toString());
 			goodsmap.put("isPackage", "false");
-			if(order.getOrderBaseInfo().getCardNo() != null){	//是否使用会员卡折扣 
+			if(flag){	//是否使用会员卡折扣 
 				goodsmap.put("isCardDiscount", true);
 			}
 			goodslist.add(goodsmap);
@@ -1869,7 +1877,7 @@ public class YkInterface implements ICTMSInterface {
 		input.put("thirdOrderId", order.getOrderBaseInfo().getLocalOrderCode());
 		input.put("goodsList", goodslist);
 		input.put("mobile", order.getOrderBaseInfo().getMobilePhone());
-		if(order.getOrderBaseInfo().getCardNo() != null){	//是否使用会员卡折扣 
+		if(flag){
 			
 			Map<String,String> payCardInfo = new LinkedHashMap<String,String>();
 			payCardInfo.put("cinemaLinkId", userCinema.getCinemaId());
@@ -1909,6 +1917,7 @@ public class YkInterface implements ICTMSInterface {
 				if("goods_success".equals(ykResult.getData().getData().getOrderStatus())){
 					order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
 					order.getOrderBaseInfo().setSubmitTime(new Date());
+					order.getOrderBaseInfo().setOrderPayTime(new Date());					//支付时间
 				} else {
 					order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.SubmitFail.getStatusCode());
 				}

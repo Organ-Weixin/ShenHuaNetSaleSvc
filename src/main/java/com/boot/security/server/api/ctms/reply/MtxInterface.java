@@ -25,6 +25,8 @@ import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaMiniProgramAccounts;
+import com.boot.security.server.model.CouponsStatusEnum;
+import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
@@ -34,6 +36,7 @@ import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.Membercardrecharge;
+import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orders;
@@ -46,6 +49,7 @@ import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.service.impl.CinemaMiniProgramAccountsServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
+import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
@@ -57,11 +61,9 @@ import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.utils.SpringUtil;
-import com.google.gson.Gson;
 
 import cn.cmts.main.webservice.WebService;
 import cn.cmts.pay.webservice.Webservice;
-
 
 public class MtxInterface implements ICTMSInterface {
 	
@@ -74,6 +76,7 @@ public class MtxInterface implements ICTMSInterface {
 	GoodsOrderServiceImpl _goodsOrderService=SpringUtil.getBean(GoodsOrderServiceImpl.class);
 	GoodscomponentsServiceImpl _goodscomponentsService=SpringUtil.getBean(GoodscomponentsServiceImpl.class);
 	CinemaMiniProgramAccountsServiceImpl _cinemaMiniProgramAccountsService = SpringUtil.getBean(CinemaMiniProgramAccountsServiceImpl.class);
+	CouponsServiceImpl _couponsService = SpringUtil.getBean(CouponsServiceImpl.class);
 	//会员卡
 	MemberCardServiceImpl _memberCardService=SpringUtil.getBean(MemberCardServiceImpl.class);
 	MemberCardLevelServiceImpl _memberCardLevelService=SpringUtil.getBean(MemberCardLevelServiceImpl.class);
@@ -292,7 +295,6 @@ public class MtxInterface implements ICTMSInterface {
 	public CTMSLockSeatReply LockSeat(Usercinemaview userCinema, OrderView order) throws Exception {
 		CTMSLockSeatReply reply = new CTMSLockSeatReply();
 		MtxLiveRealCheckSeatStateResult mtxReply = WebService.LiveRealCheckSeatState(userCinema, order);
-		System.out.println("锁座返回---"+new Gson().toJson(mtxReply));
 		if ("0".equals(mtxReply.getRealCheckSeatStateResult().getResultCode())) {
 			Date newDate = new Date();
 			order.getOrderBaseInfo().setLockOrderCode(mtxReply.getRealCheckSeatStateResult().getOrderNo());
@@ -340,6 +342,25 @@ public class MtxInterface implements ICTMSInterface {
 			order.getOrderBaseInfo().setVerifyCode(mtxReply.getSellTicketResult().getValidCode());
 			order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Submited.getStatusCode());
 			order.getOrderBaseInfo().setSubmitTime(newDate);
+			order.getOrderBaseInfo().setPayTime(newDate);
+			if(order.getOrderBaseInfo().getIsMemberPay() == 1){
+				order.getOrderBaseInfo().setOrderPayType(OrderPayTypeEnum.MemberCardPay.getTypeCode());
+			} else {
+				order.getOrderBaseInfo().setOrderPayType(OrderPayTypeEnum.WxPay.getTypeCode());
+			}
+			// 更新优惠券已使用
+			if (order.getOrderBaseInfo().getCouponsCode() != null && !order.getOrderBaseInfo().getCouponsCode().equals("")) {
+				CouponsView couponsview=_couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
+				if(couponsview!=null){
+					couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
+					couponsview.getCoupons().setUsedDate(new Date());
+					//使用数量+1
+					couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+					//更新优惠券及优惠券分组表
+					_couponsService.update(couponsview);
+				}
+			}
+			
 			QueryOrder(userCinema, order);// 调用订单查询
 			reply.Status = StatusEnum.Success;
 		} else {
@@ -474,22 +495,21 @@ public class MtxInterface implements ICTMSInterface {
 		CTMSFetchTicketReply reply = new CTMSFetchTicketReply();
 		MtxAppPrintTicketResult mtxReply = WebService.AppPrintTicket(userCinema, order, "1");
 		Date newDate = new Date();
-		String st = new SimpleDateFormat().format(order.getOrderBaseInfo().getSessionTime());
-		Date dd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(st);
-		if (newDate.getTime() > (dd.getTime() + 1000 * 60 * 60 * 2)) {
+		if (newDate.getTime() > (order.getOrderBaseInfo().getSessionTime().getTime() + 1000 * 60 * 60 * 2)) {
 			reply.Status = StatusEnum.Success;
 			reply.ErrorCode = "0";
 		} else {
 			if ("0".equals(mtxReply.getAppPrintTicketResult().getResultCode())) {
 				order.getOrderBaseInfo().setPrintStatus(1);
-				order.getOrderBaseInfo().setPrintTime(new Date());
+				order.getOrderBaseInfo().setPrintTime(newDate);
 				reply.Status = StatusEnum.Success;
 			} else {
 				reply.Status = StatusEnum.Failure;
 			}
+			reply.ErrorCode = mtxReply.getAppPrintTicketResult().getResultCode();
+			reply.ErrorMessage = mtxReply.getAppPrintTicketResult().getResultDesc();
 		}
-		reply.ErrorCode = mtxReply.getAppPrintTicketResult().getResultCode();
-		reply.ErrorMessage = mtxReply.getAppPrintTicketResult().getResultDesc();
+		
 		return reply;
 	}
 
@@ -501,7 +521,6 @@ public class MtxInterface implements ICTMSInterface {
 		CTMSCardRegisterReply reply = new CTMSCardRegisterReply();
 		String num = new SimpleDateFormat("yyyyMMdd").format(new Date());
 		String cardNo = num + RandomStringUtils.randomNumeric(8);// 卡号(最大长度16位)
-		IDNumber = cardNo;	//一个证件号只能开一张卡
 		int amount = (int) Math.round(Double.valueOf(InitialAmount));
 		MtxRegisterCardResult mtxReply = Webservice.RegisterCard(userCinema, cardNo, CardPassword, LevelCode, String.valueOf(amount),
 				CardUserName, MobilePhone, IDNumber, Sex);
@@ -865,62 +884,89 @@ public class MtxInterface implements ICTMSInterface {
 					}
 				}
 				for (GetSPInfosBean getSPInfosBean : getSPInfosBeans) {
-					Goods goo = new Goods();
-					goo.setGoodsCode(getSPInfosBean.getSpno());
-					goo.setGoodsName(getSPInfosBean.getSpname());
-					goo.setGoodsType(getSPInfosBean.getSptype());
-					if (getSPInfosBean.getSellprice() != null) {
-						goo.setStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));
-						goo.setSettlePrice(Double.valueOf(getSPInfosBean.getSellprice()));
-					}
-					goo.setGoodsDesc(getSPInfosBean.getInfo());//卖品描述	
-					goo.setUnitName(getSPInfosBean.getUnitname());//卖品单位
-					goo.setUpdated(new Date());//更新时间
-					if (getSPInfosBean.getComponents() != null && getSPInfosBean.getComponents().size() > 0) {
-						goo.setIsPackage(1);//是否套餐，1套餐
-						List<GetSPInfosBean.GetSPInfoBean> getSPInfoBeans=getSPInfosBean.getComponents();
-						for(GetSPInfoBean getSPInfoBean:getSPInfoBeans){
-							Goodscomponents gcs=new Goodscomponents();
-							gcs.setPackageCode(getSPInfosBean.getSpno());
-							gcs.setPackageName(getSPInfosBean.getSpname());
-							gcs.setGoodsCode(getSPInfoBean.getSpno());
-							gcs.setGoodsName(getSPInfoBean.getSpname());
-							gcs.setGoodsCount(getSPInfoBean.getCount());
-							gcs.setUnitName(getSPInfoBean.getUnitname());
-							if(getSPInfosBean.getSellprice()!=null){
-								gcs.setPackageStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));
-								gcs.setPackageSettlePrice(Double.valueOf(getSPInfosBean.getSellprice()));
-							}
-							
-							if(_goodscomponentsService.getByPackageAndGoodsCode(userCinema.getCinemaCode(), getSPInfosBean.getSpno(),
-									getSPInfoBean.getSpno())==null){
-								gcs.setCinemaCode(userCinema.getCinemaCode());
-								gcs.setStatus(1);
-								_goodscomponentsService.save(gcs);
-							}else{
-								_goodscomponentsService.update(gcs);
-							}
+					Goods goo = _goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(),getSPInfosBean.getSpno());
+					if(goo == null){
+						goo = new Goods();
+						goo.setGoodsCode(getSPInfosBean.getSpno());
+						goo.setGoodsName(getSPInfosBean.getSpname());
+						goo.setGoodsType(getSPInfosBean.getSptype());
+						if (getSPInfosBean.getSellprice() != null) {
+							goo.setStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));
+							goo.setSettlePrice(Double.valueOf(getSPInfosBean.getSellprice()));
 						}
+						goo.setGoodsDesc(getSPInfosBean.getInfo());//卖品描述	
+						goo.setUnitName(getSPInfosBean.getUnitname());//卖品单位
+						goo.setUpdated(new Date());//更新时间
+						if (getSPInfosBean.getComponents() != null && getSPInfosBean.getComponents().size() > 0) {
+							System.out.println("2222");
+							goo.setIsPackage(1);//是否套餐，1套餐
+							for(GetSPInfoBean getSPInfoBean : getSPInfosBean.getComponents()){
+								Goodscomponents gcs = _goodscomponentsService.getByPackageAndGoodsCode(userCinema.getCinemaCode(), 
+										getSPInfosBean.getSpno(), getSPInfoBean.getSpno());
+								if(gcs == null){
+									gcs = new Goodscomponents();
+									gcs.setPackageCode(getSPInfosBean.getSpno());
+									gcs.setPackageName(getSPInfosBean.getSpname());
+									gcs.setGoodsCode(getSPInfoBean.getSpno());
+									gcs.setGoodsName(getSPInfoBean.getSpname());
+									gcs.setGoodsCount(getSPInfoBean.getCount());
+									gcs.setUnitName(getSPInfoBean.getUnitname());
+									if(getSPInfosBean.getSellprice()!=null){
+										gcs.setPackageStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));
+										gcs.setPackageSettlePrice(Double.valueOf(getSPInfosBean.getSellprice()));
+									}
+									gcs.setCinemaCode(userCinema.getCinemaCode());
+									gcs.setStatus(1);
+									_goodscomponentsService.save(gcs);	//插入卖品套餐表
+								} else{
+									gcs.setPackageName(getSPInfosBean.getSpname());
+									gcs.setGoodsCode(getSPInfoBean.getSpno());
+									gcs.setGoodsName(getSPInfoBean.getSpname());
+									gcs.setGoodsCount(getSPInfoBean.getCount());
+									gcs.setUnitName(getSPInfoBean.getUnitname());
+									if(getSPInfosBean.getSellprice()!=null){
+										gcs.setPackageStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));
+										gcs.setPackageSettlePrice(Double.valueOf(getSPInfosBean.getSellprice()));
+									}
+									_goodscomponentsService.update(gcs);
+								}
+							}
 
-					} else {
-						goo.setIsPackage(0);//是否套餐，0非套餐
-					}
-					if (_goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(),getSPInfosBean.getSpno()) == null) {
+						} else {
+							System.out.println("3333");
+							goo.setIsPackage(0);//是否套餐，0非套餐
+						}
 						goo.setCinemaCode(userCinema.getCinemaCode());
 						goo.setUserId(userCinema.getUserId());
 						//goo.setGoodsPic();//没有卖品图片
 						goo.setStockCount(999);//库存给定100
-						goo.setShowSeqNo(0);//展示顺序 默认0
+						goo.setShowSeqNo(1);//展示顺序 默认1
 						goo.setIsDiscount(0);//是否享受会员卡优惠，1是；0 否 默认0
-						goo.setGoodsStatus(0);//卖品状态 
+						goo.setGoodsStatus(1);//卖品状态 
 						goo.setIsRecommand(0);//是否推荐  默认0
+						goo.setUpdated(new Date());//更新时间
 						_goodsService.save(goo);
+						
 					} else {
+						goo.setGoodsCode(getSPInfosBean.getSpno());
+						goo.setGoodsName(getSPInfosBean.getSpname());
+						goo.setGoodsType(getSPInfosBean.getSptype());
+						if (getSPInfosBean.getSellprice() != null) {
+							goo.setStandardPrice(Double.valueOf(getSPInfosBean.getSellprice()));
+							goo.setSettlePrice(Double.valueOf(getSPInfosBean.getSellprice()));
+						}
+						goo.setGoodsDesc(getSPInfosBean.getInfo());//卖品描述	
+						goo.setUnitName(getSPInfosBean.getUnitname());//卖品单位
+						if (getSPInfosBean.getComponents() != null && getSPInfosBean.getComponents().size() > 0) {
+							goo.setIsPackage(1);//是否套餐，1套餐
+						} else {
+							goo.setIsPackage(0);//是否套餐，0非套餐
+						}
+						goo.setUpdated(new Date());//更新时间
 						_goodsService.update(goo);
 					}
 				}
 				reply.Status = StatusEnum.Success;
-				System.out.println("更新成功");
 			} else {
 				reply.Status = StatusEnum.Failure;
 			}
@@ -949,6 +995,8 @@ public class MtxInterface implements ICTMSInterface {
 			order.getOrderBaseInfo().setOrderCode(mtxReply.getOrderNo());
 			order.getOrderBaseInfo().setPickUpCode(mtxReply.getValidCode());
 			order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
+			order.getOrderBaseInfo().setSubmitTime(new Date());
+			order.getOrderBaseInfo().setOrderPayTime(new Date());
 			reply.Status = StatusEnum.Success;
 		}else{
 			order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.SubmitFail.getStatusCode());
