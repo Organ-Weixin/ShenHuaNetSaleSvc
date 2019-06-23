@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.boot.security.server.dao.MarketingcampaignDao;
-import com.boot.security.server.model.Couponsgroup;
 import com.boot.security.server.model.Marketingcampaign;
 import com.boot.security.server.service.MarketingcampaignService;
 

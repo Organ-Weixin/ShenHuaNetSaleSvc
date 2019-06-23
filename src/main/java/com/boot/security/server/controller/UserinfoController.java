@@ -3,7 +3,6 @@ package com.boot.security.server.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boot.security.server.dao.UserinfoDao;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.page.table.PageTableHandler;
-import com.boot.security.server.page.table.PageTableRequest;
-import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
+import com.boot.security.server.page.table.PageTableRequest;
+import com.boot.security.server.page.table.PageTableResponse;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

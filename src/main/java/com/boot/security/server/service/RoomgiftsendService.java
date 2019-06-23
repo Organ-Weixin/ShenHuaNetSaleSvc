@@ -2,8 +2,6 @@ package com.boot.security.server.service;
 
 import java.util.List;
 
-import org.apache.logging.log4j.message.StringFormattedMessage;
-
 import com.boot.security.server.model.Roomgiftsend;
 
 public interface RoomgiftsendService {

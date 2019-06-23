@@ -41,7 +41,6 @@ import com.boot.security.server.api.core.SubmitGoodsOrderReply.SubmitGoodsOrderR
 import com.boot.security.server.api.core.SubmitMixOrderQueryXml.SubmitMixOrderQueryXmlGoods;
 import com.boot.security.server.api.core.SubmitMixOrderReply.SubmitGoodsOrder;
 import com.boot.security.server.api.core.SubmitMixOrderReply.SubmitTicketsOrder;
-import com.boot.security.server.api.core.LockSeatReply;
 import com.boot.security.server.api.core.SubmitMixOrderReply.SubmitTicketsOrder.SubmitOrderSeat;
 import com.boot.security.server.api.core.SubmitOrderReply.SubmitOrderReplyOrder.SubmitOrderReplySeat;
 import com.boot.security.server.api.ctms.reply.CTMSCardChargeReply;
@@ -81,7 +80,6 @@ import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
-import com.boot.security.server.model.Goodscomponents;
 import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Membercard;

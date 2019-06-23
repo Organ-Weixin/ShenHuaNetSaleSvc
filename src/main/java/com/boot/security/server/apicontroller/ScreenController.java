@@ -2,7 +2,6 @@ package com.boot.security.server.apicontroller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +17,8 @@ import com.boot.security.server.apicontroller.reply.QueryScreenSeatsArrangementR
 import com.boot.security.server.apicontroller.reply.QueryScreenSeatsArrangementReply.DataBean;
 import com.boot.security.server.apicontroller.reply.QueryScreenSeatsArrangementReply.DataBean.RowBean;
 import com.boot.security.server.apicontroller.reply.QueryScreenSeatsArrangementReply.DataBean.RowBean.SeatBean;
-import com.boot.security.server.apicontroller.reply.QueryScreenSeatsReply.QueryScreenSeatsReplyScreenSeats.QueryScreenSeatsReplyScreenSeat;
 import com.boot.security.server.apicontroller.reply.QueryScreenSeatsReply;
+import com.boot.security.server.apicontroller.reply.QueryScreenSeatsReply.QueryScreenSeatsReplyScreenSeats.QueryScreenSeatsReplyScreenSeat;
 import com.boot.security.server.apicontroller.reply.QueryScreensReply;
 import com.boot.security.server.apicontroller.reply.QueryScreensReply.QueryScreensReplyScreens.QueryScreensReplyScreen;
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
@@ -32,7 +31,6 @@ import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.ScreenseatinfoServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
-import com.google.gson.Gson;
 
 import io.swagger.annotations.ApiOperation;
 

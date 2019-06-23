@@ -5,13 +5,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.boot.security.server.api.ctms.reply.YkGetGoodsResult.DataBean.GoodsBean.GoodsResult;
-import com.boot.security.server.apicontroller.reply.UserWXResult;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
 import com.boot.security.server.model.Sessioninfo;
-import com.boot.security.server.model.Ticketusers;
 
 public class YkModelMapper {
 

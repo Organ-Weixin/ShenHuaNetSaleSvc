@@ -3,7 +3,6 @@ package com.boot.security.server.utils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.KeyManagementException;
@@ -12,8 +11,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -33,18 +30,12 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.http.util.EntityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.ResourceUtils;
 import org.w3c.dom.Document;
 
 import com.boot.security.server.apicontroller.reply.PrePayParametersReply;
 import com.boot.security.server.apicontroller.reply.PrePayParametersReply.PrePayParametersReplyParameter;
-import com.boot.security.server.apicontroller.reply.RefundPaymentReply;
-import com.boot.security.server.apicontroller.reply.RefundPaymentReply.RefundPaymentReplyOrder;
 import com.boot.security.server.model.Cinemapaymentsettings;
 import com.boot.security.server.service.impl.CinemapaymentsettingsServiceImpl;
-
-import freemarker.template.utility.StringUtil;
 
 public class WxPayUtil {
 	//连接超时时间，默认10秒

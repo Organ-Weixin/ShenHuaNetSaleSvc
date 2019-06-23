@@ -13,14 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.boot.security.server.page.table.PageTableRequest;
-import com.boot.security.server.page.table.PageTableHandler;
-import com.boot.security.server.page.table.PageTableResponse;
-import com.boot.security.server.service.impl.MarketingcampaignServiceImpl;
-import com.boot.security.server.page.table.PageTableHandler.CountHandler;
-import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.dao.MarketingcampaignDao;
 import com.boot.security.server.model.Marketingcampaign;
+import com.boot.security.server.page.table.PageTableHandler;
+import com.boot.security.server.page.table.PageTableHandler.CountHandler;
+import com.boot.security.server.page.table.PageTableHandler.ListHandler;
+import com.boot.security.server.page.table.PageTableRequest;
+import com.boot.security.server.page.table.PageTableResponse;
 
 import io.swagger.annotations.ApiOperation;
 

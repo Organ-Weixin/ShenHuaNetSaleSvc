@@ -41,7 +41,6 @@ import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
-import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Screenseatinfo;
@@ -858,7 +857,7 @@ public class Dy1905Interface implements ICTMSInterface {
 				}
 				if(membercard==null){
 					membercard = new Membercard();
-					membercard.setCinemaCodes(cinemacodes.substring(0,cinemacodes.length()-1));
+					membercard.setCinemaCodes(cinemacodes);
 					membercard.setCinemaCode(userCinema.getCinemaCode());
 					membercard.setCardPassword(CardPassword);
 					membercard.setMobilePhone(cardInfo.getMobile());

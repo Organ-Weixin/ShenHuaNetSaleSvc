@@ -1,23 +1,23 @@
 package com.boot.security.server.apicontroller;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.security.server.apicontroller.reply.BindCouponsReply;
+import com.boot.security.server.apicontroller.reply.BindCouponsReply.BindCouponsReplyBind;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.QueryUserAvailableCouponsReply;
+import com.boot.security.server.apicontroller.reply.QueryUserAvailableCouponsReply.QueryUserAvailableCouponsReplydata;
+import com.boot.security.server.apicontroller.reply.QueryUserAvailableCouponsReply.QueryUserAvailableCouponsReplydata.QueryUserAvailableCouponsReplyCoupons;
 import com.boot.security.server.apicontroller.reply.QueryUserConponsReply;
+import com.boot.security.server.apicontroller.reply.QueryUserConponsReply.QueryUserConponsBeans;
 import com.boot.security.server.apicontroller.reply.QueryUserConponsReply.QueryUserConponsBeans.QueryUserConponsBean;
 import com.boot.security.server.apicontroller.reply.QueryUsingConponsReply;
 import com.boot.security.server.apicontroller.reply.QueryUsingConponsReply.ConponData;
@@ -28,8 +28,6 @@ import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.model.Couponsgroup;
-import com.boot.security.server.model.Filminfo;
-import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.Orders;
@@ -44,11 +42,6 @@ import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
-import com.google.gson.Gson;
-import com.boot.security.server.apicontroller.reply.QueryUserConponsReply.QueryUserConponsBeans;
-import com.boot.security.server.apicontroller.reply.BindCouponsReply.BindCouponsReplyBind;
-import com.boot.security.server.apicontroller.reply.QueryUserAvailableCouponsReply.QueryUserAvailableCouponsReplydata;
-import com.boot.security.server.apicontroller.reply.QueryUserAvailableCouponsReply.QueryUserAvailableCouponsReplydata.QueryUserAvailableCouponsReplyCoupons;
 
 import io.swagger.annotations.ApiOperation;
 

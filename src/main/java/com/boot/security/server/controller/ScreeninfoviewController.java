@@ -11,19 +11,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.boot.security.server.page.table.PageTableRequest;
-import com.boot.security.server.page.table.PageTableHandler;
-import com.boot.security.server.page.table.PageTableResponse;
-import com.boot.security.server.page.table.PageTableHandler.CountHandler;
-import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.api.core.NetSaleSvcCore;
 import com.boot.security.server.api.core.QueryCinemaReply;
 import com.boot.security.server.api.core.QuerySeatReply;
 import com.boot.security.server.dao.ScreeninfoviewDao;
 import com.boot.security.server.model.Screeninfoview;
+import com.boot.security.server.page.table.PageTableHandler;
+import com.boot.security.server.page.table.PageTableHandler.CountHandler;
+import com.boot.security.server.page.table.PageTableHandler.ListHandler;
+import com.boot.security.server.page.table.PageTableRequest;
+import com.boot.security.server.page.table.PageTableResponse;
 
 import io.swagger.annotations.ApiOperation;
 

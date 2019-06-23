@@ -11,7 +11,6 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.boot.security.server.model.Middleware;
-import com.boot.security.server.model.Userinfo;
 
 @Mapper
 public interface MiddlewareDao {

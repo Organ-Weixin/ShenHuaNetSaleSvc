@@ -7,7 +7,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import com.boot.security.server.model.Adminorderview;
 import com.boot.security.server.modelView.Goodsorderdetailsview;
 
 

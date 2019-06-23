@@ -52,7 +52,6 @@ import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.Membercardrecharge;
-import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orders;

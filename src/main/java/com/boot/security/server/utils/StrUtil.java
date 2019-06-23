@@ -9,16 +9,12 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
-
-import freemarker.template.utility.StringUtil;
 
 /**
  * 字符串转化工具类

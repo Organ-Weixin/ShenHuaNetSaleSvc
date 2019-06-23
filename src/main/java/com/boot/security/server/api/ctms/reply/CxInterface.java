@@ -3,15 +3,11 @@ package com.boot.security.server.api.ctms.reply;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import javax.mail.Folder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +22,6 @@ import com.boot.security.server.api.ctms.reply.CxQueryPlanSeatResult.ResBean.Pla
 import com.boot.security.server.api.ctms.reply.CxQuerySeatInfoResult.ResBean.ScreenSitesBean.ScreenSiteBean;
 import com.boot.security.server.api.ctms.reply.CxQueryTicketInfoResult.ResBean.TicketsBean.TicketBean;
 import com.boot.security.server.api.ctms.reply.CxSubmitOrderResult.ResBean.SeatInfosBean.SeatInfoBean;
-import com.boot.security.server.api.ctms.reply.CxApplyFetchTicketResult.ResBean.TicketsBean;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Cinema;
@@ -41,6 +36,12 @@ import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orderseatdetails;
+import com.boot.security.server.model.Screeninfo;
+import com.boot.security.server.model.Screenseatinfo;
+import com.boot.security.server.model.SessionSeat;
+import com.boot.security.server.model.SessionSeatStatusEnum;
+import com.boot.security.server.model.Sessioninfo;
+import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.YesOrNoEnum;
 import com.boot.security.server.service.impl.CinemaMiniProgramAccountsServiceImpl;
@@ -56,15 +57,6 @@ import com.boot.security.server.utils.MD5Util;
 import com.boot.security.server.utils.SpringUtil;
 import com.google.gson.Gson;
 import com.oristartech.tsp.ws.soap.WebService;
-
-import ch.qos.logback.core.net.SyslogOutputStream;
-
-import com.boot.security.server.model.Screeninfo;
-import com.boot.security.server.model.Screenseatinfo;
-import com.boot.security.server.model.SessionSeat;
-import com.boot.security.server.model.SessionSeatStatusEnum;
-import com.boot.security.server.model.Sessioninfo;
-import com.boot.security.server.model.StatusEnum;
 
 public class CxInterface implements ICTMSInterface { 
 	private WebService cxService;

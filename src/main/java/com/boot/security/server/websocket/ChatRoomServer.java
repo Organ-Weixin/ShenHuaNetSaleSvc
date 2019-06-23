@@ -24,12 +24,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.boot.security.server.apicontroller.reply.BaseReply;
-import com.boot.security.server.apicontroller.reply.QueryScreenRoomReply.ScreenRoom;
-import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.Couponsgroup;
@@ -39,20 +35,13 @@ import com.boot.security.server.model.Roomgift;
 import com.boot.security.server.model.Roomgiftsend;
 import com.boot.security.server.model.Roomgiftuser;
 import com.boot.security.server.model.Sessioninfo;
-import com.boot.security.server.model.Ticketusers;
-import com.boot.security.server.service.CinemaService;
-import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
 import com.boot.security.server.service.impl.RoomgiftServiceImpl;
 import com.boot.security.server.service.impl.RoomgiftsendServiceImpl;
 import com.boot.security.server.service.impl.RoomgiftuserServiceImpl;
-import com.boot.security.server.service.impl.TicketusersServiceImpl;
 
 import net.sf.json.JSONObject;
-
-import com.boot.security.server.apicontroller.reply.RoomGiftReply;
-import com.boot.security.server.apicontroller.reply.RoomGiftReply.RoomGiftResult;
 
 @Component
 @ServerEndpoint(value="/webSocket/chat/{roll}/{roomName}/{phoneOrOpenid}")

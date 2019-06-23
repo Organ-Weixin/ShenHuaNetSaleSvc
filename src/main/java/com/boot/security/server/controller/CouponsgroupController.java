@@ -19,19 +19,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.boot.security.server.page.table.PageTableRequest;
-import com.boot.security.server.page.table.PageTableHandler;
-import com.boot.security.server.page.table.PageTableResponse;
-import com.boot.security.server.service.impl.CouponsServiceImpl;
-import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
-import com.boot.security.server.page.table.PageTableHandler.CountHandler;
-import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.dao.CouponsDao;
 import com.boot.security.server.dao.CouponsgroupDao;
 import com.boot.security.server.model.CouponGroupStatusEnum;
-import com.boot.security.server.model.Coupons;
-import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.Couponsgroup;
+import com.boot.security.server.page.table.PageTableHandler;
+import com.boot.security.server.page.table.PageTableHandler.CountHandler;
+import com.boot.security.server.page.table.PageTableHandler.ListHandler;
+import com.boot.security.server.page.table.PageTableRequest;
+import com.boot.security.server.page.table.PageTableResponse;
+import com.boot.security.server.service.impl.CouponsServiceImpl;
+import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
 
 import io.swagger.annotations.ApiOperation;
 
