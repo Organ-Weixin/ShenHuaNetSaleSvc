@@ -604,12 +604,12 @@ public class Dy1905Interface implements ICTMSInterface {
 		String TicketPrice = null;
 		String Fee = null;
 		SeatCode = OrderseatdetailsList.get(0).getSeatCode();
-		TicketPrice = String.valueOf(OrderseatdetailsList.get(0).getSalePrice());
+		TicketPrice = String.valueOf(OrderseatdetailsList.get(0).getPrice());
 		Fee = String.valueOf(OrderseatdetailsList.get(0).getFee());
 		if(OrderseatdetailsList.size()>1){
 			for(int i=1;i<OrderseatdetailsList.size();i++){
 				SeatCode += ","+OrderseatdetailsList.get(i).getSeatCode();
-				TicketPrice += ","+OrderseatdetailsList.get(i).getSalePrice();
+				TicketPrice += ","+OrderseatdetailsList.get(i).getPrice();
 				Fee += ","+OrderseatdetailsList.get(i).getFee();
 			}
 		}
@@ -903,6 +903,34 @@ public class Dy1905Interface implements ICTMSInterface {
 				String CardPassword, String LevelCode, String SessionCode, String SessionTime, String FilmCode,
 				String ScreenType, String ListingPrice, String LowestPrice) throws Exception {
 			CTMSQueryDiscountReply reply = new CTMSQueryDiscountReply();
+			/*SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			Date StartDate = sdf.parse(SessionTime);
+			String StartDate2 = sdf.format(StartDate);
+			Date EndDate = new Date(Long.parseLong(String.valueOf(StartDate.getTime()+24*60*60*1000)));
+			String EndDate2 = sdf.format(EndDate);
+			System.out.println("userCinema.getDefaultUserName()="+userCinema.getDefaultUserName()+",StartDate2="+StartDate2+
+					",EndDate2="+EndDate2+",userCinema.getDefaultPassword()="+userCinema.getDefaultPassword());
+			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + StartDate2 + EndDate2 + userCinema.getDefaultPassword(), "UTF-8").toLowerCase();
+			Map<String,String> param = new LinkedHashMap<String,String>();
+			param.put("pAppCode", userCinema.getDefaultUserName());
+			param.put("pCinemaID", userCinema.getCinemaId());
+			param.put("pStartDate", StartDate2);
+			param.put("pEndDate", EndDate2);
+			param.put("pVerifyInfo", pVerifyInfo);
+			String SessionCardPrice = HttpHelper.httpClientPost(userCinema.getUrl() +"/GetSessionCardPrice",param,"UTF-8");
+			System.out.println(SessionCardPrice);
+			Gson gson = new Gson();
+			Dy1905GetSessionCardPriceResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(SessionCardPrice, "SessionCardPrice"),Dy1905GetSessionCardPriceResult.class);
+			if(Dy1905Reply.getGetSessionCardPrice().getResultCode().equals("0")){
+				reply.setCinemaCode(userCinema.getCinemaCode());
+				reply.setDiscountType(1);
+				reply.setPrice(Float.valueOf(Dy1905Reply.getGetSessionCardPrice().getPrice()));
+				reply.Status = StatusEnum.Success;
+			}else{
+				reply.Status = StatusEnum.Failure;
+			}
+			reply.ErrorCode = Dy1905Reply.getGetSessionCardPrice().getResultCode();
+			reply.ErrorMessage = Dy1905Reply.getGetSessionCardPrice().getResultMsg();*/
 			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + SessionCode + CardNo + CardPassword + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
 			Map<String,String> param = new LinkedHashMap<String,String>();
 			param.put("pAppCode", userCinema.getDefaultUserName());
@@ -1014,9 +1042,9 @@ public class Dy1905Interface implements ICTMSInterface {
 			String MemberPrice = null;
 			String Fee = null;
 			SeatCode = order.getOrderSeatDetails().get(0).getSeatCode();
-			if(order.getOrderBaseInfo().getCouponsPrice()==null){
+			/*if(order.getOrderBaseInfo().getCouponsPrice()==null){
 				order.getOrderBaseInfo().setCouponsPrice(0.00);
-			}
+			}*/
 			//计算实际支付价格
 			MemberPrice = String.valueOf(order.getOrderSeatDetails().get(0).getSalePrice());
 			Fee = String.valueOf(order.getOrderSeatDetails().get(0).getFee());

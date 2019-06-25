@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -215,6 +216,73 @@ public class FilminfoController {
         System.out.println("map2="+new Gson().toJson(map2));
         return map;
     }
+    //endregion
+    
+    //region 上传海报
+  	@RequestMapping("/upload/file")
+  	@ApiOperation(value = "上传海报")
+  	public Object uploadFile(@RequestParam("stagePhoto") MultipartFile[] file,HttpServletRequest request){
+  		//System.out.println("file数量="+file.length);
+  		Map<String,Object> map = new HashMap();
+  		String suffix = "";  //文件后缀
+  		String returnroot = "";  //上传路径
+  		String saveroot = "";
+  		String path = "";
+  		String fileName="";  //文件名
+  		List<String> srcList = new ArrayList<>();
+  		try {
+  			String src = "";
+  			if(file.length>0){
+  				for(int i=0; i<file.length; i++){
+  					String originalName = file[i].getOriginalFilename();  //获取文件的全名
+  					suffix = originalName.substring(originalName.lastIndexOf(",")+1);  //获取文件后缀
+  					// request.getScheme()  当前链接使用的协议；一般应用返回http;SSL返回https;
+  					// request.getServerName()  服务器的名称，如果你的应用部署在本机那么其就返回localhost或者127.0.0.1 ，这2个是等价的
+  					// request.getServerPort()  应用使用的端口号
+  					// request.getContextPath()  获取应用的根目录
+  					returnroot = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+request.getContextPath()+"/upload";  //上传路径
+  					saveroot=PropertyHolder.get().getServerPath()+"/upload";
+  					path = new SimpleDateFormat("yyyyMM").format(new Date());
+  					// fileName 时间戳+三位随机数+文件名后缀
+  					fileName = new Date().getTime() + new Random().nextInt(1000)+"."+suffix;
+  					// files 文件名
+  					// File.separator 系统目录中的间隔符，说白了就是斜线
+  					File files = new File(saveroot+ File.separator +path+ File.separator);
+  					File targetFile = new File(files, fileName);  //创建新的文件  第一个参数：文件   第二个参数：文件名
+  					// targetFile.getParentFile() 获取文件目录
+  					// 判断文件目录是否存在
+  					if(!targetFile.getParentFile().exists()){
+  						//创建文件目录
+  						targetFile.getParentFile().mkdirs();
+  					}
+  					file[i].transferTo(targetFile);  //保存文件
+  					//上传到OSS服务器
+  					if(true){
+  						String BUCKET="whtxcx";  //储存空间
+  						String BUCKETPATH ="upload";
+  						String filePath="/" +path+ "/"+fileName;  //文件路径
+  						String mess = FileUploadUtils.uploadOss(saveroot,filePath,BUCKET,BUCKETPATH);  //文件上传返回信息
+  						//判断返回信息是否为""
+  						if(!"".equals(mess)){
+  							//有返回信息，说明上传失败
+  							System.out.println("mess="+mess);
+  							map.put("msg", mess);
+  						}else{
+  							src = "https://"+BUCKET+".oss-cn-hangzhou.aliyuncs.com/"+BUCKETPATH+"/"+path+"/"+fileName;
+  						}
+  					}else{
+  						 src = returnroot +"/" + path + "/" +fileName;
+  					}
+  					srcList.add(src);
+  					System.out.println("图片路径="+src);
+  				}
+  			}
+  		} catch (Exception e) {
+  			e.printStackTrace();
+  		}
+  		System.out.println("图片返回路径="+new Gson().toJson(srcList));
+  		return srcList;
+  	}
     //endregion
     
     //region 根据城市名称抓取影片信息

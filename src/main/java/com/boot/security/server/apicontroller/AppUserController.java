@@ -927,9 +927,6 @@ public class AppUserController {
 		if(!userinfo.getBirthday().equals(null)&&!userinfo.getBirthday().equals("")){
 			ticketuser.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse(userinfo.getBirthday()));
 		}
-		if(!userinfo.getHeadUrl().equals(null)&&!userinfo.getHeadUrl().equals("")){
-			ticketuser.setHeadImgUrl(userinfo.getHeadUrl());
-		}
 		if(!userinfo.getNickName().equals(null)&&!userinfo.getNickName().equals("")){
 			ticketuser.setNickName(userinfo.getNickName());
 		}

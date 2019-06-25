@@ -30,6 +30,7 @@ import com.boot.security.server.api.core.QueryCardTradeRecordReply;
 import com.boot.security.server.api.core.QueryDiscountReply;
 import com.boot.security.server.api.core.SubmitGoodsOrderReply;
 import com.boot.security.server.api.core.SubmitGoodsOrderReply.SubmitGoodsOrderReplyOrder;
+import com.boot.security.server.api.ctms.reply.CTMSQueryDiscountReply;
 import com.boot.security.server.api.ctms.reply.CTMSSubmitGoodsOrderReply;
 import com.boot.security.server.api.ctms.reply.CTMSSubmitOrderReply;
 import com.boot.security.server.api.ctms.reply.Dy1905GetMemberCardByMobileReply;
@@ -77,6 +78,7 @@ import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Priceplan;
 import com.boot.security.server.model.Screeninfo;
 import com.boot.security.server.model.Sessioninfo;
+import com.boot.security.server.model.StatusEnum;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
@@ -90,6 +92,7 @@ import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.MembercardcreditruleServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
+import com.boot.security.server.service.impl.OrderseatdetailsServiceImpl;
 import com.boot.security.server.service.impl.PriceplanServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
@@ -142,6 +145,8 @@ public class MemberController {
 	PriceplanServiceImpl _priceplanService;
 	@Autowired
 	ScreeninfoServiceImpl _screeninfoService;
+	@Autowired
+	private OrderseatdetailsServiceImpl _orderseatdetailsService;
 	
 	//region 会员卡登陆
 	@GetMapping("/LoginCard/{Username}/{Password}/{CinemaCode}/{OpenID}/{CardNo}/{CardPassword}")
@@ -354,8 +359,24 @@ public class MemberController {
 	public SellTicketCustomMemberReply SellTicketCustomMember(@PathVariable String Username,@PathVariable String Password,
 			@PathVariable String CinemaCode,@PathVariable String LockOrderCode,@PathVariable String MobilePhone,
 			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String CouponsCode) throws Exception{
+		Usercinemaview userCinema = _userCinemaViewService.getByCinemaCode(CinemaCode);
+		Orders order = orderService.getByLockOrderCode(CinemaCode, LockOrderCode);
+		//查询会员卡折扣
+		CTMSQueryDiscountReply queryDiscountReply = new Dy1905Interface().QueryDiscount(userCinema, null, CardNo, CardPassword, null, order.getSessionCode(), null, null, null, null, null);
+		//更新实际总价格
+		if(queryDiscountReply.Status==StatusEnum.Success){
+			order.setTotalSalePrice(Double.valueOf(queryDiscountReply.getPrice()*order.getTicketCount()));
+			orderService.update(order);
+			//更新订单详情中的售价
+			if(order!=null){
+				List<Orderseatdetails> orderseatdetailsList = _orderseatdetailsService.getByOrderId(order.getId());
+				for(Orderseatdetails orderseatdetails : orderseatdetailsList){
+					orderseatdetails.setSalePrice(Double.valueOf(queryDiscountReply.getPrice()));
+					_orderseatdetailsService.update(orderseatdetails);
+				}
+			}
+		}
 		Orders orders = orderService.getByLockOrderCode(CinemaCode, LockOrderCode);
-		
 		//region 更新购票订单优惠券及金额
 		orders=_couponsService.updateCouponsPricetoOrder(orders, CouponsCode);
 		orderService.update(orders);
