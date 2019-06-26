@@ -2,7 +2,10 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" type="text/css" media="screen"
+<meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" type="text/css" media="screen"
 	href="../../css/bootstrap.min.css">
 </head>
 <body>
@@ -168,6 +171,22 @@
 					    <p id="resultMsg"></p>
 					</div>
 				</div>
+				
+				<div class="form-group">
+					<label class="col-md-2 control-label">上传海报</label>
+				    <input type="hidden" name="stagePhoto1" class="stagePhoto">
+					<input type="hidden" name="stagePhoto2" class="stagePhoto">
+					<input type="hidden" name="stagePhoto3" class="stagePhoto">
+					<input type="hidden" name="stagePhoto4" class="stagePhoto">
+					<input type="hidden" name="stagePhoto5" class="stagePhoto">
+					<input type="hidden" name="stagePhoto6" class="stagePhoto">
+					<button type="button" class="layui-btn" id="addStagePhoto">多图片上传</button> 
+					<div class="col-md-10">
+						<blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;"></blockquote>
+    					<div class="layui-upload-list" id="demo2" style="margin-left:20%"></div>
+					    <p id="resultMsg2"></p>
+					</div>
+				</div>
 
 				<div class='form-group'>
 					<label class='col-md-2 control-label'>预告片</label>
@@ -240,6 +259,42 @@
 				});
 			element.init();
 		});
+		
+		layui.use('upload', function(){
+			  var $ = layui.jquery
+			  ,upload = layui.upload;
+			  
+			  //多图片上传
+			  upload.render({
+			    elem: '#addStagePhoto'
+			    ,url: '/filminfos/upload/filmImage'
+			    ,multiple: true
+			    ,before: function(obj){
+			      //预读本地文件示例，不支持ie8
+			      obj.preview(function(index, file, result){
+			      	if($(".img").length<=5){
+			       	 	$('#demo2').append('<img src="'+ result +'" alt="'+ file.name +'" class="layui-upload-img img" style="width:188px;height:188px">')
+			      	}else{
+			      		alert("最多上传6张海报");
+			      	}
+			      });
+			    }
+			    ,done: function(res){
+			    	if (res.code > 0) {
+						return layer.msg('上传失败');
+					}
+					//上传成功
+					//打印后台传回的地址: 把地址放入一个隐藏的input中, 和表单一起提交到后台, 此处略..
+					console.log(res.data.src);
+					var imgsize = $(".img").length;
+					$("input[class='stagePhoto']").eq(imgsize-1).val(res.data.src);//将地址存储好
+					window.parent.uploadHeadImage(res.data.src);
+					var resultMsg = $('#resultMsg');
+					resultMsg.html('<span style="color: #8f8f8f;">上传成功!!!</span>');
+			    }
+			  });
+			  
+			});
 
 		layui.use([ 'layer', 'laydate' ], function() {
 			var layer = layui.layer;

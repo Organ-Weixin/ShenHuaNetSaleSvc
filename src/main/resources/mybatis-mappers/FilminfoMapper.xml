@@ -117,7 +117,25 @@
 				Image = #{Image}, 
 			</if>
 			<if test="Trailer != null">
-				Trailer = #{Trailer}
+				Trailer = #{Trailer},
+			</if>
+			<if test="StagePhoto1 != null">
+				StagePhoto1 = #{StagePhoto1},
+			</if>
+			<if test="StagePhoto2 != null">
+				StagePhoto2 = #{StagePhoto2},
+			</if>
+			<if test="StagePhoto3 != null">
+				StagePhoto3 = #{StagePhoto3},
+			</if>
+			<if test="StagePhoto4 != null">
+				StagePhoto4 = #{StagePhoto4},
+			</if>
+			<if test="StagePhoto5 != null">
+				StagePhoto5 = #{StagePhoto5},
+			</if>
+			<if test="StagePhoto6 != null">
+				StagePhoto6 = #{StagePhoto6}
 			</if>
 		</set>
 

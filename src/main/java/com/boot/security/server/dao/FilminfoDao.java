@@ -34,7 +34,7 @@ public interface FilminfoDao {
     int update(Filminfo filminfo);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into filminfo(FilmCode, FilmName, Version, Duration, PublishDate, Publisher, Producer, DirectorId, Director, CastId, Cast, Introduction, Score, Area, Type, Language, Status, Image, Trailer) values(#{FilmCode}, #{FilmName}, #{Version}, #{Duration}, #{PublishDate}, #{Publisher}, #{Producer}, #{DirectorId}, #{Director}, #{CastId}, #{Cast}, #{Introduction}, #{Score}, #{Area}, #{Type}, #{Language}, #{Status}, #{Image}, #{Trailer})")
+    @Insert("insert into filminfo(FilmCode, FilmName, Version, Duration, PublishDate, Publisher, Producer, DirectorId, Director, CastId, Cast, Introduction, Score, Area, Type, Language, Status, Image, Trailer, StagePhoto1, StagePhoto2, StagePhoto3, StagePhoto4, StagePhoto5, StagePhoto6) values(#{FilmCode}, #{FilmName}, #{Version}, #{Duration}, #{PublishDate}, #{Publisher}, #{Producer}, #{DirectorId}, #{Director}, #{CastId}, #{Cast}, #{Introduction}, #{Score}, #{Area}, #{Type}, #{Language}, #{Status}, #{Image}, #{Trailer}, #{StagePhoto1}, #{StagePhoto2}, #{StagePhoto3}, #{StagePhoto4}, #{StagePhoto5}, #{StagePhoto6})")
     int save(Filminfo filminfo);
     
     int count(@Param("params") Map<String, Object> params);

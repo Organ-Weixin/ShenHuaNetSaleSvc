@@ -1042,9 +1042,6 @@ public class Dy1905Interface implements ICTMSInterface {
 			String MemberPrice = null;
 			String Fee = null;
 			SeatCode = order.getOrderSeatDetails().get(0).getSeatCode();
-			/*if(order.getOrderBaseInfo().getCouponsPrice()==null){
-				order.getOrderBaseInfo().setCouponsPrice(0.00);
-			}*/
 			//计算实际支付价格
 			MemberPrice = String.valueOf(order.getOrderSeatDetails().get(0).getSalePrice());
 			Fee = String.valueOf(order.getOrderSeatDetails().get(0).getFee());

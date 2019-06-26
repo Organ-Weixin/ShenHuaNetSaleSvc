@@ -60,8 +60,7 @@ public class Dy1905ModelMapper {
     	entity.setStandardPrice(model.getSettlementPrice());
     	entity.setLowestPrice(model.getLowestPrice());;
     	entity.setSettlePrice(model.getSettlementPrice());
-    	entity.setTicketFee(model.getFee());
-    	System.out.println("服务费="+model.getFee());
+    	entity.setTicketFee((double) 0);
     	entity.setAddFee((double) 0);
     	entity.setCinemaAllowance((double) 0);
     	entity.setIsAvalible(Integer.valueOf(model.getStatus()));
