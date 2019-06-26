@@ -58,6 +58,7 @@ import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.model.Adminorderview;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaTypeEnum;
+import com.boot.security.server.model.Cinemamessage;
 import com.boot.security.server.model.Cinemapaymentsettings;
 import com.boot.security.server.model.Cinemaview;
 import com.boot.security.server.model.Coupons;
@@ -79,6 +80,7 @@ import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.AdminorderviewServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
+import com.boot.security.server.service.impl.CinemamessageServiceImpl;
 import com.boot.security.server.service.impl.CinemapaymentsettingsServiceImpl;
 import com.boot.security.server.service.impl.CinemaviewServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
@@ -142,6 +144,8 @@ public class OrderController {
 	private OrderServiceImpl orderService;
 	@Autowired
 	private HttpServletRequest request;
+	@Autowired
+	private CinemamessageServiceImpl cinemamessageService;
 	protected static Logger log = LoggerFactory.getLogger(OrderController.class);
 
 	// region 锁座
@@ -193,8 +197,10 @@ public class OrderController {
 //			System.out.println("提交成功+++++"+new Gson().toJson(submitOrderReply));
 			if(submitOrderReply.Status.equals("Success")){
 				Orders orders=_orderService.getByOrderCode(submitOrderReply.getOrder().getOrderCode());
-				String MsgConetnt="您已成功支付，订单金额"+orders.getTotalSalePrice()+"元，影片场次："+orders.getSessionTime()+" 《"+orders.getFilmName()+"》"+orders.getTicketCount()+"张。请至影城取票机领取，取票码："+orders.getPrintNo()+".热线：4008257789";
-				new SendSmsHelper().SendSms(orders.getCinemaCode(),orders.getMobilePhone(),MsgConetnt);
+				Cinemamessage cinemamessage=cinemamessageService.getByCinemaCodeAndMessageType(orders.getCinemaCode(),"5");
+				String smsContent=cinemamessage.getMessageContent().replaceFirst("@FilmName", orders.getFilmName()).replaceFirst("@TicketCount", orders.getTicketCount().toString()).replaceFirst("@SessionTime",new SimpleDateFormat("yyyy-MM-dd HH:mm").format(orders.getSessionTime()));
+				//String MsgConetnt="您已成功支付，订单金额"+orders.getTotalSalePrice()+"元，影片场次："+orders.getSessionTime()+" 《"+orders.getFilmName()+"》"+orders.getTicketCount()+"张。请至影城取票机领取，取票码："+orders.getPrintNo()+".热线：4008257789";
+				new SendSmsHelper().SendSms(orders.getCinemaCode(),orders.getMobilePhone(),smsContent);
 			}
 			return submitOrderReply;
 		} catch (Exception e) {
@@ -552,7 +558,9 @@ public class OrderController {
 						RefundPaymentReply paymentReply = RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode());
 						if(paymentReply.Status.equals("Success")){
 							//发短信
-							MsgConetnt="您的退票已成功，退票金额"+orders.getTotalSalePrice()+"元将在3个工作日内返回支付账号，咨询：4008257789";
+							Cinemamessage cinemamessage=cinemamessageService.getByCinemaCodeAndMessageType(CinemaCode,"4");
+							String smsContent=cinemamessage.getMessageContent().replaceFirst("@PayBackAmount", orders.getTotalSalePrice().toString()).replaceFirst("@TelephoneNumber",cinema.getContactMobile());
+							//MsgConetnt="您的退票已成功，退票金额"+orders.getTotalSalePrice()+"元将在3个工作日内返回支付账号，咨询：4008257789";
 							new SendSmsHelper().SendSms(CinemaCode,orders.getMobilePhone(),MsgConetnt);
 						}
 						//log.info("微信退款结果"+new Gson().toJson(RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode())));
@@ -563,7 +571,7 @@ public class OrderController {
 						//判断票务系统
 						Cinemaview cinemaview = cinemaviewService.getByCinemaCode(CinemaCode);
 						//辰星系统调用会员卡支付撤销
-						if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
+						if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()||cinemaview.getCinemaType()==CinemaTypeEnum.ManTianXing.getTypeCode()){
 							Double backPayAmount = orders.getTotalSalePrice();
 							CardPayBackReply paybackReply=new NetSaleSvcCore().CardPayBack(UserName, Password, CinemaCode, orders.getCardNo(), orders.getCardPassword(), orders.getOrderTradeNo(), String.valueOf(backPayAmount));
 							if(paybackReply.Status.equals("Success")){
@@ -774,6 +782,8 @@ public class OrderController {
 						couponsview.getCoupons().setUsedDate(new Date());
 						//使用数量+1
 						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+						couponsview.getCouponsgroup().setOperationRemark("购票订单支付回调操作+1");
+						couponsview.getCouponsgroup().setUpdateDate(new Date());
 						//更新优惠券及优惠券分组表
 						_couponsService.update(couponsview);
 					}
@@ -854,11 +864,13 @@ public class OrderController {
 					CouponsView couponsview = _couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
 					if(couponsview!=null){
 						couponsview.getCoupons().setStatus(CouponsStatusEnum.Fetched.getStatusCode());
-						couponsview.getCoupons().setUsedDate(null);
+						//couponsview.getCoupons().setUsedDate(null);
 						//库存+1
 						couponsview.getCouponsgroup().setRemainingNumber(couponsview.getCouponsgroup().getRemainingNumber()+1);
 						//使用数量-1
 						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()-1);
+						couponsview.getCouponsgroup().setOperationRemark("购票订单退款操作-1");
+						couponsview.getCouponsgroup().setUpdateDate(new Date());
 						//更新优惠券及优惠券分组表
 						_couponsService.update(couponsview);
 					}
@@ -1003,6 +1015,8 @@ public class OrderController {
 						couponsview.getCoupons().setUsedDate(new Date());
 						//使用数量+1
 						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+						couponsview.getCouponsgroup().setOperationRemark("联合支付回调操作+1");
+						couponsview.getCouponsgroup().setUpdateDate(new Date());
 						//更新优惠券及优惠券分组表
 						_couponsService.update(couponsview);
 					}
@@ -1124,6 +1138,8 @@ public class OrderController {
 						couponsview.getCoupons().setUsedDate(null);
 						//使用数量-1
 						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()-1);
+						couponsview.getCouponsgroup().setOperationRemark("联合支付订单退款操作-1");
+						couponsview.getCouponsgroup().setUpdateDate(new Date());
 						//更新优惠券及优惠券分组表
 						_couponsService.update(couponsview);
 					}
@@ -1141,6 +1157,8 @@ public class OrderController {
 						couponsview.getCoupons().setUsedDate(null);
 						//使用数量-1
 						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()-1);
+						couponsview.getCouponsgroup().setOperationRemark("联合支付卖品订单退款操作-1");
+						couponsview.getCouponsgroup().setUpdateDate(new Date());
 						//更新优惠券及优惠券分组表
 						_couponsService.update(couponsview);
 					}

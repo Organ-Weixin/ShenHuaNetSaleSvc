@@ -53,6 +53,7 @@ import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.apicontroller.reply.SmsNoticeReply;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaTypeEnum;
+import com.boot.security.server.model.Cinemamessage;
 import com.boot.security.server.model.Cinemapaymentsettings;
 import com.boot.security.server.model.Cinemaview;
 import com.boot.security.server.model.CouponsStatusEnum;
@@ -68,6 +69,7 @@ import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
+import com.boot.security.server.service.impl.CinemamessageServiceImpl;
 import com.boot.security.server.service.impl.CinemapaymentsettingsServiceImpl;
 import com.boot.security.server.service.impl.CinemaviewServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
@@ -112,6 +114,8 @@ public class AppGoodsController {
 	private CinemaviewServiceImpl cinemaviewService;
 	@Autowired
     private HttpServletRequest request;
+	@Autowired
+	private CinemamessageServiceImpl cinemamessageService;
 	
 	//region 查询影院卖品信息
 	@GetMapping("/QueryGoods/{UserName}/{Password}/{CinemaCode}")
@@ -195,8 +199,10 @@ public class AppGoodsController {
 			SubmitGoodsOrderReply reply = NetSaleSvcCore.getInstance().SubmitGoodsOrder(QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getQueryXml());
 			if(reply.Status.equals("Success")){
 				Goodsorders goodsorders=_goodsOrderService.getByOrderCode(reply.getOrder().getOrderCode());
-				String MsgConetnt="您的订单已成功，取货码为"+reply.getOrder().getPickUpCode()+"，请到前台领取";
-				new SendSmsHelper().SendSms(goodsorders.getCinemaCode(),goodsorders.getMobilePhone(),MsgConetnt);
+				Cinemamessage cinemamessage=cinemamessageService.getByCinemaCodeAndMessageType(goodsorders.getCinemaCode(),"2");
+				String smsContent=cinemamessage.getMessageContent();
+				//String MsgConetnt="您的订单已成功，取货码为"+reply.getOrder().getPickUpCode()+"，请到前台领取";
+				new SendSmsHelper().SendSms(goodsorders.getCinemaCode(),goodsorders.getMobilePhone(),smsContent);
 			}
 			return reply;
 		} catch (JsonSyntaxException e) {
@@ -476,13 +482,8 @@ public class AppGoodsController {
 		_goodsOrderService.UpdateOrderBaseInfo(order.getOrderBaseInfo());
 		
 		//region 准备支付参数
-		//总支付金额=总结算金额-优惠金额
-		Double TotalPrice;
-		if(order.getOrderBaseInfo().getCouponsPrice()!=null){
-			TotalPrice = order.getOrderBaseInfo().getTotalSettlePrice()-order.getOrderBaseInfo().getCouponsPrice();
-		}else{
-			TotalPrice = order.getOrderBaseInfo().getTotalSettlePrice();
-		}
+		//总支付金额=总结算金额
+		Double TotalPrice = order.getOrderBaseInfo().getTotalSettlePrice();
 		Calendar cal=Calendar.getInstance();
 		String WxpayAppId = cinemapaymentsettings.getWxpayAppId();
 		String strbody = cinemapaymentsettings.getCinemaName() + "-"
@@ -537,6 +538,8 @@ public class AppGoodsController {
 						couponsview.getCoupons().setUsedDate(new Date());
 						//使用数量+1
 						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+						couponsview.getCouponsgroup().setOperationRemark("卖品支付回调操作");
+						couponsview.getCouponsgroup().setUpdateDate(new Date());
 						//更新优惠券及优惠券分组表
 						_couponsService.update(couponsview);
 					}
@@ -651,9 +654,11 @@ public class AppGoodsController {
 					CouponsView couponsview = _couponsService.getWithCouponsCode(order.getCouponsCode());
 					if(couponsview!=null){
 						couponsview.getCoupons().setStatus(CouponsStatusEnum.Fetched.getStatusCode());
-						couponsview.getCoupons().setUsedDate(null);
+						//couponsview.getCoupons().setUsedDate(null);
 						//使用数量-1
 						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()-1);
+						couponsview.getCouponsgroup().setOperationRemark("卖品订单退款操作-1");
+						couponsview.getCouponsgroup().setUpdateDate(new Date());
 						//更新优惠券及优惠券分组表
 						_couponsService.update(couponsview);
 					}

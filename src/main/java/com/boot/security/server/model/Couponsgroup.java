@@ -27,7 +27,7 @@ public class Couponsgroup {
 	private Date CreateDate;
 	private Date UpdateDate;
 	private Integer IsShareWithMemberCard;
-
+	private String OperationRemark;
 
 	public Long getId() {
 		return Id;
@@ -162,5 +162,12 @@ public class Couponsgroup {
 	public void setIsShareWithMemberCard(Integer isShareWithMemberCard) {
 		IsShareWithMemberCard = isShareWithMemberCard;
 	}
+	public String getOperationRemark() {
+		return OperationRemark;
+	}
+	public void setOperationRemark(String operationRemark) {
+		OperationRemark = operationRemark;
+	}
+	
 	
 }

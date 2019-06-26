@@ -60,6 +60,7 @@ import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelReply;
 import com.boot.security.server.model.Choosemembercardcreditrule;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaTypeEnum;
+import com.boot.security.server.model.Cinemamessage;
 import com.boot.security.server.model.Cinemapaymentsettings;
 import com.boot.security.server.model.Cinemaview;
 import com.boot.security.server.model.CouponsStatusEnum;
@@ -84,6 +85,7 @@ import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.ChoosemembercardcreditruleServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
+import com.boot.security.server.service.impl.CinemamessageServiceImpl;
 import com.boot.security.server.service.impl.CinemapaymentsettingsServiceImpl;
 import com.boot.security.server.service.impl.CinemaviewServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
@@ -147,6 +149,8 @@ public class MemberController {
 	ScreeninfoServiceImpl _screeninfoService;
 	@Autowired
 	private OrderseatdetailsServiceImpl _orderseatdetailsService;
+	@Autowired
+	private CinemamessageServiceImpl cinemamessageService;
 	
 	//region 会员卡登陆
 	@GetMapping("/LoginCard/{Username}/{Password}/{CinemaCode}/{OpenID}/{CardNo}/{CardPassword}")
@@ -305,6 +309,8 @@ public class MemberController {
 						//使用数量+1
 						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
 						couponsview.getCouponsgroup().setRemainingNumber(couponsview.getCouponsgroup().getRemainingNumber()-1);
+						couponsview.getCouponsgroup().setOperationRemark("会员卡支付操作+1");
+						couponsview.getCouponsgroup().setUpdateDate(new Date());
 						//更新优惠券及优惠券分组表
 						_couponsService.update(couponsview);
 					}
@@ -591,7 +597,7 @@ public class MemberController {
 		System.out.println("api:"+new Gson().toJson(reply));
 		OrderView order = orderService.getOrderWidthTradeNo(CinemaCode, TradeNo);
 		Goodsorders goodsorders = goodsOrderService.getByOrderTradeNo(CinemaCode, TradeNo);
-		if(order!=null){
+		if(order!=null&&order.getOrderBaseInfo()!=null){
 			if(reply.Status.equals("Success")){
 				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.PayBack.getStatusCode());
 				order.getOrderBaseInfo().setRefundTradeNo(reply.getTradeNo());
@@ -606,6 +612,8 @@ public class MemberController {
 						//使用数量-1
 						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()-1);
 						couponsview.getCouponsgroup().setRemainingNumber(couponsview.getCouponsgroup().getRemainingNumber()+1);
+						couponsview.getCouponsgroup().setOperationRemark("会员卡支付撤销操作-1");
+						couponsview.getCouponsgroup().setUpdateDate(new Date());
 						//更新优惠券及优惠券分组表
 						_couponsService.update(couponsview);
 					}
@@ -685,8 +693,10 @@ public class MemberController {
 				membercard.setScore(Integer.valueOf(queryCardReply.getCard().getScore()));
 			}
 			_memberCardService.Update(membercard);
-			String MsgConetnt="您的充值已成功，充值金额为"+ChargeAmount+"元，余额为"+membercard.getBalance()+"元，剩余积分"+membercard.getScore()+"。";
-			new SendSmsHelper().SendSms(CinemaCode, membercard.getMobilePhone(),MsgConetnt);
+			Cinemamessage cinemamessage=cinemamessageService.getByCinemaCodeAndMessageType(CinemaCode,"3");
+			String smsContent=cinemamessage.getMessageContent().replaceFirst("@ChargeAmount",ChargeAmount).replaceFirst("@BalanceAmount", membercard.getBalance().toString()).replaceFirst("@MemberScore",membercard.getScore().toString());
+			//String MsgConetnt="您的充值已成功，充值金额为"+ChargeAmount+"元，余额为"+membercard.getBalance()+"元，剩余积分"+membercard.getScore()+"。";
+			new SendSmsHelper().SendSms(CinemaCode, membercard.getMobilePhone(),smsContent);
 		}
 		return reply;
 	}

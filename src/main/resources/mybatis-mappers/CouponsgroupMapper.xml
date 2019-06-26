@@ -92,9 +92,9 @@
 	<update id="update">
 		update couponsgroup t
 		<set>
-			<if test="Id != null">
+			<!-- <if test="Id != null">
 				Id = #{Id}, 
-			</if>
+			</if> -->
 			<if test="GroupCode != null">
 				GroupCode = #{GroupCode}, 
 			</if>
@@ -157,6 +157,9 @@
 			</if>
 			<if test="IsShareWithMemberCard != null">
 				IsShareWithMemberCard = #{IsShareWithMemberCard},
+			</if>
+			<if test="OperationRemark != null">
+				OperationRemark = #{OperationRemark},
 			</if>
 		</set>
 

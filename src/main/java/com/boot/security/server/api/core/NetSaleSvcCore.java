@@ -612,9 +612,9 @@ public class NetSaleSvcCore {
 			priceplanCinemaAllowance = null == priceplan.getCinemaAllowance() ? sessionInfo.getCinemaAllowance() : priceplan.getCinemaAllowance();
 		}else{
 			priceplanPrice=sessionInfo.getStandardPrice();
-			priceplanFee=0D;
-			priceplanAddFee=0D;
-			priceplanCinemaAllowance=0D;
+			priceplanFee=sessionInfo.getTicketFee();
+			priceplanAddFee=sessionInfo.getAddFee();
+			priceplanCinemaAllowance=sessionInfo.getCinemaAllowance();
 		}
 		Double basisSubmitPrice;//基础上报价格=标准价/最低价
 		//System.out.println("====="+userCinema.getIsUseLowestPriceReport());

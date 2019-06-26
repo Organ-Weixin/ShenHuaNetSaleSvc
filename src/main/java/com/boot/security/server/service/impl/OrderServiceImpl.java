@@ -123,8 +123,11 @@ public class OrderServiceImpl implements OrderService{
 	@Override
 	public OrderView getOrderWidthTradeNo(String cinemacode, String ordertradeno) {
 		OrderView orderview=new OrderView();
-		orderview.setOrderBaseInfo(ordersDao.getByOrderTradeNo(cinemacode, ordertradeno));
-		orderview.setOrderSeatDetails(orderseatdetailssDao.getByOrderId(orderview.getOrderBaseInfo().getId()));
+		Orders orderbase=ordersDao.getByOrderTradeNo(cinemacode, ordertradeno);
+		if(orderbase!=null){
+			orderview.setOrderBaseInfo(orderbase);
+			orderview.setOrderSeatDetails(orderseatdetailssDao.getByOrderId(orderview.getOrderBaseInfo().getId()));
+		}
 		return orderview;
 	}
 

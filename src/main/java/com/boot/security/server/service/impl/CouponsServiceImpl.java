@@ -128,7 +128,7 @@ public class CouponsServiceImpl implements CouponsService{
 					}
 				}
 				//如果是代金券并且门槛金额大于当前订单总销售价
-				if(couponsview.getCouponsgroup().getCouponsType()==1&&couponsview.getCouponsgroup().getThresholdAmount()>=order.getTotalSalePrice()){
+				if(couponsview.getCouponsgroup().getCouponsType()==1&&order.getTotalSalePrice()<couponsview.getCouponsgroup().getThresholdAmount()){
 					ifCanUse=false;
 				}
 				//如果减免类型是影片
@@ -145,7 +145,10 @@ public class CouponsServiceImpl implements CouponsService{
 			order.setCouponsPrice(0D);
 		}   
 		Double TotalSalePrice=DoubleUtil.sub(order.getTotalSalePrice(), order.getCouponsPrice());
-		System.out.println("实际支付金额="+TotalSalePrice);
+		if(TotalSalePrice<0){
+			TotalSalePrice=0D;
+			order.setCouponsPrice(order.getTotalSalePrice());
+		}
 		order.setTotalSalePrice(TotalSalePrice);
 		return order;
 	}
@@ -165,7 +168,7 @@ public class CouponsServiceImpl implements CouponsService{
 					}
 				}
 				//如果是代金券并且门槛金额大于当前订单总销售价
-				if(couponsview.getCouponsgroup().getCouponsType()==1&&couponsview.getCouponsgroup().getThresholdAmount()>=order.getTotalSettlePrice()){
+				if(couponsview.getCouponsgroup().getCouponsType()==1&&order.getTotalSettlePrice()<couponsview.getCouponsgroup().getThresholdAmount()){
 					ifCanUse=false;
 				}
 				//如果减免类型是卖品
@@ -184,6 +187,10 @@ public class CouponsServiceImpl implements CouponsService{
 		}
     	//卖品总结算价=总结算价+总服务费-优惠券金额
     	Double TotalSettlePrice=DoubleUtil.sub(DoubleUtil.add(order.getTotalSettlePrice(), order.getTotalFee()),order.getCouponsPrice());
+    	if(TotalSettlePrice<0){
+    		TotalSettlePrice=0D;
+    		order.setCouponsPrice(order.getTotalSettlePrice());
+    	}
     	order.setTotalSettlePrice(TotalSettlePrice);
     	return order;
 	}

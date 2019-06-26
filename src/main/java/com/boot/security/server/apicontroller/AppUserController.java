@@ -69,6 +69,7 @@ import com.boot.security.server.apicontroller.reply.UserWXResult;
 import com.boot.security.server.dao.GoodsorderdetailsDao;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaMiniProgramAccounts;
+import com.boot.security.server.model.Cinemamessage;
 import com.boot.security.server.model.CouponGroupStatusEnum;
 import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.CouponsStatusEnum;
@@ -91,6 +92,7 @@ import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaMiniProgramAccountsServiceImpl;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
+import com.boot.security.server.service.impl.CinemamessageServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
@@ -152,6 +154,8 @@ public class AppUserController {
 	private OrderServiceImpl orderService;
 	@Autowired
 	private SessioninfoServiceImpl sessioninfoService;
+	@Autowired
+	private CinemamessageServiceImpl cinemamessageService;
 	
 	@PostMapping("/UserLogin")
 	@ApiOperation(value = "用户登陆")
@@ -428,7 +432,9 @@ public class AppUserController {
 		_ticketusersService.update(ticketuser);
 		
 		//发送验证码到用户手机号
-		String smsContent = ""+ ticketuser.getVerifyCode()+"（万画筒小程序购票平台验证码，一分钟内有效）";
+		Cinemamessage cinemamessage=cinemamessageService.getByCinemaCodeAndMessageType(userCinema.getCinemaCode(),"1");
+		String smsContent=cinemamessage.getMessageContent().replaceFirst("@VerifyCode",ticketuser.getVerifyCode());
+		//String smsContent = ""+ ticketuser.getVerifyCode()+"（万画筒小程序购票平台验证码，一分钟内有效）";
         String sendResult = new SendSmsHelper().SendSms(input.getCinemaCode(), input.getMobilePhone(), smsContent);
         if(!"Success".equals(sendResult)){
         	reply.SetSentMessageFailureReply();

@@ -1094,6 +1094,8 @@ public class Dy1905Interface implements ICTMSInterface {
 						couponsview.getCoupons().setUsedDate(new Date());
 						//使用数量+1
 						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+						couponsview.getCouponsgroup().setOperationRemark("1905会员卡购票操作+1");
+						couponsview.getCouponsgroup().setUpdateDate(new Date());
 						//更新优惠券及优惠券分组表
 						_couponsService.update(couponsview);
 					}
@@ -1615,6 +1617,8 @@ public class Dy1905Interface implements ICTMSInterface {
 						couponsview.getCoupons().setUsedDate(new Date());
 						//使用数量+1
 						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+						couponsview.getCouponsgroup().setOperationRemark("1905提交卖品订单会员卡支付操作+1");
+						couponsview.getCouponsgroup().setUpdateDate(new Date());
 						//更新优惠券及优惠券分组表
 						_couponsService.update(couponsview);
 					}
