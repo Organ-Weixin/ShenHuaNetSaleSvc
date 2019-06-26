@@ -6,9 +6,6 @@ public class RoomGiftInput {
 	private String Password;
 	private String CinemaCode;
 	private String RoomCode;
-	private String GiftCode;
-	private String GiftType;
-	private int SendNumber;
 	private String OpenID;
 	
 	public String getUserName() {
@@ -34,24 +31,6 @@ public class RoomGiftInput {
 	}
 	public void setRoomCode(String roomCode) {
 		RoomCode = roomCode;
-	}
-	public String getGiftType() {
-		return GiftType;
-	}
-	public void setGiftType(String giftType) {
-		GiftType = giftType;
-	}
-	public String getGiftCode() {
-		return GiftCode;
-	}
-	public void setGiftCode(String giftCode) {
-		GiftCode = giftCode;
-	}
-	public int getSendNumber() {
-		return SendNumber;
-	}
-	public void setSendNumber(int sendNumber) {
-		SendNumber = sendNumber;
 	}
 	public String getOpenID() {
 		return OpenID;

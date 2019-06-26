@@ -1,4 +1,4 @@
-package com.boot.security.server.controller;
+package com.boot.security.server.apicontroller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,17 +15,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.boot.security.server.model.Couponsgroup;
+import com.boot.security.server.apicontroller.reply.QueryRoomGiftRecordReply;
+import com.boot.security.server.apicontroller.reply.RoomGiftInput;
+import com.boot.security.server.apicontroller.reply.QueryRoomGiftRecordReply.QueryRoomGiftRecord;
 import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Roomgift;
+import com.boot.security.server.model.Roomgiftuser;
 import com.boot.security.server.model.Screeninfo;
-import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.RoomgiftServiceImpl;
+import com.boot.security.server.service.impl.RoomgiftuserServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.websocket.ChatRoomServer;
 
@@ -42,17 +46,14 @@ public class ChatRoomController {
 	@Autowired
 	private RoomgiftServiceImpl roomgiftService;
 	@Autowired
-	private CouponsgroupServiceImpl CouponsgroupService;
+	private RoomgiftuserServiceImpl roomgiftuserService;
 	
 	@PostMapping("/getRooms")
 	@ApiOperation(value = "根据影院获取聊天室房间列表")
 	public List<Map<String ,Object>> getRooms(@RequestParam String cinemaCode){
 		List<String> list = ChatRoomServer.getRoomByCinema(cinemaCode);		//获取房间名 根据房间名解析成影片信息
-//        Cinema cinema = cinemaService.getByCinemaCode(cinemaCode);
         List<Map<String ,Object>> dataMap = new ArrayList<>();
         String infoStr[]=null;
-        String hallCode=null;//影厅唯一编码
-        String movieCode=null;//电影唯一编码
         String startTimeStr=null;//电影开始时间年月日时分秒
         String endTimeStr=null;//电影结束时间年月日时分秒
         Screeninfo screeninfo=null;//影厅
@@ -63,7 +64,7 @@ public class ChatRoomController {
             startTimeStr = infoStr[3];
             endTimeStr = infoStr[4];
             screeninfo = screeninfoService.getByScreenCode(cinemaCode, infoStr[1]);
-            
+            System.out.println("---"+nameStr);
     		filminfo = filminfoService.getByFilmCode(infoStr[2]);
             map.put("moviePhoto",filminfo.getImage());
             map.put("movieName",filminfo.getFilmName());
@@ -110,7 +111,7 @@ public class ChatRoomController {
 		List<Roomgift> giftList=roomgiftService.getByCinema(cinemaCode);
         	//自己定义数据格式map
 		//根据cinemaCode查出优惠券列表
-		List<Couponsgroup> couponslist=CouponsgroupService.getChatRoomCouponsByCinemaCode(cinemaCode);	
+//		List<Couponsgroup> couponslist=CouponsgroupService.getChatRoomCouponsByCinemaCode(cinemaCode);	
 //      Iterator<DXPlatTicket> it = platTicketList.iterator();
 //      while(it.hasNext()){
 //          DXPlatTicket dpt = it.next();
@@ -123,16 +124,45 @@ public class ChatRoomController {
         	//放入map里 返回给前台
 		 Map<String,Object> map = new HashMap<>();
          map.put("gift",giftList);
-         map.put("coupons",couponslist);
+//         map.put("coupons",couponslist);
          
        
         return map;
     }
 	
+	@PostMapping("/QueryRoomGiftRecord")
+	@ApiOperation(value="放映厅房间用户领取奖品记录")
+	public QueryRoomGiftRecordReply QueryRoomGiftRecord(@RequestBody RoomGiftInput input) {
+		QueryRoomGiftRecordReply reply=new QueryRoomGiftRecordReply();
+		
+		List<Roomgiftuser>  roomgiftuserlist = roomgiftuserService.getByOpenidAndRoom(input.getOpenID(), input.getRoomCode());
+		List<QueryRoomGiftRecord> data = new ArrayList<QueryRoomGiftRecord>();
+		for(Roomgiftuser roomgiftuser : roomgiftuserlist){
+			QueryRoomGiftRecord record = new QueryRoomGiftRecord();
+			record.setOpenID(roomgiftuser.getOpenID());
+			record.setGiftCode(roomgiftuser.getGiftCode());
+			record.setGiftName(roomgiftuser.getGiftName());
+			record.setGiftType(roomgiftuser.getGiftType());
+			record.setImage(roomgiftuser.getImage());
+			record.setGetDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(roomgiftuser.getGetDate()));
+			if(roomgiftuser.getStartDate() != null){
+				record.setStartDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(roomgiftuser.getStartDate()));
+			}
+			if(roomgiftuser.getExpireDate() != null){
+				record.setExpireDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(roomgiftuser.getExpireDate()));	
+			}
+			
+			data.add(record);
+		}
+		reply.setData(data);
+		reply.SetSuccessReply();
+		return reply;
+	}
+	
 	@PostMapping("/getRoomTimestamp")
 	@ApiOperation(value = "获取当前房间结束时间戳")
 	public Map<String, Object> getTimestamp(@RequestParam String roomName) throws Exception{
-		Map map = new HashMap();
+		Map<String, Object> map = new HashMap<String, Object>();
 		System.out.println("roomName:"+roomName);
         if(StringUtils.isNotBlank(roomName)){
             String[] infoStr = roomName.split("_");
@@ -163,8 +193,6 @@ public class ChatRoomController {
 		List<String> list = ChatRoomServer.getAllRoom();		//获取房间名 根据房间名解析成影片信息
         List<Map<String ,Object>> dataMap = new ArrayList<>();
         String infoStr[]=null;
-        String hallCode=null;//影厅唯一编码
-        String movieCode=null;//电影唯一编码
         String startTimeStr=null;//电影开始时间年月日时分秒
         String endTimeStr=null;//电影结束时间年月日时分秒
         Screeninfo screeninfo=null;//影厅

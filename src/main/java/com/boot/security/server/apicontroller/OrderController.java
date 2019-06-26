@@ -198,9 +198,14 @@ public class OrderController {
 			if(submitOrderReply.Status.equals("Success")){
 				Orders orders=_orderService.getByOrderCode(submitOrderReply.getOrder().getOrderCode());
 				Cinemamessage cinemamessage=cinemamessageService.getByCinemaCodeAndMessageType(orders.getCinemaCode(),"5");
-				String smsContent=cinemamessage.getMessageContent().replaceFirst("@FilmName", orders.getFilmName()).replaceFirst("@TicketCount", orders.getTicketCount().toString()).replaceFirst("@SessionTime",new SimpleDateFormat("yyyy-MM-dd HH:mm").format(orders.getSessionTime()));
-				//String MsgConetnt="您已成功支付，订单金额"+orders.getTotalSalePrice()+"元，影片场次："+orders.getSessionTime()+" 《"+orders.getFilmName()+"》"+orders.getTicketCount()+"张。请至影城取票机领取，取票码："+orders.getPrintNo()+".热线：4008257789";
-				new SendSmsHelper().SendSms(orders.getCinemaCode(),orders.getMobilePhone(),smsContent);
+				try{	//提交成功，短信发送失败
+					String smsContent=cinemamessage.getMessageContent().replaceFirst("@FilmName", orders.getFilmName()).replaceFirst("@TicketCount", orders.getTicketCount().toString()).replaceFirst("@SessionTime",new SimpleDateFormat("yyyy-MM-dd HH:mm").format(orders.getSessionTime()));
+					//String MsgConetnt="您已成功支付，订单金额"+orders.getTotalSalePrice()+"元，影片场次："+orders.getSessionTime()+" 《"+orders.getFilmName()+"》"+orders.getTicketCount()+"张。请至影城取票机领取，取票码："+orders.getPrintNo()+".热线：4008257789";
+					new SendSmsHelper().SendSms(orders.getCinemaCode(),orders.getMobilePhone(),smsContent);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
 			}
 			return submitOrderReply;
 		} catch (Exception e) {
@@ -521,7 +526,7 @@ public class OrderController {
 				//退票成功进行处理
 				if(reply.Status.equals("Success")){
 					//退优惠券
-					/*if(orders.getCouponsCode()!=null&&orders.getCouponsCode()!=""){
+					if(orders.getCouponsCode()!=null&&orders.getCouponsCode()!=""){
 						Coupons coupons = _couponsService.getByCouponsCode(orders.getCouponsCode());
 						if(coupons!=null){
 							//更新每张券的状态
@@ -529,7 +534,7 @@ public class OrderController {
 							coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
 							coupons.setUpdateTime(new Date());
 							_couponsService.update(coupons);
-							System.out.println("退还优惠券结果"+_couponsService.update(coupons));
+//							System.out.println("退还优惠券结果"+_couponsService.update(coupons));
 							//更新优惠券组的库存、使用数量
 							Couponsgroup couponsgroup = couponsgroupService.getByGroupCode(coupons.getCouponsCode());
 							if(couponsgroup!=null){
@@ -539,16 +544,17 @@ public class OrderController {
 								couponsgroup.setUsedNumber(couponsgroup.getUsedNumber()-1);
 								couponsgroup.setUpdateDate(new Date());
 								couponsgroupService.update(couponsgroup);
-								System.out.println("优惠券组库存"+couponsgroupService.update(couponsgroup));
+//								System.out.println("优惠券组库存"+couponsgroupService.update(couponsgroup));
 							}
 						}
-					}*/
+					}
 					//获取影院的退票手续费
 					//无退票手续费
 					if(cinema.getRefundFee()==null){
 						cinema.setRefundFee(0.00);
 					}
 					String MsgConetnt="";
+					Cinemamessage cinemamessage=cinemamessageService.getByCinemaCodeAndMessageType(CinemaCode,"4");
 					//先判断支付类型
 					//微信支付
 					if(orders.getOrderPayType()==OrderPayTypeEnum.WxPay.getTypeCode()){
@@ -558,8 +564,7 @@ public class OrderController {
 						RefundPaymentReply paymentReply = RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode());
 						if(paymentReply.Status.equals("Success")){
 							//发短信
-							Cinemamessage cinemamessage=cinemamessageService.getByCinemaCodeAndMessageType(CinemaCode,"4");
-							String smsContent=cinemamessage.getMessageContent().replaceFirst("@PayBackAmount", orders.getTotalSalePrice().toString()).replaceFirst("@TelephoneNumber",cinema.getContactMobile());
+							MsgConetnt=cinemamessage.getMessageContent().replaceFirst("@PayBackAmount", orders.getTotalSalePrice().toString()).replaceFirst("@TelephoneNumber",cinema.getContactMobile());
 							//MsgConetnt="您的退票已成功，退票金额"+orders.getTotalSalePrice()+"元将在3个工作日内返回支付账号，咨询：4008257789";
 							new SendSmsHelper().SendSms(CinemaCode,orders.getMobilePhone(),MsgConetnt);
 						}
@@ -576,7 +581,8 @@ public class OrderController {
 							CardPayBackReply paybackReply=new NetSaleSvcCore().CardPayBack(UserName, Password, CinemaCode, orders.getCardNo(), orders.getCardPassword(), orders.getOrderTradeNo(), String.valueOf(backPayAmount));
 							if(paybackReply.Status.equals("Success")){
 								//发短信
-								MsgConetnt="您的退票已成功，退票金额"+backPayAmount+"元将在3个工作日内返回支付账号，咨询：4008257789";
+								MsgConetnt = cinemamessage.getMessageContent().replaceFirst("@PayBackAmount", backPayAmount.toString()).replaceFirst("@TelephoneNumber",cinema.getContactMobile());
+								//MsgConetnt="您的退票已成功，退票金额"+backPayAmount+"元将在3个工作日内返回支付账号，咨询：4008257789";
 								new SendSmsHelper().SendSms(CinemaCode,orders.getMobilePhone(),MsgConetnt);
 							}
 						}

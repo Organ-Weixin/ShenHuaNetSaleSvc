@@ -484,6 +484,7 @@ public class MemberController {
 		
 		order.getOrderBaseInfo().setMobilePhone(MobilePhone);
 		order.getOrderBaseInfo().setCardNo(CardNo);
+		order.getOrderBaseInfo().setCardPassword(CardPassword);
 		CTMSSubmitOrderReply ykReply = new YkInterface().SubmitOrder(userCinema, order);
 		System.out.println("----"+new Gson().toJson(ykReply));
 		if("Success".equals(ykReply.Status.getStatusCode())){

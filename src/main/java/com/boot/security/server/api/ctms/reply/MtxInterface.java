@@ -634,6 +634,9 @@ public class MtxInterface implements ICTMSInterface {
 			if (memcard != null) {
 				memcard.setScore(Integer.valueOf((int) Math.round(Double.valueOf(mtxReply.getQueryCardReturn().getScore()))));
 				memcard.setBalance(Double.valueOf(mtxReply.getQueryCardReturn().getAccBalance()));
+				memcard.setMobilePhone(mtxReply.getQueryCardReturn().getMobilePhone());
+				memcard.setLevelCode(mtxReply.getQueryCardReturn().getAccLevelCode());
+				memcard.setLevelName(mtxReply.getQueryCardReturn().getAccLevelName());
 				memcard.setUserName(mtxReply.getQueryCardReturn().getConnectName());
 				memcard.setSex(mtxReply.getQueryCardReturn().getSex());
 				memcard.setCreditNum(mtxReply.getQueryCardReturn().getIdNum());
@@ -711,6 +714,7 @@ public class MtxInterface implements ICTMSInterface {
 				price = Float.valueOf(mtxReply.getGetDiscountReturn().getPrice());
 			}
 			reply.setCinemaCode(userCinema.getCinemaCode());
+			reply.setCinemaPayAmount(0f);
 			reply.setDiscountType(1);
 			reply.setPrice(price);
 			reply.Status = StatusEnum.Success;

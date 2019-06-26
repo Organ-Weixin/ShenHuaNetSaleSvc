@@ -256,8 +256,8 @@ public class WebService {
 			param.setPayMobile(orderView.getOrderBaseInfo().getMobilePhone());// 支付手机号码
 			param.setBookSign("0");// 0全额支付1预定金方式
 			
-			Double payed = orderView.getOrderBaseInfo().getTotalPrice() + orderView.getOrderBaseInfo().getTotalFee();
-			param.setPayed(payed);// 商城已经支付的金额Payed=总票款+总手续费
+			Double payed = orderView.getOrderBaseInfo().getTotalPrice();
+			param.setPayed(payed);// 商城已经支付的金额Payed=总票款+总手续费(中间件-锁座接口已计算)
 			param.setSendModeID("0");// 满天星发送二唯码的模板编号.不知道是什么，没这个东西
 			
 			String paySeqNo =orderView.getOrderBaseInfo().getIsMemberPay() == 1 ? orderView.getOrderBaseInfo().getPaySeqNo():"";
@@ -373,7 +373,6 @@ public class WebService {
 			JSONObject  jo=new JSONObject();
 			jo.put("appCode", userCinema.getDefaultUserName());
 			jo.put("cinemaId", userCinema.getCinemaCode());
-			
 			jo.put("orderNo", "");	//（非必填项）
 			jo.put("payType",order.getOrderBaseInfo().getPayType());
 			

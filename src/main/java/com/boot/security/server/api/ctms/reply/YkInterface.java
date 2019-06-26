@@ -50,6 +50,7 @@ import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.Membercardrecharge;
+import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
 import com.boot.security.server.model.Orders;
@@ -121,6 +122,7 @@ public class YkInterface implements ICTMSInterface {
 	                cinema.setAddress(fCinema.getCity());
 	                cinema.setScreenCount(fCinema.getHallCount());
 	                cinema.setCinemaId(fCinema.getCinemaLinkId());	//影院内部编码
+	                cinema.setOverRefundTime(Integer.valueOf(fCinema.getRefundBeforeTime()));
 	                _cinemaService.update(cinema);
 	            
 	                //更新影厅信息
@@ -551,6 +553,7 @@ public class YkInterface implements ICTMSInterface {
 			orderMap.put("ticketFee", String.valueOf(orderseatdetails.get(i).getFee()));
 			if(flag){
 				orderMap.put("isCardDiscount", true);
+				order.getOrderBaseInfo().setOrderPayType(OrderPayTypeEnum.MemberCardPay.getTypeCode());
 			}
 			if(order.getOrderBaseInfo().getCouponsCode() != null){	//优惠列表
 				if(i<orderseatdetails.size()-1){
@@ -586,8 +589,7 @@ public class YkInterface implements ICTMSInterface {
 			Map<String,String> payCardInfo = new LinkedHashMap<String,String>();
 			payCardInfo.put("cinemaLinkId", userCinema.getCinemaId());
 			payCardInfo.put("cardNumber", order.getOrderBaseInfo().getCardNo());
-			Membercard  card = memberCardService.getByCardNo(userCinema.getCinemaCode(), order.getOrderBaseInfo().getCardNo());
-			payCardInfo.put("cardPassword", MD5AESPassword(card.getCardPassword(),userCinema.getDefaultPassword()));
+			payCardInfo.put("cardPassword", MD5AESPassword(order.getOrderBaseInfo().getCardPassword(),userCinema.getDefaultPassword()));
 			
 			Map<String,Object> payment = new LinkedHashMap<String,Object>();
 			payment.put("paymentMethod", "MemberCard");
@@ -954,6 +956,7 @@ public class YkInterface implements ICTMSInterface {
 		input.put("goodsList", goodsList);
 		input.put("mobile", order.getOrderBaseInfo().getMobilePhone());
 		if(flag){
+			order.getOrderBaseInfo().setOrderPayType(OrderPayTypeEnum.MemberCardPay.getTypeCode());	//会员卡支付
 			Map<String,String> payCardInfo = new LinkedHashMap<String,String>();
 			payCardInfo.put("cinemaLinkId", userCinema.getCinemaId());
 			payCardInfo.put("cardNumber", order.getOrderBaseInfo().getCardNo());
@@ -1387,6 +1390,7 @@ public class YkInterface implements ICTMSInterface {
 				}
 				reply.setDiscountType(1);
 				reply.setCinemaCode(userCinema.getCinemaCode());
+				reply.setCinemaPayAmount(0f);
 				reply.Status = StatusEnum.Success;
 			} else {
 				reply.Status = StatusEnum.Failure;
@@ -1853,8 +1857,9 @@ public class YkInterface implements ICTMSInterface {
 			goodsmap.put("salePrice", goodsorderdetails.getSettlePrice().toString());
 			goodsmap.put("count", goodsorderdetails.getGoodsCount().toString());
 			goodsmap.put("isPackage", "false");
-			if(flag){	//是否使用会员卡折扣 
+			if(flag){
 				goodsmap.put("isCardDiscount", true);
+				order.getOrderBaseInfo().setOrderPayType(OrderPayTypeEnum.MemberCardPay.getTypeCode());	//会员卡支付
 			}
 			goodslist.add(goodsmap);
 		}
