@@ -19,11 +19,11 @@
 	                   			<td>
 		                   			<form class="form-inline" onsubmit="return false">
 										<div class="form-group">
-								<input id="CinemaCode" type="text" class="form-control" placeholder="影院编码">			
-					<!--根据手机号搜索对应用户信息-->				
-						<input id="mobilephone" type="text" class="form-control" placeholder="手机号">&nbsp;&nbsp;
-						<!--根据手机号搜索对应用户信息-->				
-						<input id="nickname" type="text" class="form-control" placeholder="用户昵称">&nbsp;&nbsp;
+											<!-- <input id="CinemaCode" type="text" class="form-control" placeholder="影院编码">		 -->	
+											<!--根据手机号搜索对应用户信息-->				
+											<input id="mobilephone" type="text" class="form-control" placeholder="手机号">&nbsp;&nbsp;
+											<!--根据手机号搜索对应用户信息-->				
+											<input id="nickname" type="text" class="form-control" placeholder="用户昵称">&nbsp;&nbsp;
 											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
 										</div>
 									</form>
@@ -43,16 +43,16 @@
                                 </tr>                       
                                 <tr>
 									<th>#</th>
-									<th>影院编码</th>
+									<th>用户头像</th>
+									<th>用户昵称</th>
 									<th>手机号</th>
 									<th>是否活跃用户</th>
-									<th>用户昵称</th>
 									<th>用户性别</th>
 									<th>用户所在国家</th>
 									<th>用户所在省份</th>
 									<th>用户所在城市</th>
-									<th>用户头像</th>
-								  <!-- <th>操作</th>   -->
+								  	<th>放映厅角色</th>
+								  	<th>操作</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -63,8 +63,6 @@
             </div>
         </div>
     </div>
-</body>
-</html>
 
 <script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
 <script type="text/javascript" src="../../js/jq.js"></script>
@@ -104,14 +102,22 @@ function init(){
         	},
         	"dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",	
             "columns": [
-            //	{"data" : "id", "defaultContent" : ""},
              	 {"data" : null, 
             		"defaultContent" : "",
 					"render" : function(data, type, full, meta){
 						return meta.row + 1 + meta.settings._iDisplayStart;
 						}
 				},
-            	{"data" : "cinemaCode", "defaultContent" : ""},
+				{
+					"data":"headImgUrl",
+					"defaultContent": "",
+					"render":function(data,type,row){
+						var headImgUrl = row['headImgUrl'];
+		       			var img = "<img id='pic' style='width:32px;height: 32px;' src='"+headImgUrl+"'>";
+					  	return img;
+					}
+				},
+				{"data" : "nickName", "defaultContent" : ""},
 				{"data" : "mobilePhone", "defaultContent" : ""},
         		{
 					"data" : "isActive", 
@@ -127,8 +133,7 @@ function init(){
                         return flag;
                   	}
 				},
-				{"data" : "nickName", "defaultContent" : ""},
-            		{
+            	{
     					"data" : "sex", 
     					"defaultContent" : "",
     					"render": function (data, type, row) {
@@ -141,19 +146,43 @@ function init(){
                           	}
                             return flag;
                       	}
-    				},
+    			},
 				{"data" : "country", "defaultContent" : ""},
 				{"data" : "province", "defaultContent" : ""},
 				{"data" : "city", "defaultContent" : ""},
 				{
-					"data":"headImgUrl",
-					"defaultContent": "",
-					"render":function(data,type,row){
-						 var headImgUrl = row['headImgUrl'];
-		       var img = "<img id='pic' style='width:32px;height: 32px;' src='"+headImgUrl+"'>";
-					  	return img;
-					}
+						"data" : "roll", 
+						"defaultContent" : "",
+						"render": function (data, type, row) {
+	                		var roll = row['roll'];
+	                      	var flag = "";
+	                      	if(roll == 2){
+	                      		flag = "管理员";
+	                      	}else{
+	                      		flag = "普通会员";
+	                      	}
+	                        return flag;
+	                  	}
 				},
+				{ 
+						"data": "", 
+						"defaultContent": "",
+						"orderable":false,
+				        "render": function (data, type, row) {
+	    		           var id = row['id'];
+	    		           var roll = row['roll'];
+	    		           var opate = "";
+	    		           if(roll==1){
+	    		               opate+= "<button onclick='setRoll(" + id + ",2);' title='设置为管理员' style='color:blue; background-color:transparent; border:0'>修改角色</button>";
+	    		           }else{
+	    		               opate+= "<button onclick='setRoll(" + id + ",1);' title='设置为普通会员' style='color:blue; background-color:transparent; border:0'>修改角色</button>";
+	    		           }
+
+	                       var edit = buttonEdit(id, "", pers);
+	                       return opate;
+	      	            }
+				},
+				
             ],
            "order": [[ 0, "asc" ]]
         } );
@@ -210,9 +239,39 @@ function del(id){
     });
 }
 
+//修改放映厅角色
+function setRoll(id,roll){
+	var str = "";
+	if(roll ==2){
+		str = "确定将该用户设为管理员?";
+	} else {
+		str = "确定将该用户设为普通会员?";
+	}
+	layer.confirm(str, {
+        btn : [ '确定', '取消' ]
+    }, function() {
+    	$.ajax({
+            type : 'post',
+            url : '/ticketuserss/'+id,
+            success : function(data) {
+            	if(data == 1){
+            		example.ajax.reload();
+                    layer.msg("修改成功");
+            	} else {
+            		alert("修改失败!");
+            	}
+            }
+        });
+        
+        layer.close(layer.index);
+    });
+}
+
 $("#searchBt").click(function(){
 	example.ajax.reload();
 });
 
 init();
 </script>
+</body>
+</html>

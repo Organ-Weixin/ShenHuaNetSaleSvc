@@ -52,6 +52,18 @@ public class TicketusersController {
     public Ticketusers get(@PathVariable Long id) {
         return ticketusersDao.getById(id);
     }
+    
+    @PostMapping("/{id}")
+    @ApiOperation(value = "根据id修改用户放映厅角色")
+    public int amendRoll(@PathVariable Long id) {
+    	Ticketusers ticketuser = ticketusersDao.getById(id);
+    	if("1".equals(ticketuser.getRoll())){
+    		ticketuser.setRoll("2");
+    	} else {
+    		ticketuser.setRoll("1");
+    	}
+        return ticketusersDao.update(ticketuser);
+    }
 
     @PutMapping
     @ApiOperation(value = "修改")
@@ -88,7 +100,7 @@ public class TicketusersController {
     @RequestMapping("/getCountUser")
     @ApiOperation(value = "获取用户数量")
     public int getCountUser(@RequestParam("customertype") Integer customertype,@RequestParam("cinemacodes") String cinemacodes,@RequestParam("mobilephone") String mobilephone){
-    	Map params = new HashMap();
+    	Map<String,Object> params = new HashMap<String,Object>();
     	List<Ticketusers> ticketusersList = new ArrayList<Ticketusers>();
     	if(mobilephone!=null&&mobilephone!=""){
     		params.put("MobilePhone", mobilephone);
@@ -100,7 +112,7 @@ public class TicketusersController {
     		OpenIDs.add(ticketusers.getOpenID());
     	}
     	if(customertype==1){
-    		params = new HashMap();
+    		params = new HashMap<String,Object>();
     		params.put("IsActive", "");
     		newTicketusersList = ticketusersDao.getTicketusers(params);
     	}
@@ -120,12 +132,12 @@ public class TicketusersController {
         	return openidList.size();
     	}
     	if(customertype==3){
-    		params = new HashMap();
+    		params = new HashMap<String,Object>();
     		params.put("IsActive", "1");
     		newTicketusersList = ticketusersDao.getTicketusers(params);
     	}
     	if(customertype==4){
-    		params = new HashMap();
+    		params = new HashMap<String,Object>();
     		params.put("IsActive", "0");
     		newTicketusersList = ticketusersDao.getTicketusers(params);
     	}
@@ -146,7 +158,7 @@ public class TicketusersController {
     @RequestMapping("/checkMobliePhone")
     @ApiOperation(value = "校验用户手机号")
     public List<Ticketusers> checkMobliePhone(@RequestParam("mobilephone") String mobilephone){
-    	Map params = new HashMap();
+    	Map<String,Object> params = new HashMap<String,Object>();
     	params.put("MobilePhone", mobilephone);
     	return ticketusersDao.getTicketusers(params);
     }

@@ -24,7 +24,7 @@
 				and IsActive = #{params.IsActive} 
 			</if>
 			<if test="params.NickName != null and params.NickName != ''">
-				and NickName = #{params.NickName} 
+				and NickName like concat('%', #{params.NickName}, '%') 
 			</if>
 			<if test="params.Sex != null and params.Sex != ''">
 				and Sex = #{params.Sex} 
