@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <link rel="stylesheet" type="text/css" media="screen"
 	href="../../css/bootstrap.min.css">
+<style>
+	.img{
+		margin-right:2%;
+	}
+</style>
 </head>
 <body>
 	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -187,7 +192,9 @@
 					<input type="hidden" name="stagePhoto4" class="stagePhoto" id="StagePhoto4">
 					<input type="hidden" name="stagePhoto5" class="stagePhoto" id="StagePhoto5">
 					<input type="hidden" name="stagePhoto6" class="stagePhoto" id="StagePhoto6">
-					<button type="button" class="layui-btn" id="addStagePhoto">多图片上传</button> 
+					<button type="button" class="layui-btn" id="clearStagePhoto">重新选择</button>
+					<div id="addStagePhoto"></div>
+					<span style="color:gray;margin-left:17%">每张图片不能超过1000KB，建议大小340*470</span>
 					<div class="col-md-10">
 						<blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;"></blockquote>
     					<div class="layui-upload-list" id="demo2" style="margin-left:20%"></div>
@@ -392,11 +399,12 @@
 		    elem: '#addStagePhoto'
 		    ,url: '/filminfos/upload/filmImage'
 		    ,multiple: true
+		    ,size : 1000
 		    ,before: function(obj){
 		      //预读本地文件示例，不支持ie8
 		      obj.preview(function(index, file, result){
 		      	if($(".img").length<=5){
-		       	 	$('#demo2').append('<img src="'+ result +'" alt="'+ file.name +'" class="layui-upload-img img" style="width:188px;height:188px">')
+		       	 	$('#demo2').append('<img src="'+ result +'" alt="'+ file.name +'" class="layui-upload-img img" style="width:118px">')
 		      	}else{
 		      		alert("最多上传6张海报");
 		      	}
@@ -464,7 +472,30 @@
 						$("#StagePhoto4").val(data.stagePhoto4);
 						$("#StagePhoto5").val(data.stagePhoto5);
 						$("#StagePhoto6").val(data.stagePhoto6);
-							
+						if(data.stagePhoto1!=null&&data.stagePhoto1!=""){
+							var stagePhoto1 = "<img src='"+data.stagePhoto1+"' style='width:118px' class='img'>";
+							$("#demo2").append(stagePhoto1);
+						}
+						if(data.stagePhoto2!=null&&data.stagePhoto2!=""){
+							var stagePhoto2 = "<img src='"+data.stagePhoto2+"' style='width:118px' class='img'>";
+							$("#demo2").append(stagePhoto2);
+						}
+						if(data.stagePhoto3!=null&&data.stagePhoto3!=""){
+							var stagePhoto3 = "<img src='"+data.stagePhoto3+"' style='width:118px' class='img'>";
+							$("#demo2").append(stagePhoto3);
+						}
+						if(data.stagePhoto4!=null&&data.stagePhoto4!=""){
+							var stagePhoto4 = "<img src='"+data.stagePhoto4+"' style='width:118px' class='img'>";
+							$("#demo2").append(stagePhoto4);
+						}
+						if(data.stagePhoto5!=null&&data.stagePhoto5!=""){
+							var stagePhoto5 = "<img src='"+data.stagePhoto5+"' style='width:118px' class='img'>";
+							$("#demo2").append(stagePhoto5);
+						}
+						if(data.stagePhoto6!=null&&data.stagePhoto6!=""){
+							var stagePhoto6 = "<img src='"+data.stagePhoto6+"' style='width:118px' class='img'>";
+							$("#demo2").append(stagePhoto6);
+						}
 						if(data.directorId != null){
 							var direidlist = data.directorId.split(",");
 							var direnamelist = data.director.split(",");
@@ -751,7 +782,10 @@
 		$("#searchBtac").click(function(){
 			examplea.ajax.reload();
 		});
-		
+		$("#clearStagePhoto").click(function(){
+			$('#demo2').html('');
+			$(".stagePhoto").val(null);
+		});
 	</script>
 </body>
 </html>

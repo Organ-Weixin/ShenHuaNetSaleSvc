@@ -7,6 +7,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" type="text/css" media="screen"
 	href="../../css/bootstrap.min.css">
+<style>
+	.img{
+		margin-right:2%;
+	}
+</style>
 </head>
 <body>
 	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -180,7 +185,10 @@
 					<input type="hidden" name="stagePhoto4" class="stagePhoto">
 					<input type="hidden" name="stagePhoto5" class="stagePhoto">
 					<input type="hidden" name="stagePhoto6" class="stagePhoto">
-					<button type="button" class="layui-btn" id="addStagePhoto">多图片上传</button> 
+					<button type="button" class="layui-btn" id="clearStagePhoto">重新选择</button>
+					<div id="addStagePhoto"></div>
+					<span style="color:gray;margin-left:17%">每张图片不能超过1000KB，建议大小340*470</span>
+					<!-- <button type="button" class="layui-btn" id="addStagePhoto"></button>  -->
 					<div class="col-md-10">
 						<blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;"></blockquote>
     					<div class="layui-upload-list" id="demo2" style="margin-left:20%"></div>
@@ -269,11 +277,12 @@
 			    elem: '#addStagePhoto'
 			    ,url: '/filminfos/upload/filmImage'
 			    ,multiple: true
+			    ,size : 1000
 			    ,before: function(obj){
 			      //预读本地文件示例，不支持ie8
 			      obj.preview(function(index, file, result){
 			      	if($(".img").length<=5){
-			       	 	$('#demo2').append('<img src="'+ result +'" alt="'+ file.name +'" class="layui-upload-img img" style="width:188px;height:188px">')
+			       	 	$('#demo2').append('<img src="'+ result +'" alt="'+ file.name +'" class="layui-upload-img img" style="width:118px">')
 			      	}else{
 			      		alert("最多上传6张海报");
 			      	}
@@ -330,6 +339,11 @@
 				}
 			});
 		}
+		
+		$("#clearStagePhoto").click(function(){
+			$('#demo2').html('');
+			$(".stagePhoto").val(null);
+		});
 	</script>
 </body>
 </html>
