@@ -251,34 +251,36 @@ public class AppUserController {
             					//根据优惠券组编码获取所有未使用的优惠券
             					Couponsgroup couponsgroup = couponsgroupService.getByGroupCode(registeractivecoupons.getGroupCode());
             					//判断优惠券可发放数量是否大于赠送数量
-            					if((couponsgroup.getCouponsNumber()-couponsgroup.getIssuedNumber())>registeractivecoupons.getGiveNumber()){
-            						//是：生成优惠券记录
-            						for(int i=0; i<registeractivecoupons.getGiveNumber(); i++){
-            							Coupons coupons = new Coupons();
-            							//优惠券编码--13位时间戳加5位随机数
-            							String couponsCode = String.valueOf(new Date().getTime());
-            				    		couponsCode+=(int)((Math.random()*9+1)*10000);
-            							coupons.setCouponsCode(couponsCode);
-            							coupons.setCouponsName(couponsgroup.getCouponsName());
-            							coupons.setGroupCode(couponsgroup.getGroupCode());
-            							coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
-            							coupons.setOpenID(ticketuser.getOpenID());
-            							System.out.println("用户手机号="+ticketuser.getMobilePhone());
-            							coupons.setMobilePhone(ticketuser.getMobilePhone());
-            							coupons.setCreateDate(new Date());
-        								result = couponsService.save(coupons);
-            						}
-            					}
-            					//优惠券生成成功更新优惠券组信息
-            					if(result>0){
-            						//已发放数量
-    				    			couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()+registeractivecoupons.getGiveNumber());
-    				    			//已领取数量
-    				    			couponsgroup.setFetchNumber(couponsgroup.getFetchNumber()+registeractivecoupons.getGiveNumber());
-    				    			//剩余数量
-    				    			couponsgroup.setRemainingNumber(couponsgroup.getRemainingNumber()-registeractivecoupons.getGiveNumber());
-    				    			couponsgroup.setUpdateDate(new Date());
-    				    			couponsgroupService.update(couponsgroup);
+            					if(couponsgroup!=null){
+                					if((couponsgroup.getCouponsNumber()-couponsgroup.getIssuedNumber())>registeractivecoupons.getGiveNumber()){
+                						//是：生成优惠券记录
+                						for(int i=0; i<registeractivecoupons.getGiveNumber(); i++){
+                							Coupons coupons = new Coupons();
+                							//优惠券编码--13位时间戳加5位随机数
+                							String couponsCode = String.valueOf(new Date().getTime());
+                				    		couponsCode+=(int)((Math.random()*9+1)*10000);
+                							coupons.setCouponsCode(couponsCode);
+                							coupons.setCouponsName(couponsgroup.getCouponsName());
+                							coupons.setGroupCode(couponsgroup.getGroupCode());
+                							coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
+                							coupons.setOpenID(ticketuser.getOpenID());
+                							System.out.println("用户手机号="+ticketuser.getMobilePhone());
+                							coupons.setMobilePhone(ticketuser.getMobilePhone());
+                							coupons.setCreateDate(new Date());
+            								result = couponsService.save(coupons);
+                						}
+                					}
+                					//优惠券生成成功更新优惠券组信息
+                					if(result>0){
+                						//已发放数量
+        				    			couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()+registeractivecoupons.getGiveNumber());
+        				    			//已领取数量
+        				    			couponsgroup.setFetchNumber(couponsgroup.getFetchNumber()+registeractivecoupons.getGiveNumber());
+        				    			//剩余数量
+        				    			couponsgroup.setRemainingNumber(couponsgroup.getRemainingNumber()-registeractivecoupons.getGiveNumber());
+        				    			couponsgroup.setUpdateDate(new Date());
+        				    			couponsgroupService.update(couponsgroup);
+                					}
             					}
             				}
             				if(result>0){
