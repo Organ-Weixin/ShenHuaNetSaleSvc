@@ -119,7 +119,15 @@ public class SessionController {
 		}
 		if(films.size()>0){
 			data.setCinemaCode(films.get(0).getCCode());
+			Long min = films.get(0).getStartTime().getTime();
 			List<QueryFilmSessionsReplyFilm> filmReplyList = new ArrayList<QueryFilmSessionsReplyFilm>();
+			//获取最小的日期
+			for(int i=0; i<films.size(); i++){
+				if(((int)films.get(i).getStartTime().getTime())>min){
+					min = films.get(i).getStartTime().getTime();
+				}
+			}
+			String minDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date(min));  //排期中最早的排期时间
 			for(Sessioninfo film:films){
 				SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
 				String EndDate = sdf.format(new Date(Long.parseLong(String.valueOf(film.getStartTime().getTime()+8*24*60*60*1000))));
@@ -188,7 +196,7 @@ public class SessionController {
 					//添加演员信息到实体
 					filmReply.setCast(actorReplyList);
 				}
-				List<Sessioninfo> sessionList = _sessionInfoService.getByCinemaCodeAndFilmCodeAndTime(film.getCCode(), filmcode, sdf.format(film.getStartTime()), EndDate);
+				List<Sessioninfo> sessionList = _sessionInfoService.getByCinemaCodeAndFilmCodeAndTime(film.getCCode(), filmcode, minDate, EndDate);
 				List<QueryFilmSessionsReplySession> sessionReplyList = new ArrayList<QueryFilmSessionsReplySession>();
 				//获取排期中的信息
 				for(Sessioninfo session :sessionList){
