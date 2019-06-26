@@ -33,7 +33,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.boot.security.server.apicontroller.reply.CheckUserFilmOrdersReply;
 import com.boot.security.server.apicontroller.reply.Jscode2sessionReply;
 import com.boot.security.server.apicontroller.reply.MobilePhoneRegisterReply;
-import com.boot.security.server.apicontroller.reply.MobilePhoneRegisterReply.MobilePhoneRegisterBean;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.QueryCinemaGoodsReply;
 import com.boot.security.server.apicontroller.reply.QueryCinemaGoodsReply.QueryCinemaGoodsReplyGoods.QueryCinemaGoods;
@@ -55,7 +54,6 @@ import com.boot.security.server.apicontroller.reply.QueryUserTicketReply.QueryUs
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.apicontroller.reply.RoomGiftInput;
 import com.boot.security.server.apicontroller.reply.SendVerifyCodeReply;
-import com.boot.security.server.apicontroller.reply.SendVerifyCodeReply.SendVerifyCodeBean;
 import com.boot.security.server.apicontroller.reply.UpdateHeadUrlReply;
 import com.boot.security.server.apicontroller.reply.UpdateHeadUrlReply.UpdateHeadUrlReplyHeadUrl;
 import com.boot.security.server.apicontroller.reply.UpdateUserInfoReply;
@@ -378,22 +376,20 @@ public class AppUserController {
 			return reply;
 		}
 		//验证用户的验证码是否正确
-		if(!input.getVerifyCode().equals(ticketuser.getVerifyCode())){
+		if(input.getMobilePhone().equals(ticketuser.getMobilePhone()) && input.getVerifyCode().equals(ticketuser.getVerifyCode())){
+			reply.SetSuccessReply();
+		} else {
 			reply.SetVerifyCodeNotMatchReply();
-			return reply;
 		}
-		//更新用户手机号为传入手机号
-		ticketuser.setMobilePhone(input.getMobilePhone());
-		_ticketusersService.update(ticketuser);
 		
 		//返回
-		MobilePhoneRegisterBean mobleinfo = new MobilePhoneRegisterBean();
-		mobleinfo.setCinemaCode(ticketuser.getCinemaCode());
-		mobleinfo.setOpenID(ticketuser.getOpenID());
-		mobleinfo.setMobilePhone(ticketuser.getMobilePhone());
-		mobleinfo.setVerifyCode(ticketuser.getVerifyCode());
-		reply.setData(mobleinfo);
-		reply.SetSuccessReply();
+//		MobilePhoneRegisterBean mobleinfo = new MobilePhoneRegisterBean();
+//		mobleinfo.setCinemaCode(ticketuser.getCinemaCode());
+//		mobleinfo.setOpenID(ticketuser.getOpenID());
+//		mobleinfo.setMobilePhone(ticketuser.getMobilePhone());
+//		mobleinfo.setVerifyCode(ticketuser.getVerifyCode());
+//		reply.setData(mobleinfo);
+		
 		return reply;
 	}
 	
@@ -430,6 +426,7 @@ public class AppUserController {
 			int num=(int) (Math.random()*10);
 			str.append(String.valueOf(num));
 		}
+		ticketuser.setMobilePhone(input.getMobilePhone());
 		ticketuser.setVerifyCode(str.toString());
 		_ticketusersService.update(ticketuser);
 		
@@ -443,10 +440,10 @@ public class AppUserController {
         	return reply;
         }
 		//返回
-		SendVerifyCodeBean sendverify = new SendVerifyCodeBean();
-		sendverify.setMobilePhone(ticketuser.getMobilePhone());
-		sendverify.setVerifyCode(ticketuser.getVerifyCode());
-		reply.setData(sendverify);
+//		SendVerifyCodeBean sendverify = new SendVerifyCodeBean();
+//		sendverify.setMobilePhone(ticketuser.getMobilePhone());
+//		sendverify.setVerifyCode(ticketuser.getVerifyCode());
+//		reply.setData(sendverify);
 		reply.SetSuccessReply();
 		return reply;
 	}
