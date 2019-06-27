@@ -356,4 +356,12 @@ public class ConponController {
 		availableCouponsReply.SetSuccessReply();
 		return availableCouponsReply;
 	}
+	
+	public static void main(String[] args) {
+		CouponsView couponsview = new CouponsView();
+		Couponsgroup couponsgroup = new Couponsgroup();
+		couponsgroup.setIsShareWithMemberCard(0);
+		couponsview.setCouponsgroup(couponsgroup);
+		System.out.println(couponsview.getCouponsgroup().getIsShareWithMemberCard()!=null);
+	}
 }

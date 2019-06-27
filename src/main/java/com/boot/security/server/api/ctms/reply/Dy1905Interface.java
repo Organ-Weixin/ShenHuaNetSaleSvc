@@ -99,7 +99,7 @@ public class Dy1905Interface implements ICTMSInterface {
 	//@Override
 	public CTMSQueryCinemaReply QueryCinema(Usercinemaview userCinema) throws Exception {
 		CTMSQueryCinemaReply reply = new CTMSQueryCinemaReply();
-		if (userCinema.getCinemaId()==null)
+		if (userCinema.getCinemaId()==null||userCinema.getCinemaId()=="")
         {
             if (!QueryCinemaId(userCinema))
             {
@@ -152,6 +152,14 @@ public class Dy1905Interface implements ICTMSInterface {
 	@Override
 	public CTMSQuerySeatReply QuerySeat(Usercinemaview userCinema, Screeninfo screen) throws Exception {
 		CTMSQuerySeatReply reply = new CTMSQuerySeatReply();
+		if (userCinema.getCinemaId()==null||userCinema.getCinemaId()=="")
+        {
+            if (!QueryCinemaId(userCinema))
+            {
+                reply.GetDy1905CinemaNotValidReply();
+                return reply;
+            }
+        }
 		String pVerifyInfo=MD5Util.MD5Encode(userCinema.getDefaultUserName()+userCinema.getCinemaId()+screen.getScreenId()+userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
 		Map<String,String> param = new LinkedHashMap<String,String>();
 		param.put("pAppCode",userCinema.getDefaultUserName());
@@ -261,6 +269,14 @@ public class Dy1905Interface implements ICTMSInterface {
 	public CTMSQuerySessionReply QuerySession(Usercinemaview userCinema, Date StartDate,Date EndDate)
 			throws Exception {
 		CTMSQuerySessionReply reply = new CTMSQuerySessionReply();
+		if (userCinema.getCinemaId()==null||userCinema.getCinemaId()=="")
+        {
+            if (!QueryCinemaId(userCinema))
+            {
+                reply.GetDy1905CinemaNotValidReply();
+                return reply;
+            }
+        }
 		String pVerifyInfo=MD5Util.MD5Encode(userCinema.getDefaultUserName()+userCinema.getCinemaId()+userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
 		Map<String,String> param = new LinkedHashMap<String,String>();
 		param.put("pAppCode",userCinema.getDefaultUserName());
@@ -1234,6 +1250,7 @@ public class Dy1905Interface implements ICTMSInterface {
 			param.put("pCinemaID", userCinema.getCinemaId());
 			param.put("pVerifyInfo", pVerifyInfo);
 			String MemberTypeListResult = HttpHelper.httpClientPost(userCinema.getUrl() +"/MemberTypeList",param,"UTF-8");
+			System.out.println(MemberTypeListResult);
 			Gson gson = new Gson();
 			Dy1905MemberTypeListResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(MemberTypeListResult,"MemberTypeListResult"), Dy1905MemberTypeListResult.class);
 			List<LevelBean> Dy1905Level = Dy1905Reply.getMemberTypeListResult().getTypes().getType().get(0).getLevels().getLevel();
@@ -1757,7 +1774,7 @@ public class Dy1905Interface implements ICTMSInterface {
 			return reply;
 		}
 		public static void main(String[] args) {
-			String pVerifyInfo = MD5Util.MD5Encode("1000000035" + "1560429019270yjixwcf" + "66a16ca61f729e0c846983f8c0f4fd53","UTF-8").toLowerCase();
+			String pVerifyInfo = MD5Util.MD5Encode("1000000035" + "194" + "15268553143" + "66a16ca61f729e0c846983f8c0f4fd53","UTF-8").toLowerCase();
 			System.out.println(pVerifyInfo);
 		}
 }
