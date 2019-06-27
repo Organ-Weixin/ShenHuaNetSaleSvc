@@ -86,6 +86,12 @@ public class PayapiPortTypeProxy implements cn.cmts.pay.webservice.PayapiPortTyp
     return payapiPortType.chainCardPay(partnerCode, placeNo, partnerId, cardId, mobilePhone, passWord, sellPlaceNo, traceTypeNo, oldPrice, tracePrice, discount, featureNo, filmNo, ticketNum, traceMemo, validateKey);
   }
   
+  public java.lang.String sPBudgetByLevel(java.lang.String partnerCode, java.lang.String placeNo, java.lang.String memberTypeName, java.lang.String sPInfos, java.lang.String traceMemo, java.lang.String validateKey) throws java.rmi.RemoteException{
+    if (payapiPortType == null)
+      _initPayapiPortTypeProxy();
+    return payapiPortType.sPBudgetByLevel(partnerCode, placeNo, memberTypeName, sPInfos, traceMemo, validateKey);
+  }
+  
   public java.lang.String cardRecharge(java.lang.String partnerCode, java.lang.String placeNo, java.lang.String partnerId, java.lang.String cardId, java.lang.String mobilePhone, java.lang.String passWord, java.lang.String price, java.lang.String traceMemo, java.lang.String validateKey) throws java.rmi.RemoteException{
     if (payapiPortType == null)
       _initPayapiPortTypeProxy();
@@ -116,6 +122,12 @@ public class PayapiPortTypeProxy implements cn.cmts.pay.webservice.PayapiPortTyp
     return payapiPortType.chainCardPay2(partnerCode, placeNo, partnerId, cardId, mobilePhone, passWord, sellPlaceNo, traceTypeNo, oldPrice, tracePrice, discount, featureNo, filmNo, ticketNum, userName, traceMemo, validateKey);
   }
   
+  public java.lang.String chainCardPayBack2(java.lang.String partnerCode, java.lang.String placeNo, java.lang.String partnerId, java.lang.String cardId, java.lang.String mobilePhone, java.lang.String passWord, java.lang.String sellPlaceNo, java.lang.String traceType, java.lang.String traceNo, java.lang.String tracePrice, java.lang.String price, java.lang.String userName, java.lang.String traceMemo, java.lang.String validateKey) throws java.rmi.RemoteException{
+    if (payapiPortType == null)
+      _initPayapiPortTypeProxy();
+    return payapiPortType.chainCardPayBack2(partnerCode, placeNo, partnerId, cardId, mobilePhone, passWord, sellPlaceNo, traceType, traceNo, tracePrice, price, userName, traceMemo, validateKey);
+  }
+  
   public java.lang.String cardAccount(java.lang.String partnerCode, java.lang.String placeNo, java.lang.String partnerId, java.lang.String cardId, java.lang.String mobilePhone, java.lang.String accountType, java.lang.String filmNo, java.lang.String operator, java.lang.String startDate, java.lang.String endDate, java.lang.String validateKey) throws java.rmi.RemoteException{
     if (payapiPortType == null)
       _initPayapiPortTypeProxy();
@@ -128,10 +140,10 @@ public class PayapiPortTypeProxy implements cn.cmts.pay.webservice.PayapiPortTyp
     return payapiPortType.renewalCard(partnerCode, placeNo, partnerId, cardId, mobilePhone, validateKey);
   }
   
-  public java.lang.String chainCardPayBack2(java.lang.String partnerCode, java.lang.String placeNo, java.lang.String partnerId, java.lang.String cardId, java.lang.String mobilePhone, java.lang.String passWord, java.lang.String sellPlaceNo, java.lang.String traceType, java.lang.String traceNo, java.lang.String tracePrice, java.lang.String price, java.lang.String userName, java.lang.String traceMemo, java.lang.String validateKey) throws java.rmi.RemoteException{
+  public java.lang.String sPPay(java.lang.String partnerCode, java.lang.String placeNo, java.lang.String partnerId, java.lang.String cardId, java.lang.String mobilePhone, java.lang.String passWord, java.lang.String price, java.lang.String tracePrice, java.lang.String discount, java.lang.String traceMemo, java.lang.String validateKey) throws java.rmi.RemoteException{
     if (payapiPortType == null)
       _initPayapiPortTypeProxy();
-    return payapiPortType.chainCardPayBack2(partnerCode, placeNo, partnerId, cardId, mobilePhone, passWord, sellPlaceNo, traceType, traceNo, tracePrice, price, userName, traceMemo, validateKey);
+    return payapiPortType.sPPay(partnerCode, placeNo, partnerId, cardId, mobilePhone, passWord, price, tracePrice, discount, traceMemo, validateKey);
   }
   
   public java.lang.String getDiscount(java.lang.String partnerCode, java.lang.String placeNo, java.lang.String partnerId, java.lang.String cardId, java.lang.String mobilePhone, java.lang.String featureNo, java.lang.String featureDate, java.lang.String featureTime, java.lang.String validateKey) throws java.rmi.RemoteException{
@@ -194,6 +206,12 @@ public class PayapiPortTypeProxy implements cn.cmts.pay.webservice.PayapiPortTyp
     return payapiPortType.chainCardPayBack(partnerCode, placeNo, partnerId, cardId, mobilePhone, passWord, sellPlaceNo, traceType, traceNo, tracePrice, price, traceMemo, validateKey);
   }
   
+  public java.lang.String sPBudget(java.lang.String partnerCode, java.lang.String placeNo, java.lang.String cardId, java.lang.String mobilePhone, java.lang.String sPInfos, java.lang.String traceMemo, java.lang.String validateKey) throws java.rmi.RemoteException{
+    if (payapiPortType == null)
+      _initPayapiPortTypeProxy();
+    return payapiPortType.sPBudget(partnerCode, placeNo, cardId, mobilePhone, sPInfos, traceMemo, validateKey);
+  }
+  
   public java.lang.String loginCard(java.lang.String partnerCode, java.lang.String placeNo, java.lang.String partnerId, java.lang.String cardId, java.lang.String mobilePhone, java.lang.String passWord, java.lang.String validateKey) throws java.rmi.RemoteException{
     if (payapiPortType == null)
       _initPayapiPortTypeProxy();
@@ -218,6 +236,18 @@ public class PayapiPortTypeProxy implements cn.cmts.pay.webservice.PayapiPortTyp
     return payapiPortType.cardPayNoPt(partnerCode, placeNo, partnerId, cardId, mobilePhone, passWord, traceTypeNo, oldPrice, tracePrice, discount, featureNo, filmNo, ticketNum, traceMemo, validateKey);
   }
   
+  public java.lang.String budgetTypeByLevel(java.lang.String reqjson) throws java.rmi.RemoteException{
+    if (payapiPortType == null)
+      _initPayapiPortTypeProxy();
+    return payapiPortType.budgetTypeByLevel(reqjson);
+  }
+  
+  public java.lang.String budgetByLevel(java.lang.String partnerCode, java.lang.String placeNo, java.lang.String partnerId, java.lang.String memberTypeName, java.lang.String price, java.lang.String featureNo, java.lang.String traceMemo, java.lang.String validateKey) throws java.rmi.RemoteException{
+    if (payapiPortType == null)
+      _initPayapiPortTypeProxy();
+    return payapiPortType.budgetByLevel(partnerCode, placeNo, partnerId, memberTypeName, price, featureNo, traceMemo, validateKey);
+  }
+  
   public java.lang.String cardRecharge2(java.lang.String partnerCode, java.lang.String placeNo, java.lang.String partnerId, java.lang.String cardId, java.lang.String mobilePhone, java.lang.String passWord, java.lang.String price, java.lang.String userName, java.lang.String traceMemo, java.lang.String validateKey) throws java.rmi.RemoteException{
     if (payapiPortType == null)
       _initPayapiPortTypeProxy();
@@ -230,10 +260,10 @@ public class PayapiPortTypeProxy implements cn.cmts.pay.webservice.PayapiPortTyp
     return payapiPortType.queryCard(partnerCode, placeNo, partnerId, memoryId, validateKey);
   }
   
-  public java.lang.String budgetByLevel(java.lang.String partnerCode, java.lang.String placeNo, java.lang.String partnerId, java.lang.String memberTypeName, java.lang.String price, java.lang.String featureNo, java.lang.String traceMemo, java.lang.String validateKey) throws java.rmi.RemoteException{
+  public java.lang.String sPPayBack(java.lang.String partnerCode, java.lang.String placeNo, java.lang.String partnerId, java.lang.String cardId, java.lang.String mobilePhone, java.lang.String passWord, java.lang.String traceNo, java.lang.String traceMemo, java.lang.String validateKey) throws java.rmi.RemoteException{
     if (payapiPortType == null)
       _initPayapiPortTypeProxy();
-    return payapiPortType.budgetByLevel(partnerCode, placeNo, partnerId, memberTypeName, price, featureNo, traceMemo, validateKey);
+    return payapiPortType.sPPayBack(partnerCode, placeNo, partnerId, cardId, mobilePhone, passWord, traceNo, traceMemo, validateKey);
   }
   
   public java.lang.String serialCardPayBack(java.lang.String partnerCode, java.lang.String placeNo, java.lang.String partnerId, java.lang.String cardId, java.lang.String mobilePhone, java.lang.String passWord, java.lang.String traceType, java.lang.String traceNo, java.lang.String tracePrice, java.lang.String price, java.lang.String traceMemo, java.lang.String validateKey) throws java.rmi.RemoteException{
@@ -266,16 +296,16 @@ public class PayapiPortTypeProxy implements cn.cmts.pay.webservice.PayapiPortTyp
     return payapiPortType.cardRechargeSource(partnerCode, placeNo, partnerId, cardId, mobilePhone, passWord, price, userName, traceMemo, validateKey);
   }
   
-  public java.lang.String getCardTraceRecord(java.lang.String partnerCode, java.lang.String placeNo, java.lang.String cardId, java.lang.String mobilePhone, java.lang.String passWord, java.lang.String startDate, java.lang.String endDate, java.lang.String validateKey) throws java.rmi.RemoteException{
-    if (payapiPortType == null)
-      _initPayapiPortTypeProxy();
-    return payapiPortType.getCardTraceRecord(partnerCode, placeNo, cardId, mobilePhone, passWord, startDate, endDate, validateKey);
-  }
-  
   public java.lang.String queryCardCinema(java.lang.String partnerCode, java.lang.String placeNo, java.lang.String partnerId, java.lang.String memoryId, java.lang.String validateKey) throws java.rmi.RemoteException{
     if (payapiPortType == null)
       _initPayapiPortTypeProxy();
     return payapiPortType.queryCardCinema(partnerCode, placeNo, partnerId, memoryId, validateKey);
+  }
+  
+  public java.lang.String getCardTraceRecord(java.lang.String partnerCode, java.lang.String placeNo, java.lang.String cardId, java.lang.String mobilePhone, java.lang.String passWord, java.lang.String startDate, java.lang.String endDate, java.lang.String validateKey) throws java.rmi.RemoteException{
+    if (payapiPortType == null)
+      _initPayapiPortTypeProxy();
+    return payapiPortType.getCardTraceRecord(partnerCode, placeNo, cardId, mobilePhone, passWord, startDate, endDate, validateKey);
   }
   
   

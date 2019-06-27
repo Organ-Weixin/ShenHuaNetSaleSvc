@@ -36,6 +36,7 @@ import com.boot.security.server.api.ctms.reply.CTMSSubmitGoodsOrderReply;
 import com.boot.security.server.api.ctms.reply.CTMSSubmitOrderReply;
 import com.boot.security.server.api.ctms.reply.Dy1905GetMemberCardByMobileReply;
 import com.boot.security.server.api.ctms.reply.Dy1905Interface;
+import com.boot.security.server.api.ctms.reply.MtxInterface;
 import com.boot.security.server.api.ctms.reply.YkInterface;
 import com.boot.security.server.apicontroller.reply.GoodsOrderMemberReply;
 import com.boot.security.server.apicontroller.reply.MemberCardPayReply;
@@ -104,7 +105,6 @@ import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.DoubleUtil;
 import com.boot.security.server.utils.SendMobileMessage;
-import com.boot.security.server.utils.SendSmsHelper;
 import com.boot.security.server.utils.WxPayUtil;
 import com.google.gson.Gson;
 
@@ -283,8 +283,13 @@ public class MemberController {
 		}
 		//endregion
 		
-		CardPayReply reply = new NetSaleSvcCore().CardPay(Username, Password, CinemaCode, CardNo, CardPassword,String.valueOf(realPayAmount),String.valueOf(realGoodsPayAmount), SessionCode, FilmCode, TicketNum);
-		
+		CardPayReply reply;
+		if(userCinema.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode() && 
+				goodsOrder != null && goodsOrder.getOrderBaseInfo() != null){	//满天星卖品会员支付
+			reply = new MtxInterface().sPPay(userCinema, CardNo, CardPassword, String.valueOf(realGoodsPayAmount));
+		} else {
+			reply = new NetSaleSvcCore().CardPay(Username, Password, CinemaCode, CardNo, CardPassword,String.valueOf(realPayAmount),String.valueOf(realGoodsPayAmount), SessionCode, FilmCode, TicketNum);
+		}
         //region 更新订单支付状态
 		if(order!=null&&order.getOrderBaseInfo()!=null){
 			if(reply.Status.equals("Success")){
@@ -596,10 +601,16 @@ public class MemberController {
 	@ApiOperation(value = "会员卡支付撤销")
 	public CardPayBackReply CardPayBack(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String TradeNo,@PathVariable String PayBackAmount){
-		CardPayBackReply reply = new NetSaleSvcCore().CardPayBack(Username, Password, CinemaCode, CardNo, CardPassword, TradeNo, PayBackAmount);
-		System.out.println("api:"+new Gson().toJson(reply));
+		CardPayBackReply reply;
+		Usercinemaview userCinema = _userCinemaViewService.getByCinemaCode(CinemaCode);
 		OrderView order = orderService.getOrderWidthTradeNo(CinemaCode, TradeNo);
 		Goodsorders goodsorders = goodsOrderService.getByOrderTradeNo(CinemaCode, TradeNo);
+		if(userCinema.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode() && goodsorders != null ){	//满天星卖品会员支付撤销
+			reply = new MtxInterface().sPPayBack(userCinema, CardNo, CardPassword, TradeNo);
+		} else {
+			reply = new NetSaleSvcCore().CardPayBack(Username, Password, CinemaCode, CardNo, CardPassword, TradeNo, PayBackAmount);
+		}
+		
 		if(order!=null&&order.getOrderBaseInfo()!=null){
 			if(reply.Status.equals("Success")){
 				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.PayBack.getStatusCode());
@@ -703,7 +714,7 @@ public class MemberController {
 				String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@ChargeAmount",ChargeAmount).replaceFirst("@BalanceAmount", membercard.getBalance().toString()).replaceFirst("@MemberScore",membercard.getScore().toString());
 				//String MsgConetnt="您的充值已成功，充值金额为"+ChargeAmount+"元，余额为"+membercard.getBalance()+"元，剩余积分"+membercard.getScore()+"。";
 				//new SendSmsHelper().SendSms(CinemaCode, membercard.getMobilePhone(),smsContent);
-				String sendResult=SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), membercard.getMobilePhone(), smsContent, batchNum);
+				SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), membercard.getMobilePhone(), smsContent, batchNum);
 			} catch (Exception e) {
 				// TODO: handle exception
 			}

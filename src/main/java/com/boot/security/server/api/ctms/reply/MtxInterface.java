@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.boot.security.server.api.core.CardPayBackReply;
+import com.boot.security.server.api.core.CardPayReply;
 import com.boot.security.server.api.ctms.reply.MtxGetCardTraceRecordResult.ResBean.CardTraceRecordsBean.CardTraceRecordBean;
 import com.boot.security.server.api.ctms.reply.MtxGetCardTypeResult.ResBean.MemberTypesBean.MemberTypeBean;
 import com.boot.security.server.api.ctms.reply.MtxGetCinemaPlanResult.ResBean.CinemaPlansBean.CinemaPlanBean;
@@ -742,6 +744,41 @@ public class MtxInterface implements ICTMSInterface {
 		}
 		reply.ErrorCode = mtxReply.getResultCode();
 		reply.ErrorMessage = mtxReply.getResultMsg();
+		return reply;
+	}
+	
+	/*
+	 * 卖品会员卡支付
+	 */
+	public CardPayReply sPPay(Usercinemaview userCinema, String CardNo, String CardPassword, String GoodsPayAmount){
+		CardPayReply reply = new CardPayReply();
+		MtxsPPayResult mtxReply = Webservice.SPPay(userCinema, CardNo, CardPassword, GoodsPayAmount);
+		if("0".equals(mtxReply.getResultcode())){
+			reply.setTradeNo(mtxReply.getGroundtradeno());
+			reply.setDeductAmount(Float.valueOf(mtxReply.getDeductmoney()));
+			reply.Status = StatusEnum.Success.getStatusCode();
+		} else {
+			reply.Status = StatusEnum.Failure.getStatusCode();
+		}
+		reply.ErrorCode = mtxReply.getResultcode();
+		reply.ErrorMessage = mtxReply.getResultmsg();
+		return reply;
+	}
+	
+	/*
+	 * 卖品会员卡支付撤销接口
+	 */
+	public CardPayBackReply sPPayBack(Usercinemaview userCinema, String CardNo, String CardPassword, String TradeNo){
+		CardPayBackReply reply = new CardPayBackReply();
+		MtxsPPayBack mtxReply = Webservice.SPPayBack(userCinema, CardNo, CardPassword, TradeNo);
+		if("0".equals(mtxReply.getResultcode())){
+			reply.setTradeNo(mtxReply.getTraceno());
+			reply.Status = StatusEnum.Success.getStatusCode();
+		} else {
+			reply.Status = StatusEnum.Failure.getStatusCode();
+		}
+		reply.ErrorCode = mtxReply.getResultcode();
+		reply.ErrorMessage = mtxReply.getResultmsg();
 		return reply;
 	}
 

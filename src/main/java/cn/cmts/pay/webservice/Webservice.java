@@ -1,5 +1,6 @@
 package cn.cmts.pay.webservice;
 
+import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -16,6 +17,8 @@ import com.boot.security.server.api.ctms.reply.MtxRegisterCardResult;
 import com.boot.security.server.api.ctms.reply.MtxSerialCardPayBackResult;
 import com.boot.security.server.api.ctms.reply.MtxSerialCardPayResult;
 import com.boot.security.server.api.ctms.reply.MtxSerialCardRechargeResult;
+import com.boot.security.server.api.ctms.reply.MtxsPPayBack;
+import com.boot.security.server.api.ctms.reply.MtxsPPayResult;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.utils.XmlToJsonUtil;
 import com.google.common.base.Joiner;
@@ -167,6 +170,33 @@ public class Webservice {
 		}
 		return null;
 	}
+	
+	/*
+	 * 卖品会员卡支付
+	 * validateKey ： Md5((partnerCode +placeNo + partnerId + cardId + mobilePhone + passWord + partnerKey)小写)小写
+	 */
+	public static MtxsPPayResult SPPay(Usercinemaview userCinema, String CardNo, String CardPassword,	String PayAmount){
+		try {
+			SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSS");
+			String partnerId = format.format(new Date());// 16位流水号
+			String mobilePhone = "";
+			String tracePrice = "0";// 交易手续费
+			String discount = "10";// 折扣
+			String traceMemo = "";// 备注
+			
+			String validateKey = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
+					partnerId, CardNo, mobilePhone, CardPassword, userCinema.getDefaultPassword());
+		
+			String result = Webservice.cinemaTss(userCinema.getMemberUrl()).sPPay(userCinema.getDefaultUserName(), userCinema.getCinemaCode(), 
+					partnerId, CardNo, mobilePhone, CardPassword, PayAmount, tracePrice, discount, traceMemo, validateKey);
+//			System.out.println("卖品会员卡支付接口返回" + result);
+			return new Gson().fromJson(result, MtxsPPayResult.class);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	/*serialCardPayBack会员卡冲费（撤销）接口（流水号必传）
 	 * Md5((partnerCode + placeNo + partnerId + cardId + mobilePhone + passWord + traceType + traceNo + tracePrice + price + partnerKey)小写)小写
 	 * */
@@ -193,6 +223,29 @@ public class Webservice {
 		}
 		return null;
 	}
+	
+	/*
+	 * 卖品会员卡冲费接口
+	 * Md5((partnerCode + placeNo + partnerId +cardId+ mobilePhone+ passWord  +traceNo + partnerKey)小写)小写
+	 */
+	public static MtxsPPayBack SPPayBack(Usercinemaview userCinema, String cardNo, String cardPassword, String traceNo){
+		try {
+			SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSS");
+			String partnerId = format.format(new Date());
+			String mobilePhone = "";
+			String traceMemo = "";// 备注
+			String validateKey = GenerateVerifyInfo(userCinema.getDefaultUserName(), userCinema.getCinemaCode(),
+					partnerId, cardNo, mobilePhone, cardPassword, traceNo, userCinema.getDefaultPassword());
+			String result = Webservice.cinemaTss(userCinema.getMemberUrl()).sPPayBack(userCinema.getDefaultUserName(), 
+					userCinema.getCinemaCode(), partnerId, cardNo, mobilePhone, cardPassword, traceNo, traceMemo, validateKey);
+//			System.out.println("卖品会员卡冲费接口返回"+result);
+			return new Gson().fromJson(result, MtxsPPayBack.class);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	/*getCardTraceRecord查询会员卡交易记录接口
 	 * Md5((partnerCode + placeNo + cardId + mobilePhone + passWord + startDate + endDate + partnerKey)小写)小写
 	 * */

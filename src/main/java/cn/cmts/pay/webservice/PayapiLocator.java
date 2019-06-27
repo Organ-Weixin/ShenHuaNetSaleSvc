@@ -22,7 +22,7 @@ public class PayapiLocator extends org.apache.axis.client.Service implements cn.
     }
 
     // Use to get a proxy class for payapiHttpSoap11Endpoint
-    private java.lang.String payapiHttpSoap11Endpoint_address = "http://memberwj.mvtapi.com:8310/cmtspay/services/payapi.payapiHttpSoap11Endpoint/";
+    private java.lang.String payapiHttpSoap11Endpoint_address = "http://membernew.mvtapi.com:8310/cmtspay/services/payapi.payapiHttpSoap11Endpoint/";
 
     public java.lang.String getpayapiHttpSoap11EndpointAddress() {
         return payapiHttpSoap11Endpoint_address;
