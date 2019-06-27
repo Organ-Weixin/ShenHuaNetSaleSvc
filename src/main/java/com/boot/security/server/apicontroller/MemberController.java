@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -102,6 +103,7 @@ import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.DoubleUtil;
+import com.boot.security.server.utils.SendMobileMessage;
 import com.boot.security.server.utils.SendSmsHelper;
 import com.boot.security.server.utils.WxPayUtil;
 import com.google.gson.Gson;
@@ -694,10 +696,17 @@ public class MemberController {
 				membercard.setScore(Integer.valueOf(queryCardReply.getCard().getScore()));
 			}
 			_memberCardService.Update(membercard);
-			Cinemamessage cinemamessage=cinemamessageService.getByCinemaCodeAndMessageType(CinemaCode,"3");
-			String smsContent=cinemamessage.getMessageContent().replaceFirst("@ChargeAmount",ChargeAmount).replaceFirst("@BalanceAmount", membercard.getBalance().toString()).replaceFirst("@MemberScore",membercard.getScore().toString());
-			//String MsgConetnt="您的充值已成功，充值金额为"+ChargeAmount+"元，余额为"+membercard.getBalance()+"元，剩余积分"+membercard.getScore()+"。";
-			new SendSmsHelper().SendSms(CinemaCode, membercard.getMobilePhone(),smsContent);
+			try {
+				Cinema cinema = _cinemaService.getByCinemaCode(CinemaCode);
+				String batchNum=UUID.randomUUID().toString().replace("-","");
+				Cinemamessage cinemamessage=cinemamessageService.getByMessageType("3");
+				String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@ChargeAmount",ChargeAmount).replaceFirst("@BalanceAmount", membercard.getBalance().toString()).replaceFirst("@MemberScore",membercard.getScore().toString());
+				//String MsgConetnt="您的充值已成功，充值金额为"+ChargeAmount+"元，余额为"+membercard.getBalance()+"元，剩余积分"+membercard.getScore()+"。";
+				//new SendSmsHelper().SendSms(CinemaCode, membercard.getMobilePhone(),smsContent);
+				String sendResult=SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), membercard.getMobilePhone(), smsContent, batchNum);
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
 		}
 		return reply;
 	}

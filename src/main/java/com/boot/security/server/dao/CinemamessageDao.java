@@ -20,6 +20,9 @@ public interface CinemamessageDao {
     
     @Select("select * from cinemamessage t where t.cinemacode = #{cinemacode} and t.messagetype = #{messagetype}")
     Cinemamessage getByCinemaCodeAndMessageType(@Param("cinemacode") String cinemacode,@Param("messagetype") String messagetype);
+    
+    @Select("select * from cinemamessage t where t.messagetype = #{messagetype}")
+    Cinemamessage getByMessageType(@Param("messagetype") String messagetype);
 
     @Delete("delete from cinemamessage where id = #{id}")
     int delete(Long id);

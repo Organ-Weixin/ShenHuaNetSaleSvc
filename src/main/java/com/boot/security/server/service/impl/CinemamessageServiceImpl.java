@@ -18,4 +18,10 @@ public class CinemamessageServiceImpl implements CinemamessageService {
 		return cinemamessageDao.getByCinemaCodeAndMessageType(CinemaCode, MessageType);
 	}
 
+	@Override
+	public Cinemamessage getByMessageType(String MessageType) {
+		// TODO Auto-generated method stub
+		return cinemamessageDao.getByMessageType(MessageType);
+	}
+
 }

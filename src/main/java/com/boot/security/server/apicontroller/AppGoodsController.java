@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -80,6 +81,7 @@ import com.boot.security.server.service.impl.GoodscomponentsServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.FileUploadUtils;
+import com.boot.security.server.utils.SendMobileMessage;
 import com.boot.security.server.utils.SendSmsHelper;
 import com.boot.security.server.utils.WxPayUtil;
 import com.boot.security.server.utils.XmlHelper;
@@ -198,11 +200,19 @@ public class AppGoodsController {
 		try {
 			SubmitGoodsOrderReply reply = NetSaleSvcCore.getInstance().SubmitGoodsOrder(QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getQueryXml());
 			if(reply.Status.equals("Success")){
-				Goodsorders goodsorders=_goodsOrderService.getByOrderCode(reply.getOrder().getOrderCode());
-				Cinemamessage cinemamessage=cinemamessageService.getByCinemaCodeAndMessageType(goodsorders.getCinemaCode(),"2");
-				String smsContent=cinemamessage.getMessageContent();
-				//String MsgConetnt="您的订单已成功，取货码为"+reply.getOrder().getPickUpCode()+"，请到前台领取";
-				new SendSmsHelper().SendSms(goodsorders.getCinemaCode(),goodsorders.getMobilePhone(),smsContent);
+				try{
+					Goodsorders goodsorders=_goodsOrderService.getByOrderCode(reply.getOrder().getOrderCode());
+					Cinemamessage cinemamessage=cinemamessageService.getByMessageType("2");
+					Cinema cinema = _cinemaService.getByCinemaCode(goodsorders.getCinemaCode());
+					String batchNum=UUID.randomUUID().toString().replace("-","");
+					String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent();
+					//String MsgConetnt="您的订单已成功，取货码为"+reply.getOrder().getPickUpCode()+"，请到前台领取";
+					//new SendSmsHelper().SendSms(goodsorders.getCinemaCode(),goodsorders.getMobilePhone(),smsContent);
+					String sendResult=SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), goodsorders.getMobilePhone(), smsContent, batchNum);
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+				
 			}
 			return reply;
 		} catch (JsonSyntaxException e) {
@@ -493,7 +503,8 @@ public class AppGoodsController {
 				+ "卖品订单总额（" + TotalPrice + "元）";
 		String WxpayMchId = cinemapaymentsettings.getWxpayMchId();
 		String WxpayKey = cinemapaymentsettings.getWxpayKey();
-		String NotifyUrl = "https://xc.80piao.com:8443/Api/Goods/WxPayNotify";// 暂时
+		String weburl = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort();
+		String NotifyUrl = weburl+"/Api/Goods/WxPayNotify";
 		String OpenId = order.getOrderBaseInfo().getOpenID();
 		String TradeNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + QueryJson.getCinemaCode()
 				+ order.getOrderBaseInfo().getId();

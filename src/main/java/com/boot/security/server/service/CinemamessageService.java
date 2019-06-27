@@ -4,5 +4,6 @@ import com.boot.security.server.model.Cinemamessage;
 
 public interface CinemamessageService {
 	Cinemamessage getByCinemaCodeAndMessageType(String CinemaCode,String MessageType);
+	Cinemamessage getByMessageType(String MessageType);
 
 }

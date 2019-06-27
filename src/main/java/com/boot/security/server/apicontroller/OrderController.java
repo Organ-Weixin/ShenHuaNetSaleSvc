@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -96,6 +97,7 @@ import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.DoubleUtil;
 import com.boot.security.server.utils.FileUploadUtils;
+import com.boot.security.server.utils.SendMobileMessage;
 import com.boot.security.server.utils.SendSmsHelper;
 import com.boot.security.server.utils.WxPayUtil;
 import com.boot.security.server.utils.XmlHelper;
@@ -196,16 +198,19 @@ public class OrderController {
 			SubmitOrderReply submitOrderReply = NetSaleSvcCore.getInstance().SubmitOrder(QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getQueryXml());
 //			System.out.println("提交成功+++++"+new Gson().toJson(submitOrderReply));
 			if(submitOrderReply.Status.equals("Success")){
-				Orders orders=_orderService.getByOrderCode(submitOrderReply.getOrder().getOrderCode());
-				Cinemamessage cinemamessage=cinemamessageService.getByCinemaCodeAndMessageType(orders.getCinemaCode(),"5");
 				try{	//提交成功，短信发送失败
-					String smsContent=cinemamessage.getMessageContent().replaceFirst("@FilmName", orders.getFilmName()).replaceFirst("@TicketCount", orders.getTicketCount().toString()).replaceFirst("@SessionTime",new SimpleDateFormat("yyyy-MM-dd HH:mm").format(orders.getSessionTime()));
+					Orders orders=_orderService.getByOrderCode(submitOrderReply.getOrder().getOrderCode());
+					Screeninfo screeninfo=screeninfoService.getByScreenCode(orders.getCinemaCode(),orders.getScreenCode());
+					Cinemamessage cinemamessage=cinemamessageService.getByMessageType("5");
+					Cinema cinema = cinemaService.getByCinemaCode(orders.getCinemaCode());
+					String batchNum=UUID.randomUUID().toString().replace("-","");
+					String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@FilmName", orders.getFilmName()).replaceFirst("@ScreenName",screeninfo.getSName()).replaceFirst("@SessionTime",new SimpleDateFormat("yyyy-MM-dd HH:mm").format(orders.getSessionTime()));
 					//String MsgConetnt="您已成功支付，订单金额"+orders.getTotalSalePrice()+"元，影片场次："+orders.getSessionTime()+" 《"+orders.getFilmName()+"》"+orders.getTicketCount()+"张。请至影城取票机领取，取票码："+orders.getPrintNo()+".热线：4008257789";
-					new SendSmsHelper().SendSms(orders.getCinemaCode(),orders.getMobilePhone(),smsContent);
+					//new SendSmsHelper().SendSms(orders.getCinemaCode(),orders.getMobilePhone(),smsContent);
+					String sendResult=SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), orders.getMobilePhone(), smsContent, batchNum);
 				} catch (Exception e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
-				
 			}
 			return submitOrderReply;
 		} catch (Exception e) {
@@ -554,7 +559,7 @@ public class OrderController {
 						cinema.setRefundFee(0.00);
 					}
 					String MsgConetnt="";
-					Cinemamessage cinemamessage=cinemamessageService.getByCinemaCodeAndMessageType(CinemaCode,"4");
+					Cinemamessage cinemamessage=cinemamessageService.getByMessageType("4");
 					//先判断支付类型
 					//微信支付
 					if(orders.getOrderPayType()==OrderPayTypeEnum.WxPay.getTypeCode()){
@@ -563,13 +568,18 @@ public class OrderController {
 						//调用微信退款接口
 						RefundPaymentReply paymentReply = RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode());
 						if(paymentReply.Status.equals("Success")){
-							//发短信
-							MsgConetnt=cinemamessage.getMessageContent().replaceFirst("@PayBackAmount", orders.getTotalSalePrice().toString()).replaceFirst("@TelephoneNumber",cinema.getContactMobile());
-							//MsgConetnt="您的退票已成功，退票金额"+orders.getTotalSalePrice()+"元将在3个工作日内返回支付账号，咨询：4008257789";
-							new SendSmsHelper().SendSms(CinemaCode,orders.getMobilePhone(),MsgConetnt);
+							try{
+								//发短信
+								String batchNum=UUID.randomUUID().toString().replace("-","");
+								MsgConetnt=cinema.getSmsSignId() +cinemamessage.getMessageContent().replaceFirst("@PayBackAmount", orders.getTotalSalePrice().toString()).replaceFirst("@TelephoneNumber",cinema.getContactMobile());
+								//MsgConetnt="您的退票已成功，退票金额"+orders.getTotalSalePrice()+"元将在3个工作日内返回支付账号，咨询：4008257789";
+								//new SendSmsHelper().SendSms(CinemaCode,orders.getMobilePhone(),MsgConetnt);
+								String sendResult=SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), orders.getMobilePhone(), MsgConetnt, batchNum);
+							}catch (Exception e) {
+								// TODO: handle exception
+							}
 						}
 						//log.info("微信退款结果"+new Gson().toJson(RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode())));
-						
 					}
 					//会员卡支付
 					if(orders.getOrderPayType()==OrderPayTypeEnum.MemberCardPay.getTypeCode()){
@@ -580,10 +590,14 @@ public class OrderController {
 							Double backPayAmount = orders.getTotalSalePrice();
 							CardPayBackReply paybackReply=new NetSaleSvcCore().CardPayBack(UserName, Password, CinemaCode, orders.getCardNo(), orders.getCardPassword(), orders.getOrderTradeNo(), String.valueOf(backPayAmount));
 							if(paybackReply.Status.equals("Success")){
-								//发短信
-								MsgConetnt = cinemamessage.getMessageContent().replaceFirst("@PayBackAmount", backPayAmount.toString()).replaceFirst("@TelephoneNumber",cinema.getContactMobile());
-								//MsgConetnt="您的退票已成功，退票金额"+backPayAmount+"元将在3个工作日内返回支付账号，咨询：4008257789";
-								new SendSmsHelper().SendSms(CinemaCode,orders.getMobilePhone(),MsgConetnt);
+								try {
+									//发短信
+									MsgConetnt =cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@PayBackAmount", backPayAmount.toString()).replaceFirst("@TelephoneNumber",cinema.getContactMobile());
+									//MsgConetnt="您的退票已成功，退票金额"+backPayAmount+"元将在3个工作日内返回支付账号，咨询：4008257789";
+									new SendSmsHelper().SendSms(CinemaCode,orders.getMobilePhone(),MsgConetnt);
+								} catch (Exception e) {
+									// TODO: handle exception
+								}
 							}
 						}
 					}
@@ -738,7 +752,8 @@ public class OrderController {
 				+ orderbase.getFilmName() + " 电影票（" + orderbase.getTicketCount() + "张）";
 		String WxpayMchId = cinemapaymentsettings.getWxpayMchId();
 		String WxpayKey = cinemapaymentsettings.getWxpayKey();
-		String NotifyUrl = "https://xc.80piao.com:8443/Api/Order/WxPayNotify";// 暂时
+		String weburl = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort();
+		String NotifyUrl = weburl+"/Api/Order/WxPayNotify";
 		String OpenId = orderbase.getOpenID();
 		String TradeNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + QueryJson.getCinemaCode()
 				+ orderbase.getId();
@@ -973,7 +988,8 @@ public class OrderController {
 		        + "卖品订单总额（" + goodsorder.getOrderBaseInfo().getTotalSettlePrice() + "元）"; 
 		String WxpayMchId = cinemapaymentsettings.getWxpayMchId();
 		String WxpayKey = cinemapaymentsettings.getWxpayKey();
-		String NotifyUrl = "https://xc.80piao.com:8443/Api/Order/WxPayMixNotify";//联合预支付的异步通知
+		String weburl = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort();
+		String NotifyUrl = weburl+"/Api/Order/WxPayMixNotify";//联合预支付的异步通知
 		String OpenId = order.getOrderBaseInfo().getOpenID();
 		String TradeNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + QueryJson.getCinemaCode()
 				+ order.getOrderBaseInfo().getId();

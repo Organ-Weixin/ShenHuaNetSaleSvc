@@ -13,11 +13,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.boot.security.server.apicontroller.reply.CheckUserFilmOrdersReply;
 import com.boot.security.server.apicontroller.reply.Jscode2sessionReply;
 import com.boot.security.server.apicontroller.reply.MobilePhoneRegisterReply;
+import com.boot.security.server.apicontroller.reply.MobilePhoneRegisterReply.MobilePhoneRegisterBean;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.QueryCinemaGoodsReply;
 import com.boot.security.server.apicontroller.reply.QueryCinemaGoodsReply.QueryCinemaGoodsReplyGoods.QueryCinemaGoods;
@@ -54,6 +58,7 @@ import com.boot.security.server.apicontroller.reply.QueryUserTicketReply.QueryUs
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.apicontroller.reply.RoomGiftInput;
 import com.boot.security.server.apicontroller.reply.SendVerifyCodeReply;
+import com.boot.security.server.apicontroller.reply.SendVerifyCodeReply.SendVerifyCodeBean;
 import com.boot.security.server.apicontroller.reply.UpdateHeadUrlReply;
 import com.boot.security.server.apicontroller.reply.UpdateHeadUrlReply.UpdateHeadUrlReplyHeadUrl;
 import com.boot.security.server.apicontroller.reply.UpdateUserInfoReply;
@@ -109,6 +114,7 @@ import com.boot.security.server.utils.AESHelper;
 import com.boot.security.server.utils.FileUploadUtils;
 import com.boot.security.server.utils.HttpHelper;
 import com.boot.security.server.utils.PropertyHolder;
+import com.boot.security.server.utils.SendMobileMessage;
 import com.boot.security.server.utils.SendSmsHelper;
 import com.google.gson.Gson;
 
@@ -154,6 +160,7 @@ public class AppUserController {
 	private SessioninfoServiceImpl sessioninfoService;
 	@Autowired
 	private CinemamessageServiceImpl cinemamessageService;
+	protected static Logger log = LoggerFactory.getLogger(AppUserController.class);
 	
 	@PostMapping("/UserLogin")
 	@ApiOperation(value = "用户登陆")
@@ -431,11 +438,15 @@ public class AppUserController {
 		_ticketusersService.update(ticketuser);
 		
 		//发送验证码到用户手机号
-		Cinemamessage cinemamessage=cinemamessageService.getByCinemaCodeAndMessageType(userCinema.getCinemaCode(),"1");
-		String smsContent=cinemamessage.getMessageContent().replaceFirst("@VerifyCode",ticketuser.getVerifyCode());
+		Cinema cinema = _cinemaService.getByCinemaCode(input.getCinemaCode());
+		Cinemamessage cinemamessage=cinemamessageService.getByMessageType("1");
+		String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@VerifyCode",ticketuser.getVerifyCode());
+		log.info(smsContent);
 		//String smsContent = ""+ ticketuser.getVerifyCode()+"（万画筒小程序购票平台验证码，一分钟内有效）";
-        String sendResult = new SendSmsHelper().SendSms(input.getCinemaCode(), input.getMobilePhone(), smsContent);
-        if(!"Success".equals(sendResult)){
+        //String sendResult = new SendSmsHelper().SendSms(input.getCinemaCode(), input.getMobilePhone(), smsContent);
+		String batchNum=UUID.randomUUID().toString().replace("-","");
+		String sendResult=SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), input.getMobilePhone(), smsContent, batchNum);
+		if(!"0".equals(sendResult)){
         	reply.SetSentMessageFailureReply();
         	return reply;
         }

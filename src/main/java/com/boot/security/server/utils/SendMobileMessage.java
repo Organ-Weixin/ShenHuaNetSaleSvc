@@ -22,7 +22,7 @@ public class SendMobileMessage {
     }
     public static String sendMessage(String APPKEY, String APPSECRET, String phone, String message,String batchNum) {
         try{
-            String content = "【神画电影】"+message;
+            String content = message;
             String params = "appKey="+APPKEY+"&appSecret="+APPSECRET+"&phones="+phone+"&content="+content;
             if(StringUtils.isNotBlank(batchNum)){
                 params=params+"&batchNum="+batchNum;
