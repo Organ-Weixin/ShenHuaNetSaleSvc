@@ -9,4 +9,6 @@ public interface OrderseatdetailsService {
 	List<Orderseatdetails> getByOrderId(Long orderid);
 
 	int update(Orderseatdetails orderseatdetails);
+	
+	Orderseatdetails getById(Long id);
 }

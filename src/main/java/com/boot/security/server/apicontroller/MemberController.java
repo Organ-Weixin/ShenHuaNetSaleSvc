@@ -69,6 +69,7 @@ import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
+import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardcreditrule;
@@ -380,21 +381,64 @@ public class MemberController {
 		if(queryDiscountReply.Status==StatusEnum.Success){
 			order.setTotalSalePrice(Double.valueOf(queryDiscountReply.getPrice()*order.getTicketCount()));
 			orderService.update(order);
-			//更新订单详情中的售价
-			if(order!=null){
-				List<Orderseatdetails> orderseatdetailsList = _orderseatdetailsService.getByOrderId(order.getId());
-				for(Orderseatdetails orderseatdetails : orderseatdetailsList){
-					orderseatdetails.setSalePrice(Double.valueOf(queryDiscountReply.getPrice()));
-					_orderseatdetailsService.update(orderseatdetails);
-				}
-			}
 		}
 		Orders orders = orderService.getByLockOrderCode(CinemaCode, LockOrderCode);
 		//region 更新购票订单优惠券及金额
 		orders=_couponsService.updateCouponsPricetoOrder(orders, CouponsCode);
 		orderService.update(orders);
+		if(orders!=null){
+			//更新订单详情中的售价
+			//先把会员价更新进去
+			List<Orderseatdetails> orderseatdetailsList1 = _orderseatdetailsService.getByOrderId(order.getId());
+			for(Orderseatdetails orderseatdetails : orderseatdetailsList1){
+				orderseatdetails.setSalePrice(Double.valueOf(queryDiscountReply.getPrice()));
+				_orderseatdetailsService.update(orderseatdetails);
+			}
+			//判断是否存在优惠价格
+			if(orders.getCouponsPrice()!=null){
+				//拆分优惠金额
+				List<Orderseatdetails> orderseatdetailsList = new ArrayList<>();
+				//获取订单详细
+				orderseatdetailsList = _orderseatdetailsService.getByOrderId(orders.getId());
+				//多个商品处理
+				if(orderseatdetailsList.size()>1){
+					//得到总价格
+					Double TotalSalePrice = orderseatdetailsList.stream().collect(Collectors.summingDouble(Orderseatdetails::getSalePrice));
+					//处理除最后一个价格外的价格
+					Double couponsPrice = 0.00;
+					String dealPrice = null;
+					for(int i=0; i<orderseatdetailsList.size(); i++){
+						if(i<orderseatdetailsList.size()-1){
+							//先初始化要拆分的价格
+							dealPrice= new DecimalFormat("0.00").format(orderseatdetailsList.get(i).getSalePrice()/TotalSalePrice*orders.getCouponsPrice());
+							orderseatdetailsList.get(i).setCouponPrice(Double.parseDouble(dealPrice));
+							orderseatdetailsList.get(i).setSalePrice(orderseatdetailsList.get(i).getSalePrice()-orderseatdetailsList.get(i).getCouponPrice());
+							//得到拆分完的总价格
+							couponsPrice +=Double.parseDouble(dealPrice);
+							//格式化拆分后的价格
+							new DecimalFormat("0.00").format(orderseatdetailsList.get(i).getCouponPrice());
+						}else{
+							//处理最后一个价格
+							orderseatdetailsList.get(i).setCouponPrice(orders.getCouponsPrice()-couponsPrice);
+							//处理实际销售价格
+							orderseatdetailsList.get(i).setSalePrice(orderseatdetailsList.get(i).getSalePrice()-orderseatdetailsList.get(i).getCouponPrice());
+						}
+						//更新到订单详情
+						_orderseatdetailsService.update(orderseatdetailsList.get(i));
+					}
+				}
+				//一个商品处理
+				if(orderseatdetailsList.size()==1){
+					//处理优惠金额
+					orderseatdetailsList.get(0).setCouponPrice(orders.getCouponsPrice());
+					//处理实际销售价格
+					orderseatdetailsList.get(0).setSalePrice(orderseatdetailsList.get(0).getSalePrice()-orderseatdetailsList.get(0).getCouponPrice());
+					//更新到订单详情
+					_orderseatdetailsService.update(orderseatdetailsList.get(0));
+				}
+			}
+		}
 		//endregion
-		
 		SellTicketCustomMemberReply reply = new Dy1905Interface().SellTicketCustomMember(Username, Password, CinemaCode, LockOrderCode, CardNo, CardPassword);
 		System.out.println(new Gson().toJson(reply));
 		if(reply.Status.equals("Success")){
@@ -406,6 +450,7 @@ public class MemberController {
 		}
 		return reply;
 	}
+		
 	//endregion
 	
 	//region 1905会员卡支付+卖品

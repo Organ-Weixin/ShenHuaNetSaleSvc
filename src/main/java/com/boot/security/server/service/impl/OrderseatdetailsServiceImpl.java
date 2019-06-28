@@ -23,4 +23,9 @@ public class OrderseatdetailsServiceImpl implements OrderseatdetailsService{
 		return orderseatdetailsDao.update(orderseatdetails);
 	}
 
+	@Override
+	public Orderseatdetails getById(Long id) {
+		return orderseatdetailsDao.getById(id);
+	}
+
 }

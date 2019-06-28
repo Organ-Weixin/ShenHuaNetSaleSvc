@@ -26,6 +26,7 @@ public class Orderseatdetails extends BaseEntity<Long>{
 	private Double AddFee;//增值服务费
 	private String Seat;
 	private Double TotalSale;
+	private Double CouponPrice;//优惠
 	
 	public Long getId() {
 		return Id;
@@ -152,6 +153,12 @@ public class Orderseatdetails extends BaseEntity<Long>{
 	}
 	public void setTotalSale(Double totalSale) {
 		TotalSale = totalSale;
+	}
+	public Double getCouponPrice() {
+		return CouponPrice;
+	}
+	public void setCouponPrice(Double couponPrice) {
+		CouponPrice = couponPrice;
 	}
 	
 }
