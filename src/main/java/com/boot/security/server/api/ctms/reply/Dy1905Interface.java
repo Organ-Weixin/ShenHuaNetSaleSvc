@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.alibaba.fastjson.JSON;
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaAllSessionResult.ResBean.SessionsBean.SessionBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaAllSessionResult.ResBean.SessionsBean.SessionBean.FilmsBean.SessionFilmBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaResult.ResBean.CinemasBean.CinemaBean;
@@ -922,20 +923,21 @@ public class Dy1905Interface implements ICTMSInterface {
 			/*SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			Date StartDate = sdf.parse(SessionTime);
 			String StartDate2 = sdf.format(StartDate);
-			Date EndDate = new Date(Long.parseLong(String.valueOf(StartDate.getTime()+24*60*60*1000)));
-			String EndDate2 = sdf.format(EndDate);
+			String EndDate2 = StartDate2;
 			System.out.println("userCinema.getDefaultUserName()="+userCinema.getDefaultUserName()+",StartDate2="+StartDate2+
 					",EndDate2="+EndDate2+",userCinema.getDefaultPassword()="+userCinema.getDefaultPassword());
-			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + StartDate2 + EndDate2 + userCinema.getDefaultPassword(), "UTF-8").toLowerCase();
+			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() + StartDate2 + EndDate2 + userCinema.getDefaultPassword(), "UTF-8").toLowerCase();
 			Map<String,String> param = new LinkedHashMap<String,String>();
 			param.put("pAppCode", userCinema.getDefaultUserName());
 			param.put("pCinemaID", userCinema.getCinemaId());
 			param.put("pStartDate", StartDate2);
 			param.put("pEndDate", EndDate2);
 			param.put("pVerifyInfo", pVerifyInfo);
-			String SessionCardPrice = HttpHelper.httpClientPost(userCinema.getUrl() +"/GetSessionCardPrice",param,"UTF-8");
+			String SessionCardPrice = HttpHelper.httpClientPost(userCinema.getUrl() +"/GetSessionCardPrice.json",param,"UTF-8");
 			System.out.println(SessionCardPrice);
-			Gson gson = new Gson();
+			Dy1905GetSessionCardPriceResult Dy1905Reply = JSON.parseObject(SessionCardPrice,Dy1905GetSessionCardPriceResult.class);
+			System.out.println(new Gson().toJson(Dy1905Reply));*/
+			/*Gson gson = new Gson();
 			Dy1905GetSessionCardPriceResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(SessionCardPrice, "SessionCardPrice"),Dy1905GetSessionCardPriceResult.class);
 			if(Dy1905Reply.getGetSessionCardPrice().getResultCode().equals("0")){
 				reply.setCinemaCode(userCinema.getCinemaCode());
@@ -947,6 +949,7 @@ public class Dy1905Interface implements ICTMSInterface {
 			}
 			reply.ErrorCode = Dy1905Reply.getGetSessionCardPrice().getResultCode();
 			reply.ErrorMessage = Dy1905Reply.getGetSessionCardPrice().getResultMsg();*/
+			
 			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + SessionCode + CardNo + CardPassword + userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
 			Map<String,String> param = new LinkedHashMap<String,String>();
 			param.put("pAppCode", userCinema.getDefaultUserName());

@@ -1161,11 +1161,12 @@ public class MemberController {
 	        	levelReply.setLevelName(membercardlevel.getLevelName());
 	        	levelReply.setCardCostFee(membercardlevel.getCardCostFee());
 	        	levelReply.setMemberFee(membercardlevel.getMemberFee());
+	        	//如果没有卡图片
 	        	if(membercardlevel.getPictureUrl()==null||membercardlevel.getPictureUrl()==""){
-	        		levelReply.setMemberCardImage("https://whtxcx.oss-cn-hangzhou.aliyuncs.com/images/vipimage.png");
-	        	}else{
-	        		levelReply.setMemberCardImage(membercardlevel.getPictureUrl());
+	        		//取服务器上的卡图片
+	        		membercardlevel.setPictureUrl("https://whtxcx.oss-cn-hangzhou.aliyuncs.com/images/vipimage.png");
 	        	}
+	        	levelReply.setMemberCardImage(membercardlevel.getPictureUrl());
 	        	levelReply.setIsOnlineOpenCard(membercardlevel.getIsOnlineOpenCard());
 	        	levelReply.setStatus(membercardlevel.getStatus());
 	        	//会员卡类别规则
