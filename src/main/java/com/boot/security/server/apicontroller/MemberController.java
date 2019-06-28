@@ -1102,6 +1102,9 @@ public class MemberController {
         		//查询会员卡类别图片
         		Membercardlevel membercardlevel = _memberCardLevelService.getByCinemaCodeAndLevelCode(CinemaCode, memberCard.getLevelCode());
         		if(membercardlevel!=null){
+        			if(membercardlevel.getPictureUrl()==null||membercardlevel.getPictureUrl()==""){
+        				membercardlevel.setPictureUrl("https://whtxcx.oss-cn-hangzhou.aliyuncs.com/images/vipimage.png");
+        			}
         			cardReply.setCardPictureUrl(membercardlevel.getPictureUrl());
         		}
         		cardReply.setMobilePhone(memberCard.getMobilePhone());
@@ -1158,7 +1161,11 @@ public class MemberController {
 	        	levelReply.setLevelName(membercardlevel.getLevelName());
 	        	levelReply.setCardCostFee(membercardlevel.getCardCostFee());
 	        	levelReply.setMemberFee(membercardlevel.getMemberFee());
-	        	levelReply.setMemberCardImage(membercardlevel.getPictureUrl());
+	        	if(membercardlevel.getPictureUrl()==null||membercardlevel.getPictureUrl()==""){
+	        		levelReply.setMemberCardImage("https://whtxcx.oss-cn-hangzhou.aliyuncs.com/images/vipimage.png");
+	        	}else{
+	        		levelReply.setMemberCardImage(membercardlevel.getPictureUrl());
+	        	}
 	        	levelReply.setIsOnlineOpenCard(membercardlevel.getIsOnlineOpenCard());
 	        	levelReply.setStatus(membercardlevel.getStatus());
 	        	//会员卡类别规则

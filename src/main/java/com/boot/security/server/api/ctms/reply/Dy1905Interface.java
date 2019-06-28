@@ -1774,7 +1774,9 @@ public class Dy1905Interface implements ICTMSInterface {
 			return reply;
 		}
 		public static void main(String[] args) {
-			String pVerifyInfo = MD5Util.MD5Encode("1000000035" + "194" + "15268553143" + "66a16ca61f729e0c846983f8c0f4fd53","UTF-8").toLowerCase();
+			String pVerifyInfo = MD5Util.MD5Encode("1000000035" + "194" + "2019-06-28" + "2019-06-29" + "66a16ca61f729e0c846983f8c0f4fd53","UTF-8").toLowerCase();
 			System.out.println(pVerifyInfo);
+			/*String pVerifyInfo = MD5Util.MD5Encode("1000000035" + "194" + "15268553143" + "66a16ca61f729e0c846983f8c0f4fd53","UTF-8").toLowerCase();
+			System.out.println(pVerifyInfo);*/
 		}
 }
