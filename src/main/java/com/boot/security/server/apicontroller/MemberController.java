@@ -113,7 +113,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/Api/Member")
-public class MemberController {  
+public class MemberController {
 	
 	@Autowired
 	private UserInfoServiceImpl _userInfoService;
@@ -308,7 +308,7 @@ public class MemberController {
 				order.getOrderBaseInfo().setOrderPayType(OrderPayTypeEnum.MemberCardPay.getTypeCode());
 				order.getOrderBaseInfo().setUpdated(new Date());
 				//更新优惠券已使用
-				if (order.getOrderBaseInfo().getCouponsCode()!=null&&order.getOrderBaseInfo().getCouponsCode()!="") {
+				if (order.getOrderBaseInfo().getCouponsCode()!=null && !"".equals(order.getOrderBaseInfo().getCouponsCode())) {
 					CouponsView couponsview=_couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
 					if(couponsview!=null){
 						couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
@@ -345,7 +345,7 @@ public class MemberController {
 				goodsOrder.getOrderBaseInfo().setOrderPayType(OrderPayTypeEnum.MemberCardPay.getTypeCode());
 				goodsOrder.getOrderBaseInfo().setUpdated(new Date());
 				// 更新优惠券已使用
-				if (!goodsOrder.getOrderBaseInfo().getCouponsCode().equals(null)&&!goodsOrder.getOrderBaseInfo().getCouponsCode().equals("")) {
+				if (goodsOrder.getOrderBaseInfo().getCouponsCode() != null && !"".equals(goodsOrder.getOrderBaseInfo().getCouponsCode())) {
 					CouponsView couponsview=_couponsService.getWithCouponsCode(goodsOrder.getOrderBaseInfo().getCouponsCode());
 					if(couponsview!=null){
 						couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
@@ -499,7 +499,7 @@ public class MemberController {
 			order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
 			orderService.Update(order);
 			// 更新优惠券已使用
-			if (order.getOrderBaseInfo().getCouponsCode() != null && !order.getOrderBaseInfo().getCouponsCode().equals("")) {
+			if (order.getOrderBaseInfo().getCouponsCode() != null && !"".equals(order.getOrderBaseInfo().getCouponsCode())) {
 				CouponsView couponsview=_couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
 				if(couponsview!=null){
 					couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
@@ -571,7 +571,7 @@ public class MemberController {
 			order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
 			goodsOrderService.Update(order);
 			// 更新优惠券已使用
-			if (order.getOrderBaseInfo().getCouponsCode() != null && !order.getOrderBaseInfo().getCouponsCode().equals("")) {
+			if (order.getOrderBaseInfo().getCouponsCode() != null && !"".equals(order.getOrderBaseInfo().getCouponsCode())) {
 				CouponsView couponsview=_couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
 				if(couponsview!=null){
 					couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
@@ -618,7 +618,7 @@ public class MemberController {
 				order.getOrderBaseInfo().setRefundTime(new Date());
 				orderService.update(order.getOrderBaseInfo());
 				//退优惠券
-				if(order.getOrderBaseInfo().getCouponsCode()!=null&&order.getOrderBaseInfo().getCouponsCode()!=""){
+				if(order.getOrderBaseInfo().getCouponsCode()!=null && !"".equals(order.getOrderBaseInfo().getCouponsCode())){
 					CouponsView couponsview = _couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
 					if(couponsview!=null){
 						couponsview.getCoupons().setStatus(CouponsStatusEnum.Fetched.getStatusCode());
@@ -641,7 +641,7 @@ public class MemberController {
 				goodsorders.setRefundTime(new Date());
 				goodsOrderService.update(goodsorders);
 				//退优惠券
-				if(!goodsorders.getCouponsCode().equals(null)&&!goodsorders.getCouponsCode().equals("")){
+				if(goodsorders.getCouponsCode() != null && !"".equals(goodsorders.getCouponsCode())){
 					CouponsView couponsview = _couponsService.getWithCouponsCode(goodsorders.getCouponsCode());
 					if(couponsview!=null){
 						couponsview.getCoupons().setStatus(CouponsStatusEnum.Fetched.getStatusCode());
@@ -716,7 +716,7 @@ public class MemberController {
 				//new SendSmsHelper().SendSms(CinemaCode, membercard.getMobilePhone(),smsContent);
 				SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), membercard.getMobilePhone(), smsContent, batchNum);
 			} catch (Exception e) {
-				// TODO: handle exception
+				e.printStackTrace();
 			}
 		}
 		return reply;

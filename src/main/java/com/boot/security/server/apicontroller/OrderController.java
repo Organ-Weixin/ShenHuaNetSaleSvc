@@ -207,7 +207,7 @@ public class OrderController {
 					String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@FilmName", orders.getFilmName()).replaceFirst("@ScreenName",screeninfo.getSName()).replaceFirst("@SessionTime",new SimpleDateFormat("yyyy-MM-dd HH:mm").format(orders.getSessionTime()));
 					//String MsgConetnt="您已成功支付，订单金额"+orders.getTotalSalePrice()+"元，影片场次："+orders.getSessionTime()+" 《"+orders.getFilmName()+"》"+orders.getTicketCount()+"张。请至影城取票机领取，取票码："+orders.getPrintNo()+".热线：4008257789";
 					//new SendSmsHelper().SendSms(orders.getCinemaCode(),orders.getMobilePhone(),smsContent);
-					String sendResult=SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), orders.getMobilePhone(), smsContent, batchNum);
+					SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), orders.getMobilePhone(), smsContent, batchNum);
 				} catch (Exception e) {
 					//e.printStackTrace();
 				}
@@ -574,9 +574,9 @@ public class OrderController {
 								MsgConetnt=cinema.getSmsSignId() +cinemamessage.getMessageContent().replaceFirst("@PayBackAmount", orders.getTotalSalePrice().toString()).replaceFirst("@TelephoneNumber",cinema.getContactMobile());
 								//MsgConetnt="您的退票已成功，退票金额"+orders.getTotalSalePrice()+"元将在3个工作日内返回支付账号，咨询：4008257789";
 								//new SendSmsHelper().SendSms(CinemaCode,orders.getMobilePhone(),MsgConetnt);
-								String sendResult=SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), orders.getMobilePhone(), MsgConetnt, batchNum);
+								SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), orders.getMobilePhone(), MsgConetnt, batchNum);
 							}catch (Exception e) {
-								// TODO: handle exception
+								e.printStackTrace();
 							}
 						}
 						//log.info("微信退款结果"+new Gson().toJson(RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode())));
@@ -596,7 +596,7 @@ public class OrderController {
 									//MsgConetnt="您的退票已成功，退票金额"+backPayAmount+"元将在3个工作日内返回支付账号，咨询：4008257789";
 									new SendSmsHelper().SendSms(CinemaCode,orders.getMobilePhone(),MsgConetnt);
 								} catch (Exception e) {
-									// TODO: handle exception
+									e.printStackTrace();
 								}
 							}
 						}
@@ -754,6 +754,7 @@ public class OrderController {
 		String WxpayKey = cinemapaymentsettings.getWxpayKey();
 		String weburl = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort();
 		String NotifyUrl = weburl+"/Api/Order/WxPayNotify";
+//		String NotifyUrl = "https://xc.80piao.com:8443/Api/Order/WxPayNotify";// 暂时,本地测试用
 		String OpenId = orderbase.getOpenID();
 		String TradeNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + QueryJson.getCinemaCode()
 				+ orderbase.getId();

@@ -9,6 +9,7 @@ encoding//src/main/java/cn/cmts/pay/webservice/PayapiLocator.java=UTF-8
 encoding//src/main/java/cn/cmts/pay/webservice/PayapiPortType.java=UTF-8
 encoding//src/main/java/cn/cmts/pay/webservice/PayapiSoap11BindingStub.java=UTF-8
 encoding//src/main/java/com/boot/security/server/api/ctms/reply/YkInterface.java=UTF-8
+encoding//src/main/java/com/boot/security/server/apicontroller/ChatRoomController.java=UTF-8
 encoding//src/main/java/com/oristartech/tsp/ws/soap/TspSoapService.java=UTF-8
 encoding//src/main/java/com/oristartech/tsp/ws/soap/TspSoapServiceImplService.java=UTF-8
 encoding//src/main/java/com/oristartech/tsp/ws/soap/TspSoapServiceImplServiceLocator.java=UTF-8

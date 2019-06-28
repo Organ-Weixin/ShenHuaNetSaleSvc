@@ -852,8 +852,9 @@ public class NetSaleSvcCore {
 		// 更新订单信息
 		order = ModelMapper.MapFrom(order, QueryXmlObj);
 
-		// TODO:满天星的订单属于会员卡支付的话暂时要求传入会员卡交易流水号
+		//满天星的订单属于会员卡支付的话暂时要求传入会员卡交易流水号
 		if (userCinema.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode()
+				&& order.getOrderBaseInfo().getIsMemberPay() != null 
 				&& order.getOrderBaseInfo().getIsMemberPay() == 1 && order.getOrderBaseInfo().getPaySeqNo().isEmpty()) {
 			submitOrderReply.SetMemberPaySeqNoNotExistReply();
 			return submitOrderReply;
@@ -1449,7 +1450,6 @@ ScreenType,ListingPrice,LowestPrice))
         try {
 			CTMSReply = _CTMSInterface.QueryDiscount(userCinema,TicketCount,CardNo,CardPassword,LevelCode,SessionCode,SessionTime,FilmCode,ScreenType,ListingPrice,LowestPrice);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         if (CTMSReply.Status == StatusEnum.Success)
@@ -1517,10 +1517,8 @@ ScreenType,ListingPrice,LowestPrice))
         try {
 			CTMSReply = _CTMSInterface.CardPay(userCinema, CardNo,CardPassword,Float.parseFloat(PayAmount),Float.parseFloat(GoodsPayAmount),SessionCode,FilmCode,TicketNum);
 		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         if (CTMSReply.Status == StatusEnum.Success)
@@ -1576,7 +1574,6 @@ ScreenType,ListingPrice,LowestPrice))
         try {
 			CTMSReply = _CTMSInterface.CardPayBack(userCinema, CardNo, CardPassword, TradeNo,Float.parseFloat(PayBackAmount));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         if (CTMSReply.Status == StatusEnum.Success)
@@ -1648,7 +1645,6 @@ ScreenType,ListingPrice,LowestPrice))
         try {
 			CTMSReply = _CTMSInterface.QueryCardTradeRecord(userCinema, CardNo, CardPassword,new SimpleDateFormat("yyyy-MM-dd").format(StartDate), new SimpleDateFormat("yyyy-MM-dd").format(EndDate), PageSize, PageNum);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         if (CTMSReply.Status == StatusEnum.Success)
@@ -1722,7 +1718,6 @@ ScreenType,ListingPrice,LowestPrice))
         try {
 			CTMSReply = _CTMSInterface.CardCharge(userCinema, CardNo, CardPassword, ChargeType, ChargeAmount);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         if (CTMSReply.Status == StatusEnum.Success)
@@ -1768,7 +1763,6 @@ ScreenType,ListingPrice,LowestPrice))
         try {
 			CTMSReply = _CTMSInterface.QueryCardLevel(userCinema);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         if (CTMSReply.Status == StatusEnum.Success)
@@ -1837,7 +1831,6 @@ ScreenType,ListingPrice,LowestPrice))
         try {
 			CTMSReply = _CTMSInterface.CardRegister(userCinema, CardPassword, LevelCode, InitialAmount, CardUserName, MobilePhone, IDNumber, Sex);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         if (CTMSReply.Status == StatusEnum.Success)
@@ -1886,7 +1879,6 @@ ScreenType,ListingPrice,LowestPrice))
         try {
 			CTMSReply = _CTMSInterface.QueryGoods(userCinema);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         if (StatusEnum.Success.equals(CTMSReply.Status)) {
@@ -2045,8 +2037,9 @@ ScreenType,ListingPrice,LowestPrice))
 		Goodsorders orderBaseInfo=order.getOrderBaseInfo();
 		orderBaseInfo = ModelMapper.MapFrom(orderBaseInfo, QueryXmlObj);
 		
-		// TODO:满天星的订单属于会员卡支付的话暂时要求传入会员卡交易流水号
+		//满天星的订单属于会员卡支付的话暂时要求传入会员卡交易流水号
 		if (userCinema.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode()
+				&& order.getOrderBaseInfo().getOrderPayType() != null 
 				&& order.getOrderBaseInfo().getOrderPayType()==OrderPayTypeEnum.MemberCardPay.getTypeCode() && order.getOrderBaseInfo().getPaySeqNo().isEmpty()) {
 			submitGoodsOrderReply.SetMemberPaySeqNoNotExistReply();
 			return submitGoodsOrderReply;
@@ -2173,7 +2166,7 @@ ScreenType,ListingPrice,LowestPrice))
 			refundGoodsReply.SetOrderNotExistReply();
 			return refundGoodsReply;
 		}
-		// TODO:满天星的订单属于会员卡支付的话暂时要求传入会员卡交易流水号
+		//满天星的订单属于会员卡支付的话暂时要求传入会员卡交易流水号
 		if (userCinema.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode()
 				&& order.getOrderBaseInfo().getOrderPayType()==OrderPayTypeEnum.MemberCardPay.getTypeCode() && order.getOrderBaseInfo().getPaySeqNo().isEmpty()) {
 			refundGoodsReply.SetMemberPaySeqNoNotExistReply();
@@ -2295,7 +2288,7 @@ ScreenType,ListingPrice,LowestPrice))
 		// 更新卖品订单信息
 		ModelMapper.MapFrom(goodsorder.getOrderBaseInfo(), QueryXmlObj);
 		
-		// TODO:满天星的订单属于会员卡支付的话暂时要求传入会员卡交易流水号
+		//满天星的订单属于会员卡支付的话暂时要求传入会员卡交易流水号
 		if (userCinema.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode()
 				&& order.getOrderBaseInfo().getIsMemberPay() == 1 && order.getOrderBaseInfo().getPaySeqNo().isEmpty()) {
 			submitMixOrderReply.SetMemberPaySeqNoNotExistReply();
