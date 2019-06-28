@@ -75,7 +75,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.oristartech.tsp.ws.soap.DoubleDefaultAdapter;
 import com.oristartech.tsp.ws.soap.IntegerDefaultAdapter;
-public class Dy1905Interface implements ICTMSInterface {
+public class Dy1905Interface implements ICTMSInterface { 
 	
 	CinemaServiceImpl cinemaService = SpringUtil.getBean(CinemaServiceImpl.class);
 	ScreeninfoServiceImpl screeninfoService = SpringUtil.getBean(ScreeninfoServiceImpl.class);
