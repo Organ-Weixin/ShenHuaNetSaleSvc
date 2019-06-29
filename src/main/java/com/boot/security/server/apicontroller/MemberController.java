@@ -69,7 +69,6 @@ import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
-import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardcreditrule;
@@ -105,6 +104,7 @@ import com.boot.security.server.service.impl.TicketusersServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.DoubleUtil;
+import com.boot.security.server.utils.GoodsCouponsPriceUtil;
 import com.boot.security.server.utils.SendMobileMessage;
 import com.boot.security.server.utils.WxPayUtil;
 import com.google.gson.Gson;
@@ -439,6 +439,7 @@ public class MemberController {
 			}
 		}
 		//endregion
+		
 		SellTicketCustomMemberReply reply = new Dy1905Interface().SellTicketCustomMember(Username, Password, CinemaCode, LockOrderCode, CardNo, CardPassword);
 		System.out.println(new Gson().toJson(reply));
 		if(reply.Status.equals("Success")){
@@ -450,7 +451,6 @@ public class MemberController {
 		}
 		return reply;
 	}
-		
 	//endregion
 	
 	//region 1905会员卡支付+卖品
@@ -538,10 +538,11 @@ public class MemberController {
 		order.getOrderBaseInfo().setCardNo(CardNo);
 		order.getOrderBaseInfo().setCardPassword(CardPassword);
 		CTMSSubmitOrderReply ykReply = new YkInterface().SubmitOrder(userCinema, order);
-		System.out.println("----"+new Gson().toJson(ykReply));
 		if("Success".equals(ykReply.Status.getStatusCode())){
 			// 更新订单信息
-			order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
+			order.getOrderBaseInfo().setPayTime(new Date());	//支付时间
+			order.getOrderBaseInfo().setUpdated(new Date());	//添加更新时间
+			order.getOrderBaseInfo().setPayFlag(1);
 			orderService.Update(order);
 			// 更新优惠券已使用
 			if (order.getOrderBaseInfo().getCouponsCode() != null && !"".equals(order.getOrderBaseInfo().getCouponsCode())) {
@@ -589,8 +590,10 @@ public class MemberController {
 			return reply;
 		}
 		//验证订单是否存在
-		GoodsOrderView order = goodsOrderService.getWithLocalOrderCode(CinemaCode, LocalOrderCode);
-		if(order == null){
+		GoodsOrderView order = new GoodsCouponsPriceUtil().getGoodsCouponsPrice(LocalOrderCode);
+		System.out.println("888"+LocalOrderCode);
+		System.out.println("999"+new Gson().toJson(order.getOrderBaseInfo()));
+		if(order.getOrderBaseInfo() == null){
 			reply.SetOrderNotExistReply();
 			return reply;
 		}
@@ -610,10 +613,11 @@ public class MemberController {
 		order.getOrderBaseInfo().setCardNo(CardNo);
 		order.getOrderBaseInfo().setCardPassword(CardPassword);
 		CTMSSubmitGoodsOrderReply ykReply = new YkInterface().SubmitGoodsOrder(userCinema, order);
-		System.out.println("----"+new Gson().toJson(ykReply));
 		if("Success".equals(ykReply.Status.getStatusCode())){
 			// 更新订单信息
-			order.getOrderBaseInfo().setUpdated(new Date());//添加更新时间
+			order.getOrderBaseInfo().setOrderPayTime(new Date());	//支付时间
+			order.getOrderBaseInfo().setUpdated(new Date());
+			order.getOrderBaseInfo().setOrderPayFlag(1);
 			goodsOrderService.Update(order);
 			// 更新优惠券已使用
 			if (order.getOrderBaseInfo().getCouponsCode() != null && !"".equals(order.getOrderBaseInfo().getCouponsCode())) {

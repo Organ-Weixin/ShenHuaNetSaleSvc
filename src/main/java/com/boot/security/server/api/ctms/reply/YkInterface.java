@@ -1,5 +1,6 @@
 package com.boot.security.server.api.ctms.reply;
 
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -545,36 +546,62 @@ public class YkInterface implements ICTMSInterface {
 		Sessioninfo sessioninfo = _sessioninfoService.getBySessionCode(userCinema.getUserId(), userCinema.getCinemaCode(), order.getOrderBaseInfo().getSessionCode());
 		List<Map<String,Object>> ticketList = new ArrayList<Map<String,Object>>();
 		List<Orderseatdetails> orderseatdetails = order.getOrderSeatDetails();	//订单详情列表
-		Double dealPrice=0.00;
+		double ticketPrice;	//票价(结算价)
+		if(sessioninfo.getSettlePrice() > 0){
+			ticketPrice = sessioninfo.getSettlePrice();
+		} else {
+			ticketPrice = sessioninfo.getStandardPrice();
+		}
+		double memberPrice = 0.0;
+		if(flag){
+			//获取会员价
+			CTMSQueryDiscountReply  reply1 = QueryDiscount(userCinema, null, order.getOrderBaseInfo().getCardNo(), null, null, order.getOrderBaseInfo().getSessionCode(), null, null, null, null, null);
+			if("Success".equals(reply1.Status.getStatusCode())){
+				memberPrice = new BigDecimal(String.valueOf(reply1.getPrice())).doubleValue();
+				if(memberPrice < sessioninfo.getLowestPrice()){	//优惠后 的结算价不能低于影片的最低票价，如果 低于最低票价请以最 低票价为结算价。
+					ticketPrice = sessioninfo.getLowestPrice();
+				} else {
+					ticketPrice = memberPrice;
+				}
+			} else {
+				reply.Status = StatusEnum.Failure;
+				reply.ErrorCode = reply1.ErrorCode;
+				reply.ErrorMessage = reply1.ErrorMessage;
+				return reply;
+			}
+		}
+		double couponsPrice = order.getOrderBaseInfo().getCouponsPrice();	//优惠价格
+		double dealPrice=0.00;
 		for(int i=0;i<orderseatdetails.size();i++){
+			double price = 0.0;
 			Map<String,Object> orderMap = new LinkedHashMap<String,Object>();
 			orderMap.put("seatId", orderseatdetails.get(i).getSeatCode());
-			orderMap.put("ticketPrice", String.valueOf(orderseatdetails.get(i).getPrice()));
 			orderMap.put("ticketFee", String.valueOf(orderseatdetails.get(i).getFee()));
 			if(flag){
 				orderMap.put("isCardDiscount", true);
 				order.getOrderBaseInfo().setOrderPayType(OrderPayTypeEnum.MemberCardPay.getTypeCode());
 			}
 			if(order.getOrderBaseInfo().getCouponsCode() != null){	//优惠列表
+				Map<String,String> promotion = new LinkedHashMap<String,String>();
+				promotion.put("promotionName", order.getOrderBaseInfo().getCouponsCode());
 				if(i<orderseatdetails.size()-1){
-					Map<String,String> promotion = new LinkedHashMap<String,String>();
-					promotion.put("promotionName", order.getOrderBaseInfo().getCouponsCode());
-					Double discountAmount=order.getOrderBaseInfo().getCouponsPrice()/orderseatdetails.size();
+					Double discountAmount = couponsPrice/orderseatdetails.size();
 					dealPrice+=discountAmount;
 					promotion.put("discountAmount", new DecimalFormat("0.00").format(discountAmount));
-					List<Map<String,String>> promotionList = new ArrayList<Map<String,String>>();
-					promotionList.add(promotion);
-					orderMap.put("promotionList", promotionList);
+					price = ticketPrice-discountAmount;
 				}else{
-					Map<String,String> promotion = new LinkedHashMap<String,String>();
-					promotion.put("promotionName", order.getOrderBaseInfo().getCouponsCode());
-					Double discountAmount=order.getOrderBaseInfo().getCouponsPrice()-dealPrice;
+					Double discountAmount = couponsPrice-dealPrice;
 					promotion.put("discountAmount", new DecimalFormat("0.00").format(discountAmount));
-					List<Map<String,String>> promotionList = new ArrayList<Map<String,String>>();
-					promotionList.add(promotion);
-					orderMap.put("promotionList", promotionList);
+					price = ticketPrice-discountAmount;
 				}
+				List<Map<String,String>> promotionList = new ArrayList<Map<String,String>>();
+				promotionList.add(promotion);
+				orderMap.put("promotionList", promotionList);
+				orderMap.put("ticketPrice", String.valueOf(price));
+			} else {
+				orderMap.put("ticketPrice", String.valueOf(ticketPrice));
 			}
+			
 			ticketList.add(orderMap);
 		}
 		
@@ -590,6 +617,9 @@ public class YkInterface implements ICTMSInterface {
 			payCardInfo.put("cinemaLinkId", userCinema.getCinemaId());
 			payCardInfo.put("cardNumber", order.getOrderBaseInfo().getCardNo());
 			payCardInfo.put("cardPassword", MD5AESPassword(order.getOrderBaseInfo().getCardPassword(),userCinema.getDefaultPassword()));
+			double payAmount = (ticketPrice+sessioninfo.getTicketFee())*order.getOrderBaseInfo().getTicketCount()-couponsPrice;
+			order.getOrderBaseInfo().setTotalSalePrice(payAmount);
+			payCardInfo.put("payAmount", String.valueOf(payAmount));
 			
 			Map<String,Object> payment = new LinkedHashMap<String,Object>();
 			payment.put("paymentMethod", "MemberCard");
@@ -636,7 +666,6 @@ public class YkInterface implements ICTMSInterface {
 				}
 				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.Complete.getStatusCode());	//订单状态
 				order.getOrderBaseInfo().setSubmitTime(new Date());					//订单提交时间
-				order.getOrderBaseInfo().setPayTime(new Date());					//支付时间
 				
 				reply.Status = StatusEnum.Success;
 			} else {
@@ -1854,9 +1883,17 @@ public class YkInterface implements ICTMSInterface {
 		for(Goodsorderdetails goodsorderdetails : order.getOrderGoodsDetails()){
 			Map<String,Object> goodsmap = new LinkedHashMap<String,Object>();
 			goodsmap.put("goodsId", goodsorderdetails.getGoodsCode());
-			goodsmap.put("salePrice", goodsorderdetails.getSettlePrice().toString());
+			double price = goodsorderdetails.getSettlePrice();
+			if(goodsorderdetails.getCouponPrice() != null && goodsorderdetails.getCouponPrice() != 0){
+				price = goodsorderdetails.getSettlePrice() - goodsorderdetails.getCouponPrice()/goodsorderdetails.getGoodsCount();
+			}
+			goodsmap.put("salePrice", String.valueOf(price));
 			goodsmap.put("count", goodsorderdetails.getGoodsCount().toString());
-			goodsmap.put("isPackage", "false");
+			if(goodsorderdetails.getIsPackage() != null && goodsorderdetails.getIsPackage() == 1){
+				goodsmap.put("isPackage", true);
+			} else {
+				goodsmap.put("isPackage", false);
+			}
 			if(flag){
 				goodsmap.put("isCardDiscount", true);
 				order.getOrderBaseInfo().setOrderPayType(OrderPayTypeEnum.MemberCardPay.getTypeCode());	//会员卡支付
@@ -1908,7 +1945,7 @@ public class YkInterface implements ICTMSInterface {
 				if("goods_success".equals(ykResult.getData().getData().getOrderStatus())){
 					order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
 					order.getOrderBaseInfo().setSubmitTime(new Date());
-					order.getOrderBaseInfo().setOrderPayTime(new Date());					//支付时间
+					
 				} else {
 					order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.SubmitFail.getStatusCode());
 				}

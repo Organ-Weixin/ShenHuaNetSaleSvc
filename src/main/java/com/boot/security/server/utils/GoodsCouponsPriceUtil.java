@@ -16,14 +16,16 @@ public class GoodsCouponsPriceUtil {
 	GoodsorderdetailsServiceImpl goodsorderdetailsService = SpringUtil.getBean(GoodsorderdetailsServiceImpl.class);
 	//计算卖品优惠金额
 	public GoodsOrderView getGoodsCouponsPrice(String LocalOrderCode){
+		System.out.println("LocalOrderCode="+LocalOrderCode);
 		GoodsOrderView goodsOrderView = new GoodsOrderView();
 		List<Goodsorderdetails> goodsorderdetailsList = new ArrayList<Goodsorderdetails>();
 		Goodsorders goodsorders = goodsOrderService.getByLocalOrderCode(LocalOrderCode);
+		System.out.println("goodsorders="+goodsorders.getLocalOrderCode());
 		if(goodsorders!=null){
+			//获取卖品详细
+			goodsorderdetailsList = goodsorderdetailsService.getByOrderId(goodsorders.getId());
 			//判断是否存在优惠价格
 			if(goodsorders.getCouponsPrice()!=null){
-				//获取卖品详细
-				goodsorderdetailsList = goodsorderdetailsService.getByOrderId(goodsorders.getId());
 				//多个商品处理
 				if(goodsorderdetailsList.size()>1){
 					//得到总价格
@@ -50,9 +52,9 @@ public class GoodsCouponsPriceUtil {
 				if(goodsorderdetailsList.size()==1){
 					goodsorderdetailsList.get(0).setCouponPrice(goodsorders.getCouponsPrice());
 				}
-				goodsOrderView.setOrderBaseInfo(goodsorders);
-				goodsOrderView.setOrderGoodsDetails(goodsorderdetailsList);
 			}
+			goodsOrderView.setOrderBaseInfo(goodsorders);
+			goodsOrderView.setOrderGoodsDetails(goodsorderdetailsList);
 		}
 		return goodsOrderView;
 	}
