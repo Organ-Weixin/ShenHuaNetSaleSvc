@@ -69,6 +69,7 @@ import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
+import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardcreditrule;
@@ -377,6 +378,7 @@ public class MemberController {
 		Orders order = orderService.getByLockOrderCode(CinemaCode, LockOrderCode);
 		//查询会员卡折扣
 		CTMSQueryDiscountReply queryDiscountReply = new Dy1905Interface().QueryDiscount(userCinema, null, CardNo, CardPassword, null, order.getSessionCode(), null, null, null, null, null);
+		System.out.println("会员价="+queryDiscountReply.getPrice());
 		//更新实际总价格
 		if(queryDiscountReply.Status==StatusEnum.Success){
 			order.setTotalSalePrice(Double.valueOf(queryDiscountReply.getPrice()*order.getTicketCount()));
@@ -395,12 +397,12 @@ public class MemberController {
 				_orderseatdetailsService.update(orderseatdetails);
 			}
 			//判断是否存在优惠价格
+			List<Orderseatdetails> orderseatdetailsList = new ArrayList<>();
+			//获取订单详细
+			orderseatdetailsList = _orderseatdetailsService.getByOrderId(orders.getId());
 			if(orders.getCouponsPrice()!=null){
 				//拆分优惠金额
-				List<Orderseatdetails> orderseatdetailsList = new ArrayList<>();
-				//获取订单详细
-				orderseatdetailsList = _orderseatdetailsService.getByOrderId(orders.getId());
-				//多个商品处理
+				//多张票处理
 				if(orderseatdetailsList.size()>1){
 					//得到总价格
 					Double TotalSalePrice = orderseatdetailsList.stream().collect(Collectors.summingDouble(Orderseatdetails::getSalePrice));
@@ -427,7 +429,7 @@ public class MemberController {
 						_orderseatdetailsService.update(orderseatdetailsList.get(i));
 					}
 				}
-				//一个商品处理
+				//一张票处理
 				if(orderseatdetailsList.size()==1){
 					//处理优惠金额
 					orderseatdetailsList.get(0).setCouponPrice(orders.getCouponsPrice());
@@ -437,16 +439,31 @@ public class MemberController {
 					_orderseatdetailsService.update(orderseatdetailsList.get(0));
 				}
 			}
+			System.out.println("orders="+orders.getTotalSalePrice());
+			System.out.println("orderseatdetailsList="+orderseatdetailsList.get(0).getSalePrice());
 		}
 		//endregion
-		
 		SellTicketCustomMemberReply reply = new Dy1905Interface().SellTicketCustomMember(Username, Password, CinemaCode, LockOrderCode, CardNo, CardPassword);
 		System.out.println(new Gson().toJson(reply));
 		if(reply.Status.equals("Success")){
 			Orders orders2 = orderService.getByLockOrderCode(CinemaCode, LockOrderCode);
 			if(orders2!=null){
-				orders.setMobilePhone(MobilePhone);
+				orders2.setMobilePhone(MobilePhone);
 				orderService.update(orders2);
+			}
+			try{	//提交成功，短信发送失败
+				Orders orders3 = orderService.getByOrderCode(reply.getOrderNo());
+				Screeninfo screeninfo= _screeninfoService.getByScreenCode(orders3.getCinemaCode(),orders3.getScreenCode());
+				Cinemamessage cinemamessage=cinemamessageService.getByMessageType("5");
+				Cinema cinema = _cinemaService.getByCinemaCode(orders3.getCinemaCode());
+				String batchNum=UUID.randomUUID().toString().replace("-","");
+				String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@FilmName", orders3.getFilmName()).replaceFirst("@ScreenName",screeninfo.getSName()).replaceFirst("@SessionTime",new SimpleDateFormat("yyyy-MM-dd HH:mm").format(orders3.getSessionTime()));
+				//String MsgConetnt="您已成功支付，订单金额"+orders.getTotalSalePrice()+"元，影片场次："+orders.getSessionTime()+" 《"+orders.getFilmName()+"》"+orders.getTicketCount()+"张。请至影城取票机领取，取票码："+orders.getPrintNo()+".热线：4008257789";
+				//new SendSmsHelper().SendSms(orders.getCinemaCode(),orders.getMobilePhone(),smsContent);
+				String result = SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), orders3.getMobilePhone(), smsContent, batchNum);
+				System.out.println(result);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 		return reply;
@@ -470,6 +487,18 @@ public class MemberController {
 			if(goodsorders!=null){
 				goodsorders.setMobilePhone(MobilePhone);
 				goodsOrderService.update(goodsorders);
+				try{
+					Goodsorders goodsorders2 = goodsOrderService.getByOrderCode(reply.getOrderCode());
+					Cinemamessage cinemamessage=cinemamessageService.getByMessageType("2");
+					Cinema cinema = _cinemaService.getByCinemaCode(goodsorders2.getCinemaCode());
+					String batchNum=UUID.randomUUID().toString().replace("-","");
+					String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent();
+					//String MsgConetnt="您的订单已成功，取货码为"+reply.getOrder().getPickUpCode()+"，请到前台领取";
+					//new SendSmsHelper().SendSms(goodsorders.getCinemaCode(),goodsorders.getMobilePhone(),smsContent);
+					SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), goodsorders2.getMobilePhone(), smsContent, batchNum);
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return reply;

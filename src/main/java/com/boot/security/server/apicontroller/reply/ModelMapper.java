@@ -279,7 +279,6 @@ public class ModelMapper {
 	}
 	
 	public static QueryGoodsOrderReplyOrder MapFrom(QueryGoodsOrderReplyOrder order,GoodsOrderView ov){
-		System.out.println(ov.getOrderBaseInfo().getCinemaCode());
 		SimpleDateFormat dateformat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		order.setCinemaCode(ov.getOrderBaseInfo().getCinemaCode());
 		order.setLocalOrderCode(ov.getOrderBaseInfo().getLocalOrderCode());

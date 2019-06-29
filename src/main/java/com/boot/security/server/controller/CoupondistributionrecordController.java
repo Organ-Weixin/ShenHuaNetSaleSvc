@@ -85,6 +85,7 @@ public class CoupondistributionrecordController {
     	}
     	//活跃用户
     	if(coupondistributionrecord.getCustomerType()==3){
+    		System.out.println("活跃用户");
     		params.put("IsActive", "1");
     		customerList = ticketusersDao.getTicketusers(params);
     		for(int i=0; i<customerList.size();i++){
@@ -100,7 +101,7 @@ public class CoupondistributionrecordController {
     		}
     	}
     	//指定用户
-    	if(coupondistributionrecord.getOpenID()!=null||coupondistributionrecord.getOpenID()!=""){
+    	if(coupondistributionrecord.getOpenID()!=null&&coupondistributionrecord.getOpenID()!=""){
     		params = new HashMap<>();
     		params.put("MobilePhone", coupondistributionrecord.getOpenID());
     		List<Ticketusers> ticketusersList = ticketusersDao.getTicketusers(params);
