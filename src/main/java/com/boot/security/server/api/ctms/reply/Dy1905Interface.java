@@ -1625,6 +1625,7 @@ public class Dy1905Interface implements ICTMSInterface {
 				reply.setPickUpCode(order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
 				order.getOrderBaseInfo().setOrderTradeNo(Dy1905Reply.getGoodsOrderResult().getOrderNo());
 				order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
+				order.getOrderBaseInfo().setPickUpCode(order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
 				reply.setOrderNo(Dy1905Reply.getGoodsOrderResult().getOrderNo());
 				// 更新优惠券已使用
 				if (null!=order.getOrderBaseInfo().getCouponsCode()&&""!=order.getOrderBaseInfo().getCouponsCode()) {

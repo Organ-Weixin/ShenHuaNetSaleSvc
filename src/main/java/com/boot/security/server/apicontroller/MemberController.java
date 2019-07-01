@@ -484,7 +484,12 @@ public class MemberController {
 		
 		GoodsOrderMemberReply reply =new Dy1905Interface().GoodsOrderMember(Username, Password, CinemaCode, LocalOrderCode, CardNo, CardPassword);
 		if(reply.Status.equals("Success")){
+			goodsorders = goodsOrderService.getByLocalOrderCode(LocalOrderCode);
 			if(goodsorders!=null){
+				goodsorders.setOrderPayFlag(1);
+				goodsorders.setOrderPayType(OrderPayTypeEnum.MemberCardPay.getTypeCode());
+				goodsorders.setOrderPayTime(new Date());
+				goodsorders.setCardNo(CardNo);
 				goodsorders.setMobilePhone(MobilePhone);
 				goodsOrderService.update(goodsorders);
 				try{
