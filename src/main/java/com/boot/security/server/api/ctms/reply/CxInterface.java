@@ -22,6 +22,7 @@ import com.boot.security.server.api.ctms.reply.CxQueryPlanSeatResult.ResBean.Pla
 import com.boot.security.server.api.ctms.reply.CxQuerySeatInfoResult.ResBean.ScreenSitesBean.ScreenSiteBean;
 import com.boot.security.server.api.ctms.reply.CxQueryTicketInfoResult.ResBean.TicketsBean.TicketBean;
 import com.boot.security.server.api.ctms.reply.CxSubmitOrderResult.ResBean.SeatInfosBean.SeatInfoBean;
+import com.boot.security.server.api.ctms.reply.YkGetGoodsResult.DataBean.GoodsBean.GoodsResult;
 import com.boot.security.server.model.CardChargeTypeEnum;
 import com.boot.security.server.model.CardTradeRecord;
 import com.boot.security.server.model.Cinema;
@@ -30,6 +31,7 @@ import com.boot.security.server.model.Filminfo;
 import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
+import com.boot.security.server.model.Goodstype;
 import com.boot.security.server.model.LoveFlagEnum;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
@@ -48,6 +50,7 @@ import com.boot.security.server.service.impl.CinemaMiniProgramAccountsServiceImp
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
+import com.boot.security.server.service.impl.GoodsTypeServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
@@ -68,6 +71,7 @@ public class CxInterface implements ICTMSInterface {
 	MemberCardServiceImpl _membercardService = SpringUtil.getBean(MemberCardServiceImpl.class);
 	MemberCardLevelServiceImpl _membercardlevelService = SpringUtil.getBean(MemberCardLevelServiceImpl.class);
 	GoodsServiceImpl _goodsService = SpringUtil.getBean(GoodsServiceImpl.class);
+	GoodsTypeServiceImpl _goodsTypeService = SpringUtil.getBean(GoodsTypeServiceImpl.class);
 	CinemaMiniProgramAccountsServiceImpl _cinemaMiniProgramAccountsService = SpringUtil.getBean(CinemaMiniProgramAccountsServiceImpl.class);
 	
 	private static final String pCompress = "0";
@@ -216,29 +220,31 @@ public class CxInterface implements ICTMSInterface {
 				new SimpleDateFormat("yyyy-MM-dd").format(StartDate),
 				new SimpleDateFormat("yyyy-MM-dd").format(EndDate));
 		if (cxReply.getQueryPlanInfoByDatePeriodResult().getResultCode().equals("0")) {
-			// 更新场次信息
-			List<CinemaPlanBean> CinemaPlans = cxReply.getQueryPlanInfoByDatePeriodResult().getCinemaPlans()
-					.getCinemaPlan();
-			if (CinemaPlans.size() > 0) {
-				List<Sessioninfo> newSessions = new ArrayList<Sessioninfo>();
-				for (CinemaPlanBean cinemaplan : CinemaPlans) {
-					Sessioninfo session = new Sessioninfo();// 先创建实例
-					CxModelMapper.MapToEntity(cinemaplan, session);
-					session.setCCode(userCinema.getCinemaCode());
-					session.setUserID(userCinema.getUserId());
-					newSessions.add(session);
+			if(cxReply.getQueryPlanInfoByDatePeriodResult().getCinemaPlans() != null){
+				// 更新场次信息
+				List<CinemaPlanBean> CinemaPlans = cxReply.getQueryPlanInfoByDatePeriodResult().getCinemaPlans()
+						.getCinemaPlan();
+				if (CinemaPlans.size() > 0) {
+					List<Sessioninfo> newSessions = new ArrayList<Sessioninfo>();
+					for (CinemaPlanBean cinemaplan : CinemaPlans) {
+						Sessioninfo session = new Sessioninfo();// 先创建实例
+						CxModelMapper.MapToEntity(cinemaplan, session);
+						session.setCCode(userCinema.getCinemaCode());
+						session.setUserID(userCinema.getUserId());
+						newSessions.add(session);
+					}
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+					String sd = sdf.format(new Date(Long.parseLong(String.valueOf(EndDate.getTime()+24*60*60*1000))));
+					// 先删除旧场次
+					_sessioninfoService.deleteByCinemaCodeAndDate(userCinema.getUserId(), userCinema.getCinemaCode(),
+							StartDate, new SimpleDateFormat("yyyy-MM-dd").parse(sd));
+					// 插入场次信息
+					for (Sessioninfo session : newSessions) {
+						_sessioninfoService.save(session);
+					}
 				}
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-				String sd = sdf.format(new Date(Long.parseLong(String.valueOf(EndDate.getTime()+24*60*60*1000))));
-				// 先删除旧场次
-				_sessioninfoService.deleteByCinemaCodeAndDate(userCinema.getUserId(), userCinema.getCinemaCode(),
-						StartDate, new SimpleDateFormat("yyyy-MM-dd").parse(sd));
-				// 插入场次信息
-				for (Sessioninfo session : newSessions) {
-					_sessioninfoService.save(session);
-				}
-				reply.Status = StatusEnum.Success;
 			}
+			reply.Status = StatusEnum.Success;
 		} else {
 			reply.Status = StatusEnum.Failure;
 		}
@@ -905,24 +911,54 @@ public class CxInterface implements ICTMSInterface {
 		CTMSQueryGoodsReply reply=new CTMSQueryGoodsReply();
 		CxQueryMerchandiseResult cxReply=cxService.QueryMerchandise(userCinema);
 		if("0".equals(cxReply.getQueryMerchandiseResult().getResultCode())){
-			List<MerBean> Mers=cxReply.getQueryMerchandiseResult().getMers().getMer();
-			if(Mers.size()>0){
-				List<Goods> goodsList=new ArrayList<Goods>();
+			if(cxReply.getQueryMerchandiseResult().getMers() != null){
+				List<MerBean> Mers=cxReply.getQueryMerchandiseResult().getMers().getMer();
+				List<Goods> goodslist = _goodsService.getByCinemaCode(userCinema.getUserId(), userCinema.getCinemaCode());
+				for(Goods goods : goodslist){
+					boolean flag = true;
+					for(MerBean goodsResult : Mers){
+						if(goods.getGoodsCode().equals(goodsResult.getMerUid())){
+							flag = false;
+							break;
+						}
+					}
+					if(flag){
+						//删除本地有的而查出来没有的
+						_goodsService.deleteByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), goods.getGoodsCode());
+					}
+				}
+				
 				for(MerBean Mer:Mers){
-					Goods goods=new Goods();
-					CxModelMapper.MapToEntity(Mer, goods);
-					goods.setCinemaCode(userCinema.getCinemaCode());
-					goods.setUserId(userCinema.getUserId());
-					goodsList.add(goods);
+					//更新本地卖品表
+					Goods newGoods = _goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), Mer.getMerUid());
+					if(newGoods == null){
+						newGoods = new Goods();
+						newGoods.setCinemaCode(userCinema.getCinemaCode());
+						newGoods.setUserId(userCinema.getUserId());
+						CxModelMapper.MapToEntity(Mer, newGoods);
+						_goodsService.save(newGoods);	//新增卖品表
+					} else {
+						CxModelMapper.MapToEntity(Mer, newGoods);
+						_goodsService.update(newGoods);	//修改已有的卖品信息
+					}
+					
+					//更新本地卖品分类表
+					Goodstype  goodstype = _goodsTypeService.getByTypeCode(userCinema.getCinemaCode(), String.valueOf(Mer.getMerTypeId()));
+					if(goodstype == null){
+						goodstype = new Goodstype();
+						goodstype.setCinemaCode(userCinema.getCinemaCode());
+						goodstype.setTypeCode(String.valueOf(Mer.getMerTypeId()));
+						if(Mer.getMerTypeId() == 1){
+							goodstype.setTypeName("卖品");
+						} else if(Mer.getMerTypeId() == 4){
+							goodstype.setTypeName("套餐");
+						}
+						_goodsTypeService.save(goodstype);		//插入卖品分类表
+					}
 				}
-				//先删除旧的卖品
-				_goodsService.deleteByCinemaCode(userCinema.getUserId(),userCinema.getCinemaCode());
-				// 插入卖品信息
-				for (Goods goods : goodsList) {
-					_goodsService.save(goods);
-				}
-				reply.Status = StatusEnum.Success;
+				
 			}
+			reply.Status = StatusEnum.Success;
 		}else {
 			reply.Status = StatusEnum.Failure;
 		}

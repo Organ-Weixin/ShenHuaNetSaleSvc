@@ -91,9 +91,13 @@ public class CxModelMapper {
     	entity.setGoodsDesc(model.getMerDesc());
     	entity.setShowSeqNo(model.getShowSeqNo());
     	entity.setIsDiscount(0);
-    	entity.setGoodsStatus(0);
+    	entity.setGoodsStatus(1);
     	entity.setIsRecommand(0);
-    	entity.setIsPackage(0);
+    	if(model.getMerTypeId() == 4){
+    		entity.setIsPackage(1);
+    	} else {
+    		entity.setIsPackage(0);
+    	}
     	entity.setUpdated(new Date());
     	return entity;
     }

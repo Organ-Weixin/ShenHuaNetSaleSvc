@@ -93,10 +93,12 @@ public class Dy1905ModelMapper {
     public static Goods MaptoEntity(Dy1905GoodsListResult.ResBean.GoodsBean.GoodBean model, Goods entity){
     	entity.setGoodsCode(model.getSerial());
     	entity.setGoodsName(model.getName());
+    	entity.setGoodsType(model.getType() == null?"1":model.getType());
     	if(model.getPrice()!=null){
     		entity.setStandardPrice(Double.valueOf(model.getPrice()));
     		entity.setSettlePrice(Double.valueOf(model.getPrice()));
     	}
+    	entity.setGoodsPic(model.getImage());
     	entity.setStockCount(model.getStockCount() ==null?0 : Integer.valueOf(model.getStockCount()));
     	entity.setGoodsDesc(model.getDetail());
     	entity.setUpdated(new Date());

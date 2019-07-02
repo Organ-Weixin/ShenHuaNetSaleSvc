@@ -111,8 +111,10 @@ public class YkModelMapper {
 		
 		if(model.getIsPackage()){			//是否套餐
 			entity.setIsPackage(1);
+			entity.setGoodsType("4");		//接口无返回，套餐默认4
 		} else {
 			entity.setIsPackage(0);
+			entity.setGoodsType("1");		//接口无返回，非套餐默认1
 		}
 		return entity;
 	}

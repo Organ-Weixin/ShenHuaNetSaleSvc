@@ -69,7 +69,6 @@ import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.CouponsView;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
-import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardcreditrule;
@@ -553,7 +552,7 @@ public class MemberController {
 		}
 		//验证订单是否存在
 		OrderView order = orderService.getOrderWidthLockOrderCode(CinemaCode, LockOrderCode);
-		if(order == null){
+		if(order.getOrderBaseInfo() == null){
 			reply.SetOrderNotExistReply();
 			return reply;
 		}
@@ -591,6 +590,18 @@ public class MemberController {
 				}
 			}
 			
+			try{	//提交成功，短信发送
+				Screeninfo screeninfo = _screeninfoService.getByScreenCode(order.getOrderBaseInfo().getCinemaCode(),order.getOrderBaseInfo().getScreenCode());
+				Cinemamessage cinemamessage = cinemamessageService.getByMessageType("5");
+				Cinema cinema = _cinemaService.getByCinemaCode(order.getOrderBaseInfo().getCinemaCode());
+				String batchNum=UUID.randomUUID().toString().replace("-","");
+				String smsContent = cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@FilmName", order.getOrderBaseInfo().getFilmName())
+						.replaceFirst("@ScreenName",screeninfo.getSName()).replaceFirst("@SessionTime",new SimpleDateFormat("yyyy-MM-dd HH:mm").format(order.getOrderBaseInfo().getSessionTime()));
+				SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), order.getOrderBaseInfo().getMobilePhone(), smsContent, batchNum);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 			//返回
 			reply.setOrderNo(order.getOrderBaseInfo().getSubmitOrderCode());
 			reply.setPrintNo(order.getOrderBaseInfo().getPrintNo());
@@ -625,8 +636,6 @@ public class MemberController {
 		}
 		//验证订单是否存在
 		GoodsOrderView order = new GoodsCouponsPriceUtil().getGoodsCouponsPrice(LocalOrderCode);
-		System.out.println("888"+LocalOrderCode);
-		System.out.println("999"+new Gson().toJson(order.getOrderBaseInfo()));
 		if(order.getOrderBaseInfo() == null){
 			reply.SetOrderNotExistReply();
 			return reply;
@@ -664,6 +673,16 @@ public class MemberController {
 					//更新优惠券及优惠券分组表
 					_couponsService.update(couponsview);
 				}
+			}
+			
+			try{	//发短信
+				Cinemamessage cinemamessage = cinemamessageService.getByMessageType("2");
+				Cinema cinema = _cinemaService.getByCinemaCode(order.getOrderBaseInfo().getCinemaCode());
+				String batchNum = UUID.randomUUID().toString().replace("-","");
+				String smsContent = cinema.getSmsSignId() + cinemamessage.getMessageContent();
+				SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), order.getOrderBaseInfo().getMobilePhone(), smsContent, batchNum);
+			}catch (Exception e) {
+				e.printStackTrace();
 			}
 			
 			//返回

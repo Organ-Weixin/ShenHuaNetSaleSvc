@@ -36,7 +36,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.boot.security.server.apicontroller.reply.CheckUserFilmOrdersReply;
 import com.boot.security.server.apicontroller.reply.Jscode2sessionReply;
 import com.boot.security.server.apicontroller.reply.MobilePhoneRegisterReply;
-import com.boot.security.server.apicontroller.reply.MobilePhoneRegisterReply.MobilePhoneRegisterBean;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.QueryCinemaGoodsReply;
 import com.boot.security.server.apicontroller.reply.QueryCinemaGoodsReply.QueryCinemaGoodsReplyGoods.QueryCinemaGoods;
@@ -410,7 +409,6 @@ public class AppUserController {
 				input.getCinemaCode(), input.getOpenID(),input.getMobilePhone())) {
 			return reply;
 		}
-		System.out.println(666);
 		// 获取用户信息
 		Userinfo UserInfo = _userInfoService.getByUserCredential(input.getUserName(), input.getPassword());
 		if (UserInfo == null) {
@@ -444,20 +442,12 @@ public class AppUserController {
 		Cinemamessage cinemamessage=cinemamessageService.getByMessageType("1");
 		String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@VerifyCode",ticketuser.getVerifyCode());
 		log.info(smsContent);
-		//String smsContent = ""+ ticketuser.getVerifyCode()+"（万画筒小程序购票平台验证码，一分钟内有效）";
-        //String sendResult = new SendSmsHelper().SendSms(input.getCinemaCode(), input.getMobilePhone(), smsContent);
 		String batchNum=UUID.randomUUID().toString().replace("-","");
 		String sendResult=SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), input.getMobilePhone(), smsContent, batchNum);
 		if(!"0".equals(sendResult)){
         	reply.SetSentMessageFailureReply();
         	return reply;
         }
-		System.out.println("000"+sendResult);
-		//返回
-//		SendVerifyCodeBean sendverify = new SendVerifyCodeBean();
-//		sendverify.setMobilePhone(ticketuser.getMobilePhone());
-//		sendverify.setVerifyCode(ticketuser.getVerifyCode());
-//		reply.setData(sendverify);
 		reply.SetSuccessReply();
 		return reply;
 	}
