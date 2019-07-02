@@ -209,7 +209,8 @@ public class AppUserController {
         String wxuserStr = AESHelper.AesDecrypt(userinput.getEncryptedData(), jscode2sessionReply.getSession_key(), userinput.getIv());
         System.out.println("解密------"+wxuserStr);
         UserWXResult wxuser = new Gson().fromJson(wxuserStr, UserWXResult.class);
-        
+        //特殊处理表情，先去除掉特殊符号 todo
+		wxuser.setNickName(wxuser.getNickName().replaceAll("[^\u0000-\uFFFF]", ""));
         //更新到数据库
         Ticketusers ticketuser = _ticketusersService.getByopenids(jscode2sessionReply.getOpenid());
         if(ticketuser == null){
@@ -409,6 +410,7 @@ public class AppUserController {
 				input.getCinemaCode(), input.getOpenID(),input.getMobilePhone())) {
 			return reply;
 		}
+		System.out.println(666);
 		// 获取用户信息
 		Userinfo UserInfo = _userInfoService.getByUserCredential(input.getUserName(), input.getPassword());
 		if (UserInfo == null) {
@@ -450,6 +452,7 @@ public class AppUserController {
         	reply.SetSentMessageFailureReply();
         	return reply;
         }
+		System.out.println("000"+sendResult);
 		//返回
 //		SendVerifyCodeBean sendverify = new SendVerifyCodeBean();
 //		sendverify.setMobilePhone(ticketuser.getMobilePhone());
