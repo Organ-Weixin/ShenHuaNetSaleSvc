@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,13 +34,15 @@ import com.boot.security.server.service.impl.RoomgiftServiceImpl;
 import com.boot.security.server.service.impl.RoomgiftuserServiceImpl;
 import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.websocket.ChatRoomServer;
+import com.google.gson.Gson;
 
 import io.swagger.annotations.ApiOperation;
+import sun.util.logging.resources.logging;
 
 @RestController
 @RequestMapping("/Api/chatRoom")
 public class ChatRoomController {
-	
+	protected static Logger log = LoggerFactory.getLogger(ChatRoomController.class);
 	@Autowired
 	private ScreeninfoServiceImpl screeninfoService;
 	@Autowired
@@ -48,6 +52,7 @@ public class ChatRoomController {
 	@Autowired
 	private RoomgiftuserServiceImpl roomgiftuserService;
 	
+	//region 获取放映厅
 	@PostMapping("/getRooms")
 	@ApiOperation(value = "根据影院获取聊天室房间列表")
 	public List<Map<String ,Object>> getRooms(@RequestParam String cinemaCode){
@@ -103,7 +108,9 @@ public class ChatRoomController {
         }
         return dataMap;
 	}
+	//endregion
 	
+	//region 获取可发放礼物列表
 	@PostMapping("/getCanSendGifts")
 	@ApiOperation(value = "查看当前房间可发放礼物列表")
 	public Map<String,Object> canSend(@RequestParam String cinemaCode){
@@ -124,17 +131,17 @@ public class ChatRoomController {
 		 Map<String,Object> map = new HashMap<>();
          map.put("gift",giftList);
 //         map.put("coupons",couponslist);
-         
-       
         return map;
     }
+	//endregion
 	
+	//region 获取用户当前房间的奖品记录
 	@PostMapping("/QueryRoomGiftRecord")
 	@ApiOperation(value="放映厅房间用户领取奖品记录")
 	public QueryRoomGiftRecordReply QueryRoomGiftRecord(@RequestBody RoomGiftInput input) {
 		QueryRoomGiftRecordReply reply=new QueryRoomGiftRecordReply();
-		
 		List<Roomgiftuser>  roomgiftuserlist = roomgiftuserService.getByOpenidAndRoom(input.getOpenID(), input.getRoomCode());
+		log.info("=========roomgiftuserlist"+new Gson().toJson(roomgiftuserlist));
 		List<QueryRoomGiftRecord> data = new ArrayList<QueryRoomGiftRecord>();
 		for(Roomgiftuser roomgiftuser : roomgiftuserlist){
 			QueryRoomGiftRecord record = new QueryRoomGiftRecord();
@@ -143,20 +150,24 @@ public class ChatRoomController {
 			record.setGiftName(roomgiftuser.getGiftName());
 			record.setGiftType(roomgiftuser.getGiftType());
 			record.setImage(roomgiftuser.getImage());
-			record.setGetDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(roomgiftuser.getGetDate()));
+			if(roomgiftuser.getGetDate()!=null){
+				record.setGetDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(roomgiftuser.getGetDate()));
+			}
 			if(roomgiftuser.getStartDate() != null){
 				record.setStartDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(roomgiftuser.getStartDate()));
 			}
 			if(roomgiftuser.getExpireDate() != null){
 				record.setExpireDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(roomgiftuser.getExpireDate()));	
 			}
-			
 			data.add(record);
 		}
+		log.info("=========data"+new Gson().toJson(data));
 		reply.setData(data);
 		reply.SetSuccessReply();
 		return reply;
 	}
+	//endregion
+	
 	
 	@PostMapping("/getRoomTimestamp")
 	@ApiOperation(value = "获取当前房间结束时间戳")

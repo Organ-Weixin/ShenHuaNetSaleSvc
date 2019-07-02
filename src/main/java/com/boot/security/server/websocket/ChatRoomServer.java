@@ -40,6 +40,8 @@ import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
 import com.boot.security.server.service.impl.RoomgiftServiceImpl;
 import com.boot.security.server.service.impl.RoomgiftsendServiceImpl;
 import com.boot.security.server.service.impl.RoomgiftuserServiceImpl;
+import com.google.gson.Gson;
+import com.oristartech.tsp.ws.soap.WebService;
 
 import net.sf.json.JSONObject;
 
@@ -49,7 +51,7 @@ public class ChatRoomServer {
 
 	private static final Map<String, Set<Session>> rooms = new ConcurrentHashMap();
     private static final Map<String, Session> phoneOrOpenidSession = new ConcurrentHashMap();  //用于定点发送消息
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    protected static Logger log = LoggerFactory.getLogger(ChatRoomServer.class);
 //    private Roomgift roomGift;
 //    private DXChatRoomGiftSendRecords giftSendRecords;
     public static final Lock addRoomLock = new ReentrantLock();
@@ -84,6 +86,7 @@ public class ChatRoomServer {
 		ChatRoomServer.roomgiftuserService = roomgiftuserService;
     }
 
+    //region 连接
     @OnOpen
     public void connect(@PathParam("roll") String roll, @PathParam("roomName") String roomName,
                         @PathParam("phoneOrOpenid") String phoneOrOpenid, Session session) throws Exception {
@@ -162,7 +165,9 @@ public class ChatRoomServer {
             }
         }
     }
+    //endregion
 
+    //region 退出房间
     @OnClose
     public void disConnect(@PathParam("roomName") String roomName,@PathParam("phoneOrOpenid") String phoneOrOpenid, Session session) {
         if(rooms.containsKey(roomName)&&rooms.get(roomName).contains(session)){
@@ -170,10 +175,12 @@ public class ChatRoomServer {
             log.info(phoneOrOpenid+"退出了"+roomName+"号房间");
         }
     }
+    //endregion
 
-
+    //region 接收消息
     @OnMessage
     public void receiveMsg(@PathParam("roll") String roll,@PathParam("roomName") String roomName,@PathParam("phoneOrOpenid") String phoneOrOpenid, String msg, Session session) throws Exception {
+    	log.info("=============receiveMsg进来啦");
     	DXChatMessage chatMessage = new DXChatMessage();
     	Map<String,String> map = JSONObject.fromObject(msg);
         String header = map.get("header");
@@ -210,9 +217,17 @@ public class ChatRoomServer {
                     giftSendRecords.setTimestamp(prizeInfo[1]);
                     giftSendRecords.setGiftType("1");
                     roomgiftsendService.save(giftSendRecords);
+                    //减去已发放的组数
+                    if(roomGift.getGroupNumber()>0){
+                    	roomGift.setGroupNumber(roomGift.getGroupNumber()-1);
+                    	roomGiftService.update(roomGift);
+                    }
                 }else if(messageContent.equals("2")){////发放优惠券
+                	log.info("=========+进入发优惠券"+messageContent);
                 	Roomgift roomGift = roomGiftService.getById(Long.parseLong(prizeInfo[0]));
+                	log.info("roomGift"+new Gson().toJson(roomGift));
                 	List<Roomgiftsend> list = roomgiftsendService.getByRoomCode("2",prizeInfo[0],roomName);//查出聊天室发放的该优惠券数量
+                	log.info("List<Roomgiftsend>"+new Gson().toJson(list));
                 	if(list!=null&&list.size()>=roomGift.getGroupNumber()){
                         chatMessage.setHeader(header);
                         chatMessage.setRole(roll);
@@ -226,7 +241,7 @@ public class ChatRoomServer {
                         return;
                     }
                 	//更新优惠券组记录
-                    Couponsgroup couponsgroup=couponsgroupService.getByGroupCode(prizeInfo[0]);
+                    Couponsgroup couponsgroup=couponsgroupService.getByGroupCode(roomGift.getGiftCode());
                     couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()==null?roomGift.getSendNumber():couponsgroup.getIssuedNumber()+roomGift.getSendNumber());
                     couponsgroupService.update(couponsgroup);
                     //生成优惠券
@@ -252,6 +267,11 @@ public class ChatRoomServer {
                     giftSendRecords.setTimestamp(prizeInfo[1]);
                     giftSendRecords.setGiftType("2");
                     roomgiftsendService.save(giftSendRecords);
+                    //减去已发放的组数
+                    if(roomGift.getGroupNumber()>0){
+                    	roomGift.setGroupNumber(roomGift.getGroupNumber()-1);
+                    	roomGiftService.update(roomGift);
+                    }
                     log.info("555555");
                 }
             }else{
@@ -299,23 +319,26 @@ public class ChatRoomServer {
                         calendar.setTime(endTime);
                         calendar.add(Calendar.MINUTE,30);
                         Date overTime = calendar.getTime();
-                        Roomgiftuser roomgift = new Roomgiftuser();
-                        roomgift.setGiftCode(prizeInfo[0]);
-                        roomgift.setOpenID(phoneOrOpenid);
+                        Roomgiftuser roomgiftuser = new Roomgiftuser();
+                        roomgiftuser.setGiftCode(prizeInfo[0]);
+                        roomgiftuser.setOpenID(phoneOrOpenid);
                         //roomgift.setMemo(chatRoomGift.getMemo());
-                        roomgift.setRoomCode(roomName);
-                        roomgift.setTimestamp(prizeInfo[1]);
-                        roomgift.setOpenID(roomgift.getOpenID());
-                        roomgift.setExpireDate(overTime);
-                        roomgift.setGiftType("1");
+                        roomgiftuser.setRoomCode(roomName);
+                        roomgiftuser.setTimestamp(prizeInfo[1]);
+                        roomgiftuser.setGiftName(roomGift.getGiftName());
+                        if(roomGift.getImage()!=null){
+                   		 roomgiftuser.setImage(roomGift.getImage());
+                   	    }
+                        roomgiftuser.setExpireDate(overTime);
+                        roomgiftuser.setGiftType("1");
                         //roomgift.save(dxChatUserGift);
-                        roomgiftuserService.save(roomgift);
+                        roomgiftuserService.save(roomgiftuser);
 
                         chatMessage.setRole(roll);
                         chatMessage.setHeader(header);
                         chatMessage.setNickname(nickName);
                         chatMessage.setMessageType("3");
-                        chatMessage.setContent("恭喜你获得了"+roomgift.getGiftName());
+                        chatMessage.setContent("恭喜你获得了"+roomGift.getGiftName());
                         chatMessage.setPrizeId(prizeId);
                         sendMessage(phoneOrOpenid+roomName,chatMessage.toString());
                         Roomgiftsend sendRecords = roomgiftsendService.getByGiftAndRoomAndTimestamp("1",prizeInfo[0],roomName,prizeInfo[1]);
@@ -326,6 +349,7 @@ public class ChatRoomServer {
                     }
                 }else if(type==2){//领取优惠券
                 	Roomgift roomGift = roomGiftService.getById(Long.parseLong(prizeInfo[0]));
+                	Couponsgroup couponsgroup =couponsgroupService.getByGroupCode(roomGift.getGiftCode());
                     if(list!=null&&list.size()>=roomGift.getSendNumber()){ //已领取完
                         chatMessage.setHeader(header);
                         chatMessage.setRole(roll);
@@ -335,25 +359,28 @@ public class ChatRoomServer {
                         chatMessage.setPrizeId(prizeInfo[0]);
                         sendMessage(phoneOrOpenid+roomName,chatMessage.toString());
                     }else{ //领优惠券
-                    	 Roomgiftuser roomgift = new Roomgiftuser();
-                         roomgift.setGiftCode(prizeInfo[0]);
-                         roomgift.setOpenID(phoneOrOpenid);
+                    	 Roomgiftuser roomgiftuser = new Roomgiftuser();
+                    	 roomgiftuser.setGiftCode(prizeInfo[0]);
+                    	 roomgiftuser.setOpenID(phoneOrOpenid);
                          //roomgift.setMemo(chatRoomGift.getMemo());
-                         roomgift.setRoomCode(roomName);
-                         roomgift.setTimestamp(prizeInfo[1]);
-                         roomgift.setOpenID(roomgift.getOpenID());
-                         //roomgift.setExpireDate(overTime);
-                         roomgift.setGiftType("2");
+                    	 roomgiftuser.setRoomCode(roomName);
+                    	 roomgiftuser.setTimestamp(prizeInfo[1]);
+                    	 roomgiftuser.setGiftName(roomGift.getGiftName());
+                    	 if(roomGift.getImage()!=null){
+                    		 roomgiftuser.setImage(roomGift.getImage());
+                    	 }
+                    	 roomgiftuser.setExpireDate(couponsgroup.getExpireDate());
+                    	 roomgiftuser.setGiftType("2");
                          //roomgift.save(dxChatUserGift);
-                         roomgiftuserService.save(roomgift);
+                         roomgiftuserService.save(roomgiftuser);
 
-                        List<Coupons> couponsList=couponsService.getByGroupCode(prizeInfo[0]);
+                        List<Coupons> couponsList=couponsService.getByGroupCode(roomGift.getGiftCode());
                         for(Coupons coupons :couponsList){
                 			coupons.setOpenID(phoneOrOpenid);
                 			coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
                 			couponsService.update(coupons);
                         }
-                        Couponsgroup couponsgroup =couponsgroupService.getByGroupCode(prizeInfo[0]);
+                        
             			//已领取数量
             			couponsgroup.setFetchNumber(couponsgroup.getFetchNumber()==null?roomGift.getSendNumber():couponsgroup.getFetchNumber()+roomGift.getSendNumber());
             			//剩余数量
@@ -394,7 +421,7 @@ public class ChatRoomServer {
         }
 
     }
-
+    //endregion
 
     @OnError
     public void error(Session session, Throwable t) {
@@ -408,7 +435,7 @@ public class ChatRoomServer {
         }
     }
 
-    //关闭房间
+    //region 关闭房间
     public void removeRoomName(String roomName) throws Exception {
         //移除房间号
         if(rooms.containsKey(roomName)){
@@ -429,8 +456,9 @@ public class ChatRoomServer {
             log.info("关闭房间:"+roomName);
         }
     }
+    //endregion
 
-    //创建房间
+    //region 创建房间
     public void OpenRoomName(String roomName, Sessioninfo sessioninfo) {
         if(!rooms.containsKey(roomName)){ //房间不存在时
             Set<Session> room = new HashSet<>();
@@ -474,8 +502,9 @@ public class ChatRoomServer {
             rooms.put(roomName, room);
         }
     }
+    //endregion
 
-    //获取当前房间列表
+    //region 获取当前房间列表
     public static List<String> getRoomByCinema(String cinemaCode){
         if(StringUtils.isNotBlank(cinemaCode)){
             List<String> list = new ArrayList<>(rooms.size());
@@ -488,7 +517,9 @@ public class ChatRoomServer {
         }
         return null;
     }
-    //获取所有房间列表
+    //endregion
+    
+    //region 获取所有房间列表
     public static List<String> getAllRoom(){
         List<String> list = new ArrayList<>(rooms.size());
         for(String roomName:rooms.keySet()){
@@ -496,13 +527,15 @@ public class ChatRoomServer {
         }
         return list;
     }
+    //endregion
 
-    //发送消息给指定用户
+    //region 发送消息给指定用户
     public void sendMessage(String phoneOrOpenid,String msg) throws Exception{
         Session session = phoneOrOpenidSession.get(phoneOrOpenid);
         if(session.isOpen()){
             session.getBasicRemote().sendText(msg);
         }
     }
+    //endregion
 
 }

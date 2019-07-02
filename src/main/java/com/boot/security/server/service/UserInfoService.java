@@ -5,4 +5,5 @@ import com.boot.security.server.model.Userinfo;
 
 public interface UserInfoService {
 	Userinfo getByUserCredential(String username,String password);
+	Userinfo getById(Long Id);
 }

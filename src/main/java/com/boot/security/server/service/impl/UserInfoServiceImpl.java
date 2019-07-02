@@ -19,5 +19,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 	public Userinfo getByUserCredential(String username, String password) {
 		return userinfoDao.getByUserCredential(username, password);
 	}
+	@Override
+	public Userinfo getById(Long Id) {
+		return userinfoDao.getById(Id);
+	}
 	
 }
