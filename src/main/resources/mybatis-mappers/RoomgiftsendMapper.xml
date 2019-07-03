@@ -37,16 +37,27 @@
 	</sql>
 
 	<select id="count" resultType="int">
-		select count(1) from roomgiftsend t
+		select count(1) from (SELECT * FROM roomgiftsend <include refid="whereByroleId" />) t
 		<include refid="where" />
 	</select>
 
 	<select id="list" resultType="Roomgiftsend">
-		select * from roomgiftsend t
+		select * from (SELECT * FROM roomgiftsend <include refid="whereByroleId" />)t
 		<include refid="where" />
 		${params.orderBy}
 		limit #{offset}, #{limit}
 	</select>
+	
+	<sql id="whereByroleId">
+		<where>
+			<if test="params.roleId == 1 ">
+				cinemaCode in (select cinemaCode from sys_user) 
+			</if>
+			<if test="params.roleId != 1 ">
+				cinemaCode in (select CinemaCode from sys_user sy  where sy.id = #{params.id}  or  sy.createUserId = #{params.roleId})
+			</if>
+		</where>
+	</sql>
 
 	<update id="update">
 		update roomgiftsend t

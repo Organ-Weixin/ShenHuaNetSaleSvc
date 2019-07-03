@@ -563,8 +563,8 @@ public class OrderController {
 					//先判断支付类型
 					//微信支付
 					if(orders.getOrderPayType()==OrderPayTypeEnum.WxPay.getTypeCode()){
-						//计算退票手续费
-						orders.setTotalSalePrice(DoubleUtil.sub(orders.getTotalSalePrice(),cinema.getRefundFee()));
+						//计算退票手续费,得到退款总金额
+						orders.setTotalRefundPrice(DoubleUtil.sub(orders.getTotalSalePrice(),cinema.getRefundFee()));
 						//调用微信退款接口
 						RefundPaymentReply paymentReply = RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode());
 						if(paymentReply.Status.equals("Success")){
@@ -587,12 +587,12 @@ public class OrderController {
 						Cinemaview cinemaview = cinemaviewService.getByCinemaCode(CinemaCode);
 						//辰星系统调用会员卡支付撤销
 						if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()||cinemaview.getCinemaType()==CinemaTypeEnum.ManTianXing.getTypeCode()){
-							Double backPayAmount = orders.getTotalSalePrice();
-							CardPayBackReply paybackReply=new NetSaleSvcCore().CardPayBack(UserName, Password, CinemaCode, orders.getCardNo(), orders.getCardPassword(), orders.getOrderTradeNo(), String.valueOf(backPayAmount));
+							orders.setTotalRefundPrice(orders.getTotalSalePrice());
+							CardPayBackReply paybackReply=new NetSaleSvcCore().CardPayBack(UserName, Password, CinemaCode, orders.getCardNo(), orders.getCardPassword(), orders.getOrderTradeNo(), String.valueOf(orders.getTotalRefundPrice()));
 							if(paybackReply.Status.equals("Success")){
 								try {
 									//发短信
-									MsgConetnt =cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@PayBackAmount", backPayAmount.toString()).replaceFirst("@TelephoneNumber",cinema.getContactMobile());
+									MsgConetnt =cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@PayBackAmount", orders.getTotalRefundPrice().toString()).replaceFirst("@TelephoneNumber",cinema.getContactMobile());
 									//MsgConetnt="您的退票已成功，退票金额"+backPayAmount+"元将在3个工作日内返回支付账号，咨询：4008257789";
 									new SendSmsHelper().SendSms(CinemaCode,orders.getMobilePhone(),MsgConetnt);
 								} catch (Exception e) {
@@ -601,6 +601,7 @@ public class OrderController {
 							}
 						}
 					}
+					_orderService.update(orders);//更新一下退款金额到数据库
 				}
 			}else{
 				reply.Status = "Failure";
@@ -760,7 +761,7 @@ public class OrderController {
 				+ orderbase.getId();
 		String ExpireDate = new SimpleDateFormat("yyyyMMddHHmmss")
 				.format(orderbase.getAutoUnlockDatetime());
-		Double TotalPrice = orderbase.getTotalSalePrice();//总的销售金额就是支付退款金额
+		Double TotalPrice = DoubleUtil.sub(orderbase.getTotalSalePrice(),orderbase.getCouponsPrice());//总的销售金额-优惠金额
 		String TotalFee = String.valueOf(Double.valueOf(TotalPrice*100).intValue());// 商品金额，以分为单位
 		//endregion
 		return WxPayUtil.WxPayPrePay(request, prePayParametersReply, WxpayAppId, WxpayMchId, WxpayKey, strbody,
@@ -865,7 +866,7 @@ public class OrderController {
 			if(order.getOrderBaseInfo().getCouponsPrice()==null){
 				order.getOrderBaseInfo().setCouponsPrice(0.00);
 			}
-			Double RefundPrice = order.getOrderBaseInfo().getTotalSalePrice();// 退款金额就是销售金额
+			Double RefundPrice = order.getOrderBaseInfo().getTotalRefundPrice();// 退款金额
 			String RefundFee = String.valueOf(Double.valueOf(RefundPrice*100).intValue());// 退款金额，以分为单位
 			String OrderTradeNo=order.getOrderBaseInfo().getOrderTradeNo();//微信支付订单号
 			String WxpayRefundCert=cinemapaymentsettings.getWxpayRefundCert();

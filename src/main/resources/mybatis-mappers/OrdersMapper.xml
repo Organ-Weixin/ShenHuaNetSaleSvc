@@ -552,6 +552,9 @@
 			<if test="TotalCinemaAllowance != null">
 				TotalCinemaAllowance = #{TotalCinemaAllowance}, 
 			</if>
+			<if test="TotalRefundPrice != null">
+				TotalRefundPrice = #{TotalRefundPrice}, 
+			</if>
 
 		</set>
 

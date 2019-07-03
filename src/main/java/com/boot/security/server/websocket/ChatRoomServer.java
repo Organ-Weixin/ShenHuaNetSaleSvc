@@ -208,6 +208,7 @@ public class ChatRoomServer {
                         return;
                     }
                     Roomgiftsend giftSendRecords = new Roomgiftsend();
+                    giftSendRecords.setCinemaCode(roomGift.getCinemaCode());
                     giftSendRecords.setGiftName(roomGift.getGiftName()); //奖品名
                     giftSendRecords.setSendNumber(roomGift.getSendNumber()); //发送数量
                     giftSendRecords.setGiftCode("");
@@ -258,6 +259,7 @@ public class ChatRoomServer {
                 	}
                     
                     Roomgiftsend giftSendRecords = new Roomgiftsend();
+                    giftSendRecords.setCinemaCode(roomGift.getCinemaCode());
                     giftSendRecords.setGiftName(roomGift.getGiftName()); //奖品名
                     giftSendRecords.setSendNumber(roomGift.getSendNumber()); //发送数量
                     //giftSendRecords.setMemo(couponsgroup.getCouponsName());
@@ -320,6 +322,7 @@ public class ChatRoomServer {
                         calendar.add(Calendar.MINUTE,30);
                         Date overTime = calendar.getTime();
                         Roomgiftuser roomgiftuser = new Roomgiftuser();
+                        roomgiftuser.setCinemaCode(roomGift.getCinemaCode());
                         roomgiftuser.setGiftCode(prizeInfo[0]);
                         roomgiftuser.setOpenID(phoneOrOpenid);
                         //roomgift.setMemo(chatRoomGift.getMemo());
@@ -360,6 +363,7 @@ public class ChatRoomServer {
                         sendMessage(phoneOrOpenid+roomName,chatMessage.toString());
                     }else{ //领优惠券
                     	 Roomgiftuser roomgiftuser = new Roomgiftuser();
+                    	 roomgiftuser.setCinemaCode(roomGift.getCinemaCode());
                     	 roomgiftuser.setGiftCode(prizeInfo[0]);
                     	 roomgiftuser.setOpenID(phoneOrOpenid);
                          //roomgift.setMemo(chatRoomGift.getMemo());

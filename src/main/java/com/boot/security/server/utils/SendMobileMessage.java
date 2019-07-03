@@ -1,11 +1,7 @@
 package com.boot.security.server.utils;
 
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
-
-import java.util.Map;
 
 /**
  * 批量发送短信(支持单条发送)
@@ -32,11 +28,12 @@ public class SendMobileMessage {
                 params=params+"&batchNum="+batchNum;
             }
             String re = HttpHelper.sendPost(SENDURL, params);
-            // 将发送短信验证码接口返回json字符串转成Map集合
-            Map<String, Object> resultMap = JSON.parseObject(re);
-            if(resultMap.get("errorCode").toString().equals("000000")){ //发送成功
+            /*Map<String,String> reMap = (Map) JsonUtils.deserializeJson(re);
+            if(reMap.get("errorCode").equals("000000")){ //发送成功
                 return "0";
-            }
+            }*/
+            return "0";
+            //return reMap.toString();
         }catch (Exception e){
             e.printStackTrace();
         }

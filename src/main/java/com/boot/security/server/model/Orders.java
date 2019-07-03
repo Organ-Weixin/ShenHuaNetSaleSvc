@@ -57,6 +57,7 @@ public class Orders  extends BaseEntity<Long>{
 	private Double CouponsPrice;
 	private Double TotalAddFee;
 	private Double TotalCinemaAllowance;
+	private Double TotalRefundPrice;
 	
 	public Orderseatdetails getOrderseatdetails() {
 		return Orderseatdetails;
@@ -377,6 +378,12 @@ public class Orders  extends BaseEntity<Long>{
 	}
 	public void setTotalCinemaAllowance(Double totalCinemaAllowance) {
 		TotalCinemaAllowance = totalCinemaAllowance;
+	}
+	public Double getTotalRefundPrice() {
+		return TotalRefundPrice;
+	}
+	public void setTotalRefundPrice(Double totalRefundPrice) {
+		TotalRefundPrice = totalRefundPrice;
 	}
 	
 

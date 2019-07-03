@@ -80,6 +80,7 @@ import com.boot.security.server.service.impl.GoodsTypeServiceImpl;
 import com.boot.security.server.service.impl.GoodscomponentsServiceImpl;
 import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
+import com.boot.security.server.utils.DoubleUtil;
 import com.boot.security.server.utils.FileUploadUtils;
 import com.boot.security.server.utils.SendMobileMessage;
 import com.boot.security.server.utils.SendSmsHelper;
@@ -119,7 +120,7 @@ public class AppGoodsController {
 	@Autowired
 	private CinemamessageServiceImpl cinemamessageService;
 	
-	//region 查询影院卖品信息.
+	//region 查询影院卖品信息
 	@GetMapping("/QueryGoods/{UserName}/{Password}/{CinemaCode}")
 	@ApiOperation(value = "查询影院卖品信息")
 	public QueryGoodsReply QueryGoods(@PathVariable String UserName, @PathVariable String Password, @PathVariable String CinemaCode){
@@ -494,8 +495,8 @@ public class AppGoodsController {
 		_goodsOrderService.UpdateOrderBaseInfo(order.getOrderBaseInfo());
 		
 		//region 准备支付参数
-		//总支付金额=总结算金额
-		Double TotalPrice = order.getOrderBaseInfo().getTotalSettlePrice();
+		//总支付金额=总结算金额+服务费-优惠金额
+		Double TotalPrice=DoubleUtil.sub(DoubleUtil.add(order.getOrderBaseInfo().getTotalSettlePrice(), order.getOrderBaseInfo().getTotalFee()),order.getOrderBaseInfo().getCouponsPrice());
 		Calendar cal=Calendar.getInstance();
 		String WxpayAppId = cinemapaymentsettings.getWxpayAppId();
 		String strbody = cinemapaymentsettings.getCinemaName() + "-"

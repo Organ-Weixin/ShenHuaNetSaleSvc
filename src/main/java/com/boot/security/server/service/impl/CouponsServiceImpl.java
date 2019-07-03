@@ -135,6 +135,8 @@ public class CouponsServiceImpl implements CouponsService{
 				if(ifCanUse && couponsview.getCouponsgroup().getReductionType()==1){
 					order.setCouponsCode(couponsview.getCoupons().getCouponsCode());
 					order.setCouponsPrice(couponsview.getCouponsgroup().getReductionPrice());
+					//现在不减，实际支付时再减
+					//Double TotalSalePrice=DoubleUtil.sub(order.getTotalSalePrice(), order.getCouponsPrice());
                 }else{
                 	order.setCouponsPrice(0D);
                 }
@@ -143,13 +145,7 @@ public class CouponsServiceImpl implements CouponsService{
 			}
 		}else{
 			order.setCouponsPrice(0D);
-		}   
-		Double TotalSalePrice=DoubleUtil.sub(order.getTotalSalePrice(), order.getCouponsPrice());
-		if(TotalSalePrice<0){
-			TotalSalePrice=0D;
-			order.setCouponsPrice(order.getTotalSalePrice());
 		}
-		order.setTotalSalePrice(TotalSalePrice);
 		return order;
 	}
     public Goodsorders updateCouponsPricetoGoodsOrder(Goodsorders order,String CouponsCode){
@@ -176,6 +172,9 @@ public class CouponsServiceImpl implements CouponsService{
 					//如果到最后还是可以使用
 					order.setCouponsCode(couponsview.getCoupons().getCouponsCode());
 					order.setCouponsPrice(couponsview.getCouponsgroup().getReductionPrice());
+					//卖品总结算价=总结算价+总服务费-优惠券金额
+					//先不改金额，实际支付时修改
+			    	//Double TotalSettlePrice=DoubleUtil.sub(DoubleUtil.add(order.getTotalSettlePrice(), order.getTotalFee()),order.getCouponsPrice());
 				}else{
 					order.setCouponsPrice(0D);//优惠券不可使用
 				}
@@ -185,13 +184,6 @@ public class CouponsServiceImpl implements CouponsService{
 		}else{
 			order.setCouponsPrice(0D);
 		}
-    	//卖品总结算价=总结算价+总服务费-优惠券金额
-    	Double TotalSettlePrice=DoubleUtil.sub(DoubleUtil.add(order.getTotalSettlePrice(), order.getTotalFee()),order.getCouponsPrice());
-    	if(TotalSettlePrice<0){
-    		TotalSettlePrice=0D;
-    		order.setCouponsPrice(order.getTotalSettlePrice());
-    	}
-    	order.setTotalSettlePrice(TotalSettlePrice);
     	return order;
 	}
 
