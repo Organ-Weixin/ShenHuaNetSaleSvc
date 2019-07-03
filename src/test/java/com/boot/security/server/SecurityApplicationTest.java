@@ -793,7 +793,7 @@ public class SecurityApplicationTest {
 	}
 	@Test
 	public void RefundGoodsMid(){
-		System.out.println(new Gson().toJson(new NetSaleSvcCore().RefundGoods("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33097601", "e7962cfcf6b147a3bf50", "")));
+		System.out.println(new Gson().toJson(new NetSaleSvcCore().RefundGoods("MiniProgram", "6BF477EBCC446F54E6512AFC0E976C41", "33097601", "e7962cfcf6b147a3bf50")));
 	}
 	@Test
 	public void SubmitMixOrderMid() throws JsonSyntaxException, Exception{

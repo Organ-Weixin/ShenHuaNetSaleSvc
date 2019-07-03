@@ -31,11 +31,11 @@
 										</div>
 									</form>
 	                   			</td>
-	                   			<!-- <td align="right">
-	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addMembercardlevel.html'">
-                                      <i class="layui-icon">&#xe608;</i> 添加
+	                   			<td align="right">
+	                   				<button class="layui-btn layui-btn-sm" id="getCardLevel">
+                                      <i class="layui-icon">&#xe608;</i> 获取影院会员卡类别
                                     </button>
-	                   			</td> -->
+	                   			</td>
 	                   		</tr> 
 	                    </table>
 					</div>
@@ -265,4 +265,30 @@ function getCinemaCodes(id,roleId){
 		}
 	})
 }
+
+//获取影院会员卡类别
+$("#getCardLevel").click(function(){
+	console.log($("#cinemaName").val());
+	var cinemacode = $("#cinemaName").val();
+	if(cinemacode == null || cinemacode == ""){
+		alert("请先选择影院！");
+	} else {
+		$.ajax({
+			url:'/membercardlevels/'+cinemacode,
+			type:'post',
+			contentType: "application/json; charset=utf-8",
+			success:function(data){
+				if(data.Status == "Success"){
+					example.ajax.reload();
+		            layer.msg("获取成功");
+				} else {
+					alert("获取失败！");
+				}
+			},
+			error:function(e){
+	            alert("获取失败！");
+	        }
+		});
+	}
+});
 </script>

@@ -202,7 +202,9 @@ public class AppGoodsController {
 			if(reply.Status.equals("Success")){
 				try{
 					Goodsorders goodsorders=_goodsOrderService.getByOrderCode(reply.getOrder().getOrderCode());
-					Cinemamessage cinemamessage=cinemamessageService.getByMessageType("2");
+					//自取和配送使用不通的短信模版
+					Cinemamessage cinemamessage= goodsorders.getDeliveryType()==1 ? cinemamessageService.getByMessageType("6"):cinemamessageService.getByMessageType("7");
+
 					Cinema cinema = _cinemaService.getByCinemaCode(goodsorders.getCinemaCode());
 					String batchNum=UUID.randomUUID().toString().replace("-","");
 					String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent();
@@ -505,8 +507,6 @@ public class AppGoodsController {
 		String WxpayKey = cinemapaymentsettings.getWxpayKey();
 		String weburl = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort();
 		String NotifyUrl = weburl+"/Api/Goods/WxPayNotify";
-//		String NotifyUrl = "https://xc.80piao.com:8443/Api/Goods/WxPayNotify";// 暂时,本地测试用
-		System.out.println("url"+NotifyUrl);
 		String OpenId = order.getOrderBaseInfo().getOpenID();
 		String TradeNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + QueryJson.getCinemaCode()
 				+ order.getOrderBaseInfo().getId();
@@ -544,7 +544,7 @@ public class AppGoodsController {
 					_goodsOrderService.UpdateOrderBaseInfo(order);
 				}
 				// 更新优惠券已使用
-				if (order.getCouponsCode() != null && !"".equals(order.getCouponsCode())) {
+				if (!order.getCouponsCode().equals(null)&&!order.getCouponsCode().equals("")) {
 					CouponsView couponsview=_couponsService.getWithCouponsCode(order.getCouponsCode());
 					if(couponsview!=null){
 						couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
@@ -663,7 +663,7 @@ public class AppGoodsController {
 				order.setRefundTime(new Date());
 				_goodsOrderService.update(order);
 				//退优惠券
-				if(order.getCouponsCode() != null && !"".equals(order.getCouponsCode())){
+				if(!order.getCouponsCode().equals(null)&&!order.getCouponsCode().equals("")){
 					CouponsView couponsview = _couponsService.getWithCouponsCode(order.getCouponsCode());
 					if(couponsview!=null){
 						couponsview.getCoupons().setStatus(CouponsStatusEnum.Fetched.getStatusCode());

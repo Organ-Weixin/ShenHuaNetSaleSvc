@@ -93,17 +93,20 @@
 				contentType: "application/json; charset=utf-8",  
 				data : JSON.stringify(formdata),
 				success : function(data) {
+					completeLoading();
 					if("Success" == data.Status){
-						completeLoading();
 						layer.msg("获取成功", {shift: -1, time: 1000}, function(){
 	                        location.href = "sessioninfoList.html";
 	                    });
 					} else {
-						completeLoading();
 						layer.msg(data.ErrorMessage);
 					}
 					
-				}
+				},
+				error:function(e){
+					completeLoading();
+		            alert("获取失败！");
+		        }
 			});
 		}
 		

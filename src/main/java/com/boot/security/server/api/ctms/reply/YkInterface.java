@@ -48,6 +48,7 @@ import com.boot.security.server.model.Goods;
 import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.Goodsorderdetails;
+import com.boot.security.server.model.Goodstype;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
 import com.boot.security.server.model.Membercardrecharge;
@@ -68,6 +69,7 @@ import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
+import com.boot.security.server.service.impl.GoodsTypeServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.MembercardrechargeServiceImpl;
@@ -91,6 +93,7 @@ public class YkInterface implements ICTMSInterface {
 	MemberCardLevelServiceImpl memberCardLevelService = SpringUtil.getBean(MemberCardLevelServiceImpl.class);
 	MembercardrechargeServiceImpl membercardrechargeService = SpringUtil.getBean(MembercardrechargeServiceImpl.class);
 	GoodsServiceImpl goodsService = SpringUtil.getBean(GoodsServiceImpl.class);
+	GoodsTypeServiceImpl _goodsTypeService = SpringUtil.getBean(GoodsTypeServiceImpl.class);
 	CinemaMiniProgramAccountsServiceImpl _cinemaMiniProgramAccountsService = SpringUtil.getBean(CinemaMiniProgramAccountsServiceImpl.class);
 	CouponsServiceImpl _couponsService = SpringUtil.getBean(CouponsServiceImpl.class);
 	/*
@@ -113,9 +116,9 @@ public class YkInterface implements ICTMSInterface {
 		YkGetCinemasResult CinemaListResult = gson.fromJson(getCinemasResult, YkGetCinemasResult.class);
 		if ("0".equals(CinemaListResult.getRetCode())) {
 			if("SUCCESS".equals(CinemaListResult.getData().getBizCode())){
-//				List<FHJYCinema> cinemaList=CinemaListResult.getData().getDataList().stream().
-//						filter((FHJYCinema cinema)->cinema.getCinemaId().equals(userCinema.getCinemaCode())).collect(Collectors.toList());
-				List<YkCinema> cinemaList = CinemaListResult.getData().getDataList();
+				List<YkCinema> cinemaList=CinemaListResult.getData().getDataList().stream().
+						filter((YkCinema cinema)->cinema.getCinemaId().equals(userCinema.getCinemaCode())).collect(Collectors.toList());
+//				List<YkCinema> cinemaList = CinemaListResult.getData().getDataList();
 				for(YkCinema fCinema : cinemaList){
 					//更新或添加影院信息
 	            	Cinema cinema = _cinemaService.getByCinemaCode(fCinema.getCinemaId());
@@ -1827,7 +1830,7 @@ public class YkInterface implements ICTMSInterface {
 						newGoods = new Goods();
 						newGoods.setCinemaCode(userCinema.getCinemaCode());
 						newGoods.setUserId(userCinema.getUserId());
-						newGoods.setGoodsType("1");		//接口无返回，默认1
+						
 						newGoods.setIsRecommand(0); 	//接口无返回，默认0
 						newGoods.setStockCount(99);		//接口无返回，
 						newGoods.setShowSeqNo(0);		//接口无返回，默认0
@@ -1840,8 +1843,22 @@ public class YkInterface implements ICTMSInterface {
 						newGoods.setUpdated(new Date());
 						goodsService.update(newGoods);	//修改已有的
 					}
-					
 				}
+				
+				if(goodsResultlist.size() > 0){
+					goodslist = goodsService.getByCinemaCode(userCinema.getUserId(), userCinema.getCinemaCode());
+					for(Goods goods : goodslist){
+						Goodstype  goodstype = _goodsTypeService.getByTypeCode(goods.getCinemaCode(), goods.getGoodsType());
+						if(goodstype == null){
+							goodstype = new Goodstype();
+							goodstype.setCinemaCode(goods.getCinemaCode());
+							goodstype.setTypeCode(goods.getGoodsType());
+							goodstype.setTypeName("卖品");
+							_goodsTypeService.save(goodstype);		//插入卖品分类表
+						}
+					}
+				}
+				
 				reply.Status = StatusEnum.Success;
 			} else {
 				reply.Status = StatusEnum.Failure;

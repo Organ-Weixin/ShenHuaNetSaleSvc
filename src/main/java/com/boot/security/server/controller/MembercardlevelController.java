@@ -19,6 +19,8 @@ import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
+import com.boot.security.server.api.core.NetSaleSvcCore;
+import com.boot.security.server.api.core.QueryCardLevelReply;
 import com.boot.security.server.dao.MembercardlevelDao;
 import com.boot.security.server.model.Membercardlevel;
 
@@ -77,6 +79,15 @@ public class MembercardlevelController {
     @ApiOperation(value = "删除")
     public void delete(@PathVariable Long id) {
         membercardlevelDao.delete(id);
+    }
+    
+    @PostMapping("/{cinemaCode}")
+    @ApiOperation(value = "获取影院的会员卡类别")
+    public QueryCardLevelReply getCardLevel(@PathVariable String cinemaCode){
+    	String UserName = "MiniProgram";
+    	String Password = "6BF477EBCC446F54E6512AFC0E976C41";
+    	
+    	return NetSaleSvcCore.getInstance().QueryCardLevel(UserName, Password, cinemaCode);
     }
     
     @RequestMapping("/changeStatus")

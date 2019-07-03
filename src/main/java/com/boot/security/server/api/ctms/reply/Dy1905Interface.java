@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.alibaba.fastjson.JSON;
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaAllSessionResult.ResBean.SessionsBean.SessionBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaAllSessionResult.ResBean.SessionsBean.SessionBean.FilmsBean.SessionFilmBean;
 import com.boot.security.server.api.ctms.reply.Dy1905GetCinemaResult.ResBean.CinemasBean.CinemaBean;
@@ -36,6 +35,7 @@ import com.boot.security.server.model.GoodsOrderStatusEnum;
 import com.boot.security.server.model.GoodsOrderView;
 import com.boot.security.server.model.Goodsorderdetails;
 import com.boot.security.server.model.Goodsorders;
+import com.boot.security.server.model.Goodstype;
 import com.boot.security.server.model.LoveFlagEnum;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardlevel;
@@ -57,6 +57,7 @@ import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.GoodsServiceImpl;
+import com.boot.security.server.service.impl.GoodsTypeServiceImpl;
 import com.boot.security.server.service.impl.GoodsorderdetailsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
@@ -86,6 +87,7 @@ public class Dy1905Interface implements ICTMSInterface {
 	MemberCardServiceImpl memberCardService = SpringUtil.getBean(MemberCardServiceImpl.class);
 	MemberCardLevelServiceImpl memberCardLevelService = SpringUtil.getBean(MemberCardLevelServiceImpl.class);
 	GoodsServiceImpl goodsService = SpringUtil.getBean(GoodsServiceImpl.class);
+	GoodsTypeServiceImpl _goodsTypeService = SpringUtil.getBean(GoodsTypeServiceImpl.class);
 	GoodsOrderServiceImpl goodsOrderService = SpringUtil.getBean(GoodsOrderServiceImpl.class);
 	GoodsorderdetailsServiceImpl goodsorderdetailsService = SpringUtil.getBean(GoodsorderdetailsServiceImpl.class);
 	UserCinemaViewServiceImpl userCinemaViewService = SpringUtil.getBean(UserCinemaViewServiceImpl.class);
@@ -1410,37 +1412,53 @@ public class Dy1905Interface implements ICTMSInterface {
 			Gson gson = new Gson();
 			Dy1905GoodsListResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(GoodsListResult,"GoodsListResult"), Dy1905GoodsListResult.class);
 			if(Dy1905Reply.getGoodsListResult().getResultCode().equals("0")){
-				List<GoodBean> dy1905goodList =  Dy1905Reply.getGoodsListResult().getGoods().getGood();
-				List<Goods> goodsList = goodsService.getByCinemaCode(userCinema.getUserId(), userCinema.getCinemaCode());
-				for(Goods goods : goodsList){
-					boolean flag = true;
-					for(GoodBean goodsResult : dy1905goodList){
-						if(goods.getGoodsCode().equals(goodsResult.getSerial())){
-							flag = false;
-							break;
+				if(Dy1905Reply.getGoodsListResult().getGoods() != null){
+					List<GoodBean> dy1905goodList =  Dy1905Reply.getGoodsListResult().getGoods().getGood();
+					List<Goods> goodsList = goodsService.getByCinemaCode(userCinema.getUserId(), userCinema.getCinemaCode());
+					for(Goods goods : goodsList){
+						boolean flag = true;
+						for(GoodBean goodsResult : dy1905goodList){
+							if(goods.getGoodsCode().equals(goodsResult.getSerial())){
+								flag = false;
+								break;
+							}
+						}
+						if(flag){
+							//删除本地有的而查出来没有的
+							goodsService.deleteByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), goods.getGoodsCode());
 						}
 					}
-					if(flag){
-						//删除本地有的而查出来没有的
-						goodsService.deleteByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), goods.getGoodsCode());
+					for(GoodBean dy1905good : dy1905goodList){
+						Goods goods = goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), dy1905good.getSerial());
+						if(goods==null){
+							goods = new Goods();
+							goods.setCinemaCode(userCinema.getCinemaCode());
+							goods.setUserId(userCinema.getUserId());
+							goods.setShowSeqNo(1);		//接口无返回，默认1
+							goods.setIsDiscount(0);
+							goods.setGoodsStatus(1);
+							goods.setIsPackage(0);
+							goods.setIsRecommand(0);
+							Dy1905ModelMapper.MaptoEntity(dy1905good, goods);
+							goodsService.save(goods);
+						}else{
+							Dy1905ModelMapper.MaptoEntity(dy1905good, goods);
+							goodsService.update(goods);
+						}
 					}
-				}
-				for(GoodBean dy1905good : dy1905goodList){
-					Goods goods = goodsService.getByCinemaCodeAndGoodsCode(userCinema.getCinemaCode(), dy1905good.getSerial());
-					if(goods==null){
-						goods = new Goods();
-						goods.setGoodsType("1");
-						goods.setCinemaCode(userCinema.getCinemaCode());
-						goods.setUserId(userCinema.getUserId());
-						goods.setIsDiscount(0);
-						goods.setGoodsStatus(1);
-						goods.setIsPackage(0);
-						goods.setIsRecommand(0);
-						Dy1905ModelMapper.MaptoEntity(dy1905good, goods);
-						goodsService.save(goods);
-					}else{
-						Dy1905ModelMapper.MaptoEntity(dy1905good, goods);
-						goodsService.update(goods);
+					
+					if(dy1905goodList.size() > 0){
+						goodsList = goodsService.getByCinemaCode(userCinema.getUserId(), userCinema.getCinemaCode());
+						for(Goods goods : goodsList){
+							Goodstype  goodstype = _goodsTypeService.getByTypeCode(goods.getCinemaCode(), goods.getGoodsType());
+							if(goodstype == null){
+								goodstype = new Goodstype();
+								goodstype.setCinemaCode(goods.getCinemaCode());
+								goodstype.setTypeCode(goods.getGoodsType());
+								goodstype.setTypeName("卖品");
+								_goodsTypeService.save(goodstype);		//插入卖品分类表
+							}
+						}
 					}
 				}
 				reply.Status = StatusEnum.Success;
