@@ -33,6 +33,7 @@ public class Sessioninfo {
 	private String InternalUpdateTime;
 	private String MarketingCode;
 	private String MarketingName;
+	private String SeatVersion;	//对应的座位图版本编码,云智专用
 	
 	private Cinema cinema;
 	private Screeninfo screeninfo;
@@ -234,6 +235,12 @@ public class Sessioninfo {
 	}
 	public void setMarketingName(String marketingName) {
 		MarketingName = marketingName;
+	}
+	public String getSeatVersion() {
+		return SeatVersion;
+	}
+	public void setSeatVersion(String seatVersion) {
+		SeatVersion = seatVersion;
 	}
 	public Filminfo getFilminfo() {
 		return Filminfo;

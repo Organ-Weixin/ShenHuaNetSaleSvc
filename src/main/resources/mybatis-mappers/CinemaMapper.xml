@@ -159,6 +159,9 @@
 			<if test="CinemaId != null">
 				CinemaId = #{CinemaId}, 
 			</if>
+			<if test="QmmCinemaId != null">
+				QmmCinemaId = #{QmmCinemaId}, 
+			</if>
 			<if test="IsUseLowestPriceReport != null">
 				IsUseLowestPriceReport = #{IsUseLowestPriceReport}, 
 			</if>

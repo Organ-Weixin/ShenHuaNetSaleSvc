@@ -29,7 +29,7 @@ public class YkModelMapper {
         entity.setStandardPrice(Double.parseDouble(model.getStandardPrice()));
         entity.setLowestPrice(Double.parseDouble(model.getLowestPrice()));
         entity.setSettlePrice(Double.parseDouble(model.getSettlePrice()==null?"0":model.getSettlePrice()));
-        entity.setTicketFee(Double.parseDouble(model.getTicketFee()));
+        entity.setTicketFee(Double.parseDouble(model.getTicketFee()==null?"0":model.getTicketFee()));
         entity.setAddFee(0.0);	//增值服务费,接口没返回，默认0
         entity.setCinemaAllowance(0.0);	//影院补贴,接口没返回，默认0
         entity.setIsAvalible(1);
@@ -111,10 +111,8 @@ public class YkModelMapper {
 		
 		if(model.getIsPackage()){			//是否套餐
 			entity.setIsPackage(1);
-			entity.setGoodsType("4");		//接口无返回，套餐默认4
 		} else {
 			entity.setIsPackage(0);
-			entity.setGoodsType("1");		//接口无返回，非套餐默认1
 		}
 		return entity;
 	}

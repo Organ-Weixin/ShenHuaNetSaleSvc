@@ -27,6 +27,7 @@ public class Cinema extends BaseEntity<Long> {
 	private Date Created;
 	private Date Updated;
 	private String CinemaId;
+	private String QmmCinemaId;
 	private Integer IsUseLowestPriceReport;
 	private Integer IsGeneralStore;
 	private Integer OverRefundTime;//开场前几分钟不可以退票
@@ -178,7 +179,12 @@ public class Cinema extends BaseEntity<Long> {
 	public void setCinemaId(String CinemaId) {
 		this.CinemaId = CinemaId;
 	}
-	
+	public String getQmmCinemaId() {
+		return QmmCinemaId;
+	}
+	public void setQmmCinemaId(String qmmCinemaId) {
+		QmmCinemaId = qmmCinemaId;
+	}
 	public Integer getIsUseLowestPriceReport() {
 		return IsUseLowestPriceReport;
 	}

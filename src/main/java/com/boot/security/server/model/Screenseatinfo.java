@@ -18,6 +18,7 @@ public class Screenseatinfo extends BaseEntity<Long> {
 	private String Type;
 	private Date UpdateTime;
 	private String SeatId;
+	private String SeatVersion;
 
 	public Long getId() {
 		return Id;
@@ -103,5 +104,11 @@ public class Screenseatinfo extends BaseEntity<Long> {
 	public void setSeatId(String SeatId) {
 		this.SeatId = SeatId;
 	}
-
+	public String getSeatVersion() {
+		return SeatVersion;
+	}
+	public void setSeatVersion(String seatVersion) {
+		SeatVersion = seatVersion;
+	}
+	
 }

@@ -46,7 +46,7 @@ public interface ScreenseatinfoDao {
     int update(Screenseatinfo screenseatinfo);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into screenseatinfo(CinemaCode, ScreenCode, SeatCode, GroupCode, RowNum, ColumnNum, XCoord, YCoord, Status, LoveFlag, Type, UpdateTime, SeatId) values(#{CinemaCode}, #{ScreenCode}, #{SeatCode}, #{GroupCode}, #{RowNum}, #{ColumnNum}, #{XCoord}, #{YCoord}, #{Status}, #{LoveFlag}, #{Type}, #{UpdateTime}, #{SeatId})")
+    @Insert("insert into screenseatinfo(CinemaCode, ScreenCode, SeatCode, GroupCode, RowNum, ColumnNum, XCoord, YCoord, Status, LoveFlag, Type, UpdateTime, SeatId, SeatVersion) values(#{CinemaCode}, #{ScreenCode}, #{SeatCode}, #{GroupCode}, #{RowNum}, #{ColumnNum}, #{XCoord}, #{YCoord}, #{Status}, #{LoveFlag}, #{Type}, #{UpdateTime}, #{SeatId}, #{SeatVersion})")
     int save(Screenseatinfo screenseatinfo);
     
     int count(@Param("params") Map<String, Object> params);

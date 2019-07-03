@@ -211,7 +211,9 @@
 			<if test="InternalUpdateTime != null">
 				InternalUpdateTime = #{InternalUpdateTime}, 
 			</if>
-
+			<if test="SeatVersion != null">
+				SeatVersion = #{SeatVersion}, 
+			</if>
 		</set>
 
 		where t.id = #{id}

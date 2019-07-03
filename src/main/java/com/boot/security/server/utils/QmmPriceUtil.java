@@ -26,15 +26,23 @@ public class QmmPriceUtil {
 
 	private static final String CHANNEL_ID = "30027";
     private static final String KEY = "3b82e0e1c787f8abf337c2c2c8ce7101";
-    private static final String FILM_URL = "http://webapi2.qingbh.com/manman/index.php/open/partner/queryFilms";  //查询影片列表
+    private static final String CITY_URL = "http://webapi2.qingbh.com/manman/index.php/open/partner/queryCitys";  		//查询城市地区
+    private static final String CINEMA_URL = "http://webapi2.qingbh.com/manman/index.php/open/partner/queryCinemas";  	//查询地区影院
+    private static final String FILM_URL = "http://webapi2.qingbh.com/manman/index.php/open/partner/queryFilms";  		//查询影片列表
     private static final String SCREEN_URL="http://webapi2.qingbh.com/manman/index.php/open/partner/getCinemaChannelPlays";	//查询第三方场次价格
     
     QmmpriceServiceImpl qmmpriceService = SpringUtil.getBean(QmmpriceServiceImpl.class);
     CinemaServiceImpl cinemaService = SpringUtil.getBean(CinemaServiceImpl.class);
     
+    
 	public String getQmmPrice(String cinemaCode) throws ParseException, IOException{
-		Long cinemaId = changeCinemaId(cinemaCode);
 		Cinema cinema = cinemaService.getByCinemaCode(cinemaCode);
+		Long cinemaId;
+		if(cinema.getQmmCinemaId() != null){
+			cinemaId = Long.valueOf(cinema.getQmmCinemaId());
+		} else {
+			return "请配置趣满满的影院编码";
+		}
 		
 		//查询影院内影片列表
 		StringBuffer buf1 = new StringBuffer();
@@ -131,6 +139,50 @@ public class QmmPriceUtil {
 		}
 		return "Success";
 	}
+	
+	/*
+	 * 查询地区列表
+	 */
+	public void QueryCitys() throws IOException{
+		StringBuffer buf1 = new StringBuffer();
+		buf1.append("channelId");
+		buf1.append(CHANNEL_ID);
+		buf1.append(KEY);//key值
+		String sign = MD5Util.MD5Encode(buf1.toString(), "UTF-8");
+		Map<String,Object> param = new LinkedHashMap<String,Object>();
+		param.put("channelId", CHANNEL_ID);
+		param.put("sign", sign);
+		
+		JSONObject returnCity = HttpHelper.sendHttp(param, CITY_URL);
+		System.out.println("接口返回："+returnCity);
+	}
+	
+	/*
+	 * 查询地区影院列表
+	 */
+	public void QueryCinemas(String cityId, int page, int step) throws IOException {
+		StringBuffer buf1 = new StringBuffer();
+		buf1.append("channelId");
+		buf1.append(CHANNEL_ID);
+		buf1.append("cityId");
+		buf1.append(Integer.parseInt(cityId));
+		buf1.append("page");
+		buf1.append(page);
+		buf1.append("step");
+		buf1.append(step);
+		buf1.append(KEY);//key值
+		String sign = MD5Util.MD5Encode(buf1.toString(), "UTF-8");
+		Map<String,Object> param = new LinkedHashMap<String,Object>();
+		param.put("channelId", CHANNEL_ID);
+		param.put("cityId", cityId);
+		param.put("page", page);
+		param.put("step", step);
+		param.put("sign", sign);
+		
+		JSONObject returnCinemas = HttpHelper.sendHttp(param, CINEMA_URL);
+		System.out.println("接口返回："+returnCinemas);
+	}
+	
 	
 	//本地的影院转换为趣满满的影院编码
 	public Long changeCinemaId(String cinemaCode){
