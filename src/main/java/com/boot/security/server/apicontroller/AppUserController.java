@@ -436,7 +436,8 @@ public class AppUserController {
 		ticketuser.setMobilePhone(input.getMobilePhone());
 		ticketuser.setVerifyCode(str.toString());
 		_ticketusersService.update(ticketuser);
-		
+
+		System.out.println(str);
 		//发送验证码到用户手机号
 		Cinema cinema = _cinemaService.getByCinemaCode(input.getCinemaCode());
 		Cinemamessage cinemamessage=cinemamessageService.getByMessageType("1");
@@ -933,16 +934,16 @@ public class AppUserController {
 			return updateUserInfoReply;
 		}
 		//更新用户信息
-		if(!userinfo.getBirthday().equals(null)&&!userinfo.getBirthday().equals("")){
+		if(userinfo.getBirthday()!=null&&!userinfo.getBirthday().equals("")){
 			ticketuser.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse(userinfo.getBirthday()));
 		}
-		if(!userinfo.getNickName().equals(null)&&!userinfo.getNickName().equals("")){
+		if(userinfo.getNickName()!=null&&!userinfo.getNickName().equals("")){
 			ticketuser.setNickName(userinfo.getNickName());
 		}
-		if(!userinfo.getSex().equals(null)&&!userinfo.getSex().equals("")){
+		if(userinfo.getSex()!=null&&!userinfo.getSex().equals("")){
 			ticketuser.setSex(Integer.valueOf(userinfo.getSex()));
 		}
-		if(!userinfo.getMobilePhone().equals(null)&&!userinfo.getMobilePhone().equals("")){
+		if(userinfo.getMobilePhone()!=null&&!userinfo.getMobilePhone().equals("")){
 			ticketuser.setMobilePhone(userinfo.getMobilePhone());
 		}
 		int result = _ticketusersService.update(ticketuser);
