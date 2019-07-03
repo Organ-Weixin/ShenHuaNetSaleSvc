@@ -119,7 +119,7 @@ public class AppGoodsController {
 	@Autowired
 	private CinemamessageServiceImpl cinemamessageService;
 	
-	//region 查询影院卖品信息
+	//region 查询影院卖品信息.
 	@GetMapping("/QueryGoods/{UserName}/{Password}/{CinemaCode}")
 	@ApiOperation(value = "查询影院卖品信息")
 	public QueryGoodsReply QueryGoods(@PathVariable String UserName, @PathVariable String Password, @PathVariable String CinemaCode){
