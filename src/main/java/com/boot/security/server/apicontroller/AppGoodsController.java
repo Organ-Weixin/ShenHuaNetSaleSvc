@@ -202,7 +202,9 @@ public class AppGoodsController {
 			if(reply.Status.equals("Success")){
 				try{
 					Goodsorders goodsorders=_goodsOrderService.getByOrderCode(reply.getOrder().getOrderCode());
-					Cinemamessage cinemamessage=cinemamessageService.getByMessageType("2");
+					//自取和配送使用不通的短信模版
+					Cinemamessage cinemamessage= goodsorders.getDeliveryType()==1 ? cinemamessageService.getByMessageType("6"):cinemamessageService.getByMessageType("7");
+
 					Cinema cinema = _cinemaService.getByCinemaCode(goodsorders.getCinemaCode());
 					String batchNum=UUID.randomUUID().toString().replace("-","");
 					String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent();

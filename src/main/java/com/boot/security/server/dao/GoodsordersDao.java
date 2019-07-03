@@ -1,14 +1,10 @@
 package com.boot.security.server.dao;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import com.boot.security.server.model.Goodsorders;
 
@@ -53,4 +49,11 @@ public interface GoodsordersDao {
     
     @Select("select * from goodsorders t where t.cinemacode = #{cinemacode} and t.openid = #{openid} and t.orderstatus = #{orderstatus}")
     List<Goodsorders> getUserGoodsOrders(@Param("cinemacode")String cinemacode,@Param("openid")String openid,@Param("orderstatus")Integer orderstatus);
+
+    //查询近期的配送订单,商家使用
+    @Select("select * from goodsorders where cinemacode = #{cinemacode} and orderpaytime > #{payTime} and deliverytype = 2 and orderStatus in (3,10) ")
+    List<Goodsorders> getRecentOrderByCinemaCode(Long cinemacode, Date payTime);
+
+    @Update("update goodsorders set orderStatus = #{status} where id = #{id}")
+    void updateOrderStatus(Long id,Integer status);
 }
