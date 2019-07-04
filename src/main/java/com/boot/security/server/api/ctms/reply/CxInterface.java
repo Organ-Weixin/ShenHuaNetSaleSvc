@@ -438,7 +438,6 @@ public class CxInterface implements ICTMSInterface {
 		} else {
 			reply.Status = StatusEnum.Failure;
 		}
-
 		reply.ErrorCode = cxReply.getCancelOrderResult().getResultCode();
 		reply.ErrorMessage = cxReply.getCancelOrderResult().getMessage();
 		return reply;
@@ -766,6 +765,7 @@ public class CxInterface implements ICTMSInterface {
 		CTMSQueryCardTradeRecordReply reply = new CTMSQueryCardTradeRecordReply();
 		CxQueryMemberFlowInfoResult cxReply = cxService.QueryMemberFlowInfo(userCinema, CardNo, CardPassword, StartDate,
 				EndDate, PageSize, PageNum);
+		log.info("交易记录返回"+new Gson().toJson(cxReply));
 		if (cxReply.getQueryMemberFlowInfoResult().getResultCode().equals("0")) {
 			List<CardTradeRecord> CardTradeRecords = new ArrayList<CardTradeRecord>();
 			if(cxReply.getQueryMemberFlowInfoResult().getTransFlowVOs()
