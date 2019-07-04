@@ -103,4 +103,19 @@ public class PrePayMixOrderQueryJson {
 		
 	}
 
+	@Override
+	public String toString() {
+		return "PrePayMixOrderQueryJson{" +
+				"UserName='" + UserName + '\'' +
+				", Password='" + Password + '\'' +
+				", CinemaCode='" + CinemaCode + '\'' +
+				", OrderCode='" + OrderCode + '\'' +
+				", CouponsCode='" + CouponsCode + '\'' +
+				", ReductionPrice=" + ReductionPrice +
+				", CouponsCode2='" + CouponsCode2 + '\'' +
+				", ReductionPrice2=" + ReductionPrice2 +
+				", Seats=" + Seats +
+				", GoodsList=" + GoodsList +
+				'}';
+	}
 }
