@@ -155,6 +155,9 @@ public class OrderController {
 	@RequestMapping(value = "/LockSeat", method = RequestMethod.POST)
 	@ApiOperation(value = "锁座")
 	public LockSeatReply LockSeat(@RequestBody NetSaleQueryJson QueryJson){
+
+		log.info("/Api/Order/LockSeat :"+QueryJson);
+
 		try {
 			LockSeatReply lockSeatReply =NetSaleSvcCore.getInstance().LockSeat(QueryJson.getUserName(),QueryJson.getPassword(),QueryJson.getQueryXml());
 			if(QueryJson.getOpenID().equals(null)||QueryJson.getOpenID().equals("")){
@@ -179,6 +182,9 @@ public class OrderController {
 	@PostMapping("/ReleaseSeat")
 	@ApiOperation(value = "解锁座位")
 	public ReleaseSeatReply ReleaseSeat(@RequestBody NetSaleQueryJson QueryJson){
+
+		log.info("/Api/Order/ReleaseSeat :"+QueryJson);
+
 		try {
 			ReleaseSeatReply releaseSeatReply = NetSaleSvcCore.getInstance().ReleaseSeat(QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getQueryXml());
 //			System.out.println("解锁成功+++++"+new Gson().toJson(releaseSeatReply));
@@ -194,6 +200,9 @@ public class OrderController {
 	@PostMapping("/SubmitOrder")
 	@ApiOperation(value = "提交订单")
 	public SubmitOrderReply SubmitOrder(@RequestBody NetSaleQueryJson QueryJson){
+
+		log.info("/Api/Order/SubmitOrder :"+QueryJson);
+
 		try {
 			SubmitOrderReply submitOrderReply = NetSaleSvcCore.getInstance().SubmitOrder(QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getQueryXml());
 //			System.out.println("提交成功+++++"+new Gson().toJson(submitOrderReply));
@@ -224,6 +233,9 @@ public class OrderController {
 	@PostMapping("/SubmitMixOrder")
 	@ApiOperation(value = "提交混合订单")
 	public SubmitMixOrderReply SubmitMixOrder(@RequestBody NetSaleQueryJson QueryJson){
+
+		log.info("/Api/Order/SubmitMixOrder :"+QueryJson);
+
 		try {
 			SubmitMixOrderReply reply = NetSaleSvcCore.getInstance().SubmitMixOrder(QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getQueryXml());
 
@@ -251,6 +263,9 @@ public class OrderController {
 	@ApiOperation(value = "查询订单")
 	public QueryTicketOrderReply QueryTicketOrder(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String OrderCode){
+
+		log.info("/Api/Order/QueryTicketOrder :"+UserName+"|"+Password+"|"+CinemaCode);
+
 		QueryTicketOrderReply ticketOrderReply = new QueryTicketOrderReply();
 		// 校验参数
 		if (!ReplyExtension.RequestInfoGuard(ticketOrderReply, UserName, Password, CinemaCode, OrderCode)) {
@@ -351,6 +366,9 @@ public class OrderController {
 	@ApiOperation(value = "查询本地订单")
 	public QueryLocalOrderReply QueryLocalOrder(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String LockOrderCode){
+
+		log.info("/Api/Order/QueryLocalOrder :"+UserName+"|"+Password+"|"+CinemaCode);
+
 		QueryLocalOrderReply orderReply = new QueryLocalOrderReply();
 		// 校验参数
 		if (!ReplyExtension.RequestInfoGuard(orderReply, UserName, Password, CinemaCode, LockOrderCode)) {
@@ -419,7 +437,9 @@ public class OrderController {
 	@ApiOperation(value = "用户未支付订单列表")
 	public QueryNonPayOrdersReply QueryNonPayOrders(@PathVariable String UserName, @PathVariable String Password, @PathVariable String CinemaCode, @PathVariable String OpenID,
 			@PathVariable String startDate, @PathVariable String endDate, @PathVariable String CurrentPage, @PathVariable String PageSize) throws Exception {
-		
+
+		log.info("/Api/Order/QueryNonPayOrders :"+UserName+"|"+Password+"|"+CinemaCode+"|"+OpenID+"|"+startDate+"|"+endDate+"|"+CurrentPage+"|"+PageSize);
+
 		QueryNonPayOrdersReply reply = new QueryNonPayOrdersReply();
 		// 校验参数
 		if (!ReplyExtension.RequestInfoGuard(reply, UserName, Password, CinemaCode, OpenID)) {
@@ -487,6 +507,9 @@ public class OrderController {
 	@ApiOperation(value = "查询影票信息")
 	public QueryTicketReply QueryTicket(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String PrintNo,@PathVariable String VerifyCode){
+
+		log.info("/Api/Order/QueryTicket :"+UserName+"|"+Password+"|"+CinemaCode+"|"+PrintNo+"|"+VerifyCode);
+
 		QueryTicketReply reply = NetSaleSvcCore.getInstance().QueryTicket(UserName, Password, CinemaCode, PrintNo, VerifyCode);
 //		System.out.println("查询影片----"+new Gson().toJson(reply));
 		return reply;
@@ -498,6 +521,9 @@ public class OrderController {
 	@ApiOperation(value = "查询出票状态")
 	public QueryPrintReply QueryPrint(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String PrintNo,@PathVariable String VerifyCode){
+
+		log.info("/Api/Order/QueryPrint :"+UserName+"|"+Password+"|"+CinemaCode+"|"+VerifyCode+"|"+PrintNo);
+
 		QueryPrintReply reply = NetSaleSvcCore.getInstance().QueryPrint(UserName, Password, CinemaCode, PrintNo, VerifyCode);
 //		System.out.println("查询出票状态----"+new Gson().toJson(reply));
 		return reply;
@@ -509,6 +535,9 @@ public class OrderController {
 	@ApiOperation(value = "退票")
 	public RefundTicketReply RefundTicket(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String PrintNo,@PathVariable String VerifyCode) throws Exception{
+
+		log.info("/Api/Order/RefundTicket :"+UserName+"|"+Password+"|"+CinemaCode+"|"+VerifyCode+"|"+PrintNo+"|"+VerifyCode);
+
 		RefundTicketReply reply = new RefundTicketReply();
 		//验证影院退票规则
 		//先获取影片开始时间
@@ -619,7 +648,9 @@ public class OrderController {
 	@ApiOperation(value = "用户购票订单列表")
 	public QueryUserOrdersReply QueryUserOrders(@PathVariable String UserName, @PathVariable String Password, @PathVariable String CinemaCode, @PathVariable String OpenID,
 			@PathVariable String startDate, @PathVariable String endDate, @PathVariable String CurrentPage, @PathVariable String PageSize) throws Exception {
-		
+
+		log.info("/Api/Order/QueryUserOrders :"+UserName+"|"+Password+"|"+CinemaCode+"|"+OpenID+"|"+startDate+"|"+endDate+"|"+CurrentPage+"|"+PageSize);
+
 		QueryUserOrdersReply reply = new QueryUserOrdersReply();
 		// 校验参数
 		if (!ReplyExtension.RequestInfoGuard(reply, UserName, Password, CinemaCode, OpenID,startDate,endDate,CurrentPage,PageSize)) {
@@ -698,7 +729,9 @@ public class OrderController {
 	@RequestMapping(value="/PrePayOrder",method = RequestMethod.POST)
 	@ApiOperation(value = "预支付订单")
 	public PrePayParametersReply PrePayOrder(@RequestBody PrePayOrderQueryJson QueryJson) throws IOException{
-		System.out.println(new Gson().toJson(QueryJson));
+
+		log.info("/Api/Order/QueryUserOrders :"+QueryJson);
+
 		PrePayParametersReply prePayParametersReply=new PrePayParametersReply();
 		// 校验参数
 		if (!ReplyExtension.RequestInfoGuard(prePayParametersReply, QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getCinemaCode(), QueryJson.getOrderCode(),QueryJson.getSeats())) {
@@ -775,6 +808,7 @@ public class OrderController {
 	// @RequestDescription("支付回调地址")
 	@ResponseBody
 	public void WxPayNotify(HttpServletRequest request) throws Exception {
+
 		// 读取返回内容
 		Map<String, String> returnmap = WxPayUtil.WxPayNotify(request);
 		log.info("++++++++++++++++"+new Gson().toJson(returnmap));
@@ -828,6 +862,9 @@ public class OrderController {
 	@ApiOperation(value = "退款")
 	public RefundPaymentReply RefundPayment(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String LockOrderCode) throws UnrecoverableKeyException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, IOException{
+
+		log.info("/Api/Order/RefundPayment :"+UserName+"|"+Password+"|"+CinemaCode+"|"+LockOrderCode);
+
 		RefundPaymentReply refundpaymentReply=new RefundPaymentReply();
 		// 校验参数
 		if (!ReplyExtension.RequestInfoGuard(refundpaymentReply, UserName, Password, CinemaCode, LockOrderCode)) {
@@ -920,6 +957,9 @@ public class OrderController {
 	@RequestMapping(value="/PrePayMixOrder",method = RequestMethod.POST)
 	@ApiOperation(value = "预支付联合订单")
 	public PrePayParametersReply PrePayMixOrder(@RequestBody PrePayMixOrderQueryJson QueryJson) throws IOException{
+
+		log.info("/Api/Order/PrePayMixOrder :"+QueryJson);
+
 		PrePayParametersReply prePayParametersReply=new PrePayParametersReply();
 		// 校验参数
 		if (!ReplyExtension.RequestInfoGuard(prePayParametersReply, QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getCinemaCode(), QueryJson.getOrderCode(),QueryJson.getSeats(),QueryJson.getGoodsList())) {
@@ -1012,6 +1052,9 @@ public class OrderController {
 	// @RequestDescription("支付回调地址")
 	@ResponseBody
 	public void WxPayMixNotify(HttpServletRequest request) throws Exception {
+
+		log.info("/Api/Order/WxPayMixNotify :");
+
 		// 读取返回内容
 		Map<String, String> returnmap = WxPayUtil.WxPayNotify(request);
 		if (returnmap.get("isWXsign").equals("True")) {
@@ -1100,6 +1143,9 @@ public class OrderController {
 	@ApiOperation(value = "联合支付退款")
 	public RefundPaymentReply RefundMixPayment(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String LockOrderCode) throws UnrecoverableKeyException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, IOException{
+
+		log.info("/Api/Order/RefundMixPayment :"+UserName+"|"+Password+"|"+CinemaCode+"|"+LockOrderCode);
+
 		RefundPaymentReply refundpaymentReply=new RefundPaymentReply();
 		// 校验参数
 		if (!ReplyExtension.RequestInfoGuard(refundpaymentReply, UserName, Password, CinemaCode, LockOrderCode)) {

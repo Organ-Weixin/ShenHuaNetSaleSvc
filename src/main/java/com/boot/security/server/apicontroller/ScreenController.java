@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,10 +51,16 @@ public class ScreenController {
 	@Autowired
 	private ScreenseatinfoServiceImpl _screenseatinfoService;
 
+	private static final Logger log = LoggerFactory.getLogger(SessionController.class);
+
+
 	//region 获取影厅列表
 	@GetMapping("/QueryScreens/{Username}/{Password}/{CinemaCode}")
 	@ApiOperation(value = "获取影厅列表")
     public QueryScreensReply QueryScreens(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode){
+
+		log.info("/Api/Screen/QueryScreens :"+Username+"|"+Password+"|"+CinemaCode);
+
 		QueryScreensReply queryScreensReply=new QueryScreensReply();
 		//校验参数
         if (!ReplyExtension.RequestInfoGuard(queryScreensReply,Username, Password, CinemaCode))
@@ -95,6 +103,9 @@ public class ScreenController {
 	@GetMapping("/QueryScreenInfo/{Username}/{Password}/{CinemaCode}/{ScreenCode}")
 	@ApiOperation(value = "根据影厅编码获取影厅信息")
 	public QueryScreenInfoReply QueryScreenInfo(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode, @PathVariable String ScreenCode){
+
+		log.info("/Api/Screen/QueryScreenInfo :"+Username+"|"+Password+"|"+CinemaCode+"|"+ScreenCode);
+
 		QueryScreenInfoReply queryScreenInfoReply = new QueryScreenInfoReply();
 		//校验参数
         if (!ReplyExtension.RequestInfoGuard(queryScreenInfoReply, Username, Password, CinemaCode, ScreenCode))
@@ -134,6 +145,9 @@ public class ScreenController {
 	@GetMapping("/QueryScreenSeats/{Username}/{Password}/{CinemaCode}/{ScreenCode}")
 	@ApiOperation(value = "根据影厅编码获取影厅座位信息")
 	public QueryScreenSeatsReply QueryScreenSeats(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode, @PathVariable String ScreenCode){
+
+		log.info("/Api/Screen/QueryScreenSeats :"+Username+"|"+Password+"|"+CinemaCode+"|"+ScreenCode);
+
 		QueryScreenSeatsReply queryScreenSeatsReply = new QueryScreenSeatsReply();
 		//校验参数
         if (!ReplyExtension.RequestInfoGuard(queryScreenSeatsReply, Username, Password, CinemaCode, ScreenCode))
@@ -182,6 +196,9 @@ public class ScreenController {
 	@GetMapping("/QueryScreenSeatsArrangement/{Username}/{Password}/{CinemaCode}/{ScreenCode}")
 	@ApiOperation(value = "根据影厅编码获取影厅座位信息(按坐标重新排列整合)")
 	public QueryScreenSeatsArrangementReply QueryScreenSeatsArrangement(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode, @PathVariable String ScreenCode){
+
+		log.info("/Api/Screen/QueryScreenSeatsArrangement :"+Username+"|"+Password+"|"+CinemaCode+"|"+ScreenCode);
+
 		QueryScreenSeatsArrangementReply queryScreenSeatsArrangementReply = new QueryScreenSeatsArrangementReply();
 		//校验参数
         if (!ReplyExtension.RequestInfoGuard(queryScreenSeatsArrangementReply, Username, Password, CinemaCode, ScreenCode))
