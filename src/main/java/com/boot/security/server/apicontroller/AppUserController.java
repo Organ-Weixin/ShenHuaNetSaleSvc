@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -159,14 +161,21 @@ public class AppUserController {
 	private SessioninfoServiceImpl sessioninfoService;
 	@Autowired
 	private CinemamessageServiceImpl cinemamessageService;
+	@Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
 	protected static Logger log = LoggerFactory.getLogger(AppUserController.class);
 	
 	@PostMapping("/UserLogin")
 	@ApiOperation(value = "用户登陆")
 	public UserLoginReply UserLogin(@RequestBody UserLoginInput userinput) throws ParseException{
+	    // 用户信息redis缓存key键的统一开头字符串
+	    final String userKeyHead = "user:";
+	    // 用户信息redis缓存的有效时间（8小时）
+	    final int effectiveTime = 60 * 60 * 8;
 		UserLoginReply userReply = new UserLoginReply();
 		// 校验参数
-		if (!ReplyExtension.RequestInfoGuard(userReply, userinput.getUserName(), userinput.getPassword(), 
+		if (!ReplyExtension.RequestInfoGuard(userReply, userinput.getUserName(), userinput.getPassword(),
 				userinput.getCinemaCode(), userinput.getCode(), userinput.getEncryptedData(), userinput.getIv())) {
 			return userReply;
 		}
@@ -194,7 +203,7 @@ public class AppUserController {
 		param.put("secret", miniProgramAccount.getAppSecret());
 		param.put("js_code", userinput.getCode());
 		param.put("grant_type", "authorization_code");
-		
+
 		String url="https://api.weixin.qq.com/sns/jscode2session";
 		String returnStr = HttpHelper.sendPostByUrlConnection(url, param, "UTF-8");
         Jscode2sessionReply jscode2sessionReply = new Gson().fromJson(returnStr, Jscode2sessionReply.class);
@@ -239,6 +248,32 @@ public class AppUserController {
         data.setIsActive(String.valueOf(ticketuser.getIsActive()));
         data.setRoll(ticketuser.getRoll());
         data.setCreated(ticketuser.getCreated()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ticketuser.getCreated()));
+
+        // 将用户信息存到Map里
+        Map<String, Object> userMap = new HashMap<>(17);
+        userMap.put("id", ticketuser.getId());
+        userMap.put("cinemaCode", ticketuser.getCinemaCode());
+        userMap.put("mobilePhone", ticketuser.getMobilePhone());
+        userMap.put("openID", ticketuser.getOpenID());
+        userMap.put("verifyCode", ticketuser.getVerifyCode());
+        userMap.put("isActive", ticketuser.getIsActive());
+        userMap.put("created", ticketuser.getCreated());
+        userMap.put("nickName", ticketuser.getNickName());
+        userMap.put("sex", ticketuser.getSex());
+        userMap.put("birthday", ticketuser.getBirthday());
+        userMap.put("country", ticketuser.getCountry());
+        userMap.put("province", ticketuser.getProvince());
+        userMap.put("city", ticketuser.getCity());
+        userMap.put("headImgUrl", ticketuser.getHeadImgUrl());
+        userMap.put("totalScore", ticketuser.getTotalScore());
+        userMap.put("language", ticketuser.getLanguage());
+        userMap.put("roll", ticketuser.getRoll());
+        // 设置用户信息缓存在redis里唯一的key键
+        String userRedisKey = userKeyHead + ticketuser.getOpenID();
+        // 将用户信息缓存存入redis
+        redisTemplate.opsForHash().putAll(userRedisKey, userMap);
+        // 设置用户信息redis缓存的有效时间
+        redisTemplate.expire(userRedisKey, effectiveTime, TimeUnit.SECONDS);
         //登陆送优惠券
         if(ticketuser.getOpenID()!=null){
         	//查询用户是否存在领取记录
@@ -300,12 +335,157 @@ public class AppUserController {
             	}
         	}
         }
-        
+
         userReply.setData(data);
         userReply.SetSuccessReply();
 		return userReply;
 	}
-	
+
+//	@PostMapping("/UserLogin")
+//	@ApiOperation(value = "用户登陆")
+//	public UserLoginReply UserLogin(@RequestBody UserLoginInput userinput) throws ParseException{
+//		UserLoginReply userReply = new UserLoginReply();
+//		// 校验参数
+//		if (!ReplyExtension.RequestInfoGuard(userReply, userinput.getUserName(), userinput.getPassword(),
+//				userinput.getCinemaCode(), userinput.getCode(), userinput.getEncryptedData(), userinput.getIv())) {
+//			return userReply;
+//		}
+//		// 获取用户信息
+//		Userinfo UserInfo = _userInfoService.getByUserCredential(userinput.getUserName(), userinput.getPassword());
+//		if (UserInfo == null) {
+//			userReply.SetUserCredentialInvalidReply();
+//			return userReply;
+//		}
+//		// 验证影院是否存在且可访问
+//		Usercinemaview userCinema = _userCinemaViewService.GetUserCinemaViewsByUserIdAndCinemaCode(UserInfo.getId(),userinput.getCinemaCode());
+//		if (userCinema == null) {
+//			userReply.SetCinemaInvalidReply();
+//			return userReply;
+//		}
+//		//验证并获取AppID和AppSecret
+//		CinemaMiniProgramAccounts miniProgramAccount = _miniProgramAccountsService.getByCinemaCode(userinput.getCinemaCode());
+//		if(miniProgramAccount == null){
+//			userReply.SetCinemaMiniProgramAccountNotExistReply();
+//			return userReply;
+//		}
+//		//获取sessionKey和openid
+//        Map<String,Object> param = new LinkedHashMap<String,Object>();
+//		param.put("appid", miniProgramAccount.getAppId());
+//		param.put("secret", miniProgramAccount.getAppSecret());
+//		param.put("js_code", userinput.getCode());
+//		param.put("grant_type", "authorization_code");
+//
+//		String url="https://api.weixin.qq.com/sns/jscode2session";
+//		String returnStr = HttpHelper.sendPostByUrlConnection(url, param, "UTF-8");
+//        Jscode2sessionReply jscode2sessionReply = new Gson().fromJson(returnStr, Jscode2sessionReply.class);
+//        if(jscode2sessionReply.getSession_key() == null){
+//        	userReply.Status = StatusEnum.Failure.getStatusCode();
+//        	userReply.ErrorCode = jscode2sessionReply.getErrcode();
+//        	userReply.ErrorMessage = jscode2sessionReply.getErrmsg();
+//        	return userReply;
+//        }
+//        //解密微信小程序的登陆加密数据
+//        String wxuserStr = AESHelper.AesDecrypt(userinput.getEncryptedData(), jscode2sessionReply.getSession_key(), userinput.getIv());
+//        System.out.println("解密------"+wxuserStr);
+//        UserWXResult wxuser = new Gson().fromJson(wxuserStr, UserWXResult.class);
+//        //特殊处理表情，先去除掉特殊符号 todo
+//		wxuser.setNickName(wxuser.getNickName().replaceAll("[^\u0000-\uFFFF]", ""));
+//        //更新到数据库
+//        Ticketusers ticketuser = _ticketusersService.getByopenids(jscode2sessionReply.getOpenid());
+//        if(ticketuser == null){
+//        	ticketuser = new Ticketusers();
+//        	ticketuser.setCinemaCode(userinput.getCinemaCode());
+//        	ticketuser.setOpenID(jscode2sessionReply.getOpenid());
+//        	ModelMapper.MapToEntity(wxuser, ticketuser);
+//        	_ticketusersService.save(ticketuser);
+//        } /*else {
+//        	ModelMapper.MapToEntity(wxuser, ticketuser);
+//        	_ticketusersService.update(ticketuser);
+//        }*/
+//        //返回
+//        UserLoginResult data = new UserLoginResult();
+//        data.setTicketUserId(ticketuser.getId());
+//        data.setCinemaCode(ticketuser.getCinemaCode());
+//        data.setMobilePhone(ticketuser.getMobilePhone());
+//        data.setOpenID(ticketuser.getOpenID());
+//        data.setNickName(ticketuser.getNickName());
+//        data.setSex(String.valueOf(ticketuser.getSex()));
+//        data.setCountry(ticketuser.getCountry());
+//        data.setProvince(ticketuser.getProvince());
+//        data.setCity(ticketuser.getCity());
+//        data.setHeadlmgUrl(ticketuser.getHeadImgUrl());
+//        data.setLanguage(ticketuser.getLanguage());
+//        data.setTotalScore(ticketuser.getTotalScore());
+//        data.setIsActive(String.valueOf(ticketuser.getIsActive()));
+//        data.setRoll(ticketuser.getRoll());
+//        data.setCreated(ticketuser.getCreated()==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ticketuser.getCreated()));
+//        //登陆送优惠券
+//        if(ticketuser.getOpenID()!=null){
+//        	//查询用户是否存在领取记录
+//        	List<Registercollectionrecord> registercollectionrecordList = registercollectionrecordService.getByOpenID(ticketuser.getOpenID());
+//        	if(registercollectionrecordList.size()<=0){
+//        		//不存在领取记录：获取所有影院的注册送规则
+//        		List<Registeractive> registeractiveList = registeractiveService.getCanUseRegisterActive();
+//            	if(registeractiveList.size()>0){
+//            		int result =0;
+//            		for(Registeractive registeractive:registeractiveList){
+//            			//根据规则编码找到所赠送的优惠券组编码及赠送数量
+//            			List<Registeractivecoupons> registeractivecouponsList = registeractivecouponsService.getByRegisterActiveCode(registeractive.getRegisterActiveCode());
+//            			if(registeractivecouponsList.size()>0){
+//            				for(Registeractivecoupons registeractivecoupons:registeractivecouponsList){
+//            					//根据优惠券组编码获取所有未使用的优惠券
+//            					Couponsgroup couponsgroup = couponsgroupService.getByGroupCode(registeractivecoupons.getGroupCode());
+//            					//判断优惠券可发放数量是否大于赠送数量
+//            					if(couponsgroup!=null){
+//                					if((couponsgroup.getCouponsNumber()-couponsgroup.getIssuedNumber())>registeractivecoupons.getGiveNumber()){
+//                						//是：生成优惠券记录
+//                						for(int i=0; i<registeractivecoupons.getGiveNumber(); i++){
+//                							Coupons coupons = new Coupons();
+//                							//优惠券编码--13位时间戳加5位随机数
+//                							String couponsCode = String.valueOf(new Date().getTime());
+//                				    		couponsCode+=(int)((Math.random()*9+1)*10000);
+//                							coupons.setCouponsCode(couponsCode);
+//                							coupons.setCouponsName(couponsgroup.getCouponsName());
+//                							coupons.setGroupCode(couponsgroup.getGroupCode());
+//                							coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
+//                							coupons.setOpenID(ticketuser.getOpenID());
+//                							System.out.println("用户手机号="+ticketuser.getMobilePhone());
+//                							coupons.setMobilePhone(ticketuser.getMobilePhone());
+//                							coupons.setCreateDate(new Date());
+//            								result = couponsService.save(coupons);
+//                						}
+//                					}
+//                					//优惠券生成成功更新优惠券组信息
+//                					if(result>0){
+//                						//已发放数量
+//        				    			couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()+registeractivecoupons.getGiveNumber());
+//        				    			//已领取数量
+//        				    			couponsgroup.setFetchNumber(couponsgroup.getFetchNumber()+registeractivecoupons.getGiveNumber());
+//        				    			//剩余数量
+//        				    			couponsgroup.setRemainingNumber(couponsgroup.getRemainingNumber()-registeractivecoupons.getGiveNumber());
+//        				    			couponsgroup.setUpdateDate(new Date());
+//        				    			couponsgroupService.update(couponsgroup);
+//                					}
+//            					}
+//            				}
+//            				if(result>0){
+//            					//添加用户领取记录
+//            					Registercollectionrecord registercollectionrecord = new Registercollectionrecord();
+//	            				registercollectionrecord.setOpenID(ticketuser.getOpenID());
+//	            				registercollectionrecord.setRegisterActiveCode(registeractive.getRegisterActiveCode());
+//	            				registercollectionrecordService.save(registercollectionrecord);
+//            				}
+//            			}
+//            		}
+//            	}
+//        	}
+//        }
+//
+//        userReply.setData(data);
+//        userReply.SetSuccessReply();
+//		return userReply;
+//	}
+
 	@GetMapping("/QueryUser/{UserName}/{Password}/{CinemaCode}/{OpenID}")
 	@ApiOperation(value = "查询用户信息")
 	public UserLoginReply QueryUser(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,@PathVariable String OpenID){

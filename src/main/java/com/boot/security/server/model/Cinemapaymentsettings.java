@@ -15,6 +15,15 @@ public class Cinemapaymentsettings extends BaseEntity<Long> {
 	private Integer IsUserMemberCard;
 	private Integer IsDel;
 
+	/**
+	 * 联表查询appId
+	 */
+	private String AppId;
+	/**
+	 * 联表查询appSecret
+	 */
+	private String AppSecret;
+
 	public Long getId() {
 		return Id;
 	}
@@ -76,4 +85,19 @@ public class Cinemapaymentsettings extends BaseEntity<Long> {
 		this.IsDel = IsDel;
 	}
 
+    public String getAppId() {
+        return AppId;
+    }
+
+    public void setAppId(String appId) {
+        AppId = appId;
+    }
+
+    public String getAppSecret() {
+        return AppSecret;
+    }
+
+    public void setAppSecret(String appSecret) {
+        AppSecret = appSecret;
+    }
 }

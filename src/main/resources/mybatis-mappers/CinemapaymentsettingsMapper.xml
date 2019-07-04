@@ -6,7 +6,7 @@
 	<sql id="where">
 		<where>
 			<if test="params.Id != null and params.Id != ''">
-				and Id = #{params.Id} 
+				and Id = #{params.Id}
 			</if>
 			<if test="params.CinemaCode != null and params.CinemaCode != ''">
 				and (CinemaCode = #{params.CinemaCode} or find_in_set(CinemaCode,#{params.CinemaCode}))
@@ -15,25 +15,25 @@
 				and (CinemaName = #{params.CinemaName} or CinemaName like '%${params.CinemaName}%')
 			</if>
 			<if test="params.IsUseWxpay != null and params.IsUseWxpay != ''">
-				and IsUseWxpay = #{params.IsUseWxpay} 
+				and IsUseWxpay = #{params.IsUseWxpay}
 			</if>
 			<if test="params.WxpayAppId != null and params.WxpayAppId != ''">
-				and WxpayAppId = #{params.WxpayAppId} 
+				and WxpayAppId = #{params.WxpayAppId}
 			</if>
 			<if test="params.WxpayMchId != null and params.WxpayMchId != ''">
-				and WxpayMchId = #{params.WxpayMchId} 
+				and WxpayMchId = #{params.WxpayMchId}
 			</if>
 			<if test="params.WxpayKey != null and params.WxpayKey != ''">
-				and WxpayKey = #{params.WxpayKey} 
+				and WxpayKey = #{params.WxpayKey}
 			</if>
 			<if test="params.WxpayRefundCert != null and params.WxpayRefundCert != ''">
-				and WxpayRefundCert = #{params.WxpayRefundCert} 
+				and WxpayRefundCert = #{params.WxpayRefundCert}
 			</if>
 			<if test="params.IsUserMemberCard != null and params.IsUserMemberCard != ''">
-				and IsUserMemberCard = #{params.IsUserMemberCard} 
+				and IsUserMemberCard = #{params.IsUserMemberCard}
 			</if>
 			<if test="params.IsDel != null and params.IsDel != ''">
-				and IsDel = #{params.IsDel} 
+				and IsDel = #{params.IsDel}
 			</if>
 		
 		</where>
@@ -45,10 +45,48 @@
 	</select>
 
 	<select id="list" resultType="Cinemapaymentsettings">
-		select * from cinemapaymentsettings t
-		<include refid="where" />
-		${params.orderBy}
-		limit #{offset}, #{limit}
+		SELECT `cp`.*, `cm`.`AppId`, `cm`.`AppSecret`
+		FROM `cinemapaymentsettings` `cp`
+		LEFT JOIN `CinemaMiniProgramAccounts` `cm` ON `cp`.`CinemaCode` = `cm`.`CinemaCode`
+        <where>
+            <if test="params.Id != null and params.Id != ''">
+                and `cp`.Id = #{params.Id}
+            </if>
+            <if test="params.CinemaCode != null and params.CinemaCode != ''">
+                and (`cp`.CinemaCode = #{params.CinemaCode} or find_in_set(`cp`.CinemaCode,#{params.CinemaCode}))
+            </if>
+            <if test="params.CinemaName != null and params.CinemaName != ''">
+                and (`cp`.CinemaName = #{params.CinemaName} or `cp`.CinemaName like '%${params.CinemaName}%')
+            </if>
+            <if test="params.IsUseWxpay != null and params.IsUseWxpay != ''">
+                and `cp`.IsUseWxpay = #{params.IsUseWxpay}
+            </if>
+            <if test="params.WxpayAppId != null and params.WxpayAppId != ''">
+                and `cp`.WxpayAppId = #{params.WxpayAppId}
+            </if>
+            <if test="params.WxpayMchId != null and params.WxpayMchId != ''">
+                and `cp`.WxpayMchId = #{params.WxpayMchId}
+            </if>
+            <if test="params.WxpayKey != null and params.WxpayKey != ''">
+                and `cp`.WxpayKey = #{params.WxpayKey}
+            </if>
+            <if test="params.WxpayRefundCert != null and params.WxpayRefundCert != ''">
+                and `cp`.WxpayRefundCert = #{params.WxpayRefundCert}
+            </if>
+            <if test="params.IsUserMemberCard != null and params.IsUserMemberCard != ''">
+                and `cp`.IsUserMemberCard = #{params.IsUserMemberCard}
+            </if>
+            <if test="params.IsDel != null and params.IsDel != ''">
+                and `cp`.IsDel = #{params.IsDel}
+            </if>
+        </where>
+        ${params.orderBy}
+		GROUP BY `cp`.`CinemaCode`
+        LIMIT #{offset}, #{limit}
+		<!--select * from cinemapaymentsettings t-->
+		<!--<include refid="where" />-->
+		<!--${params.orderBy}-->
+		<!--limit #{offset}, #{limit}-->
 	</select>
 
 	<update id="update">

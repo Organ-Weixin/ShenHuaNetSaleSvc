@@ -182,6 +182,7 @@ public class ConponController {
 							queryUserConponsBean.setTitle(cou.getCouponsName());
 							queryUserConponsBean.setCanUseCinemaType(cou.getCanUseCinemaType());
 							queryUserConponsBean.setInitialAmount(cou.getThresholdAmount());//门槛金额
+							queryUserConponsBean.setExpireDate(new SimpleDateFormat("yyyy/MM/dd").format(cou.getExpireDate()));
 							// 获取可用影院名称
 							String cinemacodeList[] = cou.getCinemaCodes().split(",");
 							String cinemaname = "";

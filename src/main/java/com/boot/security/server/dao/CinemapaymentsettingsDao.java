@@ -30,7 +30,7 @@ public interface CinemapaymentsettingsDao {
     int count(@Param("params") Map<String, Object> params);
 
     List<Cinemapaymentsettings> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
-    
+
     @Select("select * from cinemapaymentsettings t where t.cinemacode = #{cinemacode}")
     Cinemapaymentsettings getByCinemaCode(String cinemacode);
 }

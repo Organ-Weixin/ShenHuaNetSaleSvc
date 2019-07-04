@@ -41,7 +41,7 @@ public interface CouponsDao {
 
     List<Coupons> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
     
-    @Select("select * from coupons t where t.openid = #{openid} ORDER BY  status asc")
+    @Select("SELECT * FROM `coupons` WHERE `OpenID` = #{openid} ORDER BY `Status` ASC, `CreateDate` DESC")
     List<Coupons> getByOpenID(String openid);
     
     @Select("select * from coupons t where t.groupcode = #{groupcode}")

@@ -47,6 +47,8 @@
 									<th>#</th>
 									<th>影院编码</th>
 									<th>影院名称</th>
+									<th>微信AppId</th>
+									<th>微信AppSecret</th>
 									<th>是否使用微信</th>
 									<th>是否使用会员卡</th>
 									<th>操作</th>
@@ -109,7 +111,7 @@ var whether = showDictSelect("isUseWxpay", "whether", true);
 var example;
 function init(){
 	example = 
-    	$('#dt-table').DataTable({
+            $('#dt-table').DataTable({
         	"searching": false,
         	"processing": false,
         	"serverSide" : true,
@@ -120,6 +122,7 @@ function init(){
         		"url" : "/cinemapaymentsettingss",
         		"type":"get",
         		"data":function(d){
+        		    console.log(d);
     				if($("#cinemacode").val()==null||$("#cinemacode").val()==""){
 	    				d.CinemaCode = $("#cinemacodes").val();
         			}else{
@@ -137,6 +140,8 @@ function init(){
 				},
 				{"data" : "cinemaCode", "defaultContent" : "","orderable":false},
 				{"data" : "cinemaName", "defaultContent" : "","orderable":false},
+				{"data" : "appId", "defaultContent" : "","orderable":false},
+				{"data" : "appSecret", "defaultContent" : "","orderable":false},
 				{"data" : "isUseWxpay", "defaultContent" : "","orderable":false,
 					"render":function(data, type, row){
 						return whether[data];

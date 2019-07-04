@@ -64,7 +64,13 @@ public class CinemapaymentsettingsController {
 
             @Override
             public List<Cinemapaymentsettings> list(PageTableRequest request) {
-                return cinemapaymentsettingsDao.list(request.getParams(), request.getOffset(), request.getLimit());
+                List<Cinemapaymentsettings> cinemapaymentsettingsList = cinemapaymentsettingsDao.list(request.getParams(), request.getOffset(), request.getLimit());
+                // 将查询到的appId和appSecret去除空格
+                for (Cinemapaymentsettings cinemapaymentsettings : cinemapaymentsettingsList) {
+                    cinemapaymentsettings.setAppId(cinemapaymentsettings.getAppId().replace(" ", ""));
+                    cinemapaymentsettings.setAppSecret(cinemapaymentsettings.getAppSecret().replace(" ", ""));
+                }
+                return cinemapaymentsettingsList;
             }
         }).handle(request);
     }

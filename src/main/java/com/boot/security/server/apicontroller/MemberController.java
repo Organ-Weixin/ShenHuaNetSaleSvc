@@ -456,7 +456,8 @@ public class MemberController {
 				Cinemamessage cinemamessage=cinemamessageService.getByMessageType("5");
 				Cinema cinema = _cinemaService.getByCinemaCode(orders3.getCinemaCode());
 				String batchNum=UUID.randomUUID().toString().replace("-","");
-				String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@FilmName", orders3.getFilmName()).replaceFirst("@ScreenName",screeninfo.getSName()).replaceFirst("@SessionTime",new SimpleDateFormat("yyyy-MM-dd HH:mm").format(orders3.getSessionTime()));
+//				String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@FilmName", orders3.getFilmName()).replaceFirst("@ScreenName",screeninfo.getSName()).replaceFirst("@SessionTime",new SimpleDateFormat("yyyy-MM-dd HH:mm").format(orders3.getSessionTime()));
+				String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@ticketCode", orders.getPrintNo()).replaceFirst("@filmName", orders.getFilmName()).replaceFirst("@ticketNumber", orders.getTicketCount().toString()).replaceFirst("@cinemaHallName", screeninfo.getSName()).replaceFirst("@showTime", new SimpleDateFormat("MM-dd HH:mm").format(orders.getSessionTime()));
 				//String MsgConetnt="您已成功支付，订单金额"+orders.getTotalSalePrice()+"元，影片场次："+orders.getSessionTime()+" 《"+orders.getFilmName()+"》"+orders.getTicketCount()+"张。请至影城取票机领取，取票码："+orders.getPrintNo()+".热线：4008257789";
 				//new SendSmsHelper().SendSms(orders.getCinemaCode(),orders.getMobilePhone(),smsContent);
 				String result = SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), orders3.getMobilePhone(), smsContent, batchNum);
@@ -595,9 +596,9 @@ public class MemberController {
 				Cinemamessage cinemamessage = cinemamessageService.getByMessageType("5");
 				Cinema cinema = _cinemaService.getByCinemaCode(order.getOrderBaseInfo().getCinemaCode());
 				String batchNum=UUID.randomUUID().toString().replace("-","");
-				String smsContent = cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@FilmName", order.getOrderBaseInfo().getFilmName())
-						.replaceFirst("@ScreenName",screeninfo.getSName()).replaceFirst("@SessionTime",new SimpleDateFormat("yyyy-MM-dd HH:mm").format(order.getOrderBaseInfo().getSessionTime()));
-				SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), order.getOrderBaseInfo().getMobilePhone(), smsContent, batchNum);
+//				String smsContent = cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@FilmName", order.getOrderBaseInfo().getFilmName()).replaceFirst("@ScreenName",screeninfo.getSName()).replaceFirst("@SessionTime",new SimpleDateFormat("yyyy-MM-dd HH:mm").format(order.getOrderBaseInfo().getSessionTime()));
+                String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@ticketCode", order.getOrderBaseInfo().getPrintNo()).replaceFirst("@filmName", order.getOrderBaseInfo().getFilmName()).replaceFirst("@ticketNumber", order.getOrderBaseInfo().getTicketCount().toString()).replaceFirst("@cinemaHallName", screeninfo.getSName()).replaceFirst("@showTime", new SimpleDateFormat("MM-dd HH:mm").format(order.getOrderBaseInfo().getSessionTime()));
+                SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), order.getOrderBaseInfo().getMobilePhone(), smsContent, batchNum);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
