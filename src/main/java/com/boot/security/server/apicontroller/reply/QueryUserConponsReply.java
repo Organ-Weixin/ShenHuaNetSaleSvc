@@ -3,7 +3,7 @@ package com.boot.security.server.apicontroller.reply;
 import java.util.List;
 
 public class QueryUserConponsReply extends BaseReply{
-	private QueryUserConponsBeans data;
+	private QueryUserConponsBeans data = new QueryUserConponsBeans();
 	public QueryUserConponsBeans getData() {
 		return data;
 	}
