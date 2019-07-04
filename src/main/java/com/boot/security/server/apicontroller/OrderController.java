@@ -564,7 +564,8 @@ public class OrderController {
 					//微信支付
 					if(orders.getOrderPayType()==OrderPayTypeEnum.WxPay.getTypeCode()){
 						//计算退票手续费,得到退款总金额
-						orders.setTotalRefundPrice(DoubleUtil.sub(orders.getTotalSalePrice(),cinema.getRefundFee()));
+						orders.setTotalRefundPrice(DoubleUtil.sub(DoubleUtil.sub(orders.getTotalSalePrice(),orders.getCouponsPrice()),cinema.getRefundFee()));
+						_orderService.update(orders);//更新一下退款金额到数据库
 						//调用微信退款接口
 						RefundPaymentReply paymentReply = RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode());
 						if(paymentReply.Status.equals("Success")){
@@ -588,6 +589,7 @@ public class OrderController {
 						//辰星系统调用会员卡支付撤销
 						if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()||cinemaview.getCinemaType()==CinemaTypeEnum.ManTianXing.getTypeCode()){
 							orders.setTotalRefundPrice(orders.getTotalSalePrice());
+							_orderService.update(orders);//更新一下退款金额到数据库
 							CardPayBackReply paybackReply=new NetSaleSvcCore().CardPayBack(UserName, Password, CinemaCode, orders.getCardNo(), orders.getCardPassword(), orders.getOrderTradeNo(), String.valueOf(orders.getTotalRefundPrice()));
 							if(paybackReply.Status.equals("Success")){
 								try {
@@ -601,7 +603,6 @@ public class OrderController {
 							}
 						}
 					}
-					_orderService.update(orders);//更新一下退款金额到数据库
 				}
 			}else{
 				reply.Status = "Failure";
@@ -776,14 +777,14 @@ public class OrderController {
 	public void WxPayNotify(HttpServletRequest request) throws Exception {
 		// 读取返回内容
 		Map<String, String> returnmap = WxPayUtil.WxPayNotify(request);
-		//log.info("++++++++++++++++"+new Gson().toJson(returnmap));
+		log.info("++++++++++++++++"+new Gson().toJson(returnmap));
 		if (returnmap.get("isWXsign").equals("True")) {
 			// 得到订单Id
 			Long OrderID = Long.parseLong(returnmap.get("out_trade_no").substring("yyyyMMddHHmmss".length() + 8));
 			OrderView order = _orderService.getOrderWidthId(OrderID);
-			//log.info("++++++++++++++++"+new Gson().toJson(order));
+			log.info("++++++++++++++++"+new Gson().toJson(order));
 			if (returnmap.get("return_code").equals("SUCCESS") && returnmap.get("result_code").equals("SUCCESS")) {
-				//log.info("--------");
+				log.info("--------");
 				// 更新订单主表
 				if(order.getOrderBaseInfo().getPayFlag()==null){
 					order.getOrderBaseInfo().setPayFlag(0);
@@ -795,6 +796,7 @@ public class OrderController {
 					order.getOrderBaseInfo().setPayFlag(1);
 					order.getOrderBaseInfo().setPayTime(new Date());
 					order.getOrderBaseInfo().setOrderTradeNo(returnmap.get("transaction_id"));
+					log.info("==========="+new Gson().toJson(order.getOrderBaseInfo()));
 					_orderService.update(order.getOrderBaseInfo());
 				}
 				// 更新优惠券已使用
