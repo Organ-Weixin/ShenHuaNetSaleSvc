@@ -841,6 +841,7 @@ public class WebService {
 			param.put("pPageNum",pPageNum);
 			param.put("pCompress", "0");
 			String result = WebService.cinemaTss(userCinema.getUrl()).queryMemberFlowInfo(userCinema.getRealUserName(),userCinema.getCinemaCode(),CardNo, pStartDate, pEndDate, pPageSize, pPageNum,"0",MD5Util.getCxSign(param,userCinema.getRealPassword()));
+			log.info("交易记录11"+result);
 			Gson gson = new Gson();
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result,"QueryMemberFlowInfoResult"),CxQueryMemberFlowInfoResult.class);
 		}catch(Exception e){
@@ -872,7 +873,7 @@ public class WebService {
 			log.info(param.toString());
 			String result = WebService.cinemaTss(userCinema.getUrl()).memberCharge(userCinema.getRealUserName(),userCinema.getCinemaCode(),CardNo,String.valueOf(ChargeType.getTypeCode()),ChargeType.getTypeName(), "手机APP", "0",ChargeAmount,null,null,pOrderCode,pTransactionNo, "0", MD5Util.getCxSign(param,userCinema.getRealPassword()));
 			Gson gson = new Gson();
-			log.info(result);
+			log.info("充值返回"+result);
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result,"MemberChargeResult"),CxMemberChargeResult.class);
 		}catch(Exception e){
 			e.printStackTrace();
@@ -1019,7 +1020,11 @@ public class WebService {
 			map.put("MobilePhone",orderview.getOrderBaseInfo().getMobilePhone());
 			StringBuffer SaleMerInfos = new StringBuffer();
 			JSONObject MerExtend=new JSONObject();
-			MerExtend.put("is_ready",orderview.getOrderBaseInfo().getIsReady());
+			if(orderview.getOrderBaseInfo().getIsReady()==1){
+				MerExtend.put("is_ready",0);	//辰星系统，0-备餐，1-不备餐
+			}else{
+				MerExtend.put("is_ready",1);
+			}
 			MerExtend.put("ready_time",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 			MerExtend.put("take_type",orderview.getOrderBaseInfo().getDeliveryType());
 			MerExtend.put("meal_remark",orderview.getOrderBaseInfo().getDeliveryMark());

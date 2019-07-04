@@ -559,6 +559,7 @@ public class OrderController {
 				reply = NetSaleSvcCore.getInstance().RefundTicket(UserName, Password, CinemaCode, PrintNo, VerifyCode);
 				//退票成功进行处理
 				if(reply.Status.equals("Success")){
+					orders = orderService.getByPrintNo(CinemaCode, PrintNo, VerifyCode);	//订单状态已改变，重新查询订单
 					//退优惠券
 					if(orders.getCouponsCode()!=null&&orders.getCouponsCode()!=""){
 						Coupons coupons = _couponsService.getByCouponsCode(orders.getCouponsCode());
@@ -808,7 +809,6 @@ public class OrderController {
 	// @RequestDescription("支付回调地址")
 	@ResponseBody
 	public void WxPayNotify(HttpServletRequest request) throws Exception {
-
 		// 读取返回内容
 		Map<String, String> returnmap = WxPayUtil.WxPayNotify(request);
 		log.info("++++++++++++++++"+new Gson().toJson(returnmap));
