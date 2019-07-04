@@ -86,7 +86,7 @@ public interface SessioninfoDao {
 	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode=#{filmcode} and t.starttime >= #{startdate} and #{enddate} >= t.starttime")
 	List<Sessioninfo> getByCinemaCodeAndFilmCodeAndTime(@Param("cinemacode") String cinemacode,@Param("filmcode") String filmcode,@Param("startdate") String startdate,@Param("enddate") String enddate);
 	
-	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode=#{filmcode} and t.starttime >= #{startdate} group by substr(t.starttime,1,10)")
+	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode=#{filmcode} and t.starttime >= #{startdate} group by substr(t.starttime,1,10) limit 7")
 	List<Sessioninfo> getSessionDate(@Param("cinemacode") String cinemacode,@Param("filmcode") String filmcode,@Param("startdate") String startdate);
 	
 	@Select("select * from sessioninfo t where t.ccode = #{cinemacode} and t.filmcode = #{filmcode} and t.starttime >=now() and substr(t.starttime,1,10) = #{sessiondate} order by t.starttime asc")
@@ -95,4 +95,5 @@ public interface SessioninfoDao {
 	//获取开始时间处于指定时间段的场次
 	@Select("select * from sessioninfo t where starttime <= #{minTime} and starttime >= #{maxTime} and ccode = #{cinemacode}")
 	List<Sessioninfo> getSessioninfoByTime(@Param("minTime") Date minTime,@Param("maxTime") Date maxTime,@Param("cinemacode")String cinemacode);
+
 }

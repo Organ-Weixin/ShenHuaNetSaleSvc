@@ -214,44 +214,44 @@ public class SessionController {
 					}
 
 
-					//获取真正的排期数据
-					List<Sessioninfo> sessionList = null;
-					String scheduleListString = (String)redisTemplate.opsForValue().get("schedule:" + paiQi.getCCode() + filmcode + minDate);
-					if (scheduleListString == null){
-						sessionList = _sessionInfoService.getByCinemaCodeAndFilmCodeAndTime(paiQi.getCCode(), filmcode, minDate, endDate);
-						redisTemplate.opsForValue().set("schedule:" + paiQi.getCCode() + filmcode + minDate,JSON.toJSONString(sessionList));
-					}else {
-						sessionList = JSON.parseArray(scheduleListString,Sessioninfo.class);
-					}
-					List<QueryFilmSessionsReplySession> sessionReplyList = new ArrayList<QueryFilmSessionsReplySession>();
-					//获取排期中的信息
-					for(Sessioninfo session :sessionList){
-						QueryFilmSessionsReplySession sessionReply = new QueryFilmSessionsReplySession();
-						sessionReply.setFeatureNo(session.getFeatureNo());
-						sessionReply.setListingPrice(session.getListingPrice());
-						sessionReply.setLowestPrice(session.getLowestPrice());
-						sessionReply.setPlaythroughFlag(session.getPlaythroughFlag());
-						sessionReply.setScreenCode(session.getScreenCode());
-						sessionReply.setSequence(session.getSequence());
-						sessionReply.setSessionCode(session.getSCode());
-						sessionReply.setStandardPrice(session.getStandardPrice());
-						if(session.getStartTime()!=null){
-							sessionReply.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(session.getStartTime()));
-						}
-						Screeninfo screeninfo = _screeninfoService.getByScreenCode(session.getCCode(), session.getScreenCode());
-						if(screeninfo!=null){
-							sessionReply.setScreenName(screeninfo.getSName());
-						}
-						sessionReply.setStartDate(new SimpleDateFormat("MM-dd").format(session.getStartTime()));
-						sessionReply.setBeginTime(new SimpleDateFormat("HH:mm").format(session.getStartTime()));
-						if(new SimpleDateFormat("yyyyMMdd").format(session.getStartTime()).equals(new SimpleDateFormat("yyyyMMdd").format(new Date()))){
-							sessionReply.setIsToday(true);
-						}else{
-							sessionReply.setIsToday(false);
-						}
-						sessionReplyList.add(sessionReply);
-					}
-					film.setSession(sessionReplyList);
+//					//获取真正的排期数据
+//					List<Sessioninfo> sessionList = null;
+//					String scheduleListString = (String)redisTemplate.opsForValue().get("schedule:" + paiQi.getCCode() + filmcode + minDate);
+//					if (scheduleListString == null){
+//						sessionList = _sessionInfoService.getByCinemaCodeAndFilmCodeAndTime(paiQi.getCCode(), filmcode, minDate, endDate);
+//						redisTemplate.opsForValue().set("schedule:" + paiQi.getCCode() + filmcode + minDate,JSON.toJSONString(sessionList));
+//					}else {
+//						sessionList = JSON.parseArray(scheduleListString,Sessioninfo.class);
+//					}
+//					List<QueryFilmSessionsReplySession> sessionReplyList = new ArrayList<QueryFilmSessionsReplySession>();
+//					//获取排期中的信息
+//					for(Sessioninfo session :sessionList){
+//						QueryFilmSessionsReplySession sessionReply = new QueryFilmSessionsReplySession();
+//						sessionReply.setFeatureNo(session.getFeatureNo());
+//						sessionReply.setListingPrice(session.getListingPrice());
+//						sessionReply.setLowestPrice(session.getLowestPrice());
+//						sessionReply.setPlaythroughFlag(session.getPlaythroughFlag());
+//						sessionReply.setScreenCode(session.getScreenCode());
+//						sessionReply.setSequence(session.getSequence());
+//						sessionReply.setSessionCode(session.getSCode());
+//						sessionReply.setStandardPrice(session.getStandardPrice());
+//						if(session.getStartTime()!=null){
+//							sessionReply.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(session.getStartTime()));
+//						}
+//						Screeninfo screeninfo = _screeninfoService.getByScreenCode(session.getCCode(), session.getScreenCode());
+//						if(screeninfo!=null){
+//							sessionReply.setScreenName(screeninfo.getSName());
+//						}
+//						sessionReply.setStartDate(new SimpleDateFormat("MM-dd").format(session.getStartTime()));
+//						sessionReply.setBeginTime(new SimpleDateFormat("HH:mm").format(session.getStartTime()));
+//						if(new SimpleDateFormat("yyyyMMdd").format(session.getStartTime()).equals(new SimpleDateFormat("yyyyMMdd").format(new Date()))){
+//							sessionReply.setIsToday(true);
+//						}else{
+//							sessionReply.setIsToday(false);
+//						}
+//						sessionReplyList.add(sessionReply);
+//					}
+//					film.setSession(sessionReplyList);
 					filmReplyList.add(film);
 				}
 					data.setFilmList(filmReplyList);
@@ -322,24 +322,24 @@ public class SessionController {
 
 		log.info("/Api/Session/QueryFilmSessionPrice :" + UserName + "|" + Password + "|" + CinemaCode+ "|" +FilmCode);
 
-		QueryFilmSessionPriceReply queryFilmSessionPriceReply = null;
+		QueryFilmSessionPriceReply result = null;
 		try {
-			queryFilmSessionPriceReply = new QueryFilmSessionPriceReply();
+            result = new QueryFilmSessionPriceReply();
 			// 校验参数
-			if (!ReplyExtension.RequestInfoGuard(queryFilmSessionPriceReply, UserName, Password, CinemaCode, FilmCode)) {
-				return queryFilmSessionPriceReply;
+			if (!ReplyExtension.RequestInfoGuard(result, UserName, Password, CinemaCode, FilmCode)) {
+				return result;
 			}
 			// 获取用户信息(渠道)
 			Userinfo UserInfo = _userInfoService.getByUserCredential(UserName, Password);
 			if (UserInfo == null) {
-				queryFilmSessionPriceReply.SetUserCredentialInvalidReply();
-				return queryFilmSessionPriceReply;
+                result.SetUserCredentialInvalidReply();
+				return result;
 			}
 			// 验证影院是否存在且可访问
 			Cinema cinema = _cinemaService.getByCinemaCode(CinemaCode);
 			if (cinema == null) {
-				queryFilmSessionPriceReply.SetCinemaInvalidReply();
-				return queryFilmSessionPriceReply;
+                result.SetCinemaInvalidReply();
+				return result;
 			}
 			QueryFimlSessionPriceReplyFilm data = new QueryFimlSessionPriceReplyFilm();
 			Filminfo filminfo = _filminfoService.getByFilmCode(FilmCode);
@@ -351,8 +351,9 @@ public class SessionController {
 				data.setFilmType(filminfo.getType());
 				data.setCast(filminfo.getCast());
 				data.setDuration(filminfo.getDuration());
-				List<Sessioninfo> sessioninfoList = _sessionInfoService.getSessionDate(CinemaCode, FilmCode, StartDate);
-				if(sessioninfoList.size()>0){
+				List<Sessioninfo> sessioninfoList = _sessionInfoService.getSessionDate(CinemaCode, FilmCode, StartDate);//所有排期
+
+				if(sessioninfoList.size()>0){//该片存在排期
 					if(data.getDuration()==null||data.getDuration()==""){
 						if(sessioninfoList.get(0).getDuration()!=null){
 							data.setDuration(String.valueOf(sessioninfoList.get(0).getDuration()));
@@ -367,7 +368,14 @@ public class SessionController {
 						}
 						sessionDateReply.setSessionDate(new SimpleDateFormat("MM-dd").format(sessioninfo.getStartTime())+today);
 						sessionDateReplyList.add(sessionDateReply);
+
+
+						//查一天的排期
 						List<Sessioninfo> oneDateSessionList = _sessionInfoService.getOneDaySession(sessioninfo.getCCode(), sessioninfo.getFilmCode(), new SimpleDateFormat("yyyy-MM-dd").format(sessioninfo.getStartTime()));
+
+
+
+
 						List<QueryFimlSessionPriceReplySession> sessionReplyList = new ArrayList<QueryFimlSessionPriceReplySession>();
 						for(Sessioninfo oneDateSession:oneDateSessionList){
 							QueryFimlSessionPriceReplySession sessionReply = new QueryFimlSessionPriceReplySession();
@@ -452,13 +460,13 @@ public class SessionController {
 						}
 					}
 				}
-				queryFilmSessionPriceReply.setData(data);
-				queryFilmSessionPriceReply.SetSuccessReply();
+                result.setData(data);
+                result.SetSuccessReply();
 			}
 		} catch (NumberFormatException e) {
 			log.error("/Api/Session/QueryFilmSessionPrice :" + UserName + "|" + Password + "|" + CinemaCode+ "|" +FilmCode+"\n"+e.getMessage());
 		}
-		return queryFilmSessionPriceReply;
+		return result;
 	}
 	public static void main(String[] args) {
 		String beginDate = String.valueOf(new Date().getTime()+420*60*1000);
