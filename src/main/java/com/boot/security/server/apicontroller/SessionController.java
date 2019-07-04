@@ -387,10 +387,10 @@ public class SessionController {
 							QueryFimlSessionPriceReplySession sessionReply = new QueryFimlSessionPriceReplySession();
 
                             Sessioninfoview sessioninfoview = null;
-                            String sessioninfoString = (String)redisTemplate.opsForValue().get("sessioninfo"+CinemaCode+FilmCode+oneDateSession.getSCode());
+                            String sessioninfoString = (String)redisTemplate.opsForValue().get("sessioninfo:"+CinemaCode+FilmCode+oneDateSession.getSCode());
 							if (sessioninfoString == null){
                                 sessioninfoview = _sessioninfoviewService.getByCinemaCodeAndSessionCode(oneDateSession.getCCode(), oneDateSession.getSCode());
-                                redisTemplate.opsForValue().set("sessioninfo"+CinemaCode+FilmCode+oneDateSession.getSCode(),JSON.toJSONString(sessioninfoview),24l, TimeUnit.HOURS);
+                                redisTemplate.opsForValue().set("sessioninfo:"+CinemaCode+FilmCode+oneDateSession.getSCode(),JSON.toJSONString(sessioninfoview),24l, TimeUnit.HOURS);
                             }else {
                                 sessioninfoview = JSON.parseObject(sessioninfoString,Sessioninfoview.class);
                             }
