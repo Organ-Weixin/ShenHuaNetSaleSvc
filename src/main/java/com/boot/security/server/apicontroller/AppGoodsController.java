@@ -264,18 +264,13 @@ public class AppGoodsController {
         	ModelMapper.MapFrom(order,orders);
         	//二维码
     		Cinemaview cinemaview = cinemaviewService.getByCinemaCode(CinemaCode);
-    		//辰星系统(取票码截取影院编码)
-    		if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
-    			if(orders.getOrderBaseInfo().getPickUpCode()!=null){
-					order.setEwmPicture(FileUploadUtils.generateEwm(orders.getOrderBaseInfo().getPickUpCode().substring(8,orders.getOrderBaseInfo().getPickUpCode().length())));
-    			}
-    		}
     		if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
     			if(orders.getOrderBaseInfo().getOrderCode()!=null){
 					order.setEwmPicture(FileUploadUtils.generateEwm(orders.getOrderBaseInfo().getOrderCode()));
     			}
     		}
-    		if(cinemaview.getCinemaType()==CinemaTypeEnum.YueKe.getTypeCode() || cinemaview.getCinemaType()==CinemaTypeEnum.ManTianXing.getTypeCode()){
+    		if(cinemaview.getCinemaType()==CinemaTypeEnum.YueKe.getTypeCode() || cinemaview.getCinemaType()==CinemaTypeEnum.ManTianXing.getTypeCode()
+    				|| cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
     			if(orders.getOrderBaseInfo().getPickUpCode()!=null){
     				order.setEwmPicture(FileUploadUtils.generateEwm(orders.getOrderBaseInfo().getPickUpCode()));
     			}
@@ -323,18 +318,13 @@ public class AppGoodsController {
         	ModelMapper.MapFrom(order,orders);
         	//二维码
     		Cinemaview cinemaview = cinemaviewService.getByCinemaCode(CinemaCode);
-    		//辰星系统(取票码截取影院编码)
-    		if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
-    			if(orders.getOrderBaseInfo().getPickUpCode()!=null){
-					order.setEwmPicture(FileUploadUtils.generateEwm(orders.getOrderBaseInfo().getPickUpCode().substring(8,orders.getOrderBaseInfo().getPickUpCode().length())));
-    			}
-    		}
     		if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
     			if(orders.getOrderBaseInfo().getOrderCode()!=null){
 					order.setEwmPicture(FileUploadUtils.generateEwm(orders.getOrderBaseInfo().getOrderCode()));
     			}
     		}
-    		if(cinemaview.getCinemaType()==CinemaTypeEnum.YueKe.getTypeCode() || cinemaview.getCinemaType()==CinemaTypeEnum.ManTianXing.getTypeCode()){
+    		if(cinemaview.getCinemaType()==CinemaTypeEnum.YueKe.getTypeCode() || cinemaview.getCinemaType()==CinemaTypeEnum.ManTianXing.getTypeCode()
+    				|| cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
     			if(orders.getOrderBaseInfo().getPickUpCode()!=null){
     				order.setEwmPicture(FileUploadUtils.generateEwm(orders.getOrderBaseInfo().getPickUpCode()));
     			}

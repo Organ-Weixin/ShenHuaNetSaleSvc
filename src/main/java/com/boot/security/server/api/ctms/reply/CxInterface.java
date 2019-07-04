@@ -998,7 +998,7 @@ public class CxInterface implements ICTMSInterface {
 		CxSubmitMerOrderResult cxReply=cxService.SubmitMerOrder(userCinema, order);
 		if(cxReply.getSubmitMerOrderResult().getResultCode().equals("0")){
 			order.getOrderBaseInfo().setOrderCode(cxReply.getSubmitMerOrderResult().getOrderCode());
-			order.getOrderBaseInfo().setPickUpCode(cxReply.getSubmitMerOrderResult().getPrintNo());
+			order.getOrderBaseInfo().setPickUpCode(cxReply.getSubmitMerOrderResult().getPrintNo().substring(8));//客户输入后8位在柜台或辰星取票机取票
 			order.getOrderBaseInfo().setVerifyCode(cxReply.getSubmitMerOrderResult().getVerifyCode());
 			order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
 			order.getOrderBaseInfo().setSubmitTime(new Date());
