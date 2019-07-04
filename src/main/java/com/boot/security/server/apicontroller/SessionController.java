@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
@@ -369,17 +370,31 @@ public class SessionController {
 						sessionDateReply.setSessionDate(new SimpleDateFormat("MM-dd").format(sessioninfo.getStartTime())+today);
 						sessionDateReplyList.add(sessionDateReply);
 
-
-						//查一天的排期
-						List<Sessioninfo> oneDateSessionList = _sessionInfoService.getOneDaySession(sessioninfo.getCCode(), sessioninfo.getFilmCode(), new SimpleDateFormat("yyyy-MM-dd").format(sessioninfo.getStartTime()));
-
-
+                        //查一天的排期 走redis
+                        String sessionData = new SimpleDateFormat("yyyy-MM-dd").format(sessioninfo.getStartTime());
+                        List<Sessioninfo> oneDateSessionList = null;
+    					String scheduleListString = (String)redisTemplate.opsForValue().get("schedule:" + CinemaCode+"|"+FilmCode+"|"+sessionData);
+    					if (scheduleListString == null){
+    					    oneDateSessionList = _sessionInfoService.getOneDaySession(sessioninfo.getCCode(), sessioninfo.getFilmCode(), sessionData);
+                            redisTemplate.opsForValue().set("schedule:" + CinemaCode+"|"+FilmCode+"|"+sessionData,JSON.toJSONString(oneDateSessionList),24l, TimeUnit.HOURS);
+                        }else {
+                            oneDateSessionList = JSON.parseArray(scheduleListString,Sessioninfo.class);
+                        }
 
 
 						List<QueryFimlSessionPriceReplySession> sessionReplyList = new ArrayList<QueryFimlSessionPriceReplySession>();
 						for(Sessioninfo oneDateSession:oneDateSessionList){
 							QueryFimlSessionPriceReplySession sessionReply = new QueryFimlSessionPriceReplySession();
-							Sessioninfoview sessioninfoview = _sessioninfoviewService.getByCinemaCodeAndSessionCode(oneDateSession.getCCode(), oneDateSession.getSCode());
+
+                            Sessioninfoview sessioninfoview = null;
+                            String sessioninfoString = (String)redisTemplate.opsForValue().get("sessioninfo"+CinemaCode+FilmCode+oneDateSession.getSCode());
+							if (sessioninfoString == null){
+                                sessioninfoview = _sessioninfoviewService.getByCinemaCodeAndSessionCode(oneDateSession.getCCode(), oneDateSession.getSCode());
+                                redisTemplate.opsForValue().set("sessioninfo"+CinemaCode+FilmCode+oneDateSession.getSCode(),JSON.toJSONString(sessioninfoview),24l, TimeUnit.HOURS);
+                            }else {
+                                sessioninfoview = JSON.parseObject(sessioninfoString,Sessioninfoview.class);
+                            }
+
 							if(sessioninfoview!=null){
 								sessionReply.setSessionTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(sessioninfoview.getStartTime()));
 								sessionReply.setScreenType(sessioninfoview.getScreenType());
