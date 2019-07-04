@@ -21,6 +21,10 @@ public interface ScreenseatinfoDao {
 	//根据场区编码分组，去重复
 	@Select("select * from screenseatinfo t where t.CinemaCode = #{cinemacode} and t.ScreenCode = #{screencode} GROUP BY GroupCode")
 	List<Screenseatinfo> getGroupByGroupCode(@Param("cinemacode") String cinemacode,@Param("screencode") String screencode);
+	
+	//云智用，根据座位图版本查座位
+	@Select("select * from screenseatinfo t where t.CinemaCode = #{cinemacode} and t.ScreenCode = #{screencode} and t.SeatVersion = #{seatVersion} GROUP BY GroupCode")
+	List<Screenseatinfo> getBySeatVersion(@Param("cinemacode") String cinemacode,@Param("screencode") String screencode, @Param("seatVersion") String seatVersion);
 		
 	////
 	@Select("select * from screenseatinfo t where t.cinemacode = #{cinemacode} and t.screencode=#{screencode} and t.seatcode in(#{seatcodes})")

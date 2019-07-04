@@ -228,7 +228,7 @@ public class SessionController {
 				filmReply.setSession(sessionReplyList);
 				filmReplyList.add(filmReply);
 			}
-				data.setFilm(filmReplyList);
+				data.setFilmList(filmReplyList);
 		}
 		queryFilmSessionsReply.setData(data);
 		queryFilmSessionsReply.SetSuccessReply();
