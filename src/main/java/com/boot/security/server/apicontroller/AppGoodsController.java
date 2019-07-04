@@ -200,23 +200,24 @@ public class AppGoodsController {
 	public SubmitGoodsOrderReply SubmitGoodsOrder(@RequestBody NetSaleQueryJson QueryJson){
 		try {
 			SubmitGoodsOrderReply reply = NetSaleSvcCore.getInstance().SubmitGoodsOrder(QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getQueryXml());
-			if(reply.Status.equals("Success")){
-				try{
-					Goodsorders goodsorders=_goodsOrderService.getByOrderCode(reply.getOrder().getOrderCode());
-					//自取和配送使用不通的短信模版
-					Cinemamessage cinemamessage= goodsorders.getDeliveryType()==1 ? cinemamessageService.getByMessageType("6"):cinemamessageService.getByMessageType("7");
-
-					Cinema cinema = _cinemaService.getByCinemaCode(goodsorders.getCinemaCode());
-					String batchNum=UUID.randomUUID().toString().replace("-","");
-					String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent();
-					//String MsgConetnt="您的订单已成功，取货码为"+reply.getOrder().getPickUpCode()+"，请到前台领取";
-					//new SendSmsHelper().SendSms(goodsorders.getCinemaCode(),goodsorders.getMobilePhone(),smsContent);
-					SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), goodsorders.getMobilePhone(), smsContent, batchNum);
-				}catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-			}
+			//卖品下定成功不发短信
+//			if(reply.Status.equals("Success")){
+//				try{
+//					Goodsorders goodsorders=_goodsOrderService.getByOrderCode(reply.getOrder().getOrderCode());
+//					//自取和配送使用不通的短信模版
+//					Cinemamessage cinemamessage= goodsorders.getDeliveryType()==1 ? cinemamessageService.getByMessageType("6"):cinemamessageService.getByMessageType("7");
+//
+//					Cinema cinema = _cinemaService.getByCinemaCode(goodsorders.getCinemaCode());
+//					String batchNum=UUID.randomUUID().toString().replace("-","");
+//					String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent();
+//					//String MsgConetnt="您的订单已成功，取货码为"+reply.getOrder().getPickUpCode()+"，请到前台领取";
+//					//new SendSmsHelper().SendSms(goodsorders.getCinemaCode(),goodsorders.getMobilePhone(),smsContent);
+//					SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), goodsorders.getMobilePhone(), smsContent, batchNum);
+//				}catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//
+//			}
 			return reply;
 		} catch (JsonSyntaxException e) {
 			e.printStackTrace();
