@@ -215,44 +215,43 @@ public class SessionController {
 					}
 
 
-//					//获取真正的排期数据
-//					List<Sessioninfo> sessionList = null;
-//					String scheduleListString = (String)redisTemplate.opsForValue().get("schedule:" + paiQi.getCCode() + filmcode + minDate);
-//					if (scheduleListString == null){
-//						sessionList = _sessionInfoService.getByCinemaCodeAndFilmCodeAndTime(paiQi.getCCode(), filmcode, minDate, endDate);
-//						redisTemplate.opsForValue().set("schedule:" + paiQi.getCCode() + filmcode + minDate,JSON.toJSONString(sessionList));
-//					}else {
-//						sessionList = JSON.parseArray(scheduleListString,Sessioninfo.class);
-//					}
-//					List<QueryFilmSessionsReplySession> sessionReplyList = new ArrayList<QueryFilmSessionsReplySession>();
-//					//获取排期中的信息
-//					for(Sessioninfo session :sessionList){
-//						QueryFilmSessionsReplySession sessionReply = new QueryFilmSessionsReplySession();
-//						sessionReply.setFeatureNo(session.getFeatureNo());
-//						sessionReply.setListingPrice(session.getListingPrice());
-//						sessionReply.setLowestPrice(session.getLowestPrice());
-//						sessionReply.setPlaythroughFlag(session.getPlaythroughFlag());
-//						sessionReply.setScreenCode(session.getScreenCode());
-//						sessionReply.setSequence(session.getSequence());
-//						sessionReply.setSessionCode(session.getSCode());
-//						sessionReply.setStandardPrice(session.getStandardPrice());
-//						if(session.getStartTime()!=null){
-//							sessionReply.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(session.getStartTime()));
-//						}
-//						Screeninfo screeninfo = _screeninfoService.getByScreenCode(session.getCCode(), session.getScreenCode());
-//						if(screeninfo!=null){
-//							sessionReply.setScreenName(screeninfo.getSName());
-//						}
-//						sessionReply.setStartDate(new SimpleDateFormat("MM-dd").format(session.getStartTime()));
-//						sessionReply.setBeginTime(new SimpleDateFormat("HH:mm").format(session.getStartTime()));
-//						if(new SimpleDateFormat("yyyyMMdd").format(session.getStartTime()).equals(new SimpleDateFormat("yyyyMMdd").format(new Date()))){
-//							sessionReply.setIsToday(true);
-//						}else{
-//							sessionReply.setIsToday(false);
-//						}
-//						sessionReplyList.add(sessionReply);
-//					}
-//					film.setSession(sessionReplyList);
+					//获取真正的排期数据
+					List<Sessioninfo> sessionList = null;
+					if (!redisTemplate.boundHashOps("schedule:" + paiQi.getCCode()).hasKey(filmcode +"|"+minDate)){
+						sessionList = _sessionInfoService.getByCinemaCodeAndFilmCodeAndTime(paiQi.getCCode(), filmcode, minDate, endDate);
+						redisTemplate.boundHashOps("schedule:" + paiQi.getCCode()).put(filmcode +"|"+minDate,JSON.toJSONString(sessionList));
+					}else {
+						sessionList = JSON.parseArray((String)redisTemplate.boundHashOps("schedule:" + paiQi.getCCode()).get(filmcode +"|"+minDate),Sessioninfo.class);
+					}
+					List<QueryFilmSessionsReplySession> sessionReplyList = new ArrayList<QueryFilmSessionsReplySession>();
+					//获取排期中的信息
+					for(Sessioninfo session :sessionList){
+						QueryFilmSessionsReplySession sessionReply = new QueryFilmSessionsReplySession();
+						sessionReply.setFeatureNo(session.getFeatureNo());
+						sessionReply.setListingPrice(session.getListingPrice());
+						sessionReply.setLowestPrice(session.getLowestPrice());
+						sessionReply.setPlaythroughFlag(session.getPlaythroughFlag());
+						sessionReply.setScreenCode(session.getScreenCode());
+						sessionReply.setSequence(session.getSequence());
+						sessionReply.setSessionCode(session.getSCode());
+						sessionReply.setStandardPrice(session.getStandardPrice());
+						if(session.getStartTime()!=null){
+							sessionReply.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(session.getStartTime()));
+						}
+						Screeninfo screeninfo = _screeninfoService.getByScreenCode(session.getCCode(), session.getScreenCode());
+						if(screeninfo!=null){
+							sessionReply.setScreenName(screeninfo.getSName());
+						}
+						sessionReply.setStartDate(new SimpleDateFormat("MM-dd").format(session.getStartTime()));
+						sessionReply.setBeginTime(new SimpleDateFormat("HH:mm").format(session.getStartTime()));
+						if(new SimpleDateFormat("yyyyMMdd").format(session.getStartTime()).equals(new SimpleDateFormat("yyyyMMdd").format(new Date()))){
+							sessionReply.setIsToday(true);
+						}else{
+							sessionReply.setIsToday(false);
+						}
+						sessionReplyList.add(sessionReply);
+					}
+					film.setSession(sessionReplyList);
 					filmReplyList.add(film);
 				}
 					data.setFilmList(filmReplyList);
@@ -388,11 +387,9 @@ public class SessionController {
 
                             Sessioninfoview sessioninfoview = null;
 							if (!redisTemplate.boundHashOps("sessioninfo:"+CinemaCode).hasKey(FilmCode+"|"+oneDateSession.getSCode())){//redis无数据
-								System.out.println("没有");
 								sessioninfoview = _sessioninfoviewService.getByCinemaCodeAndSessionCode(oneDateSession.getCCode(), oneDateSession.getSCode());
                                 redisTemplate.boundHashOps("sessioninfo:"+CinemaCode).put(FilmCode+"|"+oneDateSession.getSCode(),JSON.toJSONString(sessioninfoview));
                             }else {
-								System.out.println("有");
 								String sessioninfoString = (String)redisTemplate.boundHashOps("sessioninfo:"+CinemaCode).get(FilmCode+"|"+oneDateSession.getSCode());
 								sessioninfoview = JSON.parseObject(sessioninfoString,Sessioninfoview.class);
                             }
