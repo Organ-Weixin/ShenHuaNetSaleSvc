@@ -109,6 +109,7 @@ public class XmlToJsonUtil {
 				|| (apiResultName + "_" + nodeName).equals("GetOrderStatusResult_Seat")
 				|| (apiResultName + "_" + nodeName).equals("QueryMerchandiseResult_Mer")	//辰星-查询卖品信息
 				|| (apiResultName + "_" + nodeName).equals("QueryMemberFlowInfoResult_TransFlowVO")	//辰星-会员卡交易记录
+				|| (apiResultName + "_" + nodeName).equals("QueryPlanInfoByDatePeriodResult_CinemaPlan")	//辰星-查排期
 					) 
 			{
 				JSONArray qq = new JSONArray();
