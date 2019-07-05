@@ -5,6 +5,7 @@ import java.util.Date;
 public class Coupondistributionrecord extends BaseEntity<Long> {
 
 	private Long Id;
+	private String CinemaCode;
 	private String GroupCode;
 	private Integer CustomerType;
 	private String OpenID;
@@ -18,6 +19,12 @@ public class Coupondistributionrecord extends BaseEntity<Long> {
 	}
 	public void setId(Long Id) {
 		this.Id = Id;
+	}
+	public String getCinemaCode() {
+		return CinemaCode;
+	}
+	public void setCinemaCode(String cinemaCode) {
+		CinemaCode = cinemaCode;
 	}
 	public String getGroupCode() {
 		return GroupCode;

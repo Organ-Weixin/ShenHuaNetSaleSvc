@@ -68,21 +68,31 @@
 			<if test="params.UpdateDate != null and params.UpdateDate != ''">
 				and UpdateDate = #{params.UpdateDate} 
 			</if>
-		
 		</where>
 	</sql>
 
 	<select id="count" resultType="int">
-		select count(1) from couponsgroup t
+		select count(1) from (SELECT * FROM couponsgroup <include refid="whereByroleId" />) t
 		<include refid="where" />
 	</select>
 
 	<select id="list" resultType="Couponsgroup">
-		select * from couponsgroup t
+		select * from (SELECT * FROM couponsgroup <include refid="whereByroleId" />) t
 		<include refid="where" />
 		${params.orderBy}
 		limit #{offset}, #{limit}
 	</select>
+	
+	<sql id="whereByroleId">
+		<where>
+			<if test="params.roleId == 1 ">
+				cinemaCode in (select cinemaCode from sys_user) 
+			</if>
+			<if test="params.roleId != 1 ">
+				cinemaCode in (select CinemaCode from sys_user sy  where sy.id = #{params.id}  or  sy.createUserId = #{params.roleId})
+			</if>
+		</where>
+	</sql>
 	
 	<!-- <select id="getByCinemaCodes" resultType="Couponsgroup">
 		select * from couponsgroup t
@@ -95,6 +105,9 @@
 			<!-- <if test="Id != null">
 				Id = #{Id}, 
 			</if> -->
+			<if test="CinemaCode != null">
+				CinemaCode = #{CinemaCode}, 
+			</if>
 			<if test="GroupCode != null">
 				GroupCode = #{GroupCode}, 
 			</if>

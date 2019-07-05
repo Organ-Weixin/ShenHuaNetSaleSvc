@@ -5,6 +5,7 @@ import java.util.Date;
 public class Coupons extends BaseEntity<Long> {
 
 	private Long Id;
+	private String CinemaCode;
 	private String CouponsCode;
 	private String CouponsName;
 	private String GroupCode;
@@ -19,6 +20,13 @@ public class Coupons extends BaseEntity<Long> {
 	}
 	public void setId(Long Id) {
 		this.Id = Id;
+	}
+	
+	public String getCinemaCode() {
+		return CinemaCode;
+	}
+	public void setCinemaCode(String cinemaCode) {
+		CinemaCode = cinemaCode;
 	}
 	public String getCouponsCode() {
 		return CouponsCode;
