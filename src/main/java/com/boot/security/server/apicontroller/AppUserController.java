@@ -694,9 +694,11 @@ public class AppUserController {
 		List<Ticketuserfilm> ticketuserfilmList = ticketuserfilmService.getByOpenId(OpenID, 1);
 		data.setWantedFilmCount(ticketuserfilmList.size());
 		//看过的电影数量
-		String time = String.valueOf(new Date().getTime()+2*60*60*1000);
-		String sessiontime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Long.parseLong(time)));
-		List<Orders> ordersFilmList = orderService.getByOpenIdAndStatus(OpenID, OrderStatusEnum.Complete.getStatusCode(), sessiontime);
+		//先获取用户已完成并且已出票的订单
+		List<Orders> ordersFilmList = orderService.getUserCompleteOrders(OpenID, OrderStatusEnum.Complete.getStatusCode(), 1);
+//		String time = String.valueOf(new Date().getTime()+2*60*60*1000);
+//		String sessiontime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Long.parseLong(time)));
+//		List<Orders> ordersFilmList = orderService.getByOpenIdAndStatus(OpenID, OrderStatusEnum.Complete.getStatusCode(), sessiontime);
 		data.setLookedFilmCount(ordersFilmList.size());
 		queryUserNumberReply.setData(data);
 		queryUserNumberReply.SetSuccessReply();

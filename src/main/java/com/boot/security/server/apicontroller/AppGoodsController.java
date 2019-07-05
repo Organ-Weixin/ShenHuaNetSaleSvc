@@ -11,7 +11,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -54,7 +53,6 @@ import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.apicontroller.reply.SmsNoticeReply;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaTypeEnum;
-import com.boot.security.server.model.Cinemamessage;
 import com.boot.security.server.model.Cinemapaymentsettings;
 import com.boot.security.server.model.Cinemaview;
 import com.boot.security.server.model.CouponsStatusEnum;
@@ -70,7 +68,6 @@ import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.Usercinemaview;
 import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
-import com.boot.security.server.service.impl.CinemamessageServiceImpl;
 import com.boot.security.server.service.impl.CinemapaymentsettingsServiceImpl;
 import com.boot.security.server.service.impl.CinemaviewServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
@@ -82,7 +79,6 @@ import com.boot.security.server.service.impl.UserCinemaViewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
 import com.boot.security.server.utils.DoubleUtil;
 import com.boot.security.server.utils.FileUploadUtils;
-import com.boot.security.server.utils.SendMobileMessage;
 import com.boot.security.server.utils.SendSmsHelper;
 import com.boot.security.server.utils.WxPayUtil;
 import com.boot.security.server.utils.XmlHelper;
@@ -117,8 +113,6 @@ public class AppGoodsController {
 	private CinemaviewServiceImpl cinemaviewService;
 	@Autowired
     private HttpServletRequest request;
-	@Autowired
-	private CinemamessageServiceImpl cinemamessageService;
 	
 	//region 查询影院卖品信息
 	@GetMapping("/QueryGoods/{UserName}/{Password}/{CinemaCode}")
@@ -536,7 +530,7 @@ public class AppGoodsController {
 					_goodsOrderService.UpdateOrderBaseInfo(order);
 				}
 				// 更新优惠券已使用
-				if (!order.getCouponsCode().equals(null)&&!order.getCouponsCode().equals("")) {
+				if (order.getCouponsCode() != null &&!"".equals(order.getCouponsCode())) {
 					CouponsView couponsview=_couponsService.getWithCouponsCode(order.getCouponsCode());
 					if(couponsview!=null){
 						couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
@@ -655,7 +649,7 @@ public class AppGoodsController {
 				order.setRefundTime(new Date());
 				_goodsOrderService.update(order);
 				//退优惠券
-				if(!order.getCouponsCode().equals(null)&&!order.getCouponsCode().equals("")){
+				if(order.getCouponsCode() != null && !"".equals(order.getCouponsCode())){
 					CouponsView couponsview = _couponsService.getWithCouponsCode(order.getCouponsCode());
 					if(couponsview!=null){
 						couponsview.getCoupons().setStatus(CouponsStatusEnum.Fetched.getStatusCode());
