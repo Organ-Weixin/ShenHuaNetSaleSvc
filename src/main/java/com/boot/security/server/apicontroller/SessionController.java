@@ -388,9 +388,11 @@ public class SessionController {
                             Sessioninfoview sessioninfoview = null;
                             if (!redisTemplate.boundHashOps("sessioninfo:"+CinemaCode).hasKey(FilmCode+"|"+oneDateSession.getSCode())){//redis无数据
                                 sessioninfoview = _sessioninfoviewService.getByCinemaCodeAndSessionCode(oneDateSession.getCCode(), oneDateSession.getSCode());
+                                if (sessioninfoview!=null)
                                 redisTemplate.boundHashOps("sessioninfo:"+CinemaCode).put(FilmCode+"|"+oneDateSession.getSCode(),JSON.toJSONString(sessioninfoview));
                             }else {
                                 String sessioninfoString = (String)redisTemplate.boundHashOps("sessioninfo:"+CinemaCode).get(FilmCode+"|"+oneDateSession.getSCode());
+                                if (scheduleListString!=null)
                                 sessioninfoview = JSON.parseObject(sessioninfoString,Sessioninfoview.class);
                             }
 
@@ -410,6 +412,52 @@ public class SessionController {
                                 }else{
                                     sessionReply.setPrice(sessioninfoview.getPrice());
                                 }
+                                //票服务费
+                                if(sessioninfoview.getTicketFee()==null){
+                                    sessioninfoview.setTicketFee(0.00);
+                                }
+                                //增值服务费
+                                if(sessioninfoview.getAddFee()==null){
+                                    sessioninfoview.setAddFee(0.00);
+                                }
+                                //影院津贴
+                                if(sessioninfoview.getCinemaAllowance()==null){
+                                    sessioninfoview.setCinemaAllowance(0.00);
+                                }
+                                //实际售卖价格
+                                if(sessioninfoview.getPrice()!=null){
+                                    sessionReply.setSalePrice(sessioninfoview.getPrice()+sessioninfoview.getTicketFee()
+                                            +sessioninfoview.getAddFee()-sessioninfoview.getCinemaAllowance());
+                                }else{
+                                    sessionReply.setSalePrice(sessioninfoview.getStandardPrice()+sessioninfoview.getTicketFee()
+                                            +sessioninfoview.getAddFee()-sessioninfoview.getCinemaAllowance());
+                                }
+                                sessionReply.setStandardPrice(sessioninfoview.getStandardPrice()+sessioninfoview.getTicketFee()
+                                        +sessioninfoview.getAddFee()-sessioninfoview.getCinemaAllowance());
+                                sessionReplyList.add(sessionReply);
+                                List<Qmmprice> qmmpriceList = _qmmpriceService.getByCinemaCodeAndScreenName(oneDateSession.getCCode(), sessionReply.getScreenName(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(oneDateSession.getStartTime()));
+                                List<QueryFimlSessionPriceReplyMemberPrice> memberPriceList = new ArrayList<QueryFimlSessionPriceReplyMemberPrice>();
+                                List<QueryFimlSessionPriceReplySessionPrice> sessionPriceList = new ArrayList<QueryFimlSessionPriceReplySessionPrice>();
+                                QueryFimlSessionPriceReplyMemberPrice memberPrice = new QueryFimlSessionPriceReplyMemberPrice();
+                                if(sessioninfoview.getMemberPrice()==null){
+                                    memberPrice.setMemberPrice(sessioninfoview.getStandardPrice());
+                                }else{
+                                    memberPrice.setMemberPrice(sessioninfoview.getMemberPrice());
+                                }
+                                memberPriceList.add(memberPrice);
+                                for(Qmmprice qmmprice:qmmpriceList){
+                                    QueryFimlSessionPriceReplySessionPrice sessionPrice = new QueryFimlSessionPriceReplySessionPrice();
+                                    if(qmmprice!=null){
+                                        sessionPrice.setTypeCode(qmmprice.getDataType());
+                                        sessionPrice.setTypeName(qmmprice.getDataName());
+                                        sessionPrice.setSettlePrice(qmmprice.getSettlePrice());
+                                        sessionPrice.setStandardPrice(qmmprice.getPrice());
+                                        sessionPriceList.add(sessionPrice);
+                                    }
+                                }
+                                sessionReply.setMemberPirce(memberPriceList);
+                                sessionReply.setSessionPrice(sessionPriceList);
+                                sessionDateReply.setSession(sessionReplyList);
                             }
                             sessionReply.setScreenCode(oneDateSession.getScreenCode());
                             sessionReply.setSessionCode(oneDateSession.getSCode());
@@ -424,52 +472,7 @@ public class SessionController {
                                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
                                 sessionReply.setEndTime(sdf.format(new Date(Long.parseLong(endtime))));
                             }
-                            //票服务费
-                            if(sessioninfoview.getTicketFee()==null){
-                                sessioninfoview.setTicketFee(0.00);
-                            }
-                            //增值服务费
-                            if(sessioninfoview.getAddFee()==null){
-                                sessioninfoview.setAddFee(0.00);
-                            }
-                            //影院津贴
-                            if(sessioninfoview.getCinemaAllowance()==null){
-                                sessioninfoview.setCinemaAllowance(0.00);
-                            }
-                            //实际售卖价格
-                            if(sessioninfoview.getPrice()!=null){
-                                sessionReply.setSalePrice(sessioninfoview.getPrice()+sessioninfoview.getTicketFee()
-                                        +sessioninfoview.getAddFee()-sessioninfoview.getCinemaAllowance());
-                            }else{
-                                sessionReply.setSalePrice(sessioninfoview.getStandardPrice()+sessioninfoview.getTicketFee()
-                                        +sessioninfoview.getAddFee()-sessioninfoview.getCinemaAllowance());
-                            }
-                            sessionReply.setStandardPrice(sessioninfoview.getStandardPrice()+sessioninfoview.getTicketFee()
-                                    +sessioninfoview.getAddFee()-sessioninfoview.getCinemaAllowance());
-                            sessionReplyList.add(sessionReply);
-                            List<Qmmprice> qmmpriceList = _qmmpriceService.getByCinemaCodeAndScreenName(oneDateSession.getCCode(), sessionReply.getScreenName(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(oneDateSession.getStartTime()));
-                            List<QueryFimlSessionPriceReplyMemberPrice> memberPriceList = new ArrayList<QueryFimlSessionPriceReplyMemberPrice>();
-                            List<QueryFimlSessionPriceReplySessionPrice> sessionPriceList = new ArrayList<QueryFimlSessionPriceReplySessionPrice>();
-                            QueryFimlSessionPriceReplyMemberPrice memberPrice = new QueryFimlSessionPriceReplyMemberPrice();
-                            if(sessioninfoview.getMemberPrice()==null){
-                                memberPrice.setMemberPrice(sessioninfoview.getStandardPrice());
-                            }else{
-                                memberPrice.setMemberPrice(sessioninfoview.getMemberPrice());
-                            }
-                            memberPriceList.add(memberPrice);
-                            for(Qmmprice qmmprice:qmmpriceList){
-                                QueryFimlSessionPriceReplySessionPrice sessionPrice = new QueryFimlSessionPriceReplySessionPrice();
-                                if(qmmprice!=null){
-                                    sessionPrice.setTypeCode(qmmprice.getDataType());
-                                    sessionPrice.setTypeName(qmmprice.getDataName());
-                                    sessionPrice.setSettlePrice(qmmprice.getSettlePrice());
-                                    sessionPrice.setStandardPrice(qmmprice.getPrice());
-                                    sessionPriceList.add(sessionPrice);
-                                }
-                            }
-                            sessionReply.setMemberPirce(memberPriceList);
-                            sessionReply.setSessionPrice(sessionPriceList);
-                            sessionDateReply.setSession(sessionReplyList);
+
                             data.setSessionDate(sessionDateReplyList);
                         }
                     }
