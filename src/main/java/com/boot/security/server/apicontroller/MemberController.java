@@ -8,16 +8,20 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.security.server.api.core.CardChargeReply;
@@ -73,6 +77,7 @@ import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.Membercardcreditrule;
 import com.boot.security.server.model.Membercardlevel;
+import com.boot.security.server.model.Membercardrecharge;
 import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderStatusEnum;
 import com.boot.security.server.model.OrderView;
@@ -95,6 +100,7 @@ import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
 import com.boot.security.server.service.impl.MemberCardLevelServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.MembercardcreditruleServiceImpl;
+import com.boot.security.server.service.impl.MembercardrechargeServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.service.impl.OrderseatdetailsServiceImpl;
 import com.boot.security.server.service.impl.PriceplanServiceImpl;
@@ -139,6 +145,8 @@ public class MemberController {
 	@Autowired
 	private MembercardcreditruleServiceImpl _membercardcreditruleService;
 	@Autowired
+	private MembercardrechargeServiceImpl membercardrechargeService;
+	@Autowired
 	private OrderServiceImpl orderService;
 	@Autowired
 	private GoodsOrderServiceImpl goodsOrderService;
@@ -154,6 +162,8 @@ public class MemberController {
 	private OrderseatdetailsServiceImpl _orderseatdetailsService;
 	@Autowired
 	private CinemamessageServiceImpl cinemamessageService;
+	
+	protected static Logger log = LoggerFactory.getLogger(MemberController.class);
 	
 	//region 会员卡登陆
 	@GetMapping("/LoginCard/{Username}/{Password}/{CinemaCode}/{OpenID}/{CardNo}/{CardPassword}")
@@ -776,7 +786,7 @@ public class MemberController {
 	@ApiOperation(value = "会员卡充值")
 	public CardChargeReply CardCharge(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String ChargeType,@PathVariable String LevelCode,
-			@PathVariable String RuleCode,@PathVariable String ChargeAmount){
+			@PathVariable String RuleCode,@PathVariable String ChargeAmount,@PathVariable String TradeNo) throws Exception {
 		CardChargeReply cardChargeReply = new CardChargeReply();
 		if(RuleCode==null||RuleCode==""){
 			cardChargeReply.SetCardChargeTypeInvalidReply();
@@ -802,14 +812,18 @@ public class MemberController {
 		}
 		ChargeAmount = String.valueOf(membercardcreditrule.getCredit()+membercardcreditrule.getGivenAmount());
 		CardChargeReply reply = new NetSaleSvcCore().CardCharge(Username, Password, CinemaCode, CardNo, CardPassword, ChargeType, ChargeAmount);
+		Membercardrecharge mem = membercardrechargeService.getByTradeNo(TradeNo);
 		if(reply.Status.equals("Success")){
 			Membercard membercard=_memberCardService.getByCardNo(CinemaCode, CardNo);
 			QueryCardReply queryCardReply=QueryCard(Username, Password, CinemaCode, CardNo, CardPassword);
 			if(queryCardReply.Status.equals("Success")){
 				membercard.setBalance(Double.valueOf(queryCardReply.getCard().getBalance()));
 				membercard.setScore(Integer.valueOf(queryCardReply.getCard().getScore()));
+				mem.setBalance(Double.valueOf(queryCardReply.getCard().getBalance()));
 			}
-			_memberCardService.Update(membercard);
+			_memberCardService.Update(membercard);	//更新会员卡表
+			
+			mem.setStatus("3");	//充值成功
 			try {
 				Cinema cinema = _cinemaService.getByCinemaCode(CinemaCode);
 				String batchNum=UUID.randomUUID().toString().replace("-","");
@@ -821,7 +835,34 @@ public class MemberController {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		} else {	//充值失败
+			if(mem != null && "1".equals(mem.getStatus())){
+				//微信支付成功，退款
+				// 获取影院的支付配置
+				Cinemapaymentsettings cinemapaymentsettings = _cinemapaymentsettingsService
+						.getByCinemaCode(CinemaCode);
+				if (cinemapaymentsettings == null || cinemapaymentsettings.getWxpayAppId().isEmpty()
+						|| cinemapaymentsettings.getWxpayMchId().isEmpty()) {
+					cardChargeReply.SetCinemaPaySettingInvalidReply();
+					return cardChargeReply;
+				}
+				String WxpayAppId = cinemapaymentsettings.getWxpayAppId();
+				String WxpayMchId=cinemapaymentsettings.getWxpayMchId();
+				String WxpayKey=cinemapaymentsettings.getWxpayKey();
+				String refundTradeNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+				Double RefundPrice = Double.valueOf(ChargeAmount);// 退款金额
+				String RefundFee = String.valueOf(Double.valueOf(RefundPrice*100).intValue());// 退款金额，以分为单位
+				String OrderTradeNo = mem.getWXtradeNo();//微信支付订单号
+				String WxpayRefundCert=cinemapaymentsettings.getWxpayRefundCert();
+				WxPayUtil.WxPayRefund(WxpayAppId,WxpayMchId,WxpayKey,refundTradeNo,RefundFee,OrderTradeNo,CinemaCode,WxpayRefundCert);
+				
+			} else {
+				reply.SetOrderNotExistReply();
+				return reply;
+			}
+			
 		}
+		membercardrechargeService.update(mem);
 		return reply;
 	}
 	//endregion
@@ -1001,13 +1042,13 @@ public class MemberController {
 	//endregion
 	
 	//region 预支付会员卡充值(准备支付参数)
-	@GetMapping("/PrePayCardCharge/{Username}/{Password}/{CinemaCode}/{OpenID}/{LevelCode}/{RuleCode}/{ChargeAmount}")
+	@GetMapping("/PrePayCardCharge/{Username}/{Password}/{CinemaCode}/{OpenID}/{LevelCode}/{RuleCode}/{ChargeAmount}/{CardNo}")
 	@ApiOperation(value = "预支付会员卡充值(准备支付参数)")
 	public PrePayParametersReply PrePayCardCharge(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
-			@PathVariable String OpenID,@PathVariable String LevelCode,@PathVariable String RuleCode,@PathVariable String ChargeAmount) throws IOException{
+			@PathVariable String OpenID,@PathVariable String LevelCode,@PathVariable String RuleCode,@PathVariable String ChargeAmount,@PathVariable String CardNo) throws IOException{
 		PrePayParametersReply prePayParametersReply = new PrePayParametersReply();
 		//校验参数
-		if (!ReplyExtension.RequestInfoPrePayCardCharge(prePayParametersReply, Username, Password, CinemaCode, OpenID, ChargeAmount))
+		if (!ReplyExtension.RequestInfoPrePayCardCharge(prePayParametersReply, Username, Password, CinemaCode, OpenID, ChargeAmount,CardNo))
         {
             return prePayParametersReply;
         }
@@ -1061,6 +1102,21 @@ public class MemberController {
 		}
 		ChargeAmount = String.valueOf(membercardcreditrule.getCredit()+membercardcreditrule.getGivenAmount());
         
+		// 更新充值记录表
+		Membercardrecharge mem = new Membercardrecharge();
+		mem.setCinemaCode(CinemaCode);
+		mem.setCardNo(CardNo);
+		String out_trade_no = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + CinemaCode + (int)((Math.random()*9+1)*100000);//随机的六位数字
+		mem.setTradeNo(out_trade_no);
+		mem.setRechargeAmount(Double.valueOf(ChargeAmount));
+		mem.setStatus("0");
+		mem.setMidUserName(Username);
+		mem.setMidPassword(Password);
+		mem.setRuleCode(RuleCode);
+		mem.setLevelCode(LevelCode);
+		mem.setUpdated(new Date());
+		membercardrechargeService.save(mem);
+		
         //准备参数
         Calendar cal=Calendar.getInstance();
         String WxpayAppId = cinemapaymentsettings.getWxpayAppId();
@@ -1069,12 +1125,42 @@ public class MemberController {
                 + " 会员卡充值（" + ChargeAmount + " 元）";
         String WxpayMchId = cinemapaymentsettings.getWxpayMchId();
         String WxpayKey = cinemapaymentsettings.getWxpayKey();
-        String notify_url = "https://xc.80piao.com:8443/Api/Member/WxPayNotify";//https://xc.80piao.com:8443/Api/Member/WxPayNotify
-        String out_trade_no = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + CinemaCode + (int)((Math.random()*9+1)*100000);//随机的六位数字
-        String time_expire =new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(new Date() .getTime() + 900000));
+        String weburl = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort();
+		String notify_url = weburl+"/Api/Member/WxPayNotify";
+//        String notify_url = "https://xc.80piao.com:8443/Api/Member/WxPayNotify";
+        
+		String time_expire =new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(new Date() .getTime() + 900000));
         Double totalPrice = Double.valueOf(ChargeAmount);
         String total_fee = String.valueOf(Double.valueOf(totalPrice*100).intValue());//以分为单位
         return WxPayUtil.WxPayPrePay(request,prePayParametersReply, WxpayAppId, WxpayMchId, WxpayKey, strbody, notify_url, OpenID, out_trade_no, time_expire, total_fee);
+	}
+	//endregion
+	
+	//region 异步接收微信支付返回
+	@RequestMapping(value = "/WxPayNotify", produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public void WxPayNotify() throws Exception{
+		// 读取返回内容
+		Map<String, String> returnmap = WxPayUtil.WxPayNotify(request);
+		String tradeNo = returnmap.get("out_trade_no");
+		Membercardrecharge mem = membercardrechargeService.getByTradeNo(tradeNo);
+		log.info("++++++++++++++++"+new Gson().toJson(returnmap));
+		if (returnmap.get("isWXsign").equals("True")) {
+			if ("SUCCESS".equals(returnmap.get("return_code")) && "SUCCESS".equals(returnmap.get("result_code"))) {
+				log.info("--------");
+				
+				mem.setStatus("1");		//微信支付成功
+				mem.setWXtradeNo(returnmap.get("transaction_id"));	//微信支付流水
+				
+				//会员卡充值
+				CardCharge(mem.getMidUserName(), mem.getMidPassword(), mem.getCinemaCode(), mem.getCardNo(), "", "WxPay", mem.getLevelCode(), mem.getRuleCode(), String.valueOf(mem.getRechargeAmount()),tradeNo);	
+			} else {
+				mem.setStatus("2");		//微信支付失败
+			}
+		} else {
+			mem.setStatus("2");
+		}
+		membercardrechargeService.update(mem);	// 更新充值记录表
 	}
 	//endregion
 	
@@ -1395,11 +1481,7 @@ public class MemberController {
 	}
 	//endregion
 	
-	//region 异步接收微信支付返回(会员卡注册充值不需要更新订单表，可以为空)
-	public void WxPayNotify() throws Exception{
-		
-	}
-	//endregion
+	
 	
 	//region
 	public static void main(String[] args) {

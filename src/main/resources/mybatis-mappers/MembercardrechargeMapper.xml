@@ -26,6 +26,15 @@
 			<if test="params.Balance != null and params.Balance != ''">
 				and Balance = #{params.Balance} 
 			</if>
+			<if test="params.RechargeStatus != null and params.RechargeStatus != ''">
+				and RechargeStatus = #{params.RechargeStatus} 
+			</if>
+			<if test="params.TradeNo != null and params.TradeNo != ''">
+				and TradeNo = #{params.TradeNo} 
+			</if>
+			<if test="params.WXtradeNo != null and params.WXtradeNo != ''">
+				and WXtradeNo = #{params.WXtradeNo} 
+			</if>
 			<if test="params.Updated != null and params.Updated != ''">
 				and Updated = #{params.Updated} 
 			</if>
@@ -78,6 +87,15 @@
 			</if>
 			<if test="Balance != null">
 				Balance = #{Balance}, 
+			</if>
+			<if test="RechargeStatus != null">
+				RechargeStatus = #{RechargeStatus}, 
+			</if>
+			<if test="TradeNo != null">
+				TradeNo = #{TradeNo}, 
+			</if>
+			<if test="WXtradeNo != null">
+				WXtradeNo = #{WXtradeNo}, 
 			</if>
 			<if test="Updated != null">
 				Updated = #{Updated}, 

@@ -17,6 +17,9 @@ public interface MembercardrechargeDao {
 
     @Select("select * from membercardrecharge t where t.id = #{id}")
     Membercardrecharge getById(Long id);
+    
+    @Select("select * from membercardrecharge t where t.TradeNo = #{tradeNo}")
+    Membercardrecharge getByTradeNo(String tradeNo);
 
     @Delete("delete from membercardrecharge where id = #{id}")
     int delete(Long id);
@@ -24,7 +27,7 @@ public interface MembercardrechargeDao {
     int update(Membercardrecharge membercardrecharge);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into membercardrecharge(CinemaCode, CardNo, UserName, MobilePhone, RechargeAmount, Balance, Updated) values(#{CinemaCode}, #{CardNo}, #{UserName}, #{MobilePhone}, #{RechargeAmount}, #{Balance}, #{Updated})")
+    @Insert("insert into membercardrecharge(CinemaCode, CardNo, UserName, MobilePhone, RechargeAmount, Balance, Status, TradeNo, WXtradeNo, Updated, MidUserName, MidPassword, RuleCode, LevelCode) values(#{CinemaCode}, #{CardNo}, #{UserName}, #{MobilePhone}, #{RechargeAmount}, #{Balance}, #{Status}, #{TradeNo}, #{WXtradeNo}, #{Updated}, #{MidUserName}, #{MidPassword}, #{RuleCode}, #{LevelCode})")
     int save(Membercardrecharge membercardrecharge);
     
     int count(@Param("params") Map<String, Object> params);

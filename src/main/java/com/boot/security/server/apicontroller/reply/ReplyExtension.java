@@ -561,7 +561,8 @@ public class ReplyExtension {
 	//endregion
 	
 	//region 预支付会员卡充值
-	public static boolean RequestInfoPrePayCardCharge(PrePayParametersReply reply, String Username, String Password, String CinemaCode,String OpenID,String ChargeAmount)
+	public static boolean RequestInfoPrePayCardCharge(PrePayParametersReply reply, String Username, String Password, String CinemaCode,
+			String OpenID,String ChargeAmount, String CardNo)
     {
         if (Username == null || "".equals(Username))
         {
@@ -584,6 +585,10 @@ public class ReplyExtension {
         }
         if(ChargeAmount == null || "".equals(ChargeAmount)){
         	reply.SetNecessaryParamMissReply("ChargeAmount");
+        	return false;
+        }
+        if(CardNo == null || "".equals(CardNo)){
+        	reply.SetNecessaryParamMissReply("CardNo");
         	return false;
         }
         return true;

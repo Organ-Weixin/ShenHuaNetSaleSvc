@@ -5,4 +5,6 @@ import com.boot.security.server.model.Membercardrecharge;
 public interface MembercardrechargeService {
 
 	int save(Membercardrecharge membercardrecharge);
+	Membercardrecharge getByTradeNo(String tradeNo);
+	int update(Membercardrecharge membercardrecharge);
 }

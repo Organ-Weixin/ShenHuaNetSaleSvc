@@ -251,6 +251,13 @@ public class BaseReply {
         ErrorCode = ErrorCodeEnum.GoodsCountInvalid.getCode();
         ErrorMessage = ErrorCodeEnum.GoodsCountInvalid.getMessage();
     }
+    
+    public void SetCinemaPaySettingInvalidReply()
+    {
+        Status = StatusEnum.Failure.getStatusCode();
+        ErrorCode = ErrorCodeEnum.CinemaPaySettingInvalid.getCode();
+        ErrorMessage = ErrorCodeEnum.CinemaPaySettingInvalid.getMessage();
+    }
 	
     public String Status;
 

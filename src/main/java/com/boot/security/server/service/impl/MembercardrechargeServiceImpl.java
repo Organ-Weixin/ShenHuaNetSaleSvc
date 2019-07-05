@@ -18,4 +18,14 @@ public class MembercardrechargeServiceImpl implements MembercardrechargeService{
 		return membercardrechargeDao.save(membercardrecharge);
 	}
 
+	@Override
+	public Membercardrecharge getByTradeNo(String tradeNo) {
+		return membercardrechargeDao.getByTradeNo(tradeNo);
+	}
+
+	@Override
+	public int update(Membercardrecharge membercardrecharge) {
+		return membercardrechargeDao.update(membercardrecharge);
+	}
+
 }
