@@ -31,7 +31,7 @@ public interface CouponsgroupDao {
     int changePast(Integer status);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into couponsgroup(GroupCode, CouponsType, CouponsName, EffectiveDate, ExpireDate,ReductionType, ThresholdAmount, ReductionPrice,IsShare, Remark, CanUseCinemaType, CinemaCodes, Status, CouponsNumber, IssuedNumber, FetchNumber, RemainingNumber, UsedNumber, CreateDate, UpdateDate,IsShareWithMemberCard,OperationRemark) values(#{GroupCode}, #{CouponsType}, #{CouponsName},#{EffectiveDate}, #{ExpireDate}, #{ReductionType}, #{ThresholdAmount}, #{ReductionPrice},#{IsShare}, #{Remark}, #{CanUseCinemaType}, #{CinemaCodes}, #{Status}, #{CouponsNumber}, #{IssuedNumber}, #{FetchNumber}, #{RemainingNumber}, #{UsedNumber},#{CreateDate}, #{UpdateDate},#{IsShareWithMemberCard},#{OperationRemark})")
+    @Insert("insert into couponsgroup(CinemaCode,GroupCode, CouponsType, CouponsName, EffectiveDate, ExpireDate,ReductionType, ThresholdAmount, ReductionPrice,IsShare, Remark, CanUseCinemaType, CinemaCodes, Status, CouponsNumber, IssuedNumber, FetchNumber, RemainingNumber, UsedNumber, CreateDate, UpdateDate,IsShareWithMemberCard,OperationRemark) values(#{CinemaCode},#{GroupCode}, #{CouponsType}, #{CouponsName},#{EffectiveDate}, #{ExpireDate}, #{ReductionType}, #{ThresholdAmount}, #{ReductionPrice},#{IsShare}, #{Remark}, #{CanUseCinemaType}, #{CinemaCodes}, #{Status}, #{CouponsNumber}, #{IssuedNumber}, #{FetchNumber}, #{RemainingNumber}, #{UsedNumber},#{CreateDate}, #{UpdateDate},#{IsShareWithMemberCard},#{OperationRemark})")
     int save(Couponsgroup couponsgroup);
     
     int count(@Param("params") Map<String, Object> params);

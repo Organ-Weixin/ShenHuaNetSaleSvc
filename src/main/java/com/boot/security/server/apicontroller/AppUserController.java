@@ -616,7 +616,7 @@ public class AppUserController {
 		ticketuser.setMobilePhone(input.getMobilePhone());
 		ticketuser.setVerifyCode(str.toString());
 		_ticketusersService.update(ticketuser);
-		System.out.println(str);
+		
 		//发送验证码到用户手机号
 		Cinema cinema = _cinemaService.getByCinemaCode(input.getCinemaCode());
 		Cinemamessage cinemamessage=cinemamessageService.getByMessageType("1");

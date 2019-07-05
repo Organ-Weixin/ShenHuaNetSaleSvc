@@ -24,7 +24,7 @@ public interface CoupondistributionrecordDao {
     int update(Coupondistributionrecord coupondistributionrecord);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into coupondistributionrecord(Id, GroupCode, CustomerType, OpenID, Issuer, IssuedNumber, IssuedTime, Status) values(#{Id}, #{GroupCode}, #{CustomerType}, #{OpenID}, #{Issuer}, #{IssuedNumber}, now(), #{Status})")
+    @Insert("insert into coupondistributionrecord(Id,CinemaCode, GroupCode, CustomerType, OpenID, Issuer, IssuedNumber, IssuedTime, Status) values(#{Id},#{CinemaCode},#{GroupCode}, #{CustomerType}, #{OpenID}, #{Issuer}, #{IssuedNumber}, now(), #{Status})")
     int save(Coupondistributionrecord coupondistributionrecord);
     
     int count(@Param("params") Map<String, Object> params);

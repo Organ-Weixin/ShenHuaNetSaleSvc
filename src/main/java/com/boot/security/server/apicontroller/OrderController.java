@@ -606,7 +606,7 @@ public class OrderController {
 					//微信支付
 					if(orders.getOrderPayType()==OrderPayTypeEnum.WxPay.getTypeCode()){
 						//计算退票手续费,得到退款总金额
-						orders.setTotalRefundPrice(DoubleUtil.sub(DoubleUtil.sub(orders.getTotalSalePrice(),orders.getCouponsPrice()),cinema.getRefundFee()));
+						orders.setTotalRefundPrice(DoubleUtil.sub(orders.getTotalSalePrice(),cinema.getRefundFee()));
 						_orderService.update(orders);//更新一下退款金额到数据库
 						//调用微信退款接口
 						RefundPaymentReply paymentReply = RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode());
@@ -857,6 +857,8 @@ public class OrderController {
 						couponsview.getCouponsgroup().setUpdateDate(new Date());
 						//更新优惠券及优惠券分组表
 						_couponsService.update(couponsview);
+						//更新订单的实际销售金额=减去优惠券的实际金额
+						order.getOrderBaseInfo().setTotalSalePrice(DoubleUtil.sub(order.getOrderBaseInfo().getTotalSalePrice(), order.getOrderBaseInfo().getCouponsPrice()));
 					}
 				}
 			} else {
