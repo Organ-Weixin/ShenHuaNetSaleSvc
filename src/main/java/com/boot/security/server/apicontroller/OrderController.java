@@ -349,7 +349,7 @@ public class OrderController {
 			orders.setCouponsPrice(0.00);
 		}
 		data.setOrderStatus(orders.getOrderStatus());
-		data.setRealAmount(orders.getTotalSalePrice());
+		data.setRealAmount(orders.getTotalRefundPrice());
 		data.setOrderCode(orders.getSubmitOrderCode());
 		data.setMobilePhone(orders.getMobilePhone());
 		data.setOrderPayType(orders.getOrderPayType());
@@ -569,8 +569,9 @@ public class OrderController {
 			if(orders.getSessionTime().getTime()-new Date().getTime()>cinema.getOverRefundTime()*60*1000){
 				//退票接口
 				reply = NetSaleSvcCore.getInstance().RefundTicket(UserName, Password, CinemaCode, PrintNo, VerifyCode);
+				log.info("\nreply:" + reply.Status+"=="+reply.ErrorMessage + "\n");
 				//退票成功进行处理
-				if(reply.Status.equals("Success")){
+				if (reply.Status.equalsIgnoreCase("Success")) {
 					orders = orderService.getByPrintNo(CinemaCode, PrintNo, VerifyCode);	//订单状态已改变，重新查询订单
 					//退优惠券
 					if(orders.getCouponsCode()!=null&&orders.getCouponsCode()!=""){
@@ -580,7 +581,10 @@ public class OrderController {
 							coupons.setUsedDate(null);
 							coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
 							coupons.setUpdateTime(new Date());
-							_couponsService.update(coupons);
+
+
+                            _couponsService.update(coupons);
+                            log.info("\n\n\n\n\n\n\nreply:" + reply.Status+"=="+reply.ErrorMessage + "\n");
 //							System.out.println("退还优惠券结果"+_couponsService.update(coupons));
 							//更新优惠券组的库存、使用数量
 							Couponsgroup couponsgroup = couponsgroupService.getByGroupCode(coupons.getCouponsCode());
@@ -614,7 +618,7 @@ public class OrderController {
 							try{
 								//发短信
 								String batchNum=UUID.randomUUID().toString().replace("-","");
-								MsgConetnt=cinema.getSmsSignId() +cinemamessage.getMessageContent().replaceFirst("@PayBackAmount", orders.getTotalSalePrice().toString()).replaceFirst("@TelephoneNumber",cinema.getContactMobile());
+								MsgConetnt=cinema.getSmsSignId() +cinemamessage.getMessageContent().replaceFirst("@PayBackAmount", orders.getTotalRefundPrice().toString()).replaceFirst("@TelephoneNumber",cinema.getContactMobile());
 								//MsgConetnt="您的退票已成功，退票金额"+orders.getTotalSalePrice()+"元将在3个工作日内返回支付账号，咨询：4008257789";
 								//new SendSmsHelper().SendSms(CinemaCode,orders.getMobilePhone(),MsgConetnt);
 								SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), orders.getMobilePhone(), MsgConetnt, batchNum);
