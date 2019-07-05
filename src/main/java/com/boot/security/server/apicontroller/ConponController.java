@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.security.server.api.core.NetSaleSvcCore;
 import com.boot.security.server.api.core.QueryDiscountReply;
-import com.boot.security.server.api.ctms.reply.YkConfirmMixOrderResult.DataBean.ConfirmMixOrderBean.GoodsOrder.Goods;
 import com.boot.security.server.apicontroller.reply.BindCouponsReply;
 import com.boot.security.server.apicontroller.reply.BindCouponsReply.BindCouponsReplyBind;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
@@ -38,7 +37,6 @@ import com.boot.security.server.model.Goodsorders;
 import com.boot.security.server.model.Membercard;
 import com.boot.security.server.model.OrderPayTypeEnum;
 import com.boot.security.server.model.OrderView;
-import com.boot.security.server.model.Orders;
 import com.boot.security.server.model.Orderseatdetails;
 import com.boot.security.server.model.Priceplan;
 import com.boot.security.server.model.Screeninfo;
@@ -48,9 +46,7 @@ import com.boot.security.server.model.Userinfo;
 import com.boot.security.server.service.impl.CinemaServiceImpl;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
-import com.boot.security.server.service.impl.FilminfoServiceImpl;
 import com.boot.security.server.service.impl.GoodsOrderServiceImpl;
-import com.boot.security.server.service.impl.GoodsServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.service.impl.OrderServiceImpl;
 import com.boot.security.server.service.impl.PriceplanServiceImpl;
@@ -75,10 +71,6 @@ public class ConponController {
 	private CouponsServiceImpl _couponsService;
 	@Autowired
 	private CouponsgroupServiceImpl _couponsgroupService;
-	@Autowired
-	private FilminfoServiceImpl _filminfoService;
-	@Autowired
-	private GoodsServiceImpl _goodsService;
 	@Autowired
 	private OrderServiceImpl _orderService;
 	@Autowired
@@ -171,36 +163,48 @@ public class ConponController {
 			for (Coupons coupon : coupons) {
 				QueryUserConponsBean queryUserConponsBean = new QueryUserConponsBean();
 				ModelMapper.MapForm(queryUserConponsBean, coupon);
-				Couponsgroup cou = _couponsgroupService.getByCinemaCodeAndGroupCode(cinema.getCode(),
-						coupon.getGroupCode());
-						if (cou != null) {
-							sum++;
-							queryUserConponsBean.setCinemaCode(cou.getCinemaCodes());
-							queryUserConponsBean.setRemark(cou.getRemark());
-							queryUserConponsBean.setPrice(cou.getReductionPrice());
-							queryUserConponsBean.setCouonsType(cou.getCouponsType());
-							queryUserConponsBean.setTitle(cou.getCouponsName());
-							queryUserConponsBean.setCanUseCinemaType(cou.getCanUseCinemaType());
-							queryUserConponsBean.setInitialAmount(cou.getThresholdAmount());//门槛金额
-							queryUserConponsBean.setExpireDate(new SimpleDateFormat("yyyy/MM/dd").format(cou.getExpireDate()));
-							// 获取可用影院名称
-							String cinemacodeList[] = cou.getCinemaCodes().split(",");
-							String cinemaname = "";
-							for (int j = 0; j < cinemacodeList.length; j++) {
-								Cinema cine = _cinemaService.getByCinemaCode(cinemacodeList[j]);
-								if (cine != null) {
-									cinemaname += cine.getName() + ",";
-								}
-							}
-							if (cinemaname.length() > 0) {
-								queryUserConponsBean.setCinemaName(cinemaname.substring(0, cinemaname.length() - 1));
-							}
-							queryUserConponsBean.setReductionType(cou.getReductionType());
-							queryUserConponsBean.setIsShare(cou.getIsShare());
-							queryUserConponsBeanss.add(queryUserConponsBean);
+//				Couponsgroup cou = _couponsgroupService.getByCinemaCodeAndGroupCode(cinema.getCode(),coupon.getGroupCode());
+				Couponsgroup cou = _couponsgroupService.getByGroupCode(coupon.getGroupCode());
+				if (cou != null && cou.getCanUseCinemaType()==1) {		//所以门店通用
+					sum++;
+					queryUserConponsBean.setRemark(cou.getRemark());
+					queryUserConponsBean.setPrice(cou.getReductionPrice());
+					queryUserConponsBean.setCouonsType(cou.getCouponsType());
+					queryUserConponsBean.setTitle(cou.getCouponsName());
+					queryUserConponsBean.setCanUseCinemaType(cou.getCanUseCinemaType());
+					queryUserConponsBean.setInitialAmount(cou.getThresholdAmount());//门槛金额
+					if(cou.getEffectiveDate() != null){
+						queryUserConponsBean.setEffectiveDate(new SimpleDateFormat("yyyy/MM/dd").format(cou.getEffectiveDate()));
+					}
+					if(cou.getExpireDate() != null){
+						queryUserConponsBean.setExpireDate(new SimpleDateFormat("yyyy/MM/dd").format(cou.getExpireDate()));
+					}
+					queryUserConponsBean.setReductionType(cou.getReductionType());
+					queryUserConponsBean.setIsShare(cou.getIsShare());
+					queryUserConponsBeanss.add(queryUserConponsBean);
+				} else if (cou != null && cou.getCanUseCinemaType()==2){	//部分门店可用
+					if(cou.getCinemaCodes() != null && cou.getCinemaCodes().indexOf(CinemaCode) != -1){	//包含该影院
+						sum++;
+						queryUserConponsBean.setRemark(cou.getRemark());
+						queryUserConponsBean.setPrice(cou.getReductionPrice());
+						queryUserConponsBean.setCouonsType(cou.getCouponsType());
+						queryUserConponsBean.setTitle(cou.getCouponsName());
+						queryUserConponsBean.setCanUseCinemaType(cou.getCanUseCinemaType());
+						queryUserConponsBean.setInitialAmount(cou.getThresholdAmount());//门槛金额
+						if(cou.getEffectiveDate() != null){
+							queryUserConponsBean.setEffectiveDate(new SimpleDateFormat("yyyy/MM/dd").format(cou.getEffectiveDate()));
 						}
-					data.setConponCount(sum);
+						if(cou.getExpireDate() != null){
+							queryUserConponsBean.setExpireDate(new SimpleDateFormat("yyyy/MM/dd").format(cou.getExpireDate()));
+						}
+						queryUserConponsBean.setReductionType(cou.getReductionType());
+						queryUserConponsBean.setIsShare(cou.getIsShare());
+						queryUserConponsBeanss.add(queryUserConponsBean);
+					}
+				}
+				
 			}
+			data.setConponCount(sum);
 			data.setConpons(queryUserConponsBeanss);
 			
 		}
