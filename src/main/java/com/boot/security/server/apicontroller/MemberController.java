@@ -837,6 +837,7 @@ public class MemberController {
 			}
 		} else {	//充值失败
 			if(mem != null && "1".equals(mem.getStatus())){
+				mem.setStatus("4");
 				//微信支付成功，退款
 				// 获取影院的支付配置
 				Cinemapaymentsettings cinemapaymentsettings = _cinemapaymentsettingsService
