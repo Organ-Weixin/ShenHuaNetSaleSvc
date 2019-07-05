@@ -213,7 +213,19 @@ public class OrderController {
 					Cinemamessage cinemamessage=cinemamessageService.getByMessageType("5");
 					Cinema cinema = cinemaService.getByCinemaCode(orders.getCinemaCode());
 					String batchNum=UUID.randomUUID().toString().replace("-","");
-					String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@ticketCode", orders.getPrintNo()).replaceFirst("@filmName", orders.getFilmName()).replaceFirst("@ticketNumber", orders.getTicketCount().toString()).replaceFirst("@cinemaHallName", screeninfo.getSName()).replaceFirst("@showTime", new SimpleDateFormat("MM-dd HH:mm").format(orders.getSessionTime()));
+					// 将特定影院的取票码改为特定的格式
+                    Cinemaview cinemaview = cinemaviewService.getByCinemaCode(orders.getCinemaCode());
+                    //辰星系统(取票码截取影院编码)
+                    String printNo = orders.getPrintNo();
+                    if(cinemaview.getCinemaType() == CinemaTypeEnum.ChenXing.getTypeCode()){
+                        if (printNo != null && printNo.length() > 8) {
+                            printNo = printNo.substring(8);
+                        }
+                    } else if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
+                        printNo = orders.getSubmitOrderCode();
+                    }
+                    // 发送购票成功短信通知
+					String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@ticketCode", printNo).replaceFirst("@filmName", orders.getFilmName()).replaceFirst("@ticketNumber", orders.getTicketCount().toString()).replaceFirst("@cinemaHallName", screeninfo.getSName()).replaceFirst("@showTime", new SimpleDateFormat("MM-dd HH:mm").format(orders.getSessionTime()));
 					//String MsgConetnt="您已成功支付，订单金额"+orders.getTotalSalePrice()+"元，影片场次："+orders.getSessionTime()+" 《"+orders.getFilmName()+"》"+orders.getTicketCount()+"张。请至影城取票机领取，取票码："+orders.getPrintNo()+".热线：4008257789";
 					//new SendSmsHelper().SendSms(orders.getCinemaCode(),orders.getMobilePhone(),smsContent);
 					SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), orders.getMobilePhone(), smsContent, batchNum);
@@ -799,9 +811,8 @@ public class OrderController {
 		Double TotalPrice = DoubleUtil.sub(orderbase.getTotalSalePrice(),orderbase.getCouponsPrice());//总的销售金额-优惠金额
 		String TotalFee = String.valueOf(Double.valueOf(TotalPrice*100).intValue());// 商品金额，以分为单位
 		//endregion
-        PrePayParametersReply prePayParametersReply1 = WxPayUtil.WxPayPrePay(request, prePayParametersReply, WxpayAppId, WxpayMchId, WxpayKey, strbody,
+        return WxPayUtil.WxPayPrePay(request, prePayParametersReply, WxpayAppId, WxpayMchId, WxpayKey, strbody,
                 NotifyUrl, OpenId, TradeNo, ExpireDate, TotalFee);
-        return prePayParametersReply1;
 	}
 	// endregion
 
