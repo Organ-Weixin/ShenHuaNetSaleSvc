@@ -31,6 +31,7 @@ import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.Couponsgroup;
 import com.boot.security.server.model.Membercard;
+import com.boot.security.server.model.SysUser;
 import com.boot.security.server.model.Ticketusers;
 import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
@@ -40,6 +41,7 @@ import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
+import com.boot.security.server.utils.UserUtil;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -186,8 +188,12 @@ public class CoupondistributionrecordController {
     @GetMapping
     @ApiOperation(value = "列表")
     public PageTableResponse list(PageTableRequest request) {
+    	//获取当前登陆人信息
+    	SysUser sysuser = UserUtil.getLoginUser();
+    	request.getParams().put("id", sysuser.getId());
+    	request.getParams().put("roleId", sysuser.getRoleId());
+    	
         return new PageTableHandler(new CountHandler() {
-
             @Override
             public int count(PageTableRequest request) {
                 return coupondistributionrecordDao.count(request.getParams());

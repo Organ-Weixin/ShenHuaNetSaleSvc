@@ -614,13 +614,12 @@ public class CxInterface implements ICTMSInterface {
 				if(cxReply.getQueryMemberInfoResult().getBasicBalance()!=null){
 					membercard.setBalance(Double.parseDouble(cxReply.getQueryMemberInfoResult().getBasicBalance()));
 				}
+				membercard.setMobilePhone(cxReply.getQueryMemberInfoResult().getMobileNum());
+				membercard.setLevelCode(cxReply.getQueryMemberInfoResult().getLevelCode());
+				membercard.setLevelName(cxReply.getQueryMemberInfoResult().getLevelName());
 				membercard.setUserName(cxReply.getQueryMemberInfoResult().getUserName());
 				membercard.setSex(cxReply.getQueryMemberInfoResult().getSex());
 				membercard.setCreditNum(cxReply.getQueryMemberInfoResult().getCreditNum());
-				/*if(cxReply.getQueryMemberInfoResult().getBirthday()!=null){
-					membercard.setBirthday(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-							.parse(cxReply.getQueryMemberInfoResult().getBirthday()));
-				}*/
 				// 更新
 				_membercardService.Update(membercard);
 			} else {
@@ -768,8 +767,8 @@ public class CxInterface implements ICTMSInterface {
 		log.info("交易记录返回"+new Gson().toJson(cxReply));
 		if (cxReply.getQueryMemberFlowInfoResult().getResultCode().equals("0")) {
 			List<CardTradeRecord> CardTradeRecords = new ArrayList<CardTradeRecord>();
-			if(cxReply.getQueryMemberFlowInfoResult().getTransFlowVOs()
-					.getTransFlowVO().size()>0){
+			if(cxReply.getQueryMemberFlowInfoResult().getTransFlowVOs() != null &&
+					cxReply.getQueryMemberFlowInfoResult().getTransFlowVOs().getTransFlowVO().size()>0){
 				for (TransFlowVOBean transflow : cxReply.getQueryMemberFlowInfoResult().getTransFlowVOs()
 						.getTransFlowVO()) {
 					CardTradeRecord record = new CardTradeRecord();

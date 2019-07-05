@@ -729,7 +729,7 @@ public class WebService {
 //			log.info(MD5Util.getCxSign(param, PayConstant.signkey));
 			String result = WebService.cinemaTss(userCinema.getUrl()).queryMemberInfo(userCinema.getRealUserName(),userCinema.getCinemaCode(),pLoginNum,RealPassword,"0",MD5Util.getCxSign(param,userCinema.getRealPassword()));
 			Gson gson = new Gson();
-//			log.info(result);
+			log.info("查询会员卡"+result);
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result,"QueryMemberInfoResult"), CxQueryMemberInfoResult.class);
 		}catch(Exception e){
 			e.printStackTrace();

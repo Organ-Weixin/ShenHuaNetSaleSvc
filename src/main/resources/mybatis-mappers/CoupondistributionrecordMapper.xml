@@ -52,6 +52,9 @@
 			<if test="Id != null">
 				Id = #{Id}, 
 			</if>
+			<if test="CinemaCode != null">
+				CinemaCode = #{CinemaCode}, 
+			</if>
 			<if test="GroupCode != null">
 				GroupCode = #{GroupCode}, 
 			</if>

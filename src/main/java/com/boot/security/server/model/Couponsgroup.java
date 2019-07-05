@@ -5,6 +5,7 @@ import java.util.Date;
 public class Couponsgroup {
 
 	private Long Id;
+	private String CinemaCode;
 	private String GroupCode;
 	private Integer CouponsType;
 	private String CouponsName;
@@ -33,6 +34,13 @@ public class Couponsgroup {
 	}
 	public void setId(Long Id) {
 		this.Id = Id;
+	}
+	
+	public String getCinemaCode() {
+		return CinemaCode;
+	}
+	public void setCinemaCode(String cinemaCode) {
+		CinemaCode = cinemaCode;
 	}
 	public String getGroupCode() {
 		return GroupCode;

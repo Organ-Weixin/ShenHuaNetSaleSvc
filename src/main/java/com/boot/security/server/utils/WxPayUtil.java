@@ -54,7 +54,7 @@ public class WxPayUtil {
 		String nonce_str = MD5Util.MD5Encode(String.valueOf(new Random().nextInt(1000)), "UTF-8");
 		//System.out.println(StrUtil.getIpAddress(request));
 		Map<String, String> map = new TreeMap<String, String>();
-		map.put("appid", WxpayAppId);
+		map.put("appid", WxpayAppId);//小程序appid
 		map.put("body", strbody);// 商品信息
 		map.put("mch_id", WxpayMchId);
 		map.put("nonce_str", nonce_str.toLowerCase());
@@ -69,16 +69,18 @@ public class WxPayUtil {
 		map.put("sign", sign);
 		// 把参数组装成xml
 		String data = getXml(map);
-		//System.out.println(data);
+		System.out.println(data);
 		String UnifiedOrderUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 		String strPrepayXml = HttpHelper.sendPostByHttpUrlConnection(UnifiedOrderUrl, data, "UTF-8");
 		// 获取prepay_id
 		String strPrePayXml2 = strPrepayXml.replace("<![CDATA[", "").replace("]]>", "");
-		//System.out.println("============="+strPrePayXml2);
+		System.out.println("============="+strPrePayXml2);
 		Document document = XmlHelper.StringTOXml(strPrePayXml2);
 		String resultcodeValue = XmlHelper.getNodeValue(document, "/xml/result_code");
 		String errcodeValue=XmlHelper.getNodeValue(document, "/xml/err_code");
-		String errcodedesValue = XmlHelper.getNodeValue(document, "/xml/err_code_des");
+//		String errcodedesValue = XmlHelper.getNodeValue(document, "/xml/err_code_des");
+		String returnMsg = XmlHelper.getNodeValue(document, "/xml/return_msg");
+		System.out.println("返回");
 		String prepayidValue = XmlHelper.getNodeValue(document, "/xml/prepay_id");
 		if (resultcodeValue.equals("SUCCESS")) {
 			// 再定义一个map准备签名paysign
@@ -100,7 +102,7 @@ public class WxPayUtil {
 		} else {
 			reply.Status = "Failure";
 			reply.ErrorCode = errcodeValue;
-			reply.ErrorMessage = errcodedesValue;
+			reply.ErrorMessage = returnMsg;
 		}
 		return reply;
 	}
