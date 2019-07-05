@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,6 +42,8 @@ public class SessioninfoviewController {
     private PriceplanDao priceplanDao;
     @Autowired
     private SessioninfoviewDao sessioninfoviewDao;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id获取")
@@ -114,6 +117,9 @@ public class SessioninfoviewController {
     public QuerySessionReply getNewSession(@RequestBody Map<String,Object> map){
     	String UserName = "MiniProgram";
     	String Password = "6BF477EBCC446F54E6512AFC0E976C41";
+
+    	redisTemplate.delete("sessioninfo:"+map.get("cinemaCode"));//清该影院的redis排期
+
     	try {
 			QuerySessionReply reply =NetSaleSvcCore.getInstance().QuerySession(UserName, Password, map.get("cinemaCode").toString(), map.get("beginDate").toString(), map.get("endDate").toString());
 			return reply;

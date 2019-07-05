@@ -387,12 +387,14 @@ public class SessionController {
 							QueryFimlSessionPriceReplySession sessionReply = new QueryFimlSessionPriceReplySession();
 
                             Sessioninfoview sessioninfoview = null;
-                            String sessioninfoString = (String)redisTemplate.opsForValue().get("sessioninfo:"+CinemaCode+FilmCode+oneDateSession.getSCode());
-							if (sessioninfoString == null){
-                                sessioninfoview = _sessioninfoviewService.getByCinemaCodeAndSessionCode(oneDateSession.getCCode(), oneDateSession.getSCode());
-                                redisTemplate.opsForValue().set("sessioninfo:"+CinemaCode+FilmCode+oneDateSession.getSCode(),JSON.toJSONString(sessioninfoview),24l, TimeUnit.HOURS);
+							if (!redisTemplate.boundHashOps("sessioninfo:"+CinemaCode).hasKey(FilmCode+"|"+oneDateSession.getSCode())){//redis无数据
+								System.out.println("没有");
+								sessioninfoview = _sessioninfoviewService.getByCinemaCodeAndSessionCode(oneDateSession.getCCode(), oneDateSession.getSCode());
+                                redisTemplate.boundHashOps("sessioninfo:"+CinemaCode).put(FilmCode+"|"+oneDateSession.getSCode(),JSON.toJSONString(sessioninfoview));
                             }else {
-                                sessioninfoview = JSON.parseObject(sessioninfoString,Sessioninfoview.class);
+								System.out.println("有");
+								String sessioninfoString = (String)redisTemplate.boundHashOps("sessioninfo:"+CinemaCode).get(FilmCode+"|"+oneDateSession.getSCode());
+								sessioninfoview = JSON.parseObject(sessioninfoString,Sessioninfoview.class);
                             }
 
 							if(sessioninfoview!=null){
