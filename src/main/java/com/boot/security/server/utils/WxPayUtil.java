@@ -78,7 +78,9 @@ public class WxPayUtil {
 		Document document = XmlHelper.StringTOXml(strPrePayXml2);
 		String resultcodeValue = XmlHelper.getNodeValue(document, "/xml/result_code");
 		String errcodeValue=XmlHelper.getNodeValue(document, "/xml/err_code");
-		String errcodedesValue = XmlHelper.getNodeValue(document, "/xml/err_code_des");
+//		String errcodedesValue = XmlHelper.getNodeValue(document, "/xml/err_code_des");
+		String returnMsg = XmlHelper.getNodeValue(document, "/xml/return_msg");
+		System.out.println("返回");
 		String prepayidValue = XmlHelper.getNodeValue(document, "/xml/prepay_id");
 		if (resultcodeValue.equals("SUCCESS")) {
 			// 再定义一个map准备签名paysign
@@ -100,7 +102,7 @@ public class WxPayUtil {
 		} else {
 			reply.Status = "Failure";
 			reply.ErrorCode = errcodeValue;
-			reply.ErrorMessage = errcodedesValue;
+			reply.ErrorMessage = returnMsg;
 		}
 		return reply;
 	}

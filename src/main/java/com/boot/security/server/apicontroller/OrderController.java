@@ -622,7 +622,7 @@ public class OrderController {
 								e.printStackTrace();
 							}
 						}
-						//log.info("微信退款结果"+new Gson().toJson(RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode())));
+						log.info("微信退款结果"+new Gson().toJson(RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode())));
 					}
 					//会员卡支付
 					if(orders.getOrderPayType()==OrderPayTypeEnum.MemberCardPay.getTypeCode()){
@@ -810,9 +810,10 @@ public class OrderController {
 				.format(orderbase.getAutoUnlockDatetime());
 		Double TotalPrice = DoubleUtil.sub(orderbase.getTotalSalePrice(),orderbase.getCouponsPrice());//总的销售金额-优惠金额
 		String TotalFee = String.valueOf(Double.valueOf(TotalPrice*100).intValue());// 商品金额，以分为单位
-		//endregion
-        return WxPayUtil.WxPayPrePay(request, prePayParametersReply, WxpayAppId, WxpayMchId, WxpayKey, strbody,
+		prePayParametersReply = WxPayUtil.WxPayPrePay(request, prePayParametersReply, WxpayAppId, WxpayMchId, WxpayKey, strbody,
                 NotifyUrl, OpenId, TradeNo, ExpireDate, TotalFee);
+		log.info("预支付返回："+new Gson().toJson(prePayParametersReply));
+        return prePayParametersReply;
 	}
 	// endregion
 
@@ -824,10 +825,10 @@ public class OrderController {
 		// 读取返回内容
 		Map<String, String> returnmap = WxPayUtil.WxPayNotify(request);
 		log.info("++++++++++++++++"+new Gson().toJson(returnmap));
+		// 得到订单Id
+		Long OrderID = Long.parseLong(returnmap.get("out_trade_no").substring("yyyyMMddHHmmss".length() + 8));
+		OrderView order = _orderService.getOrderWidthId(OrderID);
 		if (returnmap.get("isWXsign").equals("True")) {
-			// 得到订单Id
-			Long OrderID = Long.parseLong(returnmap.get("out_trade_no").substring("yyyyMMddHHmmss".length() + 8));
-			OrderView order = _orderService.getOrderWidthId(OrderID);
 			log.info("++++++++++++++++"+new Gson().toJson(order));
 			if (returnmap.get("return_code").equals("SUCCESS") && returnmap.get("result_code").equals("SUCCESS")) {
 				log.info("--------");
@@ -843,7 +844,7 @@ public class OrderController {
 					order.getOrderBaseInfo().setPayTime(new Date());
 					order.getOrderBaseInfo().setOrderTradeNo(returnmap.get("transaction_id"));
 					log.info("==========="+new Gson().toJson(order.getOrderBaseInfo()));
-					_orderService.update(order.getOrderBaseInfo());
+					
 				}
 				// 更新优惠券已使用
 				if (!order.getOrderBaseInfo().getCouponsCode().equals(null)&&!order.getOrderBaseInfo().getCouponsCode().equals("")) {
@@ -865,9 +866,9 @@ public class OrderController {
 				order.getOrderBaseInfo().setOrderStatus(OrderStatusEnum.PayFail.getStatusCode());
 				order.getOrderBaseInfo().setUpdated(new Date());
 				order.getOrderBaseInfo().setErrorMessage(returnmap.get("err_code_des"));
-				_orderService.UpdateOrderBaseInfo(order.getOrderBaseInfo());
 			}
 		}
+		_orderService.update(order.getOrderBaseInfo());
 	}
 	// endregion
 	
@@ -924,10 +925,12 @@ public class OrderController {
 			String OrderTradeNo=order.getOrderBaseInfo().getOrderTradeNo();//微信支付订单号
 			String WxpayRefundCert=cinemapaymentsettings.getWxpayRefundCert();
 			String strRefundPaymentXml = WxPayUtil.WxPayRefund(WxpayAppId,WxpayMchId,WxpayKey,TradeNo,RefundFee,OrderTradeNo,CinemaCode,WxpayRefundCert);
+			log.info("退款返回："+strRefundPaymentXml);
 			//获取返回值 
 			String strRefundPaymentXml2 = strRefundPaymentXml.replace("<![CDATA[", "").replace("]]>", "");
 			Document document = XmlHelper.StringTOXml(strRefundPaymentXml2);
-			String resultcodeValue = XmlHelper.getNodeValue(document, "/xml/result_code");
+			String resultcodeValue = XmlHelper.getNodeValue(document, "/xml/return_code");
+			String resultMsg = XmlHelper.getNodeValue(document, "/xml/return_msg");
 			String refundidValue=XmlHelper.getNodeValue(document,"/xml/refund_id");
 			if (resultcodeValue.equals("SUCCESS")) {
 				//更新订单信息（退款）
@@ -938,7 +941,7 @@ public class OrderController {
 				//退优惠券
 				if(order.getOrderBaseInfo().getCouponsCode()!=null&&order.getOrderBaseInfo().getCouponsCode()!=""){
 					CouponsView couponsview = _couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
-					if(couponsview!=null){
+					if(couponsview.getCoupons() !=null && couponsview.getCoupons().getStatus() == 2){
 						couponsview.getCoupons().setStatus(CouponsStatusEnum.Fetched.getStatusCode());
 						//couponsview.getCoupons().setUsedDate(null);
 						//库存+1
@@ -961,6 +964,7 @@ public class OrderController {
 			}else{
 				refundpaymentReply.Status = "Failure";
 				refundpaymentReply.ErrorCode = resultcodeValue;
+				refundpaymentReply.ErrorMessage = resultMsg;
 			}
 		}
 		return refundpaymentReply;

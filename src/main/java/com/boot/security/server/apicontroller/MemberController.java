@@ -805,7 +805,7 @@ public class MemberController {
 	//endregion
 	
 	//region 会员卡充值
-	@GetMapping("/CardCharge/{Username}/{Password}/{CinemaCode}/{CardNo}/{CardPassword}/{ChargeType}/{LevelCode}/{RuleCode}/{ChargeAmount}")
+	@GetMapping("/CardCharge/{Username}/{Password}/{CinemaCode}/{CardNo}/{CardPassword}/{ChargeType}/{LevelCode}/{RuleCode}/{ChargeAmount}/{TradeNo}")
 	@ApiOperation(value = "会员卡充值")
 	public CardChargeReply CardCharge(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String CardNo,@PathVariable String CardPassword,@PathVariable String ChargeType,@PathVariable String LevelCode,
@@ -835,6 +835,7 @@ public class MemberController {
 		}
 		ChargeAmount = String.valueOf(membercardcreditrule.getCredit()+membercardcreditrule.getGivenAmount());
 		CardChargeReply reply = new NetSaleSvcCore().CardCharge(Username, Password, CinemaCode, CardNo, CardPassword, ChargeType, ChargeAmount);
+		log.info("充值返回："+new Gson().toJson(reply));
 		Membercardrecharge mem = membercardrechargeService.getByTradeNo(TradeNo);
 		if(reply.Status.equals("Success")){
 			Membercard membercard=_memberCardService.getByCardNo(CinemaCode, CardNo);
@@ -878,8 +879,8 @@ public class MemberController {
 				String RefundFee = String.valueOf(Double.valueOf(RefundPrice*100).intValue());// 退款金额，以分为单位
 				String OrderTradeNo = mem.getWXtradeNo();//微信支付订单号
 				String WxpayRefundCert=cinemapaymentsettings.getWxpayRefundCert();
-				WxPayUtil.WxPayRefund(WxpayAppId,WxpayMchId,WxpayKey,refundTradeNo,RefundFee,OrderTradeNo,CinemaCode,WxpayRefundCert);
-				
+				String strRefundPaymentXml = WxPayUtil.WxPayRefund(WxpayAppId,WxpayMchId,WxpayKey,refundTradeNo,RefundFee,OrderTradeNo,CinemaCode,WxpayRefundCert);
+				log.info("退款返回："+strRefundPaymentXml);
 			} else {
 				reply.SetOrderNotExistReply();
 				return reply;
