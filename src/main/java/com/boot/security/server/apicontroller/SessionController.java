@@ -372,12 +372,11 @@ public class SessionController {
                         //查一天的排期 走redis
                         String sessionData = new SimpleDateFormat("yyyy-MM-dd").format(sessioninfo.getStartTime());
                         List<Sessioninfo> oneDateSessionList = null;
-                        String scheduleListString = (String)redisTemplate.opsForValue().get("schedule:" + CinemaCode+"|"+FilmCode+"|"+sessionData);
-                        if (scheduleListString == null){
+                        if (!redisTemplate.boundHashOps("oneDaySchedule:" + CinemaCode).hasKey(FilmCode+"|"+sessionData)){
                             oneDateSessionList = _sessionInfoService.getOneDaySession(sessioninfo.getCCode(), sessioninfo.getFilmCode(), sessionData);
-                            redisTemplate.opsForValue().set("schedule:" + CinemaCode+"|"+FilmCode+"|"+sessionData,JSON.toJSONString(oneDateSessionList),24l, TimeUnit.HOURS);
+                            redisTemplate.boundHashOps("oneDaySchedule:" + CinemaCode).put(FilmCode+"|"+sessionData,JSON.toJSONString(oneDateSessionList));
                         }else {
-                            oneDateSessionList = JSON.parseArray(scheduleListString,Sessioninfo.class);
+                            oneDateSessionList = JSON.parseArray((String)redisTemplate.boundHashOps("oneDaySchedule:" + CinemaCode).get(FilmCode+"|"+sessionData),Sessioninfo.class);
                         }
 
 
@@ -389,11 +388,11 @@ public class SessionController {
                             if (!redisTemplate.boundHashOps("sessioninfo:"+CinemaCode).hasKey(FilmCode+"|"+oneDateSession.getSCode())){//redis无数据
                                 sessioninfoview = _sessioninfoviewService.getByCinemaCodeAndSessionCode(oneDateSession.getCCode(), oneDateSession.getSCode());
                                 if (sessioninfoview!=null)
-                                redisTemplate.boundHashOps("sessioninfo:"+CinemaCode).put(FilmCode+"|"+oneDateSession.getSCode(),JSON.toJSONString(sessioninfoview));
+                                    redisTemplate.boundHashOps("sessioninfo:"+CinemaCode).put(FilmCode+"|"+oneDateSession.getSCode(),JSON.toJSONString(sessioninfoview));
                             }else {
                                 String sessioninfoString = (String)redisTemplate.boundHashOps("sessioninfo:"+CinemaCode).get(FilmCode+"|"+oneDateSession.getSCode());
-                                if (scheduleListString!=null)
-                                sessioninfoview = JSON.parseObject(sessioninfoString,Sessioninfoview.class);
+                                if (sessioninfoString!=null)
+                                    sessioninfoview = JSON.parseObject(sessioninfoString,Sessioninfoview.class);
                             }
 
                             if(sessioninfoview!=null){
