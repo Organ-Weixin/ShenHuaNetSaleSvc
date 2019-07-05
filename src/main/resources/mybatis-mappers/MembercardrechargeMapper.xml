@@ -26,8 +26,8 @@
 			<if test="params.Balance != null and params.Balance != ''">
 				and Balance = #{params.Balance} 
 			</if>
-			<if test="params.RechargeStatus != null and params.RechargeStatus != ''">
-				and RechargeStatus = #{params.RechargeStatus} 
+			<if test="params.Status != null and params.Status != ''">
+				and Status = #{params.Status} 
 			</if>
 			<if test="params.TradeNo != null and params.TradeNo != ''">
 				and TradeNo = #{params.TradeNo} 
@@ -37,6 +37,18 @@
 			</if>
 			<if test="params.Updated != null and params.Updated != ''">
 				and Updated = #{params.Updated} 
+			</if>
+			<if test="params.MidUserName != null and params.MidUserName != ''">
+				and MidUserName = #{params.MidUserName} 
+			</if>
+			<if test="params.MidPassword != null and params.MidPassword != ''">
+				and MidPassword = #{params.MidPassword} 
+			</if>
+			<if test="params.RuleCode != null and params.RuleCode != ''">
+				and RuleCode = #{params.RuleCode} 
+			</if>
+			<if test="params.LevelCode != null and params.LevelCode != ''">
+				and LevelCode = #{params.LevelCode} 
 			</if>
 		</where>
 	</sql>
@@ -88,8 +100,8 @@
 			<if test="Balance != null">
 				Balance = #{Balance}, 
 			</if>
-			<if test="RechargeStatus != null">
-				RechargeStatus = #{RechargeStatus}, 
+			<if test="Status != null">
+				Status = #{Status}, 
 			</if>
 			<if test="TradeNo != null">
 				TradeNo = #{TradeNo}, 
@@ -99,6 +111,18 @@
 			</if>
 			<if test="Updated != null">
 				Updated = #{Updated}, 
+			</if>
+			<if test="MidUserName != null">
+				MidUserName = #{MidUserName}, 
+			</if>
+			<if test="MidPassword != null">
+				MidPassword = #{MidPassword}, 
+			</if>
+			<if test="RuleCode != null">
+				RuleCode = #{RuleCode}, 
+			</if>
+			<if test="LevelCode != null">
+				LevelCode = #{LevelCode}, 
 			</if>
 
 		</set>
