@@ -340,7 +340,6 @@ public class OrderController {
 			data.setSeat(seatList);
 		}
 		data.setCount(orders.getTicketCount());
-		data.setPrintNo(orders.getPrintNo());
 		if(orders.getPayTime()!=null){
 			data.setPayTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orders.getPayTime()));
 		}
@@ -360,16 +359,20 @@ public class OrderController {
 		//辰星系统(取票码截取影院编码)
 		if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
 			if(orders.getPrintNo()!=null&&orders.getPrintNo().length()>8){
-				data.setEwmPicture(FileUploadUtils.generateEwm(orders.getPrintNo().substring(8,orders.getPrintNo().length())));
+				data.setPrintNo(orders.getPrintNo().substring(8,orders.getPrintNo().length()));
 			}
-		}
-		if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
-			data.setEwmPicture(FileUploadUtils.generateEwm(orders.getSubmitOrderCode()));
-		}
-		if(cinemaview.getCinemaType() == CinemaTypeEnum.YueKe.getTypeCode() ||
+		}else if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
+			data.setPrintNo(orders.getPrintNo());
+		}else if(cinemaview.getCinemaType() == CinemaTypeEnum.YueKe.getTypeCode() ||
 				cinemaview.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode()){
-			data.setEwmPicture(FileUploadUtils.generateEwm(orders.getPrintNo()));
+			data.setPrintNo(orders.getPrintNo());
 		}
+		if(orders.getEwmPic() == null || "".equals(orders.getEwmPic())){
+			String ewmpic = FileUploadUtils.generateEwm(data.getPrintNo());
+			orders.setEwmPic(ewmpic);
+			_orderService.update(orders);
+		}
+		data.setEwmPicture(orders.getEwmPic());
 		ticketOrderReply.setData(data);
 		ticketOrderReply.SetSuccessReply();
 		return ticketOrderReply;

@@ -555,7 +555,9 @@
 			<if test="TotalRefundPrice != null">
 				TotalRefundPrice = #{TotalRefundPrice}, 
 			</if>
-
+			<if test="EwmPic != null">
+				EwmPic = #{EwmPic}, 
+			</if>
 		</set>
 
 		where t.id = #{id}

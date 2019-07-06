@@ -58,7 +58,15 @@ public class Orders  extends BaseEntity<Long>{
 	private Double TotalAddFee;
 	private Double TotalCinemaAllowance;
 	private Double TotalRefundPrice;
+	private String EwmPic;
 	
+	
+	public String getEwmPic() {
+		return EwmPic;
+	}
+	public void setEwmPic(String ewmPic) {
+		EwmPic = ewmPic;
+	}
 	public Orderseatdetails getOrderseatdetails() {
 		return Orderseatdetails;
 	}
