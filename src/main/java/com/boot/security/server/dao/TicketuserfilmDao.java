@@ -24,7 +24,7 @@ public interface TicketuserfilmDao {
     int update(Ticketuserfilm ticketuserfilm);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into ticketuserfilm(Id, OpenId, FilmCode, Status) values(#{Id}, #{OpenId}, #{FilmCode}, #{Status})")
+    @Insert("insert into ticketuserfilm(Id, OpenId, FilmCode, Status, LookStatus) values(#{Id}, #{OpenId}, #{FilmCode}, #{Status}, #{LookStatus})")
     int save(Ticketuserfilm ticketuserfilm);
     
     int count(@Param("params") Map<String, Object> params);
@@ -32,7 +32,11 @@ public interface TicketuserfilmDao {
     List<Ticketuserfilm> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
     
     @Select("select * from ticketuserfilm t where t.openid = #{openid} and t.status = #{status}")
-    List<Ticketuserfilm> getByOpenId(@Param("openid")String openid,@Param("status")Integer status);
+    List<Ticketuserfilm> getByOpenId(@Param("openid")String openid,@Param("status")String status);
+    
+    //看过的电影
+    @Select("select * from ticketuserfilm t where t.openid = #{openid} and t.lookstatus = #{lookstatus}")
+    List<Ticketuserfilm> getByLookStatus(@Param("openid")String openid, @Param("lookstatus")String lookstatus);
     
     @Delete("delete from ticketuserfilm where openid = #{openid} and filmcode = #{filmcode}")
     int deleteByFilmCode(@Param("openid")String openid,@Param("filmcode")String filmcode);

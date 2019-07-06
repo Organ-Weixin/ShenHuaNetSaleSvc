@@ -12,7 +12,8 @@ public interface TicketuserfilmService {
 	
 	int deleteByFilmCode(String openid,String filmcode);
 
-	List<Ticketuserfilm> getByOpenId(String openid,Integer status);
+	List<Ticketuserfilm> getByOpenId(String openid,String status);
+	List<Ticketuserfilm> getByLookStatus(String openid,String lookstatus);
 	
 	Ticketuserfilm getByFilmCode(String openid,String filmcode);
 }

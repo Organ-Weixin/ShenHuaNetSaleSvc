@@ -48,9 +48,6 @@ import com.boot.security.server.apicontroller.reply.QueryUserFilmReply.QueryUser
 import com.boot.security.server.apicontroller.reply.QueryUserFilmReply.QueryUserFilmReplyUserFilm.QueryUserFilmReplyFilm;
 import com.boot.security.server.apicontroller.reply.QueryUserInfoReply;
 import com.boot.security.server.apicontroller.reply.QueryUserInfoReply.QueryUserInfoReplyUserInfo;
-import com.boot.security.server.apicontroller.reply.QueryUserLookedFilmsReply;
-import com.boot.security.server.apicontroller.reply.QueryUserLookedFilmsReply.QueryUserLookedFilmsReplyUser;
-import com.boot.security.server.apicontroller.reply.QueryUserLookedFilmsReply.QueryUserLookedFilmsReplyUser.QueryUserLookedFilmsReplyUserLookedFilms;
 import com.boot.security.server.apicontroller.reply.QueryUserNumberReply;
 import com.boot.security.server.apicontroller.reply.QueryUserNumberReply.QueryUserNumberReplyUserNumber;
 import com.boot.security.server.apicontroller.reply.QueryUserTicketReply;
@@ -59,7 +56,6 @@ import com.boot.security.server.apicontroller.reply.QueryUserTicketReply.QueryUs
 import com.boot.security.server.apicontroller.reply.ReplyExtension;
 import com.boot.security.server.apicontroller.reply.RoomGiftInput;
 import com.boot.security.server.apicontroller.reply.SendVerifyCodeReply;
-import com.boot.security.server.apicontroller.reply.SendVerifyCodeReply.SendVerifyCodeBean;
 import com.boot.security.server.apicontroller.reply.UpdateHeadUrlReply;
 import com.boot.security.server.apicontroller.reply.UpdateHeadUrlReply.UpdateHeadUrlReplyHeadUrl;
 import com.boot.security.server.apicontroller.reply.UpdateUserInfoReply;
@@ -116,7 +112,6 @@ import com.boot.security.server.utils.FileUploadUtils;
 import com.boot.security.server.utils.HttpHelper;
 import com.boot.security.server.utils.PropertyHolder;
 import com.boot.security.server.utils.SendMobileMessage;
-import com.boot.security.server.utils.SendSmsHelper;
 import com.google.gson.Gson;
 
 import io.swagger.annotations.ApiOperation;
@@ -661,24 +656,25 @@ public class AppUserController {
 			return queryUserNumberReply;
 		}
 		QueryUserNumberReplyUserNumber data = new QueryUserNumberReplyUserNumber();
+		//需求不确定，暂时把这些数量定为0
 		//影票数量
-		List<Orders> ordersList = orderService.getUserOrders(CinemaCode, OpenID, OrderStatusEnum.Complete.getStatusCode(), 1);
+//		List<Orders> ordersList = orderService.getUserOrders(CinemaCode, OpenID, OrderStatusEnum.Complete.getStatusCode(), 1);
 		Integer ticketCount = 0;
-		if(ordersList.size()>0){
-			ticketCount = ordersList.stream().collect(Collectors.summingInt(Orders::getTicketCount));
-		}
+//		if(ordersList.size()>0){
+//			ticketCount = ordersList.stream().collect(Collectors.summingInt(Orders::getTicketCount));
+//		}
 		data.setTicketCount(ticketCount);
 		//卖品数量
-		List<Goodsorders> goodsordersList=_goodsOrderService.getByCinemaCodeAndOpenID(CinemaCode, OpenID);
+//		List<Goodsorders> goodsordersList=_goodsOrderService.getByCinemaCodeAndOpenID(CinemaCode, OpenID);
 		Integer goodsCount = 0;
-		if(goodsordersList.size()>0){
-			goodsCount = goodsordersList.size();
-		}
+//		if(goodsordersList.size()>0){
+//			goodsCount = goodsordersList.size();
+//		}
 		data.setGoodsCount(goodsCount);
 		//优惠券数量
-		List<Coupons> couponsList = couponsService.getUserCoupons(OpenID, CouponsStatusEnum.Fetched.getStatusCode());
+//		List<Coupons> couponsList = couponsService.getUserCoupons(OpenID, CouponsStatusEnum.Fetched.getStatusCode());
 		int couponsCount = 0;
-		if(couponsList.size()>0){
+		/*if(couponsList.size()>0){
 			for(Coupons coupons:couponsList){
 				Couponsgroup couponsgroup = couponsgroupService.getUserCouponsGroup(coupons.getGroupCode(), CouponGroupStatusEnum.Enabled.getStatusCode(), CinemaCode);
 				if(couponsgroup!=null){
@@ -686,21 +682,17 @@ public class AppUserController {
 					couponsCount +=couponsReList.size();
 				}
 			}
-			data.setCouponsCount(couponsCount);
-		}
+		}*/
+		data.setCouponsCount(couponsCount);
 		//礼品数量
-		List<Roomgiftuser> roomgiftuserList = roomgiftuserService.getByOpenid(OpenID, CinemaCode);
-		data.setGiftCount(roomgiftuserList.size());
+//		List<Roomgiftuser> roomgiftuserList = roomgiftuserService.getByOpenid(OpenID, CinemaCode);
+		data.setGiftCount(0);
 		//想看的电影数量
-		List<Ticketuserfilm> ticketuserfilmList = ticketuserfilmService.getByOpenId(OpenID, 1);
-		data.setWantedFilmCount(ticketuserfilmList.size());
+//		List<Ticketuserfilm> ticketuserfilmList = ticketuserfilmService.getByOpenId(OpenID, "1");
+		data.setWantedFilmCount(0);
 		//看过的电影数量
-		//先获取用户已完成并且已出票的订单
-		List<Orders> ordersFilmList = orderService.getUserCompleteOrders(OpenID, OrderStatusEnum.Complete.getStatusCode(), 1);
-//		String time = String.valueOf(new Date().getTime()+2*60*60*1000);
-//		String sessiontime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Long.parseLong(time)));
-//		List<Orders> ordersFilmList = orderService.getByOpenIdAndStatus(OpenID, OrderStatusEnum.Complete.getStatusCode(), sessiontime);
-		data.setLookedFilmCount(ordersFilmList.size());
+//		List<Ticketuserfilm> lookedList = ticketuserfilmService.getByLookStatus(OpenID, "2");
+		data.setLookedFilmCount(0); 
 		queryUserNumberReply.setData(data);
 		queryUserNumberReply.SetSuccessReply();
 		return queryUserNumberReply;
@@ -880,7 +872,7 @@ public class AppUserController {
 		}
 	
 	@GetMapping("/UpdateUserWantedFilm/{UserName}/{Password}/{OpenID}/{FilmCode}/{Status}")
-	@ApiOperation(value = "更新用户想看的电影")
+	@ApiOperation(value = "更新用户想看(看过)的电影")
 	public UpdateUserWantedFilmReply UpdateUserWantedFilm(@PathVariable String UserName,@PathVariable String Password,@PathVariable String OpenID,
 			@PathVariable String FilmCode,@PathVariable String Status){
 		UpdateUserWantedFilmReply updateUserWantedFilmReply = new UpdateUserWantedFilmReply();
@@ -899,37 +891,45 @@ public class AppUserController {
 			updateUserWantedFilmReply.SetOpenIDNotExistReply();
 			return updateUserWantedFilmReply;
 		}
-		//添加想看的电影
-		if(Status.equals("1")){
-			//验证影片是否存在
-			Filminfo filminfo = _filminfoServiceImpl.getByFilmCode(FilmCode);
-			if(filminfo == null){
-				updateUserWantedFilmReply.SetFilmCodeNotExistReply();
-				return updateUserWantedFilmReply;
-			}
-			//验证是否存在记录
-			Ticketuserfilm ticketuserfilm = ticketuserfilmService.getByFilmCode(OpenID, FilmCode);
-			if(ticketuserfilm != null){
-				updateUserWantedFilmReply.SetSuccessReply();
-				return updateUserWantedFilmReply;
-			}else{
-				ticketuserfilm = new Ticketuserfilm();
-				ticketuserfilm.setOpenId(OpenID);
-				ticketuserfilm.setFilmCode(FilmCode);
-				ticketuserfilm.setStatus(Integer.valueOf(Status));
-				int result = ticketuserfilmService.save(ticketuserfilm);
-				if(result>0){
-					updateUserWantedFilmReply.SetSuccessReply();
-				}
-			}
+		//验证影片是否存在
+		Filminfo filminfo = _filminfoServiceImpl.getByFilmCode(FilmCode);
+		if(filminfo == null){
+			updateUserWantedFilmReply.SetFilmCodeNotExistReply();
+			return updateUserWantedFilmReply;
 		}
-		//取消想看的电影
-		if(Status.equals("0")){
-			int result = ticketuserfilmService.deleteByFilmCode(OpenID, FilmCode);
+			
+		//验证是否存在记录
+		Ticketuserfilm ticketuserfilm = ticketuserfilmService.getByFilmCode(OpenID, FilmCode);
+		if(ticketuserfilm != null){
+			if("0".equals(Status) || "1".equals(Status)){			//是否想看
+				ticketuserfilm.setStatus(Status);
+			} else if("2".equals(Status) || "3".equals(Status)){	//是否看过
+				ticketuserfilm.setLookStatus(Status);
+			}
+			int num = ticketuserfilmService.update(ticketuserfilm);
+			if(num > 0){
+				updateUserWantedFilmReply.SetSuccessReply();
+			} else {
+				updateUserWantedFilmReply.ErrorMessage = "更新数据失败";
+			}
+						
+		}else{
+			ticketuserfilm = new Ticketuserfilm();
+			ticketuserfilm.setOpenId(OpenID);
+			ticketuserfilm.setFilmCode(FilmCode);
+			if("0".equals(Status) || "1".equals(Status)){
+				ticketuserfilm.setStatus(Status);
+			} else if("2".equals(Status) || "3".equals(Status)){
+				ticketuserfilm.setLookStatus(Status);
+			}
+			int result = ticketuserfilmService.save(ticketuserfilm);
 			if(result>0){
 				updateUserWantedFilmReply.SetSuccessReply();
+			} else {
+				updateUserWantedFilmReply.ErrorMessage = "更新数据失败";
 			}
 		}
+
 		return updateUserWantedFilmReply;
 	}
 	
@@ -1014,8 +1014,8 @@ public class AppUserController {
 	
 	@GetMapping("/QueryUserLookedFilms/{UserName}/{Password}/{OpenID}")
 	@ApiOperation(value = "用户看过的电影")
-	public QueryUserLookedFilmsReply QueryUserLookedFilms(@PathVariable String UserName,@PathVariable String Password,@PathVariable String OpenID){
-		QueryUserLookedFilmsReply queryUserLookedFilmsReply = new QueryUserLookedFilmsReply();
+	public QueryUserFilmReply QueryUserLookedFilms(@PathVariable String UserName,@PathVariable String Password,@PathVariable String OpenID){
+		QueryUserFilmReply queryUserLookedFilmsReply = new QueryUserFilmReply();
 		//校验参数
 		if (!ReplyExtension.RequestInfoGuard(queryUserLookedFilmsReply, UserName, Password, OpenID)) {
 			return queryUserLookedFilmsReply;
@@ -1032,29 +1032,30 @@ public class AppUserController {
 			queryUserLookedFilmsReply.SetOpenIDNotExistReply();
 			return queryUserLookedFilmsReply;
 		}
-		//先获取用户已完成并且已出票的订单
-		List<Orders> ordersList = orderService.getUserCompleteOrders(OpenID, OrderStatusEnum.Complete.getStatusCode(), 1);
-		QueryUserLookedFilmsReplyUser data = new QueryUserLookedFilmsReplyUser();
-		if(ordersList.size()>0){
-			List<QueryUserLookedFilmsReplyUserLookedFilms> userLookedFilmsList = new ArrayList<QueryUserLookedFilmsReplyUserLookedFilms>();
-			for(Orders orders : ordersList){
-				//获取所有影片信息
-				Filminfo filminfo = _filminfoServiceImpl.getByFilmCode(orders.getFilmCode());
-				QueryUserLookedFilmsReplyUserLookedFilms userLookedFilms = new QueryUserLookedFilmsReplyUserLookedFilms();
+		//用户看过的电影
+		QueryUserFilmReplyUserFilm data = new QueryUserFilmReplyUserFilm();
+		List<Ticketuserfilm> ticketuserfilmList = ticketuserfilmService.getByLookStatus(OpenID, UserFilmStatusEnum.Looked.getStatusCode());
+		log.info("看过的电影查询返回"+new Gson().toJson(ticketuserfilmList));
+		int count = 0;
+		if(ticketuserfilmList.size()>0){
+			List<QueryUserFilmReplyFilm> filmReplyList = new ArrayList<QueryUserFilmReplyFilm>();
+			for(Ticketuserfilm ticketuserfilm:ticketuserfilmList){
+				Filminfo filminfo = _filminfoServiceImpl.getByFilmCode(ticketuserfilm.getFilmCode());
+				QueryUserFilmReplyFilm filmReply = new QueryUserFilmReplyFilm();
 				if(filminfo!=null){
-					userLookedFilms.setArea(filminfo.getArea());
-					userLookedFilms.setCast(filminfo.getCast());
-					userLookedFilms.setFilmImage(filminfo.getImage());
-					userLookedFilms.setFilmName(filminfo.getFilmName());
-					if(filminfo.getPublishDate()!=null){
-						userLookedFilms.setPublishDate(new SimpleDateFormat("yyyy-MM-dd").format(filminfo.getPublishDate()));
-					}
+					count ++;
+					filmReply.setFilmName(filminfo.getFilmName());
+					filmReply.setArea(filminfo.getArea());
+					filmReply.setCast(filminfo.getCast());
+					filmReply.setFilmImage(filminfo.getImage());
+					filmReply.setPublishDate(new SimpleDateFormat("yyyy-MM-dd").format(filminfo.getPublishDate()));
+					filmReplyList.add(filmReply);
 				}
-				userLookedFilmsList.add(userLookedFilms);
 			}
-			data.setFilm(userLookedFilmsList);
+			data.setCount(count);
+			data.setFilm(filmReplyList);
 		}
-		data.setCount(ordersList.size());
+		
 		queryUserLookedFilmsReply.setData(data);
 		queryUserLookedFilmsReply.SetSuccessReply();
 		return queryUserLookedFilmsReply;

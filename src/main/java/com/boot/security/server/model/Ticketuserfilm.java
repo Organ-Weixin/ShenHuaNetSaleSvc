@@ -7,7 +7,8 @@ public class Ticketuserfilm extends BaseEntity<Long> {
 	private Long Id;
 	private String OpenId;
 	private String FilmCode;
-	private Integer Status;
+	private String Status;
+	private String LookStatus;
 
 	public Long getId() {
 		return Id;
@@ -27,11 +28,17 @@ public class Ticketuserfilm extends BaseEntity<Long> {
 	public void setFilmCode(String FilmCode) {
 		this.FilmCode = FilmCode;
 	}
-	public Integer getStatus() {
+	public String getStatus() {
 		return Status;
 	}
-	public void setStatus(Integer Status) {
-		this.Status = Status;
+	public void setStatus(String status) {
+		Status = status;
 	}
-
+	public String getLookStatus() {
+		return LookStatus;
+	}
+	public void setLookStatus(String lookStatus) {
+		LookStatus = lookStatus;
+	}
+	
 }
