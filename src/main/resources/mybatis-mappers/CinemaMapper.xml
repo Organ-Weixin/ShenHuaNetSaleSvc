@@ -192,6 +192,12 @@
 			<if test="BusinessDesc != null">
 				BusinessDesc = #{BusinessDesc}, 
 			</if>
+			<if test="BeforeStartTime != null">
+				BeforeStartTime = #{BeforeStartTime}, 
+			</if>
+			<if test="CinemaAgreement != null">
+				CinemaAgreement = #{CinemaAgreement}, 
+			</if>
 		</set>
 
 		where t.Id = #{Id}
