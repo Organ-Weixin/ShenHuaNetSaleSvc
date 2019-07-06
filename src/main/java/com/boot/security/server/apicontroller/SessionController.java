@@ -3,6 +3,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -452,7 +453,14 @@ public class SessionController {
                             sessionReply.setStandardPrice(sessioninfoview.getStandardPrice()+sessioninfoview.getTicketFee()
                                     +sessioninfoview.getAddFee()-sessioninfoview.getCinemaAllowance());
                             sessionReplyList.add(sessionReply);
+
+                            //
                             List<Qmmprice> qmmpriceList = _qmmpriceService.getByCinemaCodeAndScreenName(oneDateSession.getCCode(), sessionReply.getScreenName(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(oneDateSession.getStartTime()));
+                            LinkedHashSet<Qmmprice> tmpSet = new LinkedHashSet(qmmpriceList.size());
+                            tmpSet.addAll(qmmpriceList);
+                            qmmpriceList.clear();
+                            qmmpriceList.addAll(tmpSet);
+
                             List<QueryFimlSessionPriceReplyMemberPrice> memberPriceList = new ArrayList<QueryFimlSessionPriceReplyMemberPrice>();
                             List<QueryFimlSessionPriceReplySessionPrice> sessionPriceList = new ArrayList<QueryFimlSessionPriceReplySessionPrice>();
                             QueryFimlSessionPriceReplyMemberPrice memberPrice = new QueryFimlSessionPriceReplyMemberPrice();

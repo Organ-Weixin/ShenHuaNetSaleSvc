@@ -1,6 +1,8 @@
 package com.boot.security.server.model;
 
 import java.util.Date;
+import java.util.Objects;
+
 /**
  * 趣满满场次价格
  * @author sheng
@@ -135,5 +137,17 @@ public class Qmmprice {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Qmmprice qmmprice = (Qmmprice) o;
+		return Objects.equals(dataType, qmmprice.dataType);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(dataType);
+	}
 }
