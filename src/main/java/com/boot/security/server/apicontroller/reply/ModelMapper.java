@@ -82,7 +82,7 @@ public class ModelMapper {
 		return screeninfo;
 	}
 	public static QueryScreenSeatsReplyScreenSeats.QueryScreenSeatsReplyScreenSeat MapFrom(QueryScreenSeatsReplyScreenSeats.QueryScreenSeatsReplyScreenSeat screenSeat, Screenseatinfo entity){
-		screenSeat.setSeatId(entity.getId());
+		screenSeat.setSeatId(Long.valueOf(entity.getId()));
 		screenSeat.setCinemaCode(entity.getCinemaCode());
 		screenSeat.setScreenCode(entity.getScreenCode());
 		screenSeat.setSeatCode(entity.getSeatCode());
