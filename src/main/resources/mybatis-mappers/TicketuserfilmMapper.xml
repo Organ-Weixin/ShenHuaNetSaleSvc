@@ -48,7 +48,9 @@
 			<if test="Status != null">
 				Status = #{Status}, 
 			</if>
-
+			<if test="LookStatus != null">
+				LookStatus = #{LookStatus}, 
+			</if>
 		</set>
 
 		where t.id = #{id}

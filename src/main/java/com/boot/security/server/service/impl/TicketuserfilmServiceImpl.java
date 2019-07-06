@@ -15,32 +15,32 @@ public class TicketuserfilmServiceImpl implements TicketuserfilmService{
 	
 	@Override
 	public int save(Ticketuserfilm ticketuserfilm) {
-		// TODO Auto-generated method stub
 		return ticketuserfilmDao.save(ticketuserfilm);
 	}
 	
 	@Override
-	public List<Ticketuserfilm> getByOpenId(String openid,Integer status) {
-		// TODO Auto-generated method stub
+	public List<Ticketuserfilm> getByOpenId(String openid,String status) {
 		return ticketuserfilmDao.getByOpenId(openid,status);
 	}
 
 	@Override
 	public int deleteByFilmCode(String openid, String filmcode) {
-		// TODO Auto-generated method stub
 		return ticketuserfilmDao.deleteByFilmCode(openid, filmcode);
 	}
 
 	@Override
 	public Ticketuserfilm getByFilmCode(String openid, String filmcode) {
-		// TODO Auto-generated method stub
 		return ticketuserfilmDao.getByFilmCode(openid, filmcode);
 	}
 
 	@Override
 	public int update(Ticketuserfilm ticketuserfilm) {
-		// TODO Auto-generated method stub
 		return ticketuserfilmDao.update(ticketuserfilm);
+	}
+
+	@Override
+	public List<Ticketuserfilm> getByLookStatus(String openid, String lookstatus) {
+		return ticketuserfilmDao.getByLookStatus(openid, lookstatus);
 	}
 
 }
