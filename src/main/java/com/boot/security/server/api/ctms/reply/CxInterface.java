@@ -329,7 +329,7 @@ public class CxInterface implements ICTMSInterface {
 		CxSubmitOrderResult cxReply = cxService.SubmitOrder(userCinema,order,null);
 		if (cxReply.getSubmitOrderResult().getResultCode().equals("0")) {
 			order.getOrderBaseInfo().setSubmitOrderCode(cxReply.getSubmitOrderResult().getOrderCode());
-			order.getOrderBaseInfo().setPrintNo(cxReply.getSubmitOrderResult().getPrintNo());
+			order.getOrderBaseInfo().setPrintNo(cxReply.getSubmitOrderResult().getPrintNo().substring(8));//客户输入后8位在柜台或辰星取票机取票
 			order.getOrderBaseInfo().setVerifyCode(cxReply.getSubmitOrderResult().getVerifyCode());
 			for (Orderseatdetails orderseat : order.getOrderSeatDetails()) {
 				log.info("SeatCode：" + orderseat.getSeatCode());
