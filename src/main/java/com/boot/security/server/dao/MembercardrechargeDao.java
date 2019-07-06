@@ -20,6 +20,9 @@ public interface MembercardrechargeDao {
     
     @Select("select * from membercardrecharge t where t.TradeNo = #{tradeNo}")
     Membercardrecharge getByTradeNo(String tradeNo);
+    
+    @Select("select * from membercardrecharge t where t.CinemaCode = #{cinemaCode} and t.CardNo = #{cardNo} order by Updated desc")
+    List<Membercardrecharge> getByCinemaAndCard(@Param("cinemaCode") String cinemaCode, @Param("cardNo") String cardNo);
 
     @Delete("delete from membercardrecharge where id = #{id}")
     int delete(Long id);
@@ -27,7 +30,7 @@ public interface MembercardrechargeDao {
     int update(Membercardrecharge membercardrecharge);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into membercardrecharge(CinemaCode, CardNo, UserName, MobilePhone, RechargeAmount, Balance, Status, TradeNo, WXtradeNo, Updated, MidUserName, MidPassword, RuleCode, LevelCode) values(#{CinemaCode}, #{CardNo}, #{UserName}, #{MobilePhone}, #{RechargeAmount}, #{Balance}, #{Status}, #{TradeNo}, #{WXtradeNo}, #{Updated}, #{MidUserName}, #{MidPassword}, #{RuleCode}, #{LevelCode})")
+    @Insert("insert into membercardrecharge(CinemaCode, CardNo, CardPassword, UserName, MobilePhone, RechargeAmount, Balance, PayStatus, ChargeStatus, ErrorMsg, TradeNo, WXtradeNo, Updated, MidUserName, MidPassword, RuleCode, LevelCode) values(#{CinemaCode}, #{CardNo}, #{CardPassword}, #{UserName}, #{MobilePhone}, #{RechargeAmount}, #{Balance}, #{PayStatus}, #{ChargeStatus},#{ErrorMsg}, #{TradeNo}, #{WXtradeNo}, #{Updated}, #{MidUserName}, #{MidPassword}, #{RuleCode}, #{LevelCode})")
     int save(Membercardrecharge membercardrecharge);
     
     int count(@Param("params") Map<String, Object> params);

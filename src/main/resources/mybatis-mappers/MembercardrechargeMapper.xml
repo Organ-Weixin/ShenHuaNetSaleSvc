@@ -26,8 +26,11 @@
 			<if test="params.Balance != null and params.Balance != ''">
 				and Balance = #{params.Balance} 
 			</if>
-			<if test="params.Status != null and params.Status != ''">
-				and Status = #{params.Status} 
+			<if test="params.PayStatus != null and params.PayStatus != ''">
+				and PayStatus = #{params.PayStatus} 
+			</if>
+			<if test="params.ChargeStatus != null and params.ChargeStatus != ''">
+				and ChargeStatus = #{params.ChargeStatus} 
 			</if>
 			<if test="params.TradeNo != null and params.TradeNo != ''">
 				and TradeNo = #{params.TradeNo} 
@@ -94,14 +97,23 @@
 			<if test="CardNo != null">
 				CardNo = #{CardNo}, 
 			</if>
+			<if test="CardPassword != null">
+				CardPassword = #{CardPassword}, 
+			</if>
 			<if test="RechargeAmount != null">
 				RechargeAmount = #{RechargeAmount}, 
 			</if>
 			<if test="Balance != null">
 				Balance = #{Balance}, 
 			</if>
-			<if test="Status != null">
-				Status = #{Status}, 
+			<if test="PayStatus != null">
+				PayStatus = #{PayStatus}, 
+			</if>
+			<if test="ChargeStatus != null">
+				ChargeStatus = #{ChargeStatus}, 
+			</if>
+			<if test="ErrorMsg != null">
+				ErrorMsg = #{ErrorMsg}, 
 			</if>
 			<if test="TradeNo != null">
 				TradeNo = #{TradeNo}, 

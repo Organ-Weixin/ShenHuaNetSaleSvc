@@ -7,11 +7,14 @@ public class Membercardrecharge {
 	private Long Id;
 	private String CinemaCode;
 	private String CardNo;
+	private String CardPassword;
 	private String UserName;
 	private String MobilePhone;
 	private Double RechargeAmount;
 	private Double Balance;
-	private String Status;
+	private String PayStatus;
+	private String ChargeStatus;
+	private String ErrorMsg;
 	private String TradeNo;
 	private String WXtradeNo;
 	private Date Updated;
@@ -50,6 +53,12 @@ public class Membercardrecharge {
 	public void setCardNo(String CardNo) {
 		this.CardNo = CardNo;
 	}
+	public String getCardPassword() {
+		return CardPassword;
+	}
+	public void setCardPassword(String cardPassword) {
+		CardPassword = cardPassword;
+	}
 	public Double getRechargeAmount() {
 		return RechargeAmount;
 	}
@@ -62,11 +71,23 @@ public class Membercardrecharge {
 	public void setBalance(Double Balance) {
 		this.Balance = Balance;
 	}
-	public String getStatus() {
-		return Status;
+	public String getPayStatus() {
+		return PayStatus;
 	}
-	public void setStatus(String status) {
-		Status = status;
+	public void setPayStatus(String payStatus) {
+		PayStatus = payStatus;
+	}
+	public String getChargeStatus() {
+		return ChargeStatus;
+	}
+	public void setChargeStatus(String chargeStatus) {
+		ChargeStatus = chargeStatus;
+	}
+	public String getErrorMsg() {
+		return ErrorMsg;
+	}
+	public void setErrorMsg(String errorMsg) {
+		ErrorMsg = errorMsg;
 	}
 	public String getTradeNo() {
 		return TradeNo;
