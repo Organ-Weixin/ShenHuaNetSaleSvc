@@ -173,6 +173,7 @@ public class OrderController {
 		} catch (JsonSyntaxException e) {
 			return new LockSeatReply();
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new LockSeatReply();
 		}
 	}

@@ -100,7 +100,7 @@ public class FilminfoController {
     @PutMapping
     @ApiOperation(value = "修改")
     public Filminfo update(@RequestBody Filminfo filminfo){
-    	if(filminfo.getDirectorId() != null){	//导演
+    	if(filminfo.getDirectorId() != null && !filminfo.getDirectorId().equals("")){	//导演
     		StringBuffer direbf = new StringBuffer();
     		String[] directorlist = filminfo.getDirectorId().split(",");
     		for(int i=0;i<directorlist.length;i++){
@@ -110,7 +110,7 @@ public class FilminfoController {
     		filminfo.setDirector(direbf.substring(0, direbf.length()-1));
     	}
     	
-    	if(filminfo.getCastId() != null){	//演员
+    	if(filminfo.getCastId() != null && !filminfo.getCastId().equals("")){	//演员
     		StringBuffer acbf = new StringBuffer();
     		String[] actorlist = filminfo.getCastId().split(",");
     		for(int i=0;i<actorlist.length;i++){
