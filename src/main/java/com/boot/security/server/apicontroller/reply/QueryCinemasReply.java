@@ -59,6 +59,8 @@ public class QueryCinemasReply extends BaseReply {
 			private String BusinessName;//商户名称
 			private String BusinessDesc;//描述
 			private String OfferDescription;
+			private int BeforeStartTime;
+			private String CinemaAgreement;
 			
 			public Long getCinemaId() {
 				return CinemaId;
@@ -205,8 +207,18 @@ public class QueryCinemasReply extends BaseReply {
 			public void setOfferDescription(String offerDescription) {
 				OfferDescription = offerDescription;
 			}
-			
-			
+			public int getBeforeStartTime() {
+				return BeforeStartTime;
+			}
+			public void setBeforeStartTime(int beforeStartTime) {
+				BeforeStartTime = beforeStartTime;
+			}
+			public String getCinemaAgreement() {
+				return CinemaAgreement;
+			}
+			public void setCinemaAgreement(String cinemaAgreement) {
+				CinemaAgreement = cinemaAgreement;
+			}
 		}
 	}
 	

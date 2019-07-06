@@ -38,6 +38,8 @@ public class Cinema extends BaseEntity<Long> {
 	private String BusinessPic;
 	private String BusinessName;
 	private String BusinessDesc;
+	private int BeforeStartTime;
+	private String CinemaAgreement;
 	
 	private Date GoodsUpdated; //影院卖品更新时间
 
@@ -251,5 +253,16 @@ public class Cinema extends BaseEntity<Long> {
 	public void setBusinessDesc(String businessDesc) {
 		BusinessDesc = businessDesc;
 	}
-	
+	public int getBeforeStartTime() {
+		return BeforeStartTime;
+	}
+	public void setBeforeStartTime(int beforeStartTime) {
+		BeforeStartTime = beforeStartTime;
+	}
+	public String getCinemaAgreement() {
+		return CinemaAgreement;
+	}
+	public void setCinemaAgreement(String cinemaAgreement) {
+		CinemaAgreement = cinemaAgreement;
+	}
 }

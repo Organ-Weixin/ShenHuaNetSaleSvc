@@ -125,6 +125,8 @@ public class CinemaListController {
         		   cinemareply.setBusinessPic(cinema.getBusinessPic());
         		   cinemareply.setBusinessName(cinema.getBusinessName());
         		   cinemareply.setBusinessDesc(cinema.getBusinessDesc());
+        		   cinemareply.setBeforeStartTime(cinema.getBeforeStartTime());
+        		   cinemareply.setCinemaAgreement(cinema.getCinemaAgreement());
         		   cinemas.add(cinemareply);
     		   }
     	   }
