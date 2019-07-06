@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +33,8 @@ public class ScreeninfoviewController {
 
     @Autowired
     private ScreeninfoviewDao screeninfoviewDao;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @PostMapping
     @ApiOperation(value = "保存")
@@ -62,7 +65,9 @@ public class ScreeninfoviewController {
     @RequestMapping("/getNewScreenSeat")
     @ApiOperation(value = "重新获取影厅座位")//@RequestParam(value="loginname",required=false
     public QuerySeatReply getNewScreenSeat(@RequestBody Map map){
-    	System.out.println("11111"+"ccode");
+
+    	redisTemplate.delete("seats:"+map.get("cinemaCode"));//清缓存
+
     	String UserName = "MiniProgram";
     	String Password = "6BF477EBCC446F54E6512AFC0E976C41";
     	try {

@@ -2,11 +2,14 @@ package com.boot.security.server.apicontroller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,6 +53,8 @@ public class ScreenController {
 	private ScreeninfoServiceImpl _screeninfoService;
 	@Autowired
 	private ScreenseatinfoServiceImpl _screenseatinfoService;
+	@Autowired
+	private RedisTemplate redisTemplate;
 
 	private static final Logger log = LoggerFactory.getLogger(SessionController.class);
 
@@ -226,9 +231,16 @@ public class ScreenController {
         	return queryScreenSeatsArrangementReply;
         }
         //读取影厅座位
-        List<Screenseatinfo> screenseatinfos = _screenseatinfoService.getByCinemaCodeAndScreenCode(CinemaCode, ScreenCode);
-//        System.out.println("===="+new Gson().toJson(screenseatinfos));
-        queryScreenSeatsArrangementReply.setData(new DataBean());
+		List<Screenseatinfo> screenseatinfos = null;
+		if (redisTemplate.boundHashOps("seats:"+CinemaCode).hasKey(ScreenCode)){
+			screenseatinfos = JSON.parseArray((String)redisTemplate.boundHashOps("seats:"+CinemaCode).get(ScreenCode),Screenseatinfo.class);
+		}else {
+			screenseatinfos = _screenseatinfoService.getByCinemaCodeAndScreenCode(CinemaCode, ScreenCode);
+			redisTemplate.boundHashOps("seats:"+CinemaCode).put(ScreenCode,JSON.toJSONString(screenseatinfos));
+			redisTemplate.expire("seats:"+CinemaCode,24l, TimeUnit.HOURS);
+		}
+
+
         if(screenseatinfos!=null){
         	//region 座位排列组合
             int MaxColumn=0;//最大纵坐标

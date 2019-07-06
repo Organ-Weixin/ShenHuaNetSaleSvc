@@ -3,7 +3,7 @@ package com.boot.security.server.apicontroller.reply;
 import java.util.List;
 
 public class QueryScreenSeatsArrangementReply extends BaseReply{
-	private DataBean data;
+	private DataBean data = new DataBean();
 	public DataBean getData() {
 		return data;
 	}

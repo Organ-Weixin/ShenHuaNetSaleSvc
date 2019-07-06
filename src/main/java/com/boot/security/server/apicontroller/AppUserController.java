@@ -613,6 +613,7 @@ public class AppUserController {
 			int num=(int) (Math.random()*10);
 			str.append(String.valueOf(num));
 		}
+		System.out.println(str);
 		ticketuser.setMobilePhone(input.getMobilePhone());
 		ticketuser.setVerifyCode(str.toString());
 		_ticketusersService.update(ticketuser);
