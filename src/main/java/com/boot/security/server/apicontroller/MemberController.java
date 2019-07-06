@@ -476,7 +476,15 @@ public class MemberController {
                 Cinemaview cinemaview = cinemaviewService.getByCinemaCode(orders3.getCinemaCode());
                 //辰星系统(取票码截取影院编码)
                 String printNo = orders3.getPrintNo();
-                if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
+                if(cinemaview.getCinemaType() == CinemaTypeEnum.ChenXing.getTypeCode()){
+	                if (printNo != null && printNo.length() > 8) {
+	                	printNo = printNo.substring(8);
+	                }
+                } else if(cinemaview.getCinemaType() == CinemaTypeEnum.ChenXing.getTypeCode()){
+                	if (printNo != null && printNo.length() > 8) {
+                		printNo = printNo.substring(8);
+                	}
+                } else if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
                     printNo = orders3.getSubmitOrderCode();
                 }
 //				String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@FilmName", orders3.getFilmName()).replaceFirst("@ScreenName",screeninfo.getSName()).replaceFirst("@SessionTime",new SimpleDateFormat("yyyy-MM-dd HH:mm").format(orders3.getSessionTime()));
@@ -623,7 +631,11 @@ public class MemberController {
                 Cinemaview cinemaview = cinemaviewService.getByCinemaCode(order.getOrderBaseInfo().getCinemaCode());
                 //辰星系统(取票码截取影院编码)
                 String printNo = order.getOrderBaseInfo().getPrintNo();
-                if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
+                if(cinemaview.getCinemaType() == CinemaTypeEnum.ChenXing.getTypeCode()){
+                	if (printNo != null && printNo.length() > 8) {
+                		printNo = printNo.substring(8);
+                	}
+                } else if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
                     printNo = order.getOrderBaseInfo().getSubmitOrderCode();
                 }
 //				String smsContent = cinema.getSmsSignId() + cinemamessage.getMessageContent().replaceFirst("@FilmName", order.getOrderBaseInfo().getFilmName()).replaceFirst("@ScreenName",screeninfo.getSName()).replaceFirst("@SessionTime",new SimpleDateFormat("yyyy-MM-dd HH:mm").format(order.getOrderBaseInfo().getSessionTime()));

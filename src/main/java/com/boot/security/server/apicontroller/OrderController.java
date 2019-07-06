@@ -219,7 +219,11 @@ public class OrderController {
                     Cinemaview cinemaview = cinemaviewService.getByCinemaCode(orders.getCinemaCode());
                     //辰星系统(取票码截取影院编码)
                     String printNo = orders.getPrintNo();
-                    if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
+                    if(cinemaview.getCinemaType() == CinemaTypeEnum.ChenXing.getTypeCode()){
+    	                if (printNo != null && printNo.length() > 8) {
+    	                	printNo = printNo.substring(8);
+    	                }
+                    } else if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
                         printNo = orders.getSubmitOrderCode();
                     }
                     // 发送购票成功短信通知
@@ -353,12 +357,17 @@ public class OrderController {
 		data.setOrderPayType(orders.getOrderPayType());
 		//二维码
 		Cinemaview cinemaview = cinemaviewService.getByCinemaCode(CinemaCode);
+		//辰星系统(取票码截取影院编码)
+		if(cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
+			if(orders.getPrintNo()!=null&&orders.getPrintNo().length()>8){
+				data.setEwmPicture(FileUploadUtils.generateEwm(orders.getPrintNo().substring(8,orders.getPrintNo().length())));
+			}
+		}
 		if(cinemaview.getCinemaType()==CinemaTypeEnum.DianYing1905.getTypeCode()){
 			data.setEwmPicture(FileUploadUtils.generateEwm(orders.getSubmitOrderCode()));
 		}
 		if(cinemaview.getCinemaType() == CinemaTypeEnum.YueKe.getTypeCode() ||
-				cinemaview.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode() ||
-				cinemaview.getCinemaType()==CinemaTypeEnum.ChenXing.getTypeCode()){
+				cinemaview.getCinemaType() == CinemaTypeEnum.ManTianXing.getTypeCode()){
 			data.setEwmPicture(FileUploadUtils.generateEwm(orders.getPrintNo()));
 		}
 		ticketOrderReply.setData(data);
