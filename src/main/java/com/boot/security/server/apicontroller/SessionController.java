@@ -119,7 +119,7 @@ public class SessionController {
                 return result;
             }
             //排期中的全部影片
-            String StartDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+            String StartDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
             List<Sessioninfo> films = _sessionInfoService.getByFilmName(CinemaCode, StartDate);
             QueryFilmSessionsReplyFilmSessions data = new QueryFilmSessionsReplyFilmSessions();
             //获取影院可线上开卡的卡号
@@ -369,8 +369,8 @@ public class SessionController {
                         sessionDateReply.setSessionDate(new SimpleDateFormat("MM-dd").format(sessioninfo.getStartTime())+today);
                         sessionDateReplyList.add(sessionDateReply);
 
-                        //查一天的排期 走redis
                         String sessionData = new SimpleDateFormat("yyyy-MM-dd").format(sessioninfo.getStartTime());
+                        //查一天的排期 走redis
                         List<Sessioninfo> oneDateSessionList = null;
                         if (!redisTemplate.boundHashOps("oneDaySchedule:" + CinemaCode).hasKey(FilmCode+"|"+sessionData)){
                             oneDateSessionList = _sessionInfoService.getOneDaySession(sessioninfo.getCCode(), sessioninfo.getFilmCode(), sessionData);
