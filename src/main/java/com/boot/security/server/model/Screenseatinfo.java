@@ -1,5 +1,7 @@
 package com.boot.security.server.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Date;
 
 public class Screenseatinfo extends BaseEntity<Long> {
@@ -20,6 +22,7 @@ public class Screenseatinfo extends BaseEntity<Long> {
 	private String SeatId;
 	private String SeatVersion;
 
+	@JsonIgnore
 	public Long getId() {
 		return Id;
 	}

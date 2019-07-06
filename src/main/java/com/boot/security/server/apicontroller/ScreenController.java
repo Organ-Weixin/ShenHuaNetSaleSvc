@@ -234,6 +234,7 @@ public class ScreenController {
 		List<Screenseatinfo> screenseatinfos = null;
 		if (redisTemplate.boundHashOps("seats:"+CinemaCode).hasKey(ScreenCode)){
 			screenseatinfos = JSON.parseArray((String)redisTemplate.boundHashOps("seats:"+CinemaCode).get(ScreenCode),Screenseatinfo.class);
+
 		}else {
 			screenseatinfos = _screenseatinfoService.getByCinemaCodeAndScreenCode(CinemaCode, ScreenCode);
 			redisTemplate.boundHashOps("seats:"+CinemaCode).put(ScreenCode,JSON.toJSONString(screenseatinfos));
