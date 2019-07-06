@@ -44,7 +44,7 @@ public interface GoodsordersDao {
     @Select("select * from goodsorders t where t.cinemacode = #{cinemacode}")
     List<Goodsorders> getByCinemaCode(String cinemacode);
     
-    @Select("select * from goodsorders t where t.cinemacode = #{cinemacode} and t.openid=#{openid} and(orderstatus = 3 or orderstatus = 7 or orderstatus = 8 or orderstatus = 10)")
+    @Select("select * from goodsorders t where t.cinemacode = #{cinemacode} and t.openid=#{openid} and(orderstatus = 7 or orderstatus = 10)")
     List<Goodsorders> getByCinemaCodeAndOpenID(@Param("cinemacode")String cinemacode,@Param("openid")String openid);
     
     @Select("select * from goodsorders t where t.openid = #{openid} and t.orderstatus in (7,10) and t.submittime #{time} order by t.submittime desc limit 0,1")
@@ -53,9 +53,6 @@ public interface GoodsordersDao {
     @Select("select * from goodsorders t where t.cinemacode =#{cinemacode} and t.ordertradeno = #{ordertradeno}")
     Goodsorders getByOrderTradeNo(@Param("cinemacode")String cinemacode,@Param("ordertradeno")String ordertradeno);
     
-    @Select("select * from goodsorders t where t.cinemacode = #{cinemacode} and t.openid = #{openid} and t.orderstatus = #{orderstatus}")
-    List<Goodsorders> getUserGoodsOrders(@Param("cinemacode")String cinemacode,@Param("openid")String openid,@Param("orderstatus")Integer orderstatus);
-
     //查询近期的配送订单,商家使用
     @Select("select * from goodsorders where cinemacode = #{cinemacode} and orderpaytime > #{payTime} and deliverytype = 2 and orderStatus in (3,10) ")
     List<Goodsorders> getRecentOrderByCinemaCode(Long cinemacode, Date payTime);

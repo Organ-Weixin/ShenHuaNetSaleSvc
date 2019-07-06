@@ -669,10 +669,10 @@ public class AppUserController {
 		}
 		data.setTicketCount(ticketCount);
 		//卖品数量
-		List<Goodsorders> goodsordersList = _goodsOrderService.getUserGoodsOrders(CinemaCode, OpenID, OrderStatusEnum.Complete.getStatusCode());
+		List<Goodsorders> goodsordersList=_goodsOrderService.getByCinemaCodeAndOpenID(CinemaCode, OpenID);
 		Integer goodsCount = 0;
 		if(goodsordersList.size()>0){
-			goodsCount = goodsordersList.stream().collect(Collectors.summingInt(Goodsorders::getGoodsCount));
+			goodsCount = goodsordersList.size();
 		}
 		data.setGoodsCount(goodsCount);
 		//优惠券数量

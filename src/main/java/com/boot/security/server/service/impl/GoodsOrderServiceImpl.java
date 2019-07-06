@@ -115,9 +115,5 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
 		// TODO Auto-generated method stub
 		return ordersDao.getByOrderTradeNo(cinemacode, ordertradeno);
 	}
-	@Override
-	public List<Goodsorders> getUserGoodsOrders(String cinemacode, String openid, Integer orderstatus) {
-		// TODO Auto-generated method stub
-		return ordersDao.getUserGoodsOrders(cinemacode, openid, orderstatus);
-	}
+	
 }
