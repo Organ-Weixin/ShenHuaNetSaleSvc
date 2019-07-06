@@ -430,6 +430,8 @@ public class SessionController {
                                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
                                 sessionReply.setEndTime(sdf.format(new Date(Long.parseLong(endtime))));
                             }
+                            
+                            if (sessioninfoview == null) sessioninfoview = new Sessioninfoview();
                             //票服务费
                             if(sessioninfoview.getTicketFee()==null){
                                 sessioninfoview.setTicketFee(0.00);
