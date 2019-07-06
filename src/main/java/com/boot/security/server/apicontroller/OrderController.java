@@ -933,8 +933,8 @@ public class OrderController {
 			//获取返回值 
 			String strRefundPaymentXml2 = strRefundPaymentXml.replace("<![CDATA[", "").replace("]]>", "");
 			Document document = XmlHelper.StringTOXml(strRefundPaymentXml2);
-			String resultcodeValue = XmlHelper.getNodeValue(document, "/xml/return_code");
-			String resultMsg = XmlHelper.getNodeValue(document, "/xml/return_msg");
+			String resultcodeValue = XmlHelper.getNodeValue(document, "/xml/result_code");
+			String resultMsg = XmlHelper.getNodeValue(document, "/xml/err_code_des");
 			String refundidValue=XmlHelper.getNodeValue(document,"/xml/refund_id");
 			if (resultcodeValue.equals("SUCCESS")) {
 				//更新订单信息（退款）

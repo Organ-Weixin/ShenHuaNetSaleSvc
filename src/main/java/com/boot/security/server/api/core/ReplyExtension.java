@@ -399,10 +399,10 @@ public class ReplyExtension {
 			reply.SetNecessaryParamMissReply(CardNo);
 			return false;
 		}
-		if (CardPassword.isEmpty()) {
+		/*if (CardPassword.isEmpty()) {
 			reply.SetNecessaryParamMissReply(CardPassword);
 			return false;
-		}
+		}*/
 		return true;
 	}
 	// endregion
@@ -603,10 +603,10 @@ public class ReplyExtension {
 			reply.SetNecessaryParamMissReply(CardNo);
 			return false;
 		}
-		if (CardPassword.isEmpty()) {
+		/*if (CardPassword.isEmpty()) {
 			reply.SetNecessaryParamMissReply(CardPassword);
 			return false;
-		}
+		}*/
 		if (ChargeType.isEmpty()) {
 			reply.SetNecessaryParamMissReply(ChargeType);
 			return false;

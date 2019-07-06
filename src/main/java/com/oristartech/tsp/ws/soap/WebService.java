@@ -718,16 +718,16 @@ public class WebService {
 	//region 查询会员卡(完成)
 	public static CxQueryMemberInfoResult  QueryMemberInfo(Usercinemaview userCinema,String pLoginNum,String pLmsPassword){
 		try{
-			String RealPassword = MD5Util.MD5Encode(pLmsPassword, "UTF-8");
-			Map<String,String> param = new LinkedHashMap();
+//			String RealPassword = MD5Util.MD5Encode(pLmsPassword, "UTF-8");
+			Map<String,String> param = new LinkedHashMap<String,String>();
 			param.put("pAppCode",userCinema.getRealUserName());
 			param.put("pCinemaCode",userCinema.getCinemaCode());
 			param.put("pLoginNum", pLoginNum);
-			param.put("pLmsPassword",RealPassword );
+			param.put("pLmsPassword","");	//会员消费密码（需MD5加密，可空，为空时不需要验证密码）
 			param.put("pCompress", "0");
 //			log.info(param.toString());
 //			log.info(MD5Util.getCxSign(param, PayConstant.signkey));
-			String result = WebService.cinemaTss(userCinema.getUrl()).queryMemberInfo(userCinema.getRealUserName(),userCinema.getCinemaCode(),pLoginNum,RealPassword,"0",MD5Util.getCxSign(param,userCinema.getRealPassword()));
+			String result = WebService.cinemaTss(userCinema.getUrl()).queryMemberInfo(userCinema.getRealUserName(),userCinema.getCinemaCode(),pLoginNum,"","0",MD5Util.getCxSign(param,userCinema.getRealPassword()));
 			Gson gson = new Gson();
 			log.info("查询会员卡"+result);
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result,"QueryMemberInfoResult"), CxQueryMemberInfoResult.class);

@@ -1,5 +1,7 @@
 package com.boot.security.server.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,11 @@ public class MembercardrechargeServiceImpl implements MembercardrechargeService{
 	@Override
 	public int update(Membercardrecharge membercardrecharge) {
 		return membercardrechargeDao.update(membercardrecharge);
+	}
+
+	@Override
+	public List<Membercardrecharge> getByCinemaAndCard(String cinemaCode, String cardNo) {
+		return membercardrechargeDao.getByCinemaAndCard(cinemaCode, cardNo);
 	}
 
 }

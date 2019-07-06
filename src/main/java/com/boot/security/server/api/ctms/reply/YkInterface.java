@@ -1609,15 +1609,6 @@ public class YkInterface implements ICTMSInterface {
 					memercard.setUpdated(new Date());
 					memberCardService.Update(memercard);
 					
-					Membercardrecharge membercardrecharge = new Membercardrecharge();
-					membercardrecharge.setCinemaCode(memercard.getCinemaCode());
-					membercardrecharge.setCardNo(memercard.getCardNo());
-					membercardrecharge.setUserName(memercard.getUserName());
-					membercardrecharge.setMobilePhone(memercard.getMobilePhone());
-					membercardrecharge.setRechargeAmount(Double.valueOf(ChargeAmount));
-					membercardrecharge.setBalance(memercard.getBalance());
-					membercardrecharge.setUpdated(new Date());
-					membercardrechargeService.save(membercardrecharge);		//更新会员卡充值记录表
 					reply.Status = StatusEnum.Success;
 				} else {
 					reply.Status = StatusEnum.Failure;
