@@ -1487,11 +1487,11 @@ public class Dy1905Interface implements ICTMSInterface {
 		public CTMSSubmitGoodsOrderReply SubmitGoodsOrder(Usercinemaview userCinema, GoodsOrderView order)
 				throws Exception {
 			CTMSSubmitGoodsOrderReply reply = new CTMSSubmitGoodsOrderReply();
-			GoodsOrderView orders = new GoodsCouponsPriceUtil().getGoodsCouponsPrice(order.getOrderBaseInfo().getLocalOrderCode());
-			List<Goodsorderdetails> orderGoodsDetails = orders.getOrderGoodsDetails();
+			new GoodsCouponsPriceUtil().getGoodsCouponsPrice(order);
+			List<Goodsorderdetails> orderGoodsDetails = order.getOrderGoodsDetails();
 			//判断是否立即取餐
-			if(orders.getOrderBaseInfo().getIsReady()==1){
-				orders.getOrderBaseInfo().setDeliveryType(2);
+			if(order.getOrderBaseInfo().getIsReady()==1){
+				order.getOrderBaseInfo().setDeliveryType(2);
 			}
 			Map<String,String> param = new LinkedHashMap<String,String>();
 			//循环遍历出卖品编码、卖品数量、卖品价格
@@ -1509,48 +1509,51 @@ public class Dy1905Interface implements ICTMSInterface {
 				}
 			}
 			//实际支付金额
-			Double payPrice = orders.getOrderBaseInfo().getTotalSettlePrice();
-			if(orders.getOrderBaseInfo().getCouponsPrice()!=null){
-				payPrice = orders.getOrderBaseInfo().getTotalSettlePrice();
+			Double payPrice = order.getOrderBaseInfo().getTotalSettlePrice();
+			if(order.getOrderBaseInfo().getCouponsPrice()!=null){
+				payPrice = order.getOrderBaseInfo().getTotalSettlePrice();
 			}
 			String pVerifyInfo = MD5Util.MD5Encode(userCinema.getDefaultUserName() + userCinema.getCinemaId() 
-			+ orders.getOrderBaseInfo().getLocalOrderCode().substring(0,20)
-			+ GoodsCode + GoodsCount + GoodsPrice + orders.getOrderBaseInfo().getMobilePhone() + String.valueOf(new Date().getTime()).substring(0,10)
-			+ orders.getOrderBaseInfo().getTotalSettlePrice() + payPrice
-			+ orders.getOrderBaseInfo().getDeliveryType() + orders.getOrderBaseInfo().getDeliveryAddress()
-			+ orders.getOrderBaseInfo().getDeliveryTime() + orders.getOrderBaseInfo().getDeliveryMark()
+			+ order.getOrderBaseInfo().getLocalOrderCode().substring(0,20)
+			+ GoodsCode + GoodsCount + GoodsPrice + order.getOrderBaseInfo().getMobilePhone() + String.valueOf(new Date().getTime()).substring(0,10)
+			+ order.getOrderBaseInfo().getTotalSettlePrice() + payPrice
+			+ order.getOrderBaseInfo().getDeliveryType() + order.getOrderBaseInfo().getDeliveryAddress()
+			+ order.getOrderBaseInfo().getDeliveryTime() + order.getOrderBaseInfo().getDeliveryMark()
 			+ userCinema.getDefaultPassword(),"UTF-8").toLowerCase();
 			param.put("pAppCode",userCinema.getDefaultUserName());
 			param.put("pCinemaID",userCinema.getCinemaId());
-			param.put("pNetOrder",orders.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
+			param.put("pNetOrder",order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
 			param.put("pGoodsSerial",GoodsCode);
 			param.put("pGoodsCount",GoodsCount);
 			param.put("pGoodsPrice",GoodsPrice);
-			param.put("pTel",orders.getOrderBaseInfo().getMobilePhone());
+			param.put("pTel",order.getOrderBaseInfo().getMobilePhone());
 			param.put("pOrderTime",String.valueOf(new Date().getTime()).substring(0,10));
-			param.put("pTotalPrice",String.valueOf(orders.getOrderBaseInfo().getTotalSettlePrice()));
+			param.put("pTotalPrice",String.valueOf(order.getOrderBaseInfo().getTotalSettlePrice()));
 			param.put("pPayPrice",String.valueOf(payPrice));
-			param.put("pDeliveryType",String.valueOf(orders.getOrderBaseInfo().getDeliveryType()));
-			param.put("pSeat",orders.getOrderBaseInfo().getDeliveryAddress());
-			param.put("pDeliveryTime",orders.getOrderBaseInfo().getDeliveryTime());
-			param.put("pMark",orders.getOrderBaseInfo().getDeliveryMark());
+			param.put("pDeliveryType",String.valueOf(order.getOrderBaseInfo().getDeliveryType()));
+			param.put("pSeat",order.getOrderBaseInfo().getDeliveryAddress());
+			param.put("pDeliveryTime",order.getOrderBaseInfo().getDeliveryTime());
+			param.put("pMark",order.getOrderBaseInfo().getDeliveryMark());
 			param.put("pVerifyInfo",pVerifyInfo);
 			String GoodsOrderResult = HttpHelper.httpClientPost(userCinema.getUrl()+"/GoodsOrder",param,"UTF-8");
 			Gson gson = new Gson();
 			Dy1905GoodsOrderResult Dy1905Reply = gson.fromJson(XmlToJsonUtil.xmltoJson(GoodsOrderResult,"GoodsOrderResult"), Dy1905GoodsOrderResult.class);
+			System.out.println("Dy1905Reply====="+new Gson().toJson(Dy1905Reply));
 			if(Dy1905Reply.getGoodsOrderResult().getResultCode().equals("0")){
-				orders.getOrderBaseInfo().setOrderCode(orders.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
-				orders.getOrderBaseInfo().setPickUpCode(Dy1905Reply.getGoodsOrderResult().getOrderNo());
-				orders.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
+				order.getOrderBaseInfo().setOrderCode(order.getOrderBaseInfo().getLocalOrderCode().substring(0,20));
+				order.getOrderBaseInfo().setPickUpCode(Dy1905Reply.getGoodsOrderResult().getOrderNo());
+				order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.Complete.getStatusCode());
 				reply.setPickNo(Dy1905Reply.getGoodsOrderResult().getOrderNo());
 				reply.Status = StatusEnum.Success;
+				System.out.println("Dy1905Reply+orders====="+new Gson().toJson(order));
 			}else{
-				orders.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.SubmitFail.getStatusCode());
-				orders.getOrderBaseInfo().setErrorMessage(Dy1905Reply.getGoodsOrderResult().getResultMsg());
+				order.getOrderBaseInfo().setOrderStatus(GoodsOrderStatusEnum.SubmitFail.getStatusCode());
+				order.getOrderBaseInfo().setErrorMessage(Dy1905Reply.getGoodsOrderResult().getResultMsg());
 				reply.Status = StatusEnum.Failure;
 			}
 			reply.ErrorCode = Dy1905Reply.getGoodsOrderResult().getResultCode();
 			reply.ErrorMessage = Dy1905Reply.getGoodsOrderResult().getResultMsg();
+			goodsOrderService.Update(order);
 			return reply;
 		}
 		/*
@@ -1572,7 +1575,8 @@ public class Dy1905Interface implements ICTMSInterface {
 				return reply;
 			}
 			//验证订单是否存在
-			GoodsOrderView order = new GoodsCouponsPriceUtil().getGoodsCouponsPrice(LocalOrderCode);
+			GoodsOrderView order =goodsOrderService.getWithLocalOrderCode(LocalOrderCode);
+			new GoodsCouponsPriceUtil().getGoodsCouponsPrice(order);
 			if(order == null){
 				reply.SetOrderNotExistReply();
 				return reply;

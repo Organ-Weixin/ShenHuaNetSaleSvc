@@ -182,20 +182,23 @@ public class FilminfoController {
                 System.out.println("targetFile="+targetFile);
                 
                 //上传到OSS服务器
-        		if(true){
-        			String BUCKET="whtxcx";
-        			String BUCKETPATH ="upload";
-        			String filePath="/" +path+ "/"+fileName;
-        			String mess = FileUploadUtils.uploadOss(saveroot,filePath,BUCKET,BUCKETPATH);
-        			System.out.println("mess="+mess);
-        			if(!"".equals(mess)){
-        				map.put("code",-1);
-        		        map.put("msg","图片上传出错："+mess);
-        			}
-        			map2.put("src","https://"+BUCKET+".oss-cn-hangzhou.aliyuncs.com/"+BUCKETPATH+"/"+path+"/"+fileName); 
-        		}else{
-        			map2.put("src",returnroot +"/" + path + "/" +fileName); 
-        		}
+    			String BUCKET="whtxcx";
+    			String BUCKETPATH ="upload";
+    			String filePath="/" +path+ "/"+fileName;
+    			String mess = FileUploadUtils.uploadOss(saveroot,filePath,BUCKET,BUCKETPATH);
+    			System.out.println("mess="+mess);
+    			if(!"".equals(mess)){
+    				map.put("code",-1);
+    		        map.put("msg","图片上传出错："+mess);
+    		        map.put("data",map2);
+    		        return map;
+    			}else{
+    				File upFile=new File(saveroot+filePath);
+    				if (upFile.exists()) {
+    					upFile.delete();
+    				}
+    			}
+    			map2.put("src","https://"+BUCKET+".oss-cn-hangzhou.aliyuncs.com/"+BUCKETPATH+"/"+path+"/"+fileName); 
             }
         }catch (Exception e){
         }finally{
@@ -212,8 +215,6 @@ public class FilminfoController {
         map.put("code",0);
         map.put("msg","上传成功！");
         map.put("data",map2);
-        System.out.println("map="+new Gson().toJson(map));
-        System.out.println("map2="+new Gson().toJson(map2));
         return map;
     }
     //endregion

@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -673,7 +674,8 @@ public class MemberController {
 			return reply;
 		}
 		//验证订单是否存在
-		GoodsOrderView order = new GoodsCouponsPriceUtil().getGoodsCouponsPrice(LocalOrderCode);
+		GoodsOrderView order =goodsOrderService.getWithLocalOrderCode(LocalOrderCode);
+		new GoodsCouponsPriceUtil().getGoodsCouponsPrice(order);
 		if(order.getOrderBaseInfo() == null){
 			reply.SetOrderNotExistReply();
 			return reply;
@@ -1186,10 +1188,10 @@ public class MemberController {
 	}
 	//endregion
 	
-	//region 异步接收微信支付返回
+	//region 异步接收微信支付返回(充值 )
 	@RequestMapping(value = "/WxPayNotify", produces = "application/json;charset=UTF-8")
 	@ResponseBody
-	public void WxPayNotify() throws Exception{
+	public void WxPayNotify(HttpServletRequest request,HttpServletResponse response) throws Exception{
 		// 读取返回内容
 		Map<String, String> returnmap = WxPayUtil.WxPayNotify(request);
 		String tradeNo = returnmap.get("out_trade_no");
@@ -1198,13 +1200,14 @@ public class MemberController {
 		if (returnmap.get("isWXsign").equals("True")) {
 			if ("SUCCESS".equals(returnmap.get("return_code")) && "SUCCESS".equals(returnmap.get("result_code"))) {
 				log.info("--------");
-				
-				mem.setPayStatus("1");		//微信支付成功
-				mem.setWXtradeNo(returnmap.get("transaction_id"));	//微信支付流水
-				membercardrechargeService.update(mem);
-				//会员卡充值
-				CardCharge(mem.getMidUserName(), mem.getMidPassword(), mem.getCinemaCode(), mem.getCardNo(), mem.getCardPassword(), "WxPay", mem.getLevelCode(), mem.getRuleCode(), String.valueOf(mem.getRechargeAmount()),tradeNo);	
-			} else {
+				if("0".equals(mem.getPayStatus())){
+					mem.setPayStatus("1");		//微信支付成功
+					mem.setWXtradeNo(returnmap.get("transaction_id"));	//微信支付流水
+					membercardrechargeService.update(mem);
+					//会员卡充值
+					CardCharge(mem.getMidUserName(), mem.getMidPassword(), mem.getCinemaCode(), mem.getCardNo(), mem.getCardPassword(), "WxPay", mem.getLevelCode(), mem.getRuleCode(), String.valueOf(mem.getRechargeAmount()),tradeNo);	
+				}
+			}else {
 				mem.setPayStatus("2");		//微信支付失败
 				mem.setErrorMsg(returnmap.get("err_code_des"));
 				mem.setUpdated(new Date());
@@ -1216,7 +1219,12 @@ public class MemberController {
 			mem.setUpdated(new Date());
 			membercardrechargeService.update(mem);	// 更新充值记录表
 		}
-		
+		response.getWriter().write(setXML("SUCCESS", "OK")); 
+	}
+	public static String setXML(String return_code, String return_msg) {
+		  return "<xml><return_code><![CDATA[" + return_code
+		    + "]]></return_code><return_msg><![CDATA[" + return_msg
+		    + "]]></return_msg></xml>";
 	}
 	//endregion
 	
@@ -1290,12 +1298,49 @@ public class MemberController {
         + " 会员卡注册初始金额（" + InitialAmount + " 元）";
         String WxpayMchId = cinemapaymentsettings.getWxpayMchId();
         String WxpayKey = cinemapaymentsettings.getWxpayKey();
-        String notify_url = "https://xc.80piao.com:8443/Api/Member/WxPayNotify";
+        String weburl = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort();
+		String notify_url = weburl+"/Api/Member/WxPayRegisterNotify";
+        //String notify_url = "https://xc.80piao.com:8443/Api/Member/WxPayNotify";
         String out_trade_no = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + CinemaCode + (int)((Math.random()*9+1)*100000);//随机的六位数字
         String time_expire =new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(new Date() .getTime() + 900000));
         Double totalPrice = Double.valueOf(InitialAmount);
         String total_fee = String.valueOf(Double.valueOf(totalPrice*100).intValue());//以分为单位
         return WxPayUtil.WxPayPrePay(request,prePayParametersReply, WxpayAppId, WxpayMchId, WxpayKey, strbody, notify_url, OpenID, out_trade_no, time_expire, total_fee);
+	}
+	//endregion
+	
+	//region 异步接收微信支付返回（注册）
+	@RequestMapping(value = "/WxPayRegisterNotify", produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public void WxPayRegisterNotify(HttpServletRequest request,HttpServletResponse response) throws Exception{
+		// 读取返回内容
+		Map<String, String> returnmap = WxPayUtil.WxPayNotify(request);
+		String tradeNo = returnmap.get("out_trade_no");
+		//Membercardrecharge mem = membercardrechargeService.getByTradeNo(tradeNo);
+		log.info("异步接收微信支付返回："+new Gson().toJson(returnmap));
+		if (returnmap.get("isWXsign").equals("True")) {
+			if ("SUCCESS".equals(returnmap.get("return_code")) && "SUCCESS".equals(returnmap.get("result_code"))) {
+				log.info("--------");
+				/*if("0".equals(mem.getPayStatus())){
+					mem.setPayStatus("1");		//微信支付成功
+					mem.setWXtradeNo(returnmap.get("transaction_id"));	//微信支付流水
+					membercardrechargeService.update(mem);
+					//会员卡充值
+					CardCharge(mem.getMidUserName(), mem.getMidPassword(), mem.getCinemaCode(), mem.getCardNo(), mem.getCardPassword(), "WxPay", mem.getLevelCode(), mem.getRuleCode(), String.valueOf(mem.getRechargeAmount()),tradeNo);	
+				}*/
+			}else {
+				/*mem.setPayStatus("2");		//微信支付失败
+				mem.setErrorMsg(returnmap.get("err_code_des"));
+				mem.setUpdated(new Date());
+				membercardrechargeService.update(mem);	// 更新充值记录表
+*/			}
+		} else {
+			/*mem.setPayStatus("2");
+			mem.setErrorMsg(returnmap.get("err_code_des"));
+			mem.setUpdated(new Date());
+			membercardrechargeService.update(mem);	// 更新充值记录表
+*/		}
+		response.getWriter().write(setXML("SUCCESS", "OK")); 
 	}
 	//endregion
 	

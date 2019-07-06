@@ -251,6 +251,7 @@ public class ChatRoomServer {
                 		//优惠券编码--13位时间戳加5位随机数
                 		String couponsCode = String.valueOf(new Date().getTime());
                 		couponsCode+=(int)((Math.random()*9+1)*10000);
+                		coupons.setCinemaCode(couponsgroup.getCinemaCode());
                 		coupons.setCouponsCode(couponsCode);
                     	coupons.setCouponsName(couponsgroup.getCouponsName());
                     	coupons.setGroupCode(couponsgroup.getGroupCode());

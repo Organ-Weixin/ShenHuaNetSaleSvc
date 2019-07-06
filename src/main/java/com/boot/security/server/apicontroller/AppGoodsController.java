@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -162,7 +163,7 @@ public class AppGoodsController {
 	public CreateGoodsOrderReply CreateGoodsOrder(@RequestBody CreateGoodsOrderQueryJson QueryJson){
 		try {
 			CreateGoodsOrderReply reply = NetSaleSvcCore.getInstance().CreateGoodsOrder(QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getQueryXml());
-			if(QueryJson.getOpenID().equals(null)||QueryJson.getOpenID().equals("")){
+			if(QueryJson.getOpenID()==null||QueryJson.getOpenID().equals("")){
 				return reply;
 			}
 			//创建卖品订单时需要保存送货信息
@@ -195,23 +196,23 @@ public class AppGoodsController {
 		try {
 			SubmitGoodsOrderReply reply = NetSaleSvcCore.getInstance().SubmitGoodsOrder(QueryJson.getUserName(), QueryJson.getPassword(), QueryJson.getQueryXml());
 			//卖品下定成功不发短信
-//			if(reply.Status.equals("Success")){
-//				try{
-//					Goodsorders goodsorders=_goodsOrderService.getByOrderCode(reply.getOrder().getOrderCode());
-//					//自取和配送使用不通的短信模版
-//					Cinemamessage cinemamessage= goodsorders.getDeliveryType()==1 ? cinemamessageService.getByMessageType("6"):cinemamessageService.getByMessageType("7");
-//
-//					Cinema cinema = _cinemaService.getByCinemaCode(goodsorders.getCinemaCode());
-//					String batchNum=UUID.randomUUID().toString().replace("-","");
-//					String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent();
-//					//String MsgConetnt="您的订单已成功，取货码为"+reply.getOrder().getPickUpCode()+"，请到前台领取";
-//					//new SendSmsHelper().SendSms(goodsorders.getCinemaCode(),goodsorders.getMobilePhone(),smsContent);
-//					SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), goodsorders.getMobilePhone(), smsContent, batchNum);
-//				}catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//
-//			}
+			/*if(reply.Status.equals("Success")){
+				try{
+					Goodsorders goodsorders=_goodsOrderService.getByOrderCode(reply.getOrder().getOrderCode());
+					//自取和配送使用不通的短信模版
+					Cinemamessage cinemamessage= goodsorders.getDeliveryType()==1 ? cinemamessageService.getByMessageType("6"):cinemamessageService.getByMessageType("7");
+
+					Cinema cinema = _cinemaService.getByCinemaCode(goodsorders.getCinemaCode());
+					String batchNum=UUID.randomUUID().toString().replace("-","");
+					String smsContent=cinema.getSmsSignId() + cinemamessage.getMessageContent();
+					//String MsgConetnt="您的订单已成功，取货码为"+reply.getOrder().getPickUpCode()+"，请到前台领取";
+					//new SendSmsHelper().SendSms(goodsorders.getCinemaCode(),goodsorders.getMobilePhone(),smsContent);
+					SendMobileMessage.sendMessage(cinema.getSmsAccount(),cinema.getSmsPwd(), goodsorders.getMobilePhone(), smsContent, batchNum);
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			}*/
 			return reply;
 		} catch (JsonSyntaxException e) {
 			e.printStackTrace();
@@ -250,7 +251,7 @@ public class AppGoodsController {
         }
         //验证订单是否存在
         GoodsOrderView orders=_goodsOrderService.getWithOrderCode(CinemaCode,OrderCode);
-        if(orders==null){
+        if(orders.getOrderBaseInfo()==null){
         	queryGoodsOrderReply.SetOrderNotExistReply();
         	return queryGoodsOrderReply;
         }else
@@ -508,7 +509,7 @@ public class AppGoodsController {
 	@RequestMapping(value = "/WxPayNotify", produces = "application/json;charset=UTF-8")
 	// @RequestDescription("支付回调地址")
 	@ResponseBody
-	public void WxPayNotify(HttpServletRequest request) throws Exception {
+	public void WxPayNotify(HttpServletRequest request,HttpServletResponse response) throws Exception {
 		// 读取返回内容
 		Map<String, String> returnmap = WxPayUtil.WxPayNotify(request);
 		if (returnmap.get("isWXsign").equals("True")) {
@@ -528,19 +529,20 @@ public class AppGoodsController {
 					order.setOrderPayTime(new Date());
 					order.setOrderTradeNo(returnmap.get("transaction_id"));
 					_goodsOrderService.UpdateOrderBaseInfo(order);
-				}
-				// 更新优惠券已使用
-				if (order.getCouponsCode() != null &&!"".equals(order.getCouponsCode())) {
-					CouponsView couponsview=_couponsService.getWithCouponsCode(order.getCouponsCode());
-					if(couponsview!=null){
-						couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
-						couponsview.getCoupons().setUsedDate(new Date());
-						//使用数量+1
-						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
-						couponsview.getCouponsgroup().setOperationRemark("卖品支付回调操作");
-						couponsview.getCouponsgroup().setUpdateDate(new Date());
-						//更新优惠券及优惠券分组表
-						_couponsService.update(couponsview);
+					
+					// 更新优惠券已使用
+					if (order.getCouponsCode() != null &&!"".equals(order.getCouponsCode())) {
+						CouponsView couponsview=_couponsService.getWithCouponsCode(order.getCouponsCode());
+						if(couponsview!=null){
+							couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
+							couponsview.getCoupons().setUsedDate(new Date());
+							//使用数量+1
+							couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+							couponsview.getCouponsgroup().setOperationRemark("卖品支付回调操作");
+							couponsview.getCouponsgroup().setUpdateDate(new Date());
+							//更新优惠券及优惠券分组表
+							_couponsService.update(couponsview);
+						}
 					}
 				}
 			} else {
@@ -549,7 +551,15 @@ public class AppGoodsController {
 				order.setErrorMessage(returnmap.get("err_code_des"));
 				_goodsOrderService.UpdateOrderBaseInfo(order);
 			}
+			
+			response.getWriter().write(setXML("SUCCESS", "OK")); 
 		}
+	}
+	
+	public static String setXML(String return_code, String return_msg) {
+		  return "<xml><return_code><![CDATA[" + return_code
+		    + "]]></return_code><return_msg><![CDATA[" + return_msg
+		    + "]]></return_msg></xml>";
 	}
 	//endregion
 	

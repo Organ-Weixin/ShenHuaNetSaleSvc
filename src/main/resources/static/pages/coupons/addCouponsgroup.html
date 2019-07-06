@@ -131,14 +131,14 @@
 			<div class='form-group' style="margin-top:3%">
 				<label class='col-md-2 control-label'>减免金额&nbsp;<font style="color:red;font-size:15px">*</font></label>
 				<input type="hidden" id="reductionType" name="reductionType">
-				<input type="hidden" id="InitialAmount" name="initialAmount">
+				<input type="hidden" id="thresholdAmount" name="thresholdAmount">
 				<input type="hidden" id="reductionPrice" name="reductionPrice">
 				<div class='col-md-10' style="font-size:15px">
 					<div style="margin-top:2%">
 						<input type="radio" name="reductionTypeRadio" value="1">影片
-						<span id="filminitialAmount">
+						<span id="filmThresholdAmount1">
 							&nbsp;&nbsp;满&nbsp;
-							<input type="text" style="width:10%" id="filmInitialAmount" name="initialAmount">&nbsp;
+							<input type="text" style="width:10%" id="filmThresholdAmount" name="filmThresholdAmount">&nbsp;
 						</span>
 						<span id="filmReduction">
 							&nbsp;&nbsp;减&nbsp;
@@ -155,9 +155,9 @@
 					</div>
 					<div style="margin-top:2%">
 						<input type="radio" name="reductionTypeRadio" value="2">卖品
-						<span id="goodinitialAmount">
+						<span id="goodThresholdAmount1">
 							&nbsp;&nbsp;满&nbsp;
-							<input type="text" style="width:10%" id="goodInitialAmount">&nbsp;
+							<input type="text" style="width:10%" id="goodThresholdAmount">&nbsp;
 						</span>
 						<span id="goodReduction">
 							&nbsp;&nbsp;减&nbsp;
@@ -236,7 +236,7 @@
 	$("#CouponsType").val(getUrlParam("CouponsType"));
 	if(getUrlParam("CouponsType")==2){
 		$("#filmReduction").hide();
-		$("#goodinitialAmount").hide();
+		$("#goodThresholdAmount").hide();
 		$("#goodReduction").hide();
 	}
 	//影片下拉多选
@@ -371,7 +371,7 @@
 					$("#Goods").css("display","none");
 					$("#Films").css("display","block");
 					$("#goodsDiv").css("display","none");
-					$("#goodInitialAmount").val(null);
+					$("#goodThresholdAmount").val(null);
 					$("#goodReductionPrice").val(null);
 					$("#GoodsSelect").val(null);
 				}
@@ -379,7 +379,7 @@
 					$("#Films").css("display","none");
 					$("#Goods").css("display","block");
 					$("#filmsDiv").css("display","none");
-					$("#filmInitialAmount").val(null);
+					$("#filmThresholdAmount").val(null);
 					$("#filmReductionPrice").val(null);
 					$("#FilmsSelect").val(null);
 				}
@@ -387,17 +387,17 @@
 		}); 
 		//影片减免金额判断
 		$("#filmReductionPrice").blur(function(){
-			if(parseFloat($("#filmReductionPrice").val())>parseFloat($("#filmInitialAmount").val())){
-				alert("总金额="+$("#filmInitialAmount").val()+",减免金额="+$("#filmReductionPrice").val());
-				$("#filmInitialAmount").val(null);
+			if(parseFloat($("#filmReductionPrice").val())>parseFloat($("#filmThresholdAmount").val())){
+				alert("总金额="+$("#filmThresholdAmount").val()+",减免金额="+$("#filmReductionPrice").val());
+				$("#filmThresholdAmount").val(null);
 				$("#filmReductionPrice").val(null);
 				layer.msg("减免金额不能大于总金额");
 			}
 		});
 		//卖品减免金额判断
 		$("#goodReductionPrice").blur(function(){
-			if(parseFloat($("#goodReductionPrice").val())>parseFloat($("#goodInitialAmount").val())){
-				$("#goodInitialAmount").val(null);
+			if(parseFloat($("#goodReductionPrice").val())>parseFloat($("#goodThresholdAmount").val())){
+				$("#goodThresholdAmount").val(null);
 				$("#goodReductionPrice").val(null);
 				layer.msg("减免金额不能大于总金额");
 			}
@@ -493,13 +493,18 @@
 			}
 			$("#reductionType").val($('input:radio[name="reductionTypeRadio"]:checked').val());
 			if($("input:radio[name='reductionTypeRadio']:checked").val()==1){
-				$("#InitialAmount").val(null);
+				$("#goodThresholdAmount").val(null);
 				$("#goodReductionPrice").val(null);
+				$("#thresholdAmount").val($("#filmThresholdAmount").val());
+				console.log("111");
+				console.log("2222"+$("#filmThresholdAmount").val());
 			}
 			if($("input:radio[name='reductionTypeRadio']:checked").val()==2){
+				$("#filmThresholdAmount").val(null);
 				$("#filmReductionPrice").val(null);
+				$("#thresholdAmount").val($("#goodThresholdAmount").val())
 			}
-			$("#InitialAmount").val($("#filmInitialAmount").val()+$("#goodInitialAmount").val());
+			//$("#thresholdAmount").val($("#filmThresholdAmount").val()+$("#goodThresholdAmount").val());
 			$("#reductionPrice").val($("#filmReductionPrice").val()+$("#goodReductionPrice").val());
 			$("#canUseCinemaType").val($('input:radio[name="CanUseCinemaTypeRadio"]:checked').val());
 		}
@@ -516,6 +521,7 @@
 			LimitNumCheck();
 		})
 		function add() {
+			console.log("add1"+$("#filmThresholdAmount").val())
 			checkParams();
 		 	//提交之前非空判断
 		 	//有效期
@@ -565,7 +571,7 @@
 					result = false;
 					layer.msg("请选择减免金额类型！");
 				}else{
-					if($("#filmInitialAmount").val()==null&&$("#goodInitialAmount").val()==null){
+					if($("#filmThresholdAmount").val()==null&&$("#goodThresholdAmount").val()==null){
 						result = false;
 						layer.msg("请输入减免金额！");
 					}
@@ -588,8 +594,9 @@
 			    if(!bootstrapValidator.isValid()){
 				   return;
 			    }
-			    
+			  $("#thresholdAmount").val($("#filmThresholdAmount").val());
 			    var formdata = $("#form").serializeObject();
+			    console.log(JSON.stringify(formdata));
 			    $.ajax({
 					type : 'post',
 					url : '/couponsgroups',

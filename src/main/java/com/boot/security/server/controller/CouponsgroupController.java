@@ -32,6 +32,8 @@ import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
 import com.boot.security.server.utils.UserUtil;
+import com.google.gson.Gson;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -49,11 +51,16 @@ public class CouponsgroupController {
     @PostMapping
     @ApiOperation(value = "保存")
     public Couponsgroup save(@RequestBody Couponsgroup couponsgroup) throws ParseException {
+    	System.out.println("========"+new Gson().toJson(couponsgroup));
+    	//获取当前登陆人信息
+    	SysUser sysuser = UserUtil.getLoginUser();
+    	
     	couponsgroup.setEffectiveDate(couponsgroup.getEffectiveDate());
     	couponsgroup.setExpireDate(couponsgroup.getExpireDate());
     	//优惠券组编码--10位时间戳加6位随机数
     	String groupCode = String.valueOf(new Date().getTime()/1000);
     	groupCode+=(int)((Math.random()*9+1)*100000);
+    	couponsgroup.setCinemaCode(sysuser.getCinemaCode());
     	couponsgroup.setGroupCode(groupCode);
     	couponsgroup.setStatus(CouponGroupStatusEnum.Enabled.getStatusCode());
     	couponsgroup.setIssuedNumber(0);

@@ -23,6 +23,7 @@ import com.boot.security.server.page.table.PageTableHandler;
 import com.boot.security.server.page.table.PageTableResponse;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.utils.UserUtil;
+import com.google.gson.Gson;
 import com.boot.security.server.page.table.PageTableHandler.CountHandler;
 import com.boot.security.server.page.table.PageTableHandler.ListHandler;
 import com.boot.security.server.dao.TicketusersDao;
@@ -107,6 +108,9 @@ public class TicketusersController {
     @RequestMapping("/getCountUser")
     @ApiOperation(value = "获取用户数量")
     public int getCountUser(@RequestParam("customertype") Integer customertype,@RequestParam("cinemacodes") String cinemacodes,@RequestParam("mobilephone") String mobilephone){
+    	//获取当前登陆人信息
+    	SysUser sysuser = UserUtil.getLoginUser();
+    	
     	Map<String,Object> params = new HashMap<String,Object>();
     	List<Ticketusers> ticketusersList = new ArrayList<Ticketusers>();
     	if(mobilephone!=null&&mobilephone!=""){
@@ -121,10 +125,13 @@ public class TicketusersController {
     	if(customertype==1){
     		params = new HashMap<String,Object>();
     		params.put("IsActive", "");
+    		params.put("CinemaCode",sysuser.getCinemaCode());
     		newTicketusersList = ticketusersDao.getTicketusers(params);
     	}
     	if(customertype==2){
+    		System.out.println("cinemacodes==="+cinemacodes);
     		List<Membercard> memberList = memberCardService.getByCinemaCodes(cinemacodes);
+    		System.out.println("memberList==="+new Gson().toJson(memberList));
     		for(Membercard member:memberList){
     			OpenIDs.add(member.getOpenId());
     		}
@@ -141,11 +148,13 @@ public class TicketusersController {
     	if(customertype==3){
     		params = new HashMap<String,Object>();
     		params.put("IsActive", "1");
+    		params.put("CinemaCode",sysuser.getCinemaCode());
     		newTicketusersList = ticketusersDao.getTicketusers(params);
     	}
     	if(customertype==4){
     		params = new HashMap<String,Object>();
     		params.put("IsActive", "0");
+    		params.put("CinemaCode",sysuser.getCinemaCode());
     		newTicketusersList = ticketusersDao.getTicketusers(params);
     	}
     	for(Ticketusers ticketusers:newTicketusersList){

@@ -384,7 +384,7 @@ public class ConponController {
 		StringBuilder couponsgroups=new StringBuilder();
 		if(UserCouponsList!=null&&UserCouponsList.size()>0){
 			for(Coupons usecoupons:UserCouponsList){
-				if(!usecoupons.getCouponsCode().equals("")&&!usecoupons.getCouponsCode().equals(null)){
+				if(!usecoupons.getCouponsCode().equals("")&&usecoupons.getCouponsCode()!=null){
 					CouponsView couponsview = _couponsService.getWithCouponsCode(usecoupons.getCouponsCode());
 					if(couponsview.getCoupons()!=null){
 						boolean ifCanUse = true;

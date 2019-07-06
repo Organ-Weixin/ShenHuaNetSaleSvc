@@ -374,6 +374,7 @@ public class SessionController {
                         //查一天的排期 走redis
                         List<Sessioninfo> oneDateSessionList = null;
                         if (!redisTemplate.boundHashOps("oneDaySchedule:" + CinemaCode).hasKey(FilmCode+"|"+sessionData)){
+                        	
                             oneDateSessionList = _sessionInfoService.getOneDaySession(sessioninfo.getCCode(), sessioninfo.getFilmCode(), sessionData);
                             redisTemplate.boundHashOps("oneDaySchedule:" + CinemaCode).put(FilmCode+"|"+sessionData,JSON.toJSONString(oneDateSessionList));
                             redisTemplate.expire("oneDaySchedule:" + CinemaCode,24,TimeUnit.HOURS);
@@ -385,17 +386,21 @@ public class SessionController {
                         List<QueryFimlSessionPriceReplySession> sessionReplyList = new ArrayList<QueryFimlSessionPriceReplySession>();
                         for(Sessioninfo oneDateSession:oneDateSessionList){
                             QueryFimlSessionPriceReplySession sessionReply = new QueryFimlSessionPriceReplySession();
-
-
                             Sessioninfoview sessioninfoview = null;
                             if (!redisTemplate.boundHashOps("sessioninfo:"+CinemaCode).hasKey(FilmCode+"|"+oneDateSession.getSCode())){//redis无数据
+                            	log.info("QueryFilmSessionPrice:1");
                                 sessioninfoview = _sessioninfoviewService.getByCinemaCodeAndSessionCode(oneDateSession.getCCode(), oneDateSession.getSCode());
-                                if (sessioninfoview!=null)
+                                if (sessioninfoview!=null){
+                                	log.info("QueryFilmSessionPrice:2");
                                     redisTemplate.boundHashOps("sessioninfo:"+CinemaCode).put(FilmCode+"|"+oneDateSession.getSCode(),JSON.toJSONString(sessioninfoview));
+                                }
                             }else {
+                            	log.info("QueryFilmSessionPrice:3");
                                 String sessioninfoString = (String)redisTemplate.boundHashOps("sessioninfo:"+CinemaCode).get(FilmCode+"|"+oneDateSession.getSCode());
-                                if (sessioninfoString!=null)
+                                if (sessioninfoString!=null){
+                                	log.info("QueryFilmSessionPrice:4");
                                     sessioninfoview = JSON.parseObject(sessioninfoString,Sessioninfoview.class);
+                                }
                             }
 
 
@@ -431,7 +436,10 @@ public class SessionController {
                                 sessionReply.setEndTime(sdf.format(new Date(Long.parseLong(endtime))));
                             }
                             
-                            if (sessioninfoview == null) sessioninfoview = new Sessioninfoview();
+                            if (sessioninfoview == null){
+                            	log.info("QueryFilmSessionPrice:5");
+                            	sessioninfoview = new Sessioninfoview();
+                            }
                             //票服务费
                             if(sessioninfoview.getTicketFee()==null){
                                 sessioninfoview.setTicketFee(0.00);
@@ -444,6 +452,11 @@ public class SessionController {
                             if(sessioninfoview.getCinemaAllowance()==null){
                                 sessioninfoview.setCinemaAllowance(0.00);
                             }
+                            //标准价
+                            if(sessioninfoview.getStandardPrice()==null){
+                            	sessioninfoview.setStandardPrice(50.00);
+                            }
+                            
                             //实际售卖价格
                             if(sessioninfoview.getPrice()!=null){
                                 sessionReply.setSalePrice(sessioninfoview.getPrice()+sessioninfoview.getTicketFee()

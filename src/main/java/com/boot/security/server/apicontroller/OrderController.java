@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,7 +161,7 @@ public class OrderController {
 
 		try {
 			LockSeatReply lockSeatReply =NetSaleSvcCore.getInstance().LockSeat(QueryJson.getUserName(),QueryJson.getPassword(),QueryJson.getQueryXml());
-			if(QueryJson.getOpenID().equals(null)||QueryJson.getOpenID().equals("")){
+			if(QueryJson.getOpenID()==null||QueryJson.getOpenID().equals("")){
 				return lockSeatReply;
 			}
 			//锁座时新增订单需要传入OpenID,之后修改订单就不需要再操作
@@ -350,7 +351,7 @@ public class OrderController {
 			orders.setCouponsPrice(0.00);
 		}
 		data.setOrderStatus(orders.getOrderStatus());
-		data.setRealAmount(orders.getTotalRefundPrice());
+		data.setRealAmount(orders.getTotalSalePrice());
 		data.setOrderCode(orders.getSubmitOrderCode());
 		data.setMobilePhone(orders.getMobilePhone());
 		data.setOrderPayType(orders.getOrderPayType());
@@ -826,7 +827,7 @@ public class OrderController {
 	@RequestMapping(value = "/WxPayNotify", produces = "application/json;charset=UTF-8")
 	// @RequestDescription("支付回调地址")
 	@ResponseBody
-	public void WxPayNotify(HttpServletRequest request) throws Exception {
+	public void WxPayNotify(HttpServletRequest request,HttpServletResponse response) throws Exception {
 		// 读取返回内容
 		Map<String, String> returnmap = WxPayUtil.WxPayNotify(request);
 		log.info("++++++++++++++++"+new Gson().toJson(returnmap));
@@ -850,21 +851,21 @@ public class OrderController {
 					order.getOrderBaseInfo().setOrderTradeNo(returnmap.get("transaction_id"));
 					log.info("==========="+new Gson().toJson(order.getOrderBaseInfo()));
 					
-				}
-				// 更新优惠券已使用
-				if (!order.getOrderBaseInfo().getCouponsCode().equals(null)&&!order.getOrderBaseInfo().getCouponsCode().equals("")) {
-					CouponsView couponsview=_couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
-					if(couponsview!=null){
-						couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
-						couponsview.getCoupons().setUsedDate(new Date());
-						//使用数量+1
-						couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
-						couponsview.getCouponsgroup().setOperationRemark("购票订单支付回调操作+1");
-						couponsview.getCouponsgroup().setUpdateDate(new Date());
-						//更新优惠券及优惠券分组表
-						_couponsService.update(couponsview);
-						//更新订单的实际销售金额=减去优惠券的实际金额
-						order.getOrderBaseInfo().setTotalSalePrice(DoubleUtil.sub(order.getOrderBaseInfo().getTotalSalePrice(), order.getOrderBaseInfo().getCouponsPrice()));
+					// 更新优惠券已使用
+					if (order.getOrderBaseInfo().getCouponsCode()!=null&&!order.getOrderBaseInfo().getCouponsCode().equals("")) {
+						CouponsView couponsview=_couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
+						if(couponsview!=null){
+							couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
+							couponsview.getCoupons().setUsedDate(new Date());
+							//使用数量+1
+							couponsview.getCouponsgroup().setUsedNumber(couponsview.getCouponsgroup().getUsedNumber()+1);
+							couponsview.getCouponsgroup().setOperationRemark("购票订单支付回调操作+1");
+							couponsview.getCouponsgroup().setUpdateDate(new Date());
+							//更新优惠券及优惠券分组表
+							_couponsService.update(couponsview);
+							//更新订单的实际销售金额=减去优惠券的实际金额
+							order.getOrderBaseInfo().setTotalSalePrice(DoubleUtil.sub(order.getOrderBaseInfo().getTotalSalePrice(), order.getOrderBaseInfo().getCouponsPrice()));
+						}
 					}
 				}
 			} else {
@@ -874,6 +875,13 @@ public class OrderController {
 			}
 		}
 		_orderService.update(order.getOrderBaseInfo());
+		response.getWriter().write(setXML("SUCCESS", "OK")); 
+	}
+	
+	public static String setXML(String return_code, String return_msg) {
+		  return "<xml><return_code><![CDATA[" + return_code
+		    + "]]></return_code><return_msg><![CDATA[" + return_msg
+		    + "]]></return_msg></xml>";
 	}
 	// endregion
 	
@@ -1100,7 +1108,7 @@ public class OrderController {
 					_orderService.update(order.getOrderBaseInfo());
 				}
 				// 更新优惠券已使用
-				if (!order.getOrderBaseInfo().getCouponsCode().equals(null)&&!order.getOrderBaseInfo().getCouponsCode().equals("")) {
+				if (order.getOrderBaseInfo().getCouponsCode()!=null&&!order.getOrderBaseInfo().getCouponsCode().equals("")) {
 					CouponsView couponsview=_couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
 					if(couponsview!=null){
 						couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
@@ -1139,7 +1147,7 @@ public class OrderController {
 					_goodsOrderService.UpdateOrderBaseInfo(goodsorder);
 				}
 				// 更新优惠券已使用
-				if (!goodsorder.getCouponsCode().equals(null)&&!goodsorder.getCouponsCode().equals("")) {
+				if (goodsorder.getCouponsCode()!=null&&!goodsorder.getCouponsCode().equals("")) {
 					CouponsView couponsview=_couponsService.getWithCouponsCode(goodsorder.getCouponsCode());
 					if(couponsview!=null){
 						couponsview.getCoupons().setStatus(CouponsStatusEnum.Used.getStatusCode());
@@ -1226,7 +1234,7 @@ public class OrderController {
 				order.getOrderBaseInfo().setRefundTime(new Date());
 				_orderService.update(order.getOrderBaseInfo());
 				//退购票优惠券
-				if(!order.getOrderBaseInfo().getCouponsCode().equals(null)&&!order.getOrderBaseInfo().getCouponsCode().equals("")){
+				if(order.getOrderBaseInfo().getCouponsCode()!=null&&!order.getOrderBaseInfo().getCouponsCode().equals("")){
 					CouponsView couponsview = _couponsService.getWithCouponsCode(order.getOrderBaseInfo().getCouponsCode());
 					if(couponsview!=null){
 						couponsview.getCoupons().setStatus(CouponsStatusEnum.Fetched.getStatusCode());
@@ -1245,7 +1253,7 @@ public class OrderController {
 				goodsorder.setRefundTime(new Date());
 				_goodsOrderService.update(goodsorder);
 				//退卖品优惠券
-				if(!goodsorder.getCouponsCode().equals(null)&&!goodsorder.getCouponsCode().equals("")){
+				if(goodsorder.getCouponsCode()!=null&&!goodsorder.getCouponsCode().equals("")){
 					CouponsView couponsview = _couponsService.getWithCouponsCode(goodsorder.getCouponsCode());
 					if(couponsview!=null){
 						couponsview.getCoupons().setStatus(CouponsStatusEnum.Fetched.getStatusCode());

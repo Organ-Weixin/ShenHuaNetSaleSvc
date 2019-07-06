@@ -42,6 +42,8 @@ import com.boot.security.server.service.impl.CouponsServiceImpl;
 import com.boot.security.server.service.impl.CouponsgroupServiceImpl;
 import com.boot.security.server.service.impl.MemberCardServiceImpl;
 import com.boot.security.server.utils.UserUtil;
+import com.google.gson.Gson;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -65,6 +67,9 @@ public class CoupondistributionrecordController {
     @PostMapping
     @ApiOperation(value = "保存")
     public Coupondistributionrecord save(@RequestBody Coupondistributionrecord coupondistributionrecord,HttpServletRequest request) throws ParseException {
+    	//获取当前登陆人信息
+    	SysUser sysuser = UserUtil.getLoginUser();
+    	
     	Couponsgroup couponsgroup = couponsgroupService.getByGroupCode(coupondistributionrecord.getGroupCode());
     	List<Ticketusers> customerList = new ArrayList<Ticketusers>();
     	//根据顾客类型获取顾客列表
@@ -73,38 +78,52 @@ public class CoupondistributionrecordController {
     	//所有顾客
     	if(coupondistributionrecord.getCustomerType()==1){
     		params.put("IsActive", "");
+    		params.put("CinemaCode",sysuser.getCinemaCode());
     		customerList = ticketusersDao.getTicketusers(params);
     		for(int i=0; i<customerList.size();i++){
     			openIDs.add(customerList.get(i).getOpenID());
     		}
+    		System.out.println("params"+new Gson().toJson(params));
+    		System.out.println("所有顾客"+new Gson().toJson(customerList));
     	}
+    	
     	//会员
     	if(coupondistributionrecord.getCustomerType()==2){
-    		List<Membercard> membercardList = memberCardService.getByCinemaCodes(request.getSession().getAttribute("cinemacodes").toString());
+    		System.out.println("cinemacodes："+sysuser.getCinemaCode());
+    		List<Membercard> membercardList = memberCardService.getByCinemaCodes(sysuser.getCinemaCode());
+    		System.out.println("membercardList:"+new Gson().toJson(membercardList));
     		for(int i=0; i<membercardList.size();i++){
     			openIDs.add(membercardList.get(i).getOpenId());
     		}
+    		System.out.println("会员"+new Gson().toJson(membercardList));
     	}
+    	
     	//活跃用户
     	if(coupondistributionrecord.getCustomerType()==3){
     		System.out.println("活跃用户");
     		params.put("IsActive", "1");
+    		params.put("CinemaCode",sysuser.getCinemaCode());
     		customerList = ticketusersDao.getTicketusers(params);
     		for(int i=0; i<customerList.size();i++){
     			openIDs.add(customerList.get(i).getOpenID());
     		}
+    		System.out.println("活跃用户"+new Gson().toJson(customerList));
     	}
+    	
     	//非活跃用户
     	if(coupondistributionrecord.getCustomerType()==4){
     		params.put("IsActive", "0");
+    		params.put("CinemaCode",sysuser.getCinemaCode());
     		customerList = ticketusersDao.getTicketusers(params);
     		for(int i=0; i<customerList.size();i++){
     			openIDs.add(customerList.get(i).getOpenID());
     		}
+    		System.out.println("非活跃用户"+new Gson().toJson(customerList));
     	}
     	//指定用户
     	if(coupondistributionrecord.getOpenID()!=null&&coupondistributionrecord.getOpenID()!=""){
     		params = new HashMap<>();
+    		params.put("CinemaCode",sysuser.getCinemaCode());
     		params.put("MobilePhone", coupondistributionrecord.getOpenID());
     		List<Ticketusers> ticketusersList = ticketusersDao.getTicketusers(params);
     		String openid = "";
@@ -115,7 +134,9 @@ public class CoupondistributionrecordController {
     		if(coupondistributionrecord.getOpenID()!=null&&coupondistributionrecord.getOpenID()!=""){
     			coupondistributionrecord.setOpenID(openid.substring(0,openid.length()-1));
     		}
+    		System.out.println("指定用户"+new Gson().toJson(ticketusersList));
     	}
+    	
     	DefaultTransactionDefinition defaultTransactionDefinition = new DefaultTransactionDefinition();
         defaultTransactionDefinition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
         TransactionStatus status = transactionManager.getTransaction(defaultTransactionDefinition);
@@ -139,6 +160,7 @@ public class CoupondistributionrecordController {
 					String couponsCode = String.valueOf(new Date().getTime());
 		    		couponsCode+=(int)((Math.random()*9+1)*10000);
 					coupons.setCouponsCode(couponsCode);
+					coupons.setCinemaCode(sysuser.getCinemaCode());
 					coupons.setCouponsName(couponsgroup.getCouponsName());
 					coupons.setGroupCode(couponsgroup.getGroupCode());
 					coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
@@ -156,13 +178,16 @@ public class CoupondistributionrecordController {
     			couponsgroupService.update(couponsgroup);
     			transactionManager.commit(status);
     			coupondistributionrecord.setStatus(1);
+    			coupondistributionrecord.setCinemaCode(sysuser.getCinemaCode());
 			} catch (Exception e) {
 				transactionManager.rollback(status);
 				coupondistributionrecord.setIssuedNumber(0);
 				coupondistributionrecord.setStatus(0);
+				coupondistributionrecord.setCinemaCode(sysuser.getCinemaCode());
 				e.printStackTrace();
 			}
     	}else{
+    		coupondistributionrecord.setCinemaCode(sysuser.getCinemaCode());
     		coupondistributionrecord.setIssuedNumber(0);
     		coupondistributionrecord.setStatus(0);
     	}

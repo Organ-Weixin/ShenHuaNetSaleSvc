@@ -34,17 +34,28 @@
 	</sql>
 
 	<select id="count" resultType="int">
-		select count(1) from coupondistributionrecord t
+		select count(1) from (SELECT * FROM coupondistributionrecord <include refid="whereByroleId" />) t
 		<include refid="where" />
 	</select>
 
 	<select id="list" resultType="Coupondistributionrecord">
-		select * from coupondistributionrecord t
+		select * from (SELECT * FROM coupondistributionrecord <include refid="whereByroleId" />) t
 		<include refid="where" />
 		order by issuedtime desc
 		${params.orderBy}
 		limit #{offset}, #{limit}
 	</select>
+	
+	<sql id="whereByroleId">
+		<where>
+			<if test="params.roleId == 1 ">
+				cinemaCode in (select cinemaCode from sys_user) 
+			</if>
+			<if test="params.roleId != 1 ">
+				cinemaCode in (select CinemaCode from sys_user sy  where sy.id = #{params.id}  or  sy.createUserId = #{params.roleId})
+			</if>
+		</where>
+	</sql>
 
 	<update id="update">
 		update coupondistributionrecord t

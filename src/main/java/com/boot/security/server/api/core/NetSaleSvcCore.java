@@ -2051,12 +2051,13 @@ ScreenType,ListingPrice,LowestPrice))
 			_CTMSInterface = CTMSInterfaceFactory.Create(userCinema);
 			CTMSSubmitGoodsOrderReply CTMSReply = null;
 			CTMSReply = _CTMSInterface.SubmitGoodsOrder(userCinema, order);
+			System.out.println("netsale=========CTMSReply"+new Gson().toJson(CTMSReply));
+			System.out.println("netsale========ordernew"+new Gson().toJson(order));
 			if (StatusEnum.Success.equals(CTMSReply.Status)) {
 				reply.setOrder(new SubmitGoodsOrderReplyOrder());
 				reply.getOrder().setOrderCode(order.getOrderBaseInfo().getOrderCode());
 				reply.getOrder().setPickUpCode(order.getOrderBaseInfo().getPickUpCode());
 				reply.getOrder().setVerifyCode(order.getOrderBaseInfo().getVerifyCode());
-				
 				reply.SetSuccessReply();
 			}else {
 				reply.GetErrorFromCTMSReply(CTMSReply);
