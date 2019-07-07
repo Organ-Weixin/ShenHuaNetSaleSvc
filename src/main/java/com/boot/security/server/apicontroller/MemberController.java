@@ -892,9 +892,10 @@ public class MemberController {
 				String refundTradeNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 				Double RefundPrice = Double.valueOf(ChargeAmount);// 退款金额
 				String RefundFee = String.valueOf(Double.valueOf(RefundPrice*100).intValue());// 退款金额，以分为单位
+				String TotalFee = String.valueOf(Double.valueOf(RefundPrice*100).intValue());// 退款金额，以分为单位
 				String OrderTradeNo = mem.getWXtradeNo();//微信支付订单号
 				String WxpayRefundCert=cinemapaymentsettings.getWxpayRefundCert();
-				String strRefundPaymentXml = WxPayUtil.WxPayRefund(WxpayAppId,WxpayMchId,WxpayKey,refundTradeNo,RefundFee,OrderTradeNo,CinemaCode,WxpayRefundCert);
+				String strRefundPaymentXml = WxPayUtil.WxPayRefund(WxpayAppId,WxpayMchId,WxpayKey,refundTradeNo,RefundFee,TotalFee,OrderTradeNo,CinemaCode,WxpayRefundCert);
 				log.info("退款返回："+strRefundPaymentXml);
 				//获取返回值 
 				String strRefundPaymentXml2 = strRefundPaymentXml.replace("<![CDATA[", "").replace("]]>", "");

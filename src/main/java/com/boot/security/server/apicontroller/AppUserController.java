@@ -213,7 +213,9 @@ public class AppUserController {
         System.out.println("解密------"+wxuserStr);
         UserWXResult wxuser = new Gson().fromJson(wxuserStr, UserWXResult.class);
         //特殊处理表情，先去除掉特殊符号 todo
-		wxuser.setNickName(wxuser.getNickName().replaceAll("[^\u0000-\uFFFF]", ""));
+        if(wxuser.getNickName()!=null&&!"".equals(wxuser.getNickName())){
+		  wxuser.setNickName(wxuser.getNickName().replaceAll("[^\u0000-\uFFFF]", ""));
+        }
         //更新到数据库
         Ticketusers ticketuser = _ticketusersService.getByopenids(jscode2sessionReply.getOpenid());
         if(ticketuser == null){

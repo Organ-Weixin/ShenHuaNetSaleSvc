@@ -643,10 +643,11 @@ public class AppGoodsController {
 			+ order.getId();
 			Double RefundPrice = order.getTotalSettlePrice()+order.getTotalFee();// 结算价+服务费
 			String RefundFee = String.valueOf(Double.valueOf(RefundPrice*100).intValue());// 退款金额，以分为单位
+			String TotalFee = String.valueOf(Double.valueOf(RefundPrice*100).intValue());// 订单支付金额，以分为单位
 			String OrderTradeNo=order.getOrderTradeNo();//微信支付订单号
 			String WxpayRefundCert=cinemapaymentsettings.getWxpayRefundCert();
 			
-			String strRefundPaymentXml = WxPayUtil.WxPayRefund(WxpayAppId,WxpayMchId,WxpayKey,TradeNo,RefundFee,OrderTradeNo,CinemaCode,WxpayRefundCert);
+			String strRefundPaymentXml = WxPayUtil.WxPayRefund(WxpayAppId,WxpayMchId,WxpayKey,TradeNo,RefundFee,TotalFee,OrderTradeNo,CinemaCode,WxpayRefundCert);
 			//获取返回值 
 			String strRefundPaymentXml2 = strRefundPaymentXml.replace("<![CDATA[", "").replace("]]>", "");
 			Document document = XmlHelper.StringTOXml(strRefundPaymentXml2);

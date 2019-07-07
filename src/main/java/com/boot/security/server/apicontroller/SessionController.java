@@ -58,6 +58,7 @@ import com.boot.security.server.service.impl.ScreeninfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoServiceImpl;
 import com.boot.security.server.service.impl.SessioninfoviewServiceImpl;
 import com.boot.security.server.service.impl.UserInfoServiceImpl;
+import com.google.gson.Gson;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -388,22 +389,19 @@ public class SessionController {
                             QueryFimlSessionPriceReplySession sessionReply = new QueryFimlSessionPriceReplySession();
                             Sessioninfoview sessioninfoview = null;
                             if (!redisTemplate.boundHashOps("sessioninfo:"+CinemaCode).hasKey(FilmCode+"|"+oneDateSession.getSCode())){//redis无数据
-                            	log.info("QueryFilmSessionPrice:1");
                                 sessioninfoview = _sessioninfoviewService.getByCinemaCodeAndSessionCode(oneDateSession.getCCode(), oneDateSession.getSCode());
                                 if (sessioninfoview!=null){
-                                	log.info("QueryFilmSessionPrice:2");
                                     redisTemplate.boundHashOps("sessioninfo:"+CinemaCode).put(FilmCode+"|"+oneDateSession.getSCode(),JSON.toJSONString(sessioninfoview));
                                 }
                             }else {
-                            	log.info("QueryFilmSessionPrice:3");
                                 String sessioninfoString = (String)redisTemplate.boundHashOps("sessioninfo:"+CinemaCode).get(FilmCode+"|"+oneDateSession.getSCode());
                                 if (sessioninfoString!=null){
-                                	log.info("QueryFilmSessionPrice:4");
                                     sessioninfoview = JSON.parseObject(sessioninfoString,Sessioninfoview.class);
                                 }
                             }
-
-
+                            if(sessioninfoview==null){
+                            	continue;
+                            }
                             if(sessioninfoview!=null){
                                 sessionReply.setSessionTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(sessioninfoview.getStartTime()));
                                 sessionReply.setScreenType(sessioninfoview.getScreenType());

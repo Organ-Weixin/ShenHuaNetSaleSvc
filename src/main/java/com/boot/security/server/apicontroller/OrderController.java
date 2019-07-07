@@ -549,17 +549,17 @@ public class OrderController {
 	//endregion
 	
 	//region 退票
-	@GetMapping("/RefundTicket/{UserName}/{Password}/{CinemaCode}/{PrintNo}/{VerifyCode}")
+	@GetMapping("/RefundTicket/{UserName}/{Password}/{CinemaCode}/{OrderCode}")
 	@ApiOperation(value = "退票")
 	public RefundTicketReply RefundTicket(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
-			@PathVariable String PrintNo,@PathVariable String VerifyCode) throws Exception{
+			@PathVariable String OrderCode) throws Exception{
 
-		log.info("/Api/Order/RefundTicket :"+UserName+"|"+Password+"|"+CinemaCode+"|"+VerifyCode+"|"+PrintNo+"|"+VerifyCode);
+		log.info("/Api/Order/RefundTicket :"+UserName+"|"+Password+"|"+CinemaCode+"|"+OrderCode);
 
 		RefundTicketReply reply = new RefundTicketReply();
 		//验证影院退票规则
 		//先获取影片开始时间
-		Orders orders = orderService.getByPrintNo(CinemaCode, PrintNo, VerifyCode);
+		Orders orders = orderService.getByOrderCode(OrderCode);
 		if(orders == null){
 			reply.SetOrderNotExistReply();
 			return reply;
@@ -574,11 +574,11 @@ public class OrderController {
 			//在退票时间内
 			if(orders.getSessionTime().getTime()-new Date().getTime()>cinema.getOverRefundTime()*60*1000){
 				//退票接口
-				reply = NetSaleSvcCore.getInstance().RefundTicket(UserName, Password, CinemaCode, PrintNo, VerifyCode);
+				reply = NetSaleSvcCore.getInstance().RefundTicket(UserName, Password, CinemaCode, orders.getPrintNo(),orders.getVerifyCode());
 				log.info("\nreply:" + reply.Status+"=="+reply.ErrorMessage + "\n");
 				//退票成功进行处理
 				if (reply.Status.equalsIgnoreCase("Success")) {
-					orders = orderService.getByPrintNo(CinemaCode, PrintNo, VerifyCode);	//订单状态已改变，重新查询订单
+					orders = orderService.getByPrintNo(CinemaCode, orders.getPrintNo(),orders.getVerifyCode());	//订单状态已改变，重新查询订单
 					//退优惠券
 					if(orders.getCouponsCode()!=null&&orders.getCouponsCode()!=""){
 						Coupons coupons = _couponsService.getByCouponsCode(orders.getCouponsCode());
@@ -632,7 +632,7 @@ public class OrderController {
 								e.printStackTrace();
 							}
 						}
-						log.info("微信退款结果"+new Gson().toJson(RefundPayment(UserName, Password, CinemaCode, orders.getLockOrderCode())));
+						log.info("微信退款结果"+new Gson().toJson(paymentReply));
 					}
 					//会员卡支付
 					if(orders.getOrderPayType()==OrderPayTypeEnum.MemberCardPay.getTypeCode()){
@@ -834,14 +834,12 @@ public class OrderController {
 	public void WxPayNotify(HttpServletRequest request,HttpServletResponse response) throws Exception {
 		// 读取返回内容
 		Map<String, String> returnmap = WxPayUtil.WxPayNotify(request);
-		log.info("++++++++++++++++"+new Gson().toJson(returnmap));
+		log.info("微信回调返回："+new Gson().toJson(returnmap));
 		// 得到订单Id
 		Long OrderID = Long.parseLong(returnmap.get("out_trade_no").substring("yyyyMMddHHmmss".length() + 8));
 		OrderView order = _orderService.getOrderWidthId(OrderID);
 		if (returnmap.get("isWXsign").equals("True")) {
-			log.info("++++++++++++++++"+new Gson().toJson(order));
 			if (returnmap.get("return_code").equals("SUCCESS") && returnmap.get("result_code").equals("SUCCESS")) {
-				log.info("--------");
 				// 更新订单主表
 				if(order.getOrderBaseInfo().getPayFlag()==null){
 					order.getOrderBaseInfo().setPayFlag(0);
@@ -939,9 +937,11 @@ public class OrderController {
 			}
 			Double RefundPrice = order.getOrderBaseInfo().getTotalRefundPrice();// 退款金额
 			String RefundFee = String.valueOf(Double.valueOf(RefundPrice*100).intValue());// 退款金额，以分为单位
+			Double TotalSalePrice = order.getOrderBaseInfo().getTotalSalePrice();// 订单金额
+			String TotalFee=String.valueOf(Double.valueOf(TotalSalePrice*100).intValue());
 			String OrderTradeNo=order.getOrderBaseInfo().getOrderTradeNo();//微信支付订单号
 			String WxpayRefundCert=cinemapaymentsettings.getWxpayRefundCert();
-			String strRefundPaymentXml = WxPayUtil.WxPayRefund(WxpayAppId,WxpayMchId,WxpayKey,TradeNo,RefundFee,OrderTradeNo,CinemaCode,WxpayRefundCert);
+			String strRefundPaymentXml = WxPayUtil.WxPayRefund(WxpayAppId,WxpayMchId,WxpayKey,TradeNo,RefundFee,TotalFee,OrderTradeNo,CinemaCode,WxpayRefundCert);
 			log.info("退款返回："+strRefundPaymentXml);
 			//获取返回值 
 			String strRefundPaymentXml2 = strRefundPaymentXml.replace("<![CDATA[", "").replace("]]>", "");
@@ -1174,7 +1174,7 @@ public class OrderController {
 	//endregion
 	
 	//region 联合支付退款
-	@GetMapping("/RefundMixPayment/{UserName}/{Password}/{CinemaCode}/{LockOrderCode}")
+	/*@GetMapping("/RefundMixPayment/{UserName}/{Password}/{CinemaCode}/{LockOrderCode}")
 	@ApiOperation(value = "联合支付退款")
 	public RefundPaymentReply RefundMixPayment(@PathVariable String UserName,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String LockOrderCode) throws UnrecoverableKeyException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, IOException{
@@ -1283,7 +1283,7 @@ public class OrderController {
 			}
 		}
 		return refundpaymentReply;
-	}
+	}*/
 	//endregion
 	
 }

@@ -184,7 +184,7 @@ public class WxPayUtil {
 	// endregion
 
 	//region 退款
-	public static String WxPayRefund(String WxpayAppId,String WxpayMchId,String WxpayKey,String TradeNo,String RefundFee,String OrderTradeNo,String CinemaCode,String WxpayRefundCert) throws UnrecoverableKeyException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, IOException{
+	public static String WxPayRefund(String WxpayAppId,String WxpayMchId,String WxpayKey,String TradeNo,String RefundFee,String TotalFee,String OrderTradeNo,String CinemaCode,String WxpayRefundCert) throws UnrecoverableKeyException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, IOException{
 		String nonce_str = MD5Util.MD5Encode(String.valueOf(new Random().nextInt(1000)), "UTF-8");
 		Map<String, String> map = new TreeMap<String, String>();
 		map.put("appid", WxpayAppId);
@@ -194,7 +194,7 @@ public class WxPayUtil {
 		map.put("out_refund_no",TradeNo);//商家退款单号
 		//map.put("out_trade_no","");
 		map.put("refund_fee",RefundFee);//
-		map.put("total_fee",RefundFee);//
+		map.put("total_fee",TotalFee);//
 		map.put("transaction_id",OrderTradeNo);
 		String sign = getSign(map, "key", WxpayKey, "UTF-8");
 		map.put("sign",sign);
