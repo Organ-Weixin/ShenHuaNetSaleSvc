@@ -65,11 +65,15 @@
 	<sql id="whereByroleId">
 		<where>
 			<if test="params.roleId == 1 ">
-				cinemaCode in (select cinemaCode from sys_user) 
+				and cinemaCode in (select cinemaCode from sys_user)
 			</if>
 			<if test="params.roleId != 1 ">
-				cinemaCode in (select CinemaCode from sys_user sy  where sy.id = #{params.id}  or  sy.createUserId = #{params.roleId})
+				and cinemaCode in (select CinemaCode from sys_user sy  where sy.id = #{params.id}  or  sy.createUserId = #{params.roleId})
 			</if>
+			<if test="1==1">
+				and showTime>=now()
+			</if>
+
 		</where>
 	</sql>
 	
