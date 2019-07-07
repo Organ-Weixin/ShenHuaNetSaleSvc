@@ -908,6 +908,11 @@ public class MemberController {
 					mem.setPayStatus("4");	//退款失败
 					mem.setErrorMsg(resultMsg);
 				}
+				
+				QueryCardReply queryCardReply=QueryCard(Username, Password, CinemaCode, CardNo, CardPassword);	//查询会员卡
+				if(queryCardReply.Status.equals("Success")){
+					mem.setBalance(Double.valueOf(queryCardReply.getCard().getBalance()));
+				}
 				mem.setUpdated(new Date());
 				membercardrechargeService.update(mem);
 				
@@ -1471,9 +1476,9 @@ public class MemberController {
 	        		if(membercardcreditrule!=null){
 	        			levelReply.setCredit(membercardcreditrule.getCredit());
 	        			levelReply.setRuleCode(membercardcreditrule.getRuleCode());
-	        			levelReply.setRuleName(membercardcreditrule.getRuleName());
+	        			levelReply.setRuleName(membercardcreditrule.getRuleName()==null?"":membercardcreditrule.getRuleName());
 	        			levelReply.setOfferDescription(membercardcreditrule.getOfferDescription());
-	        			levelReply.setRuleDescription(membercardcreditrule.getRuleDescription());
+	        			levelReply.setRuleDescription(membercardcreditrule.getRuleDescription()==null?"":membercardcreditrule.getRuleDescription());
 	        			levelReply.setRuleType(membercardcreditrule.getRuleType());
 	        		}
 	        	}

@@ -62,7 +62,7 @@
 	</select>
 
 	<select id="list" resultType="Membercardrecharge">
-		select * from (select * from membercardrecharge m <include refid="whereByroleId" />)t 
+		select * from (select * from membercardrecharge m <include refid="whereByroleId" /> order by CinemaCode,CardNo,Updated desc)t 
 		<include refid="where" />
 		${params.orderBy}
 		limit #{offset}, #{limit}
@@ -74,7 +74,7 @@
 				m.cinemaCode in (select cinemaCode from sys_user) 
 			</if>
 			<if test="params.roleId != 1 ">
-				m.cinemaCode in (select CinemaCode from sys_user sy  where sy.id = #{params.id}  or  sy.createUserId = #{params.roleId})
+				m.cinemaCode in (select CinemaCode from sys_user sy  where sy.id = #{params.id}  or  sy.createUserId = #{params.roleId}) 
 			</if>
 		</where>
 	</sql>

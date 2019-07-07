@@ -47,6 +47,8 @@
 									<th>手机号</th>
 									<th>充值金额</th>
 									<th>卡余额</th>
+									<th>支付状态</th>
+									<th>充值状态</th>
 									<th>充值时间</th>
                                 </tr>
                             </thead>
@@ -102,11 +104,43 @@ function init(){
 				{"data" : "mobilePhone", "defaultContent" : ""},
 				{"data" : "rechargeAmount", "defaultContent" : ""},
 				{"data" : "balance", "defaultContent" : ""},
+				{			"data" : "payStatus", 
+		  					"defaultContent" : "",
+							"render": function (data, type, row) {
+								var payStatus = row['payStatus'];
+								var statusMsg = "";
+								if(payStatus == 0){
+									statusMsg = "未支付";
+								} else if (payStatus == 1){
+									statusMsg = "支付成功";
+								} else if (payStatus == 2){
+									statusMsg = "支付失败";
+								} else if (payStatus == 3){
+									statusMsg = "退款成功";
+								} else if (payStatus == 4){
+									statusMsg = "退款失败";
+								}
+		    					return statusMsg;
+		  					}		
+			  	},
+			  	{			"data" : "chargeStatus", 
+		  					"defaultContent" : "",
+							"render": function (data, type, row) {
+								var chargeStatus = row['chargeStatus'];
+								var msg = "";
+								if(chargeStatus == 1){
+									msg = "充值成功";
+								} else {
+									msg = "充值失败";
+								}
+		    					return msg;
+		  					}		
+			  	},
 				{"data" : "updated", "defaultContent" : ""},
 				
                 
             ],
-           "order": [[ 2, "asc" ]]
+           "order": [[ 0, "asc" ]]
         } );
 }
 
