@@ -105,6 +105,7 @@ public class ModelMapper {
 		// 订单基本信息
 		order.setCinemaCode(userCinema.getCinemaCode());
 		order.setUserId(userCinema.getUserId());
+		order.setMinimumFare(sessionInfo.getLowestPrice());//在订单里保存一下场次最低价
 		order.setSessionCode(sessionInfo.getSCode());
 		order.setScreenCode(sessionInfo.getScreenCode());
 		order.setSessionTime(sessionInfo.getStartTime());

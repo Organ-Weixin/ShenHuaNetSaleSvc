@@ -59,13 +59,14 @@
 									<th>时长(分钟)</th>
 									<th>语言</th>
 									<th>标准价</th>
+									<!-- <th>设置价</th> -->
 									<th>最低价</th>
 									<th>服务费</th>
 									<th>增值服务费</th>
 									<th>影院补贴</th>
-									<th>设置价</th>
-									<th>会员价</th>
-									<th width="6%">操作</th>
+									
+									<!-- <th>会员价</th> -->
+									<!-- <th width="6%">操作</th> -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -124,20 +125,20 @@
 					{"data" : "duration", "defaultContent" : ""},
 					{"data" : "language", "defaultContent" : ""},
 					{"data" : "standardPrice", "defaultContent" : ""},
-					{"data" : "lowestPrice", "defaultContent" : ""},
-					{"data" : "ticketFee", "defaultContent" : ""},
-					{"data" : "addFee", "defaultContent" : ""},
-					{"data" : "cinemaAllowance", "defaultContent" : ""},
-					{
+					/* {
 						"data" : "price", 
 						"defaultContent" : "0",
 						"render": function (data, type, row) {
 	                		var price = row['price'];
-	                      
 	                        return price;
 	                  	}
-					},
-					{
+					}, */
+					{"data" : "lowestPrice", "defaultContent" : ""},
+					{"data" : "ticketFee", "defaultContent" : ""},
+					{"data" : "addFee", "defaultContent" : ""},
+					{"data" : "cinemaAllowance", "defaultContent" : ""},
+					
+					/* {
 						"data" : "memberPrice", 
 						"defaultContent" : "0",
 						"render": function (data, type, row) {
@@ -149,8 +150,8 @@
 	                      
 	                        return str;
 	                  	}
-					},
-					{ 
+					}, */
+					/* { 
 						"data": "", 
 						"sDefaultContent": "",
 						"orderable":false,
@@ -163,7 +164,7 @@
 	
 	                               return update;
 	               	            }		
-					},
+					}, */
 	                
 	            ],
 	           "order": [[ 0, "asc" ]]

@@ -558,6 +558,9 @@
 			<if test="EwmPic != null">
 				EwmPic = #{EwmPic}, 
 			</if>
+			<if test="minimumFare != null">
+				minimumFare = #{minimumFare}, 
+			</if>
 		</set>
 
 		where t.id = #{id}

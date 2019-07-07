@@ -37,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.boot.security.server.apicontroller.reply.CheckUserFilmOrdersReply;
 import com.boot.security.server.apicontroller.reply.Jscode2sessionReply;
 import com.boot.security.server.apicontroller.reply.MobilePhoneRegisterReply;
+import com.boot.security.server.apicontroller.reply.MobilePhoneRegisterReply.MobilePhoneRegisterBean;
 import com.boot.security.server.apicontroller.reply.ModelMapper;
 import com.boot.security.server.apicontroller.reply.QueryCinemaGoodsReply;
 import com.boot.security.server.apicontroller.reply.QueryCinemaGoodsReply.QueryCinemaGoodsReplyGoods.QueryCinemaGoods;
@@ -217,6 +218,7 @@ public class AppUserController {
         //更新到数据库
         Ticketusers ticketuser = _ticketusersService.getByopenids(jscode2sessionReply.getOpenid());
         if(ticketuser == null){
+        	log.info("UserLogin:11");
         	ticketuser = new Ticketusers();
         	ticketuser.setCinemaCode(userinput.getCinemaCode());
         	ticketuser.setOpenID(jscode2sessionReply.getOpenid());
@@ -269,67 +271,7 @@ public class AppUserController {
         redisTemplate.opsForHash().putAll(userRedisKey, userMap);
         // 设置用户信息redis缓存的有效时间
         redisTemplate.expire(userRedisKey, effectiveTime, TimeUnit.SECONDS);
-        //登陆送优惠券
-        if(ticketuser.getOpenID()!=null){
-        	//查询用户是否存在领取记录
-        	List<Registercollectionrecord> registercollectionrecordList = registercollectionrecordService.getByOpenID(ticketuser.getOpenID());
-        	if(registercollectionrecordList.size()<=0){
-        		//不存在领取记录：获取所有影院的注册送规则
-        		List<Registeractive> registeractiveList = registeractiveService.getCanUseRegisterActive();
-            	if(registeractiveList.size()>0){
-            		int result =0;
-            		for(Registeractive registeractive:registeractiveList){
-            			//根据规则编码找到所赠送的优惠券组编码及赠送数量
-            			List<Registeractivecoupons> registeractivecouponsList = registeractivecouponsService.getByRegisterActiveCode(registeractive.getRegisterActiveCode());
-            			if(registeractivecouponsList.size()>0){
-            				for(Registeractivecoupons registeractivecoupons:registeractivecouponsList){
-            					//根据优惠券组编码获取所有未使用的优惠券
-            					Couponsgroup couponsgroup = couponsgroupService.getByGroupCode(registeractivecoupons.getGroupCode());
-            					//判断优惠券可发放数量是否大于赠送数量
-            					if(couponsgroup!=null){
-                					if((couponsgroup.getCouponsNumber()-couponsgroup.getIssuedNumber())>registeractivecoupons.getGiveNumber()){
-                						//是：生成优惠券记录
-                						for(int i=0; i<registeractivecoupons.getGiveNumber(); i++){
-                							Coupons coupons = new Coupons();
-                							//优惠券编码--13位时间戳加5位随机数
-                							String couponsCode = String.valueOf(new Date().getTime());
-                				    		couponsCode+=(int)((Math.random()*9+1)*10000);
-                							coupons.setCouponsCode(couponsCode);
-                							coupons.setCouponsName(couponsgroup.getCouponsName());
-                							coupons.setGroupCode(couponsgroup.getGroupCode());
-                							coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
-                							coupons.setOpenID(ticketuser.getOpenID());
-                							System.out.println("用户手机号="+ticketuser.getMobilePhone());
-                							coupons.setMobilePhone(ticketuser.getMobilePhone());
-                							coupons.setCreateDate(new Date());
-            								result = couponsService.save(coupons);
-                						}
-                					}
-                					//优惠券生成成功更新优惠券组信息
-                					if(result>0){
-                						//已发放数量
-        				    			couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()+registeractivecoupons.getGiveNumber());
-        				    			//已领取数量
-        				    			couponsgroup.setFetchNumber(couponsgroup.getFetchNumber()+registeractivecoupons.getGiveNumber());
-        				    			//剩余数量
-        				    			couponsgroup.setRemainingNumber(couponsgroup.getRemainingNumber()-registeractivecoupons.getGiveNumber());
-        				    			couponsgroup.setUpdateDate(new Date());
-        				    			couponsgroupService.update(couponsgroup);
-                					}
-            					}
-            				}
-            				if(result>0){
-            					//添加用户领取记录
-            					Registercollectionrecord registercollectionrecord = new Registercollectionrecord();
-	            				registercollectionrecord.setOpenID(ticketuser.getOpenID());
-	            				registercollectionrecord.setRegisterActiveCode(registeractive.getRegisterActiveCode());
-	            				registercollectionrecordService.save(registercollectionrecord);
-            				}
-            			}
-            		}
-            	}
-        	}
-        }
+        
 
         userReply.setData(data);
         userReply.SetSuccessReply();
@@ -563,12 +505,79 @@ public class AppUserController {
 		} else {
 			reply.SetVerifyCodeNotMatchReply();
 		}
-		
+		String linkUrl="";
+		//注册送优惠券
+        if(ticketuser.getOpenID()!=null){
+        	//查询用户是否存在领取记录
+        	List<Registercollectionrecord> registercollectionrecordList = registercollectionrecordService.getByOpenID(ticketuser.getOpenID());
+        	if(registercollectionrecordList.size()<=0){
+        		log.info("UserLogin:getCinemaCode:"+input.getCinemaCode());
+        		//不存在领取记录：获取所有影院的注册送规则
+        		List<Registeractive> registeractiveList = registeractiveService.getCanUseRegisterActive(input.getCinemaCode());
+            	if(registeractiveList.size()>0){
+            		int result =0;
+            		for(Registeractive registeractive:registeractiveList){
+            			//根据规则编码找到所赠送的优惠券组编码及赠送数量
+            			List<Registeractivecoupons> registeractivecouponsList = registeractivecouponsService.getByRegisterActiveCode(registeractive.getRegisterActiveCode());
+            			if(registeractivecouponsList.size()>0){
+            				for(Registeractivecoupons registeractivecoupons:registeractivecouponsList){
+            					//根据优惠券组编码获取所有未使用的优惠券
+            					Couponsgroup couponsgroup = couponsgroupService.getByGroupCode(registeractivecoupons.getGroupCode());
+            					//判断优惠券可发放数量是否大于赠送数量
+            					if(couponsgroup!=null){
+                					if((couponsgroup.getCouponsNumber()-couponsgroup.getIssuedNumber())>registeractivecoupons.getGiveNumber()){
+                						//是：生成优惠券记录
+                						for(int i=0; i<registeractivecoupons.getGiveNumber(); i++){
+                							Coupons coupons = new Coupons();
+                							//优惠券编码--13位时间戳加5位随机数
+                							String couponsCode = String.valueOf(new Date().getTime());
+                				    		couponsCode+=(int)((Math.random()*9+1)*10000);
+                							coupons.setCouponsCode(couponsCode);
+                							coupons.setCouponsName(couponsgroup.getCouponsName());
+                							coupons.setGroupCode(couponsgroup.getGroupCode());
+                							coupons.setStatus(CouponsStatusEnum.Fetched.getStatusCode());
+                							coupons.setOpenID(ticketuser.getOpenID());
+                							System.out.println("用户手机号="+ticketuser.getMobilePhone());
+                							coupons.setMobilePhone(ticketuser.getMobilePhone());
+                							coupons.setCreateDate(new Date());
+            								result = couponsService.save(coupons);
+                						}
+                					}
+                					//优惠券生成成功更新优惠券组信息
+                					if(result>0){
+                						//已发放数量
+        				    			couponsgroup.setIssuedNumber(couponsgroup.getIssuedNumber()+registeractivecoupons.getGiveNumber());
+        				    			//已领取数量
+        				    			couponsgroup.setFetchNumber(couponsgroup.getFetchNumber()+registeractivecoupons.getGiveNumber());
+        				    			//剩余数量
+        				    			couponsgroup.setRemainingNumber(couponsgroup.getRemainingNumber()-registeractivecoupons.getGiveNumber());
+        				    			couponsgroup.setUpdateDate(new Date());
+        				    			couponsgroupService.update(couponsgroup);
+                					}
+            					}
+            				}
+            				if(result>0){
+            					//添加用户领取记录
+            					Registercollectionrecord registercollectionrecord = new Registercollectionrecord();
+	            				registercollectionrecord.setOpenID(ticketuser.getOpenID());
+	            				registercollectionrecord.setRegisterActiveCode(registeractive.getRegisterActiveCode());
+	            				registercollectionrecordService.save(registercollectionrecord);
+	            				linkUrl = registeractive.getActivePictureUrl();
+            				}
+            			}
+            		}
+            	}
+        	}
+        }
 		//更新数据库
 		ticketuser.setIsRegister("1");
+		ticketuser.setCinemaCode(input.getCinemaCode());
 		ticketuser.setRegisterTime(new Date());
 		_ticketusersService.update(ticketuser);
 		
+		MobilePhoneRegisterBean data= new MobilePhoneRegisterBean();
+		data.setLinkUrl(linkUrl);
+		reply.setData(data);
 		return reply;
 	}
 	

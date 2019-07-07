@@ -16,7 +16,15 @@ public class MobilePhoneRegisterReply extends BaseReply{
 		private String OpenID;
 		private String MobilePhone;
 		private String VerifyCode;
+		private String LinkUrl;
 		
+		
+		public String getLinkUrl() {
+			return LinkUrl;
+		}
+		public void setLinkUrl(String linkUrl) {
+			LinkUrl = linkUrl;
+		}
 		public String getCinemaCode() {
 			return CinemaCode;
 		}

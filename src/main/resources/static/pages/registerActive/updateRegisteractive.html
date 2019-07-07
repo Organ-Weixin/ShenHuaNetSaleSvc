@@ -123,6 +123,7 @@
 				async : false,
 				success : function(data) {
 					$("#cinemacode").val(data.cinemaCode);
+					console.log(data.cinemaCode);
 					getCouponGroups(data.cinemaCode);
 					initData(data.cinemaCode);
 				}
@@ -130,10 +131,12 @@
 		}
 		//获取登陆人的对应影院的优惠券
 		function getCouponGroups(cinemacode){
+			console.log(cinemacode);
 			$.ajax({
 				url:'/couponsgroups/getCouponGroups?cinemacode='+cinemacode,
 				type:'post',
 				success:function(data){
+					console.log(data);
 					for(var i=0; i<data.length; i++){
 						var option = "<option value='"+data[i].groupCode+"' title='"+data[i].couponsName+"'>"+data[i].couponsName+"</option>";
 						$("select[name='couponSelect']").each(function(){
@@ -257,7 +260,7 @@
 				});
 		    }
 		}
-		alert("正在加载...");
+		//alert("正在加载...");
 	</script>
 </body>
 </html>

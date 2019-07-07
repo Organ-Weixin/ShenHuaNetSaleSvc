@@ -59,7 +59,7 @@ public class Orders  extends BaseEntity<Long>{
 	private Double TotalCinemaAllowance;
 	private Double TotalRefundPrice;
 	private String EwmPic;
-	
+	private Double minimumFare;//最低价
 	
 	public String getEwmPic() {
 		return EwmPic;
@@ -392,6 +392,12 @@ public class Orders  extends BaseEntity<Long>{
 	}
 	public void setTotalRefundPrice(Double totalRefundPrice) {
 		TotalRefundPrice = totalRefundPrice;
+	}
+	public Double getMinimumFare() {
+		return minimumFare;
+	}
+	public void setMinimumFare(Double minimumFare) {
+		this.minimumFare = minimumFare;
 	}
 	
 

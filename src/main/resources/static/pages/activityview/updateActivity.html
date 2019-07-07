@@ -27,12 +27,24 @@
 				</div>
 			</div>
 			<div class='form-group'>
+				<label class='col-md-2 control-label'>轮播图位置</label>
+					<div class='col-md-10'>
+						<select class="form-control" id="GradeCode"name="gradeCode" data-bv-notempty='true' data-bv-notempty-message='等级编号不能为空'>
+							<option value="">请选择...</option>
+							<option value="03">卖品Banner(图片大小:720*330)</option>
+							<option value="04">放映厅Banner(图片大小:720*330)</option>
+							<option value="01">新人注册送红包弹窗(图片大小:480*638)</option>
+							<option value="02">我的头部Banner(图片大小:720*330)</option>
+						</select>
+					</div>
+				</div>
+			<div class='form-group'>
 			   <input type="hidden" name="image"  id="Image"/>
 					<label class="col-md-2 control-label">图片</label>
 					<div class="col-md-10">
 						<div class="layui-upload-drag" id="filmImage"></div>
-						<span class="help-block" id="plogoblock">不能超过500KB，建议大小720*300</span>
-						<img class="layui-upload-img headImage" src=""	id="preview" width="240" height="100">
+						<span class="help-block" id="plogoblock">不能超过500KB</span>
+						<img class="layui-upload-img headImage" src=""	id="preview" width="240">
 					    <p id="resultMsg"></p>
 					</div></div>
 			<div class='form-group'>
@@ -47,8 +59,8 @@
 					<input class='form-control' placeholder='' type='text' name='endDate' id='EndDate' data-bv-notempty='true' data-bv-notempty-message='活动结束时间不能为空'>
 				</div>
 			</div>
-				<div class='form-group'>
-				<label class='col-md-2 control-label'>活动链接地址</label>
+				<!-- <div class='form-group'>
+				<label class='col-md-2 control-label'>跳转地址</label>
 					<div class='col-md-10'>
 						<select class="form-control" name='linkUrl' id='LinkUrl'data-bv-notempty='true' data-bv-notempty-message='活动链接地址不能为空'>
 							<option value="">请选择...</option>
@@ -61,22 +73,8 @@
 							<option value="../mine/mine">个人中心(底部)</option>
 						</select>
 					</div>
-				</div>
-				<div class='form-group'>
-				<label class='col-md-2 control-label'>等级编号</label>
-					<div class='col-md-10'>
-						<select class="form-control" id="GradeCode"name="gradeCode" data-bv-notempty='true' data-bv-notempty-message='等级编号不能为空'>
-							<option value="">请选择...</option>
-							<option value="01">首页推荐</option>
-							<option value="02">首页弹窗</option>
-							<option value="03">卖品Banner</option>
-							<option value="04">放映厅Banner</option>
-							<option value="05">卖品弹窗</option>
-							<option value="06">选座弹窗</option>
-							<option value="07">优惠券弹窗</option>
-						</select>
-					</div>
-				</div>
+				</div> -->
+				
 			<div class='form-group'>
 				<label class='col-md-2 control-label'>排序</label>
 				<div class='col-md-10'>

@@ -165,7 +165,7 @@ public class CouponsgroupController {
     	for(String str : set){
     		list.add(couponsgroupService.getByGroupCode(str));
     	}
-    	list.addAll(couponsgroupService.getAllCinemaCanUseCoupons());
+    	//list.addAll(couponsgroupService.getAllCinemaCanUseCoupons());
     	return list;
     }
     //随机字符串

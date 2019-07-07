@@ -8,5 +8,5 @@ public interface RegisteractiveService {
 	
 	Registeractive getByCinemaCode(String cinemacode);
 	
-	List<Registeractive> getCanUseRegisterActive();
+	List<Registeractive> getCanUseRegisterActive(String cinemacode);
 }

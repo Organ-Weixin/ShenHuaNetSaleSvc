@@ -21,9 +21,9 @@ public class RegisteractiveServiceImpl implements RegisteractiveService{
 	}
 
 	@Override
-	public List<Registeractive> getCanUseRegisterActive() {
+	public List<Registeractive> getCanUseRegisterActive(String cinemacode) {
 		// TODO Auto-generated method stub
-		return registeractiveDao.getCanUseRegisterActive();
+		return registeractiveDao.getCanUseRegisterActive(cinemacode);
 	}
 	
 }

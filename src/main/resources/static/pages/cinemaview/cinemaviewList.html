@@ -34,9 +34,9 @@
 									</form>
 	                   			</td>
 	                   			<td align="right">
-	                   				<button class="layui-btn layui-btn-sm" onclick="location.href='addCinema.html'">
+	                   			<div id="addbutton"><button  class="layui-btn layui-btn-sm" onclick="location.href='addCinema.html'">
                                       <i class="layui-icon">&#xe608;</i> 添加影院
-                                    </button>
+                                    </button></div>
 	                   			</td>
 	                   		</tr> 
 	                    </table>
@@ -58,7 +58,7 @@
 									<th>开通状态</th>
 									<th>是否开通套餐</th>
 									<th>会员卡门店通用</th>
-									<th>放映厅功能</th>
+									<th>放映厅功能设置</th>
 									<th>操作</th>
                                 </tr>
                             </thead>
@@ -167,6 +167,23 @@
 	            ],
 	           "order": [[ 0, "asc" ]]
 	        } );
+	}
+	
+	//获取登陆人信息
+	initUser();
+	function initUser(){
+		$.ajax({
+			type : 'get',
+			url : '/users/current',
+			async : false,
+			success : function(data) {
+				console.log("data:"+data)
+				if(data.roleId==4){
+					console.log("11")
+					$("#addbutton").hide();
+				}
+			}
+		});
 	}
 	
 	layui.use('layer', function(){

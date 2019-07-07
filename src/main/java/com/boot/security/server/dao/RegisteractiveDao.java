@@ -34,6 +34,6 @@ public interface RegisteractiveDao {
     @Select("select * from registeractive t where t.cinemacode = #{cinemacode}")
     Registeractive getByCinemaCode(String cinemacode);
     
-    @Select("select * from registeractive t where t.status =1")
-    List<Registeractive> getCanUseRegisterActive();
+    @Select("select * from registeractive t where t.cinemacode=#{cinemacode} and t.status =1")
+    List<Registeractive> getCanUseRegisterActive(String cinemaCode);
 }
