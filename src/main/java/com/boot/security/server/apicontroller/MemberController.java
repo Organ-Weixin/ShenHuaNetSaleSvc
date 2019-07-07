@@ -66,6 +66,7 @@ import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelReply.Qu
 import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelRuleReply.QueryMemberCardLevelRuleReplyMemberCard;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelRuleReply.QueryMemberCardLevelRuleReplyMemberCard.QueryMemberCardLevelRuleReplyMemberCardRule;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelRuleReply;
+import com.boot.security.server.apicontroller.reply.RefundPaymentReply;
 import com.boot.security.server.apicontroller.reply.QueryMemberCardLevelReply;
 import com.boot.security.server.model.Choosemembercardcreditrule;
 import com.boot.security.server.model.Cinema;
@@ -1698,6 +1699,58 @@ public class MemberController {
 		
 		reply.SetSuccessReply();
 		return reply;
+	}
+	
+	//退款
+	public RefundPaymentReply RefundPayment(String CinemaCode,String TradeNo) throws Exception{
+
+		log.info("/Api/Order/RefundPayment :"+CinemaCode+"|"+TradeNo);
+
+		RefundPaymentReply refundpaymentReply=new RefundPaymentReply();
+		// 获取影院的支付配置
+		Cinemapaymentsettings cinemapaymentsettings = _cinemapaymentsettingsService.getByCinemaCode(CinemaCode);
+		if (cinemapaymentsettings == null || cinemapaymentsettings.getWxpayAppId().isEmpty()
+				|| cinemapaymentsettings.getWxpayMchId().isEmpty()) {
+			refundpaymentReply.SetCinemaPaySettingInvalidReply();
+			return refundpaymentReply;
+		}
+		//验证订单是否存在
+		Membercardrecharge  mem = membercardrechargeService.getByTradeNo(TradeNo);
+		if(mem == null){
+			refundpaymentReply.ErrorMessage = "此笔交易不存在！";
+			return refundpaymentReply;
+		}else{
+			//如果订单存在，开始退款
+			String WxpayAppId = cinemapaymentsettings.getWxpayAppId();
+			String WxpayMchId=cinemapaymentsettings.getWxpayMchId();
+			String WxpayKey=cinemapaymentsettings.getWxpayKey();
+			String refundTradeNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+			Double RefundPrice = mem.getRechargeAmount();// 退款金额
+			String RefundFee = String.valueOf(Double.valueOf(RefundPrice*100).intValue());// 退款金额，以分为单位
+			String TotalFee = String.valueOf(Double.valueOf(RefundPrice*100).intValue());// 退款金额，以分为单位
+			String OrderTradeNo = mem.getWXtradeNo();//微信支付订单号
+			String WxpayRefundCert = cinemapaymentsettings.getWxpayRefundCert();
+			String strRefundPaymentXml = WxPayUtil.WxPayRefund(WxpayAppId,WxpayMchId,WxpayKey,refundTradeNo,RefundFee,TotalFee,OrderTradeNo,CinemaCode,WxpayRefundCert);
+			log.info("退款返回："+strRefundPaymentXml);
+			//获取返回值 
+			String strRefundPaymentXml2 = strRefundPaymentXml.replace("<![CDATA[", "").replace("]]>", "");
+			Document document = XmlHelper.StringTOXml(strRefundPaymentXml2);
+			String resultcodeValue = XmlHelper.getNodeValue(document, "/xml/result_code");
+			String resultMsg = XmlHelper.getNodeValue(document, "/xml/err_code_des");
+			if ("SUCCESS".equals(resultcodeValue)) {
+				//更新充值记录（退款）
+				mem.setPayStatus("3");	//退款成功
+				
+			} else {
+				mem.setPayStatus("4");
+				mem.setErrorMsg(resultMsg);
+				refundpaymentReply.Status = "Failure";
+				refundpaymentReply.ErrorCode = resultcodeValue;
+				refundpaymentReply.ErrorMessage = resultMsg;
+			}
+			membercardrechargeService.update(mem);
+		}
+		return refundpaymentReply;
 	}
 	
 	//region
