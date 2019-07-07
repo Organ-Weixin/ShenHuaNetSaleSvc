@@ -15,6 +15,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -115,6 +117,8 @@ public class AppGoodsController {
 	@Autowired
     private HttpServletRequest request;
 	
+	protected static Logger log = LoggerFactory.getLogger(MemberController.class);
+	
 	//region 查询影院卖品信息
 	@GetMapping("/QueryGoods/{UserName}/{Password}/{CinemaCode}")
 	@ApiOperation(value = "查询影院卖品信息")
@@ -166,18 +170,20 @@ public class AppGoodsController {
 			if(QueryJson.getOpenID()==null||QueryJson.getOpenID().equals("")){
 				return reply;
 			}
+			log.info("进入创建卖品订单接口1："+new Gson().toJson(QueryJson));
 			//创建卖品订单时需要保存送货信息
 			if(reply.Status.equals("Success")){
 				GoodsOrderView order=_goodsOrderService.getWithLocalOrderCode(reply.getOrder().getOrderCode());
 				order.getOrderBaseInfo().setOpenID(QueryJson.getOpenID());
 				order.getOrderBaseInfo().setDeliveryType(QueryJson.getDeliveryType());
+				log.info("QueryJson.getDeliveryAddress()："+QueryJson.getDeliveryAddress());
 				order.getOrderBaseInfo().setDeliveryAddress(QueryJson.getDeliveryAddress());
 				order.getOrderBaseInfo().setDeliveryTime(QueryJson.getDeliveryTime());
 				order.getOrderBaseInfo().setIsReady(QueryJson.getIsReady());
 				order.getOrderBaseInfo().setDeliveryMark(QueryJson.getDeliveryMark());
 				_goodsOrderService.UpdateOrderBaseInfo(order.getOrderBaseInfo());
 			}
-			System.out.println(new Gson().toJson(reply));
+			log.info("进入创建卖品订单接口2："+new Gson().toJson(QueryJson));
 			return reply;
 		} catch (JsonSyntaxException e) {
 			e.printStackTrace();

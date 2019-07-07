@@ -22,6 +22,7 @@ public class Membercardrecharge {
 	private String MidPassword;
 	private String RuleCode;
 	private String LevelCode;
+	private String OpenId;
 
 	public Long getId() {
 		return Id;
@@ -130,6 +131,12 @@ public class Membercardrecharge {
 	}
 	public void setLevelCode(String levelCode) {
 		LevelCode = levelCode;
+	}
+	public String getOpenId() {
+		return OpenId;
+	}
+	public void setOpenId(String openId) {
+		OpenId = openId;
 	}
 	
 }

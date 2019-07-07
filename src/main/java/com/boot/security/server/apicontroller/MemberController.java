@@ -989,7 +989,7 @@ public class MemberController {
 	public CardRegisterReply CardRegister(@PathVariable String Username,@PathVariable String Password,@PathVariable String CinemaCode,
 			@PathVariable String OpenID,@PathVariable String CardPassword,@PathVariable String LevelCode,
 			@PathVariable String RuleCode,@PathVariable String InitialAmount,@PathVariable String CardUserName,
-			@PathVariable String MobilePhone,@PathVariable String IDNumber,@PathVariable String Sex){
+			@PathVariable String MobilePhone,@PathVariable String IDNumber,@PathVariable String Sex) throws Exception {
 			CardRegisterReply cardRegisterReply = new CardRegisterReply();
 			if(RuleCode==null||RuleCode==""){
 				cardRegisterReply.SetCardChargeTypeInvalidReply();
@@ -1024,15 +1024,65 @@ public class MemberController {
 			}
 			InitialAmount = String.valueOf(membercardcreditrule.getCredit()+membercardcreditrule.getGivenAmount());
 			cardRegisterReply = new NetSaleSvcCore().CardRegister(Username, Password, CinemaCode, CardPassword, LevelCode, InitialAmount, CardUserName, MobilePhone, IDNumber, Sex);
-			if(cardRegisterReply.Status.equals("Success")){
+			Membercardrecharge cardrecharge = membercardrechargeService.getByOpenId(CinemaCode, OpenID);
+			if("Success".equals(cardRegisterReply.Status)){
 				Membercard membercard = _memberCardService.getByCardNo(CinemaCode, cardRegisterReply.getCardNo());
 				membercard.setOpenId(OpenID);
 				membercard.setStatus(1);
-				_memberCardService.Update(membercard);
+				_memberCardService.Update(membercard);	//更新会员卡表
 				
 				Ticketusers  ticketuser = _ticketusersService.getByopenids(OpenID);
-				ticketuser.setIsMember("1");
-				_ticketusersService.update(ticketuser);	//更新购票用户表
+				if(ticketuser != null){
+					ticketuser.setIsMember("1");
+					_ticketusersService.update(ticketuser);	//更新购票用户表
+				}
+				
+				if(cardrecharge != null){
+					cardrecharge.setCardNo(cardRegisterReply.getCardNo());
+					cardrecharge.setBalance((double)cardRegisterReply.getBalance());
+					cardrecharge.setUserName(membercard.getUserName());
+					cardrecharge.setMobilePhone(membercard.getMobilePhone());
+					cardrecharge.setChargeStatus("1");
+					membercardrechargeService.update(cardrecharge);	//更新充值记录表
+				}
+				
+			} else {	//微信支付成功，充值注册失败，退款
+				if(cardrecharge != null && "1".equals(cardrecharge.getPayStatus())){
+					cardrecharge.setChargeStatus("0");
+					cardrecharge.setErrorMsg(cardRegisterReply.ErrorMessage);
+					
+					// 获取影院的支付配置
+					Cinemapaymentsettings cinemapaymentsettings = _cinemapaymentsettingsService
+							.getByCinemaCode(CinemaCode);
+					if (cinemapaymentsettings == null || cinemapaymentsettings.getWxpayAppId().isEmpty()
+							|| cinemapaymentsettings.getWxpayMchId().isEmpty()) {
+						cardRegisterReply.SetCinemaPaySettingInvalidReply();
+						return cardRegisterReply;
+					}
+					String WxpayAppId = cinemapaymentsettings.getWxpayAppId();
+					String WxpayMchId=cinemapaymentsettings.getWxpayMchId();
+					String WxpayKey=cinemapaymentsettings.getWxpayKey();
+					String refundTradeNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+					Double RefundPrice = Double.valueOf(InitialAmount);// 退款金额
+					String RefundFee = String.valueOf(Double.valueOf(RefundPrice*100).intValue());// 退款金额，以分为单位
+					String TotalFee = String.valueOf(Double.valueOf(RefundPrice*100).intValue());// 退款金额，以分为单位
+					String OrderTradeNo = cardrecharge.getWXtradeNo();//微信支付订单号
+					String WxpayRefundCert=cinemapaymentsettings.getWxpayRefundCert();
+					String strRefundPaymentXml = WxPayUtil.WxPayRefund(WxpayAppId,WxpayMchId,WxpayKey,refundTradeNo,RefundFee,TotalFee,OrderTradeNo,CinemaCode,WxpayRefundCert);
+					log.info("退款返回："+strRefundPaymentXml);
+					//获取返回值 
+					String strRefundPaymentXml2 = strRefundPaymentXml.replace("<![CDATA[", "").replace("]]>", "");
+					Document document = XmlHelper.StringTOXml(strRefundPaymentXml2);
+					String resultcode = XmlHelper.getNodeValue(document, "/xml/result_code");
+					String resultMsg = XmlHelper.getNodeValue(document, "/xml/err_code_des");
+					if (resultcode.equals("SUCCESS")) {
+						cardrecharge.setPayStatus("3");	//退款成功
+					} else {
+						cardrecharge.setPayStatus("4");	//退款失败
+						cardrecharge.setErrorMsg(resultMsg);
+					}
+					membercardrechargeService.update(cardrecharge);	//更新充值记录表
+				}
 			}
 		return cardRegisterReply; 
 	}
@@ -1184,6 +1234,7 @@ public class MemberController {
 		mem.setMidPassword(Password);
 		mem.setRuleCode(RuleCode);
 		mem.setLevelCode(LevelCode);
+		mem.setOpenId(OpenID);
 		mem.setUpdated(new Date());
 		membercardrechargeService.save(mem);
 		
@@ -1308,6 +1359,22 @@ public class MemberController {
 		}
 		InitialAmount = String.valueOf(membercardcreditrule.getCredit()+membercardcreditrule.getGivenAmount());
         
+		// 更新充值记录表
+		Membercardrecharge mem = new Membercardrecharge();
+		mem.setCinemaCode(CinemaCode);
+		String out_trade_no = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + CinemaCode + (int)((Math.random()*9+1)*100000);//随机的六位数字
+		mem.setTradeNo(out_trade_no);
+		mem.setRechargeAmount(Double.valueOf(InitialAmount));
+		mem.setPayStatus("0");	//未支付
+		mem.setChargeStatus("0");
+		mem.setMidUserName(Username);
+		mem.setMidPassword(Password);
+		mem.setRuleCode(RuleCode);
+		mem.setLevelCode(LevelCode);
+		mem.setOpenId(OpenID);
+		mem.setUpdated(new Date());
+		membercardrechargeService.save(mem);
+				
         //准备参数
         Calendar cal=Calendar.getInstance();
         String WxpayAppId = cinemapaymentsettings.getWxpayAppId();
@@ -1319,7 +1386,6 @@ public class MemberController {
         String weburl = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort();
 		String notify_url = weburl+"/Api/Member/WxPayRegisterNotify";
         //String notify_url = "https://xc.80piao.com:8443/Api/Member/WxPayNotify";
-        String out_trade_no = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + CinemaCode + (int)((Math.random()*9+1)*100000);//随机的六位数字
         String time_expire =new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(new Date() .getTime() + 900000));
         Double totalPrice = Double.valueOf(InitialAmount);
         String total_fee = String.valueOf(Double.valueOf(totalPrice*100).intValue());//以分为单位
@@ -1334,30 +1400,28 @@ public class MemberController {
 		// 读取返回内容
 		Map<String, String> returnmap = WxPayUtil.WxPayNotify(request);
 		String tradeNo = returnmap.get("out_trade_no");
-		//Membercardrecharge mem = membercardrechargeService.getByTradeNo(tradeNo);
+		Membercardrecharge mem = membercardrechargeService.getByTradeNo(tradeNo);
 		log.info("异步接收微信支付返回："+new Gson().toJson(returnmap));
 		if (returnmap.get("isWXsign").equals("True")) {
 			if ("SUCCESS".equals(returnmap.get("return_code")) && "SUCCESS".equals(returnmap.get("result_code"))) {
 				log.info("--------");
-				/*if("0".equals(mem.getPayStatus())){
+				if("0".equals(mem.getPayStatus())){
 					mem.setPayStatus("1");		//微信支付成功
 					mem.setWXtradeNo(returnmap.get("transaction_id"));	//微信支付流水
-					membercardrechargeService.update(mem);
-					//会员卡充值
-					CardCharge(mem.getMidUserName(), mem.getMidPassword(), mem.getCinemaCode(), mem.getCardNo(), mem.getCardPassword(), "WxPay", mem.getLevelCode(), mem.getRuleCode(), String.valueOf(mem.getRechargeAmount()),tradeNo);	
-				}*/
+					
+				}
 			}else {
-				/*mem.setPayStatus("2");		//微信支付失败
+				mem.setPayStatus("2");		//微信支付失败
 				mem.setErrorMsg(returnmap.get("err_code_des"));
 				mem.setUpdated(new Date());
-				membercardrechargeService.update(mem);	// 更新充值记录表
-*/			}
+			}
 		} else {
-			/*mem.setPayStatus("2");
+			mem.setPayStatus("2");
 			mem.setErrorMsg(returnmap.get("err_code_des"));
 			mem.setUpdated(new Date());
-			membercardrechargeService.update(mem);	// 更新充值记录表
-*/		}
+			
+		}
+		membercardrechargeService.update(mem);	// 更新充值记录表
 		response.getWriter().write(setXML("SUCCESS", "OK")); 
 	}
 	//endregion

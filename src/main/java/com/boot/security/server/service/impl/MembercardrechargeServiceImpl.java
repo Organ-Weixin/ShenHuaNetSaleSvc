@@ -35,4 +35,9 @@ public class MembercardrechargeServiceImpl implements MembercardrechargeService{
 		return membercardrechargeDao.getByCinemaAndCard(cinemaCode, cardNo);
 	}
 
+	@Override
+	public Membercardrecharge getByOpenId(String cinemaCode, String openId) {
+		return membercardrechargeDao.getByOpenId(cinemaCode, openId);
+	}
+
 }

@@ -53,6 +53,9 @@
 			<if test="params.LevelCode != null and params.LevelCode != ''">
 				and LevelCode = #{params.LevelCode} 
 			</if>
+			<if test="params.OpenId != null and params.OpenId != ''">
+				and OpenId = #{params.OpenId} 
+			</if>
 		</where>
 	</sql>
 
@@ -136,7 +139,9 @@
 			<if test="LevelCode != null">
 				LevelCode = #{LevelCode}, 
 			</if>
-
+			<if test="OpenId != null">
+				OpenId = #{OpenId}, 
+			</if>
 		</set>
 
 		where t.id = #{id}

@@ -911,14 +911,20 @@ public class WebService {
 			param.put("pLmsPassword", RealPassword);
 			param.put("pLoginPasswd", RealPassword);
 			param.put("pName",pName);
-			param.put("pSex", pSex);
+			String sex = "";
+			if("1".equals(pSex)){
+				sex = "0";
+			} else if("2".equals(pSex)){
+				sex = "1";
+			}
+			param.put("pSex", sex);	//可空，“0”为男，“1”为女
 			param.put("pBirthday","");
 			param.put("pCreditNum",pCreditNum);
 			param.put("pEmail", "");
 			param.put("pOperator", "APP");
 			param.put("pCompress", "0");
 			String result = WebService.cinemaTss(userCinema.getUrl()).phoneNumReg(userCinema.getRealUserName(),userCinema.getCinemaCode(),pMobileNum,
-					RealPassword,RealPassword,pName,pSex,"",pCreditNum,"","APP","0",MD5Util.getCxSign(param,userCinema.getRealPassword()));
+					RealPassword,RealPassword,pName,sex,"",pCreditNum,"","APP","0",MD5Util.getCxSign(param,userCinema.getRealPassword()));
 			Gson gson = new Gson();
 			log.info(result);
 			return gson.fromJson(XmlToJsonUtil.xmltoJson(result,"PhoneNumRegResult"),CxPhoneNumRegResult.class);
@@ -1026,8 +1032,14 @@ public class WebService {
 				MerExtend.put("is_ready",1);
 			}
 			MerExtend.put("ready_time",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-			MerExtend.put("take_type",orderview.getOrderBaseInfo().getDeliveryType());
-			MerExtend.put("meal_remark",orderview.getOrderBaseInfo().getDeliveryMark());
+			if(orderview.getOrderBaseInfo().getDeliveryType()!=null && orderview.getOrderBaseInfo().getDeliveryType() == 2){
+				MerExtend.put("take_type",1);	//辰星取餐类型，0：自取，1：送餐
+			} else {
+				MerExtend.put("take_type",0);
+			}
+			
+			String remark = orderview.getOrderBaseInfo().getDeliveryAddress()+"_"+orderview.getOrderBaseInfo().getMobilePhone()+"_"+orderview.getOrderBaseInfo().getDeliveryMark();
+			MerExtend.put("meal_remark",remark);
 			orderview.getOrderGoodsDetails()
 					.forEach(n -> SaleMerInfos.append(n.getGoodsCode())// 商品编码
 							.append(n.getGoodsName())//商品名称
@@ -1037,7 +1049,7 @@ public class WebService {
 							.append(n.getShowSeqNo()));
 			map.put("SaleMerInfos", SaleMerInfos.toString());
 			map.put("Compress", "0");
-			log.info("==========================");
+			log.info("确认卖品订单备注信息======="+remark);
 			log.info(SaleMerInfos.toString());
 			log.info("==========================");
 			

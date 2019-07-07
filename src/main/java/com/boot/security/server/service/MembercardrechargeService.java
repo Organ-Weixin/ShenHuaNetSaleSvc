@@ -11,4 +11,5 @@ public interface MembercardrechargeService {
 	int update(Membercardrecharge membercardrecharge);
 	
 	List<Membercardrecharge> getByCinemaAndCard(String cinemaCode, String cardNo);
+	Membercardrecharge getByOpenId(String cinemaCode, String openId);
 }
