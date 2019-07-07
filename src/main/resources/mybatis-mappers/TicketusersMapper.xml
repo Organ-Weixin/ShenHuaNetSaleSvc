@@ -89,6 +89,9 @@
 			<if test="params.roleId != 1 ">
 				cinemaCode in (select CinemaCode from sys_user sy  where sy.id = #{params.id}  or  sy.createUserId = #{params.roleId})
 			</if>
+			<if test="1==1">
+				order by id desc
+			</if>
 		</where>
 	</sql>
 	
