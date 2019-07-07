@@ -847,10 +847,10 @@ public class MemberController {
 		CardChargeReply reply = new NetSaleSvcCore().CardCharge(Username, Password, CinemaCode, CardNo, CardPassword, ChargeType, ChargeAmount);
 		log.info("充值返回："+new Gson().toJson(reply));
 		Membercardrecharge mem = membercardrechargeService.getByTradeNo(TradeNo);
-		if(reply.Status.equals("Success")){
+		if("Success".equals(reply.Status)){
 			Membercard membercard=_memberCardService.getByCardNo(CinemaCode, CardNo);
 			QueryCardReply queryCardReply=QueryCard(Username, Password, CinemaCode, CardNo, CardPassword);
-			if(queryCardReply.Status.equals("Success")){
+			if("Success".equals(queryCardReply.Status)){
 				membercard.setBalance(Double.valueOf(queryCardReply.getCard().getBalance()));
 				membercard.setScore(Integer.valueOf(queryCardReply.getCard().getScore()));
 				mem.setBalance(Double.valueOf(queryCardReply.getCard().getBalance()));
@@ -910,8 +910,12 @@ public class MemberController {
 				}
 				
 				QueryCardReply queryCardReply=QueryCard(Username, Password, CinemaCode, CardNo, CardPassword);	//查询会员卡
-				if(queryCardReply.Status.equals("Success")){
-					mem.setBalance(Double.valueOf(queryCardReply.getCard().getBalance()));
+				if("Success".equals(queryCardReply.Status)){
+					if(queryCardReply.getCard() != null){
+						mem.setUserName(queryCardReply.getCard().getUserName());
+						mem.setMobilePhone(queryCardReply.getCard().getMobilePhone());
+						mem.setBalance(Double.valueOf(queryCardReply.getCard().getBalance()));
+					}
 				}
 				mem.setUpdated(new Date());
 				membercardrechargeService.update(mem);
@@ -1025,6 +1029,10 @@ public class MemberController {
 				membercard.setOpenId(OpenID);
 				membercard.setStatus(1);
 				_memberCardService.Update(membercard);
+				
+				Ticketusers  ticketuser = _ticketusersService.getByopenids(OpenID);
+				ticketuser.setIsMember("1");
+				_ticketusersService.update(ticketuser);	//更新购票用户表
 			}
 		return cardRegisterReply; 
 	}

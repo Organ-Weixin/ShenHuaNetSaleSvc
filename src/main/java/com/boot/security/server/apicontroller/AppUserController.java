@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -70,7 +69,6 @@ import com.boot.security.server.dao.GoodsorderdetailsDao;
 import com.boot.security.server.model.Cinema;
 import com.boot.security.server.model.CinemaMiniProgramAccounts;
 import com.boot.security.server.model.Cinemamessage;
-import com.boot.security.server.model.CouponGroupStatusEnum;
 import com.boot.security.server.model.Coupons;
 import com.boot.security.server.model.CouponsStatusEnum;
 import com.boot.security.server.model.Couponsgroup;
@@ -566,13 +564,10 @@ public class AppUserController {
 			reply.SetVerifyCodeNotMatchReply();
 		}
 		
-		//返回
-//		MobilePhoneRegisterBean mobleinfo = new MobilePhoneRegisterBean();
-//		mobleinfo.setCinemaCode(ticketuser.getCinemaCode());
-//		mobleinfo.setOpenID(ticketuser.getOpenID());
-//		mobleinfo.setMobilePhone(ticketuser.getMobilePhone());
-//		mobleinfo.setVerifyCode(ticketuser.getVerifyCode());
-//		reply.setData(mobleinfo);
+		//更新数据库
+		ticketuser.setIsRegister("1");
+		ticketuser.setRegisterTime(new Date());
+		_ticketusersService.update(ticketuser);
 		
 		return reply;
 	}

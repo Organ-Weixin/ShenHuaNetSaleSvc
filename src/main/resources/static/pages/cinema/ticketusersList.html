@@ -24,7 +24,10 @@
 											<input id="mobilephone" type="text" class="form-control" placeholder="手机号">&nbsp;&nbsp;
 											<!--根据手机号搜索对应用户信息-->				
 											<input id="nickname" type="text" class="form-control" placeholder="用户昵称">&nbsp;&nbsp;
+											<input id="startDate" type="text" class="form-control" placeholder="注册时间（开始）">
+											<input id="endDate" type="text" class="form-control" placeholder="注册时间（结束）">
 											<button id="searchBt" class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button>
+											<!-- <button id="emptyBt" class="layui-btn layui-btn-sm">清空</button> -->
 										</div>
 									</form>
 	                   			</td>
@@ -45,12 +48,12 @@
 									<th>#</th>
 									<th>用户头像</th>
 									<th>用户昵称</th>
+									<th>用户性别</th>
 									<th>手机号</th>
 									<th>是否活跃用户</th>
-									<th>用户性别</th>
-									<th>用户所在国家</th>
-									<th>用户所在省份</th>
-									<th>用户所在城市</th>
+									<th>是否会员</th>
+									<th>是否注册用户</th>
+									<th>注册时间</th>
 								  	<th>放映厅角色</th>
 								  	<th>操作</th>
                                 </tr>
@@ -92,6 +95,8 @@ function init(){
         			d.id = $("#id").val();
     				d.MobilePhone = $("#mobilephone").val();
     				d.NickName = $("#nickname").val();
+    				d.StartTime = $("#startDate").val();
+    				d.EndTime = $("#endDate").val();
     				d.CinemaCode = $("#CinemaCode").val();
     				if($("#CinemaCode").val==null||$("#CinemaCode").val()==""){
     					d.CinemaCode=$("#cinemacodes").val();
@@ -118,11 +123,25 @@ function init(){
 					}
 				},
 				{"data" : "nickName", "defaultContent" : ""},
+				{
+					"data" : "sex", 
+					"defaultContent" : "",
+					"render": function (data, type, row) {
+                		var sex = row['sex'];
+                      	var flag = "";
+                      	if(sex == 1){
+                      		flag = "男";
+                      	}else{
+                      		flag = "女";
+                      	}
+                        return flag;
+                  	}
+				},
 				{"data" : "mobilePhone", "defaultContent" : ""},
         		{
 					"data" : "isActive", 
 					"defaultContent" : "",
-					"render": function (data, type, row) {
+					"render": function (data, type, row) {	//是否活跃用户
                 		var isActive = row['isActive'];
                       	var flag = "";
                       	if(isActive == 1){
@@ -133,23 +152,35 @@ function init(){
                         return flag;
                   	}
 				},
-            	{
-    					"data" : "sex", 
-    					"defaultContent" : "",
-    					"render": function (data, type, row) {
-                    		var sex = row['sex'];
-                          	var flag = "";
-                          	if(sex == 1){
-                          		flag = "男";
-                          	}else{
-                          		flag = "女";
-                          	}
-                            return flag;
+				{
+					"data" : "isMember", 
+					"defaultContent" : "",
+					"render": function (data, type, row) {	//是否会员
+                		var isMember = row['isMember'];
+                      	var flag = "";
+                      	if(isMember == 1){
+                      		flag = "会员";
+                      	}else{
+                      		flag = "非会员";
                       	}
-    			},
-				{"data" : "country", "defaultContent" : ""},
-				{"data" : "province", "defaultContent" : ""},
-				{"data" : "city", "defaultContent" : ""},
+                        return flag;
+                  	}
+				},
+				{
+					"data" : "isRegister", 
+					"defaultContent" : "",
+					"render": function (data, type, row) {	//是否在小程序上注册过
+                		var isRegister = row['isRegister'];
+                      	var flag = "";
+                      	if(isRegister == 1){
+                      		flag = "是";
+                      	}else{
+                      		flag = "否";
+                      	}
+                        return flag;
+                  	}
+				},
+				{"data" : "registerTime", "defaultContent" : ""},
 				{
 						"data" : "roll", 
 						"defaultContent" : "",
@@ -159,7 +190,7 @@ function init(){
 	                      	if(roll == 2){
 	                      		flag = "管理员";
 	                      	}else{
-	                      		flag = "普通会员";
+	                      		flag = "普通用户";
 	                      	}
 	                        return flag;
 	                  	}
@@ -175,7 +206,7 @@ function init(){
 	    		           if(roll==1){
 	    		               opate+= "<button onclick='setRoll(" + id + ",2);' title='设置为管理员' style='color:blue; background-color:transparent; border:0'>修改角色</button>";
 	    		           }else{
-	    		               opate+= "<button onclick='setRoll(" + id + ",1);' title='设置为普通会员' style='color:blue; background-color:transparent; border:0'>修改角色</button>";
+	    		               opate+= "<button onclick='setRoll(" + id + ",1);' title='设置为普通用户' style='color:blue; background-color:transparent; border:0'>修改角色</button>";
 	    		           }
 
 	                       var edit = buttonEdit(id, "", pers);
@@ -218,8 +249,15 @@ function getCinemaCodes(id,roleId){
 	})
 }  
 
-layui.use('layer', function(){
+layui.use(['layer','laydate'], function(){
     var layer = layui.layer;
+    var laydate = layui.laydate;
+    laydate.render({
+       elem: '#startDate',
+    });
+    laydate.render({
+       elem: '#endDate'
+    });
 });
 
 function del(id){

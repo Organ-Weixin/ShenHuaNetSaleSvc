@@ -10,6 +10,9 @@ public class Ticketusers {
 	private String OpenID;
 	private String VerifyCode;
 	private int IsActive;
+	private String IsRegister;
+	private String IsMember;
+	private Date RegisterTime;
 	private Date Created;
 	private String NickName;
 	private int Sex;
@@ -57,6 +60,24 @@ public class Ticketusers {
 	}
 	public void setIsActive(int IsActive) {
 		this.IsActive = IsActive;
+	}
+	public String getIsRegister() {
+		return IsRegister;
+	}
+	public void setIsRegister(String isRegister) {
+		IsRegister = isRegister;
+	}
+	public String getIsMember() {
+		return IsMember;
+	}
+	public void setIsMember(String isMember) {
+		IsMember = isMember;
+	}
+	public Date getRegisterTime() {
+		return RegisterTime;
+	}
+	public void setRegisterTime(Date registerTime) {
+		RegisterTime = registerTime;
 	}
 	public Date getCreated() {
 		return Created;

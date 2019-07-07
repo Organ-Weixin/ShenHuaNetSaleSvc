@@ -23,7 +23,7 @@ public interface TicketusersDao {
     int update(Ticketusers ticketusers);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into ticketusers(CinemaCode, MobilePhone, OpenID, VerifyCode, IsActive, Created, NickName, Sex, Country, Province, City, HeadImgUrl, TotalScore, Language,Roll) values(#{CinemaCode}, #{MobilePhone}, #{OpenID}, #{VerifyCode}, #{IsActive}, #{Created}, #{NickName}, #{Sex}, #{Country}, #{Province}, #{City}, #{HeadImgUrl}, #{TotalScore}, #{Language}, #{Roll})")
+    @Insert("insert into ticketusers(CinemaCode, MobilePhone, OpenID, VerifyCode, IsActive, IsRegister, IsMember, RegisterTime, Created, NickName, Sex, Birthday, Country, Province, City, HeadImgUrl, TotalScore, Language, Roll) values(#{CinemaCode}, #{MobilePhone}, #{OpenID}, #{VerifyCode}, #{IsActive}, #{IsRegister}, #{IsMember}, #{RegisterTime}, #{Created}, #{NickName}, #{Sex}, #{Birthday}, #{Country}, #{Province}, #{City}, #{HeadImgUrl}, #{TotalScore}, #{Language}, #{Roll})")
     int save(Ticketusers ticketusers);
     
     @Select("select * from Ticketusers where CinemaCode=#{cinemacode} and OpenID = #{openid}")
